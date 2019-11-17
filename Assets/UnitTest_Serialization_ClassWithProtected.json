@@ -1,0 +1,14 @@
+{
+  "ClassWithProtected": {
+    "m_class_POD": {
+      "m_pod_bool": false,
+      "m_pod_float": 33.33000183105469,
+      "m_pod_int": -11,
+      "m_pod_unsigned": 22
+    },
+    "m_class_bool": true,
+    "m_class_float": 5.550000190734863,
+    "m_class_int": -3,
+    "m_class_unsigned": 4
+  }
+}

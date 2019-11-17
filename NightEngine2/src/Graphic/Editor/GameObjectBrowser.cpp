@@ -7,11 +7,11 @@
 #include "Graphic/Editor/MemberSerializerEditor.hpp"
 #include "Graphic/Editor/ConfirmationBox.hpp"
 
-#include "Graphic/imgui/imgui.h"
+#include "imgui/imgui.h"
 
-#include "Core/ECS/GameObject.hpp"
+#include "Core/EC/GameObject.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
-#include "Core/ECS/ArchetypeManager.hpp"
+#include "Core/EC/ArchetypeManager.hpp"
 #include "Graphic/Window.hpp"
 
 using namespace Core;

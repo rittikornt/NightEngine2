@@ -8,8 +8,8 @@
 #include "LinearMath/btAlignedObjectArray.h"
 #include "LinearMath/btIDebugDraw.h"
 
-#include "Core/ECS/GameObject.hpp"
-#include "Core/ECS/Handle.hpp"
+#include "Core/EC/GameObject.hpp"
+#include "Core/EC/Handle.hpp"
 #include <vector>
 #include <unordered_map>
 

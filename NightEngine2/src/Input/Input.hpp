@@ -55,31 +55,31 @@ namespace Input
 
 	enum class JoyButtonCode : unsigned
 	{
-		Button_A			= GLFW_GAMEPAD_BUTTON_A,
-		Button_B			= GLFW_GAMEPAD_BUTTON_B,
-		Button_X			= GLFW_GAMEPAD_BUTTON_X,
-		Button_Y			= GLFW_GAMEPAD_BUTTON_Y,
-		Button_LB			= GLFW_GAMEPAD_BUTTON_LEFT_BUMPER,
-		Button_RB			= GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER,
-		Button_Back		= GLFW_GAMEPAD_BUTTON_BACK,
-		Button_Start	= GLFW_GAMEPAD_BUTTON_START,
-		Button_L3		,
-		Button_R3		,
-		Button_Up		,
+		Button_A = GLFW_GAMEPAD_BUTTON_A,
+		Button_B = GLFW_GAMEPAD_BUTTON_B,
+		Button_X = GLFW_GAMEPAD_BUTTON_X,
+		Button_Y = GLFW_GAMEPAD_BUTTON_Y,
+		Button_LB = GLFW_GAMEPAD_BUTTON_LEFT_BUMPER,
+		Button_RB = GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER,
+		Button_Back = GLFW_GAMEPAD_BUTTON_BACK,
+		Button_Start = GLFW_GAMEPAD_BUTTON_START,
+		Button_L3,
+		Button_R3,
+		Button_Up,
 		Button_Right,
-		Button_Down	,
+		Button_Down,
 		Button_Left
 	};
 	///////////////////////////////////////////////////////////////////////
 
 	bool GetMouseUp(MouseKeyCode);
-  bool GetMouseUp(unsigned);
+	bool GetMouseUp(unsigned);
 
 	bool GetMouseDown(MouseKeyCode);
-  bool GetMouseDown(unsigned);
+	bool GetMouseDown(unsigned);
 
 	bool GetMouseHold(MouseKeyCode);
-  bool GetMouseHold(unsigned);
+	bool GetMouseHold(unsigned);
 
 	Vector2 GetMousePosition();
 
@@ -88,27 +88,27 @@ namespace Input
 	/////////////////////////////////////////////////////////////////////////
 
 	bool GetKeyUp(KeyCode);
-  bool GetKeyUp(int);
-  
+	bool GetKeyUp(int);
+
 	bool GetKeyDown(KeyCode);
-  bool GetKeyDown(int);
+	bool GetKeyDown(int);
 
 	bool GetKeyHold(KeyCode);
-  bool GetKeyHold(int);
+	bool GetKeyHold(int);
 
 	/////////////////////////////////////////////////////////////////////////
 
 	Vector2 GetJoystickAxis(JoyStickNumber, JoyAxisType);
-  Vector2 GetJoystickAxis(unsigned joyNumber, unsigned axisType);
+	Vector2 GetJoystickAxis(unsigned joyNumber, unsigned axisType);
 
 	bool GetJoyButtonUp(JoyStickNumber, JoyButtonCode);
-  bool GetJoyButtonUp(unsigned joyNumber, unsigned joyButton);
+	bool GetJoyButtonUp(unsigned joyNumber, unsigned joyButton);
 
 	bool GetJoyButtonDown(JoyStickNumber, JoyButtonCode);
-  bool GetJoyButtonDown(unsigned joyNumber, unsigned joyButton);
+	bool GetJoyButtonDown(unsigned joyNumber, unsigned joyButton);
 
 	bool GetJoyButtonHold(JoyStickNumber, JoyButtonCode);
-  bool GetJoyButtonHold(unsigned joyNumber, unsigned joyButton);
+	bool GetJoyButtonHold(unsigned joyNumber, unsigned joyButton);
 
 	//TODO: Cursor Position
 

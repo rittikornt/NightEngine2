@@ -1,0 +1,33 @@
+{
+  "GameObject": {
+    "m_components": {
+      "MeshRenderer": {
+        "m_drawMode": 0
+      }
+    },
+    "m_name": "Model1",
+    "m_transform": {
+      "m_angle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "m_position": {
+        "x": -3.8499999046325684,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "m_rotation": {
+        "w": 0.0,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "m_scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      }
+    }
+  }
+}

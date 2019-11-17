@@ -23,10 +23,10 @@
 //#include "Graphic/Cubemap.hpp"
 //#include "Graphic/UniformBufferObject.hpp"
 //
-//#include "Core/ECS/Components/MeshRenderer.hpp"
-//#include "Core/ECS/Factory.hpp"
-//#include "Core/ECS/GameObject.hpp"
-//#include "Core/ECS/Handle.hpp"
+//#include "Core/EC/Components/MeshRenderer.hpp"
+//#include "Core/EC/Factory.hpp"
+//#include "Core/EC/GameObject.hpp"
+//#include "Core/EC/Handle.hpp"
 //
 ////Subsystem
 //#include "Core/Logger.hpp"

@@ -1,0 +1,33 @@
+{
+  "GameObject": {
+    "m_components": {
+      "MeshRenderer": {
+        "m_drawMode": 4
+      }
+    },
+    "m_name": "BoxInstances5",
+    "m_transform": {
+      "m_angle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -0.5
+      },
+      "m_position": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": -10.0
+      },
+      "m_rotation": {
+        "w": 0.9689124226570129,
+        "x": 0.0,
+        "y": 0.0,
+        "z": -0.24740397930145264
+      },
+      "m_scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      }
+    }
+  }
+}

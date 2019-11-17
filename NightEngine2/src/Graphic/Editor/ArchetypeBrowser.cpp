@@ -7,15 +7,15 @@
 #include "Graphic/Editor/MemberSerializerEditor.hpp"
 #include "Graphic/Editor/ConfirmationBox.hpp"
 
-#include "Graphic/imgui/imgui.h"
+#include "imgui/imgui.h"
 
-#include "Core/ECS/GameObject.hpp"
-#include "Core/ECS/Archetype.hpp"
+#include "Core/EC/GameObject.hpp"
+#include "Core/EC/Archetype.hpp"
 
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Graphic/Window.hpp"
 
-#include "Core/ECS/ArchetypeManager.hpp"
+#include "Core/EC/ArchetypeManager.hpp"
 
 using namespace Core;
 using namespace Core::ECS;

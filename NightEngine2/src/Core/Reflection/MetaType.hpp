@@ -11,8 +11,8 @@
 #include "Core/Reflection/Member.hpp"
 
 //JsonValue
-#include "Core/Serialization/taocpp_json/include/tao/json/value.hpp"
-#include "Core/Serialization/taocpp_json/include/tao/json/basic_value.hpp"
+#include "taocpp_json/include/tao/json/value.hpp"
+#include "taocpp_json/include/tao/json/basic_value.hpp"
 
 namespace Core
 {

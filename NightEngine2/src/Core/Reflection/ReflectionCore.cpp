@@ -16,7 +16,7 @@
 #include "UnitTest/UnitTest.hpp"
 
 #include "Core/Message/IMessageHandler.hpp"
-#include "Core/ECS/GameObject.hpp"
+#include "Core/EC/GameObject.hpp"
 
 //Math
 #include "glm/vec2.hpp"
@@ -29,14 +29,14 @@
 #include "GLM/gtx/quaternion.hpp"
 
 //Archetypes
-#include "Core/ECS/Archetype.hpp"
-#include "Core/ECS/ArchetypeManager.hpp"
+#include "Core/EC/Archetype.hpp"
+#include "Core/EC/ArchetypeManager.hpp"
 
 //Components
-#include "Core/ECS/ComponentLogic.hpp"
-#include "Core/ECS/Components/Transform.hpp"
-#include "Core/ECS/Components/Rigidbody.hpp"
-#include "Core/ECS/Components/MeshRenderer.hpp"
+#include "Core/EC/ComponentLogic.hpp"
+#include "Core/EC/Components/Transform.hpp"
+#include "Core/EC/Components/Rigidbody.hpp"
+#include "Core/EC/Components/MeshRenderer.hpp"
 
 #include "Graphic/Light.hpp"
 #include "Graphic/Material.hpp"

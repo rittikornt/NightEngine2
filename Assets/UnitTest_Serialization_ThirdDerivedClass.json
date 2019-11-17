@@ -1,0 +1,8 @@
+{
+  "ThirdDerivedClass": {
+    "m_secondPrivateDerived_float": 5432.10009765625,
+    "m_secondPrivateDerived_int": -111,
+    "m_thirdPrivateDerived_float": 322.54998779296875,
+    "m_thridPrivateDerived_int": -45425
+  }
+}

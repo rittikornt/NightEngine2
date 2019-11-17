@@ -10,10 +10,10 @@
 #include "Graphic/Shader.hpp"
 
 #include "Core/Macros.hpp"
-#include "Core/ECS/Components/MeshRenderer.hpp"
+#include "Core/EC/Components/MeshRenderer.hpp"
 #include "Core/Utility/Utility.hpp"
 
-#include "Core/ECS/Factory.hpp"
+#include "Core/EC/Factory.hpp"
 #include "Core/Container/MurmurHash2.hpp"
 
 using namespace Core;

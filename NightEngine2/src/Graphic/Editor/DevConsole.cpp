@@ -7,7 +7,7 @@
 #pragma once
 #include "Graphic/Editor/DevConsole.hpp"
 
-#include "Core/Lua/LuaCore.hpp"
+//#include "Core/Lua/LuaCore.hpp"
 #include "UnitTest/UnitTest.hpp"
 #include "Graphic/Window.hpp"
 
@@ -430,7 +430,7 @@ namespace Editor
   {
     if (m_Arguments.size() > 0)
     {
-      Core::LuaCore::SafeScript(m_Arguments[0]);
+      //Core::LuaCore::SafeScript(m_Arguments[0]);
     }
   }
 

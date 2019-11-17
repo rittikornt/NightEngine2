@@ -7,7 +7,7 @@
 #pragma once
 #include <Graphic/Color.hpp>
 #include "Graphic/Shader.hpp"
-#include "Core/ECS/ComponentLogic.hpp"
+#include "Core/EC/ComponentLogic.hpp"
 
 #include <glm/mat4x4.hpp>
 

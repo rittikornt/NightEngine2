@@ -7,12 +7,11 @@
 #include <iostream>
 
 //++Remove Later, for testing
-#include "Core/ECS/Factory.hpp"
+#include "Core/EC/Factory.hpp"
 
 //++Remove Later, for testing
 #include "Core/Message/MessageTypeEnum.hpp"
 
-#include "Core/Lua/LuaCore.hpp"
 #include "Core/Reflection/ReflectionCore.hpp"
 #include "Core/GameStatus.hpp"
 #include "Core/Logger.hpp"
@@ -20,7 +19,7 @@
 #include "Graphic/GraphicCore.hpp"
 #include "Input/Input.hpp"
 
-#include "Core/ECS/ArchetypeManager.hpp"
+#include "Core/EC/ArchetypeManager.hpp"
 
 #include "Physics/PhysicsScene.hpp"
 
@@ -56,7 +55,6 @@ namespace World
 		ArchetypeManager::Initialize();
 
 		//Runtime
-		LuaCore::Initialize();
 		Graphic::Initialize();
 		Input::Initialize();
 
@@ -87,8 +85,8 @@ namespace World
 
 		while (accumulator > c_TARGET_DT)
 		{
-			//Debug::Log << "World::FixedUpdate(" << c_TARGET_DT
-			//	<< ")\n";
+			Debug::Log << "World::FixedUpdate(" << c_TARGET_DT
+				<< ")\n";
 
 			//++Update here with c_TARGET_DT
 			g_physicScene->Update(c_TARGET_DT);
@@ -100,8 +98,8 @@ namespace World
 
 	void OnUpdate(float dt)
 	{
-		//Debug::Log << "World::Update(" << g_gameStat.m_deltaTime
-		//	<< "), FPS: " << g_gameStat.m_frameRate << '\n';
+		Debug::Log << "World::Update(" << g_gameStat->m_deltaTime
+			<< "), FPS: " << g_gameStat->m_frameRate << '\n';
 
 		//Update Systems
 		Input::OnUpdate();
@@ -117,7 +115,6 @@ namespace World
 		//Terminate System
 		Input::Terminate();
 		Graphic::Terminate();
-		LuaCore::Terminate();
 
 		ArchetypeManager::Terminate();
 		Factory::Terminate();

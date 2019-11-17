@@ -1,0 +1,18 @@
+{
+  "Material": {
+    "Diffuse": "./../Assets/Textures/diffuse_brickwall.jpg",
+    "Emissive": "./../Assets/Textures/emissive_wood.png",
+    "Emissive Strength": 15.0,
+    "Metallic": "./../Assets/Textures/Blank/000.png",
+    "Metallic Value": 0.0,
+    "Normal": "./../Assets/Textures/normal_brickwall.jpg",
+    "Normal Multiplier": 2.0,
+    "Roughness": "./../Assets/Textures/Blank/000.png",
+    "Roughness Value": 0.0,
+    "Shaders": [
+      "Rendering/deferred_geometry_pass.vert",
+      "Rendering/deferred_geometry_pass.frag"
+    ],
+    "UseNormal": true
+  }
+}

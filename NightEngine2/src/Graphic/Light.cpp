@@ -5,7 +5,7 @@
 */
 
 #include "Graphic/Light.hpp"
-#include "Core/ECS/GameObject.hpp"
+#include "Core/EC/GameObject.hpp"
 
 #include "Graphic/CameraObject.hpp"
 

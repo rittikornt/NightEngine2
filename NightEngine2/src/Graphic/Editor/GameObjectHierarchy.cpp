@@ -6,10 +6,10 @@
 */
 
 #include "Graphic/Editor/GameObjectHierarchy.hpp"
-#include "Graphic/imgui/imgui.h"
+#include "imgui/imgui.h"
 #include "Graphic/Window.hpp"
 
-#include "Core/ECS/GameObject.hpp"
+#include "Core/EC/GameObject.hpp"
 
 using namespace Core;
 using namespace Graphic;

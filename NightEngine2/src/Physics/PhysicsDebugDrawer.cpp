@@ -7,7 +7,7 @@
 #include "Physics/PhysicsDebugDrawer.hpp"
 
 #include "Core/Logger.hpp"
-#include "Core/ECS/Components/Transform.hpp"
+#include "Core/EC/Components/Transform.hpp"
 #include "Graphic/CameraObject.hpp"
 #include "Graphic/PrimitiveShape.hpp"
 

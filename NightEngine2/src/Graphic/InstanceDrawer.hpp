@@ -13,7 +13,7 @@
 
 #include "Graphic/VertexArrayObject.hpp"
 #include "Graphic/Mesh.hpp"
-#include "Core/ECS/Handle.hpp"
+#include "Core/EC/Handle.hpp"
 
 namespace Core
 {

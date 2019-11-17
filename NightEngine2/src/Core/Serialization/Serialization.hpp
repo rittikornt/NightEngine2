@@ -10,10 +10,10 @@
 #include "Core/Reflection/MetaType.hpp"
 #include "Core/Reflection/Variable.hpp"
 
-#include "Core/Serialization/taocpp_json/include/tao/json/stream.hpp"
-#include "Core/Serialization/taocpp_json/include/tao/json/from_string.hpp"
-#include "Core/Serialization/taocpp_json/include/tao/json/as.hpp"
-#include "Core/Serialization/taocpp_json/include/tao/json/basic_value.hpp"
+#include "taocpp_json/include/tao/json/stream.hpp"
+#include "taocpp_json/include/tao/json/from_string.hpp"
+#include "taocpp_json/include/tao/json/as.hpp"
+#include "taocpp_json/include/tao/json/basic_value.hpp"
 
 namespace Core
 {

@@ -4,11 +4,11 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of MemberSerializerEditor
 */
-#include "Graphic/imgui/imgui.h"
+#include "imgui/imgui.h"
 
 #include "Core/Reflection/ReflectionMacros.hpp"
 
-#include "Core/ECS/GameObject.hpp"
+#include "Core/EC/GameObject.hpp"
 #include "Graphic/Window.hpp"
 
 #include "Graphic/Color.hpp"

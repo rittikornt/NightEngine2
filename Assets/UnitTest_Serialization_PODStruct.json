@@ -1,0 +1,8 @@
+{
+  "PODStruct": {
+    "m_pod_bool": true,
+    "m_pod_float": 777.77001953125,
+    "m_pod_int": -55,
+    "m_pod_unsigned": 66
+  }
+}

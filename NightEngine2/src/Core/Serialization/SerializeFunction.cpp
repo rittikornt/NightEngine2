@@ -9,12 +9,12 @@
 #include "Core/Macros.hpp"
 #include "Core/Reflection/MetaType.hpp"
 
-#include "Core/ECS/GameObject.hpp"
+#include "Core/EC/GameObject.hpp"
 
 #include "Graphic/Material.hpp"
 
 //JsonValue
-#include "Core/Serialization/taocpp_json/include/tao/json/value.hpp"
+#include "taocpp_json/include/tao/json/value.hpp"
 
 //***********************************************
 //	Macros

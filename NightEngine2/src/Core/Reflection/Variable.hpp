@@ -8,8 +8,8 @@
 #include <ostream>
 
 //JsonValue
-#include "Core/Serialization/taocpp_json/include/tao/json/value.hpp"
-#include "Core/Serialization/taocpp_json/include/tao/json/basic_value.hpp"
+#include "taocpp_json/include/tao/json/value.hpp"
+#include "taocpp_json/include/tao/json/basic_value.hpp"
 
 //! @brief Macros for help access member within a Data Object (work with private too)
 #define POINTER_OFFSET(VOIDPTR, OFFSET)\

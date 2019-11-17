@@ -1,0 +1,28 @@
+{
+  "SecondDerivedClass": {
+    "m_class_POD": {
+      "m_pod_bool": false,
+      "m_pod_float": 33.33000183105469,
+      "m_pod_int": -11,
+      "m_pod_unsigned": 22
+    },
+    "m_class_bool": true,
+    "m_class_float": 5.550000190734863,
+    "m_class_int": -3,
+    "m_class_unsigned": 4,
+    "m_derived_POD": {
+      "m_pod_bool": true,
+      "m_pod_float": 333.3299865722656,
+      "m_pod_int": -111,
+      "m_pod_unsigned": 222
+    },
+    "m_derived_POD_2": {
+      "m_pod_bool": false,
+      "m_pod_float": 3333.330078125,
+      "m_pod_int": -1111,
+      "m_pod_unsigned": 2222
+    },
+    "m_secondDerived_float": 3456.340087890625,
+    "m_secondDerived_int": -9999
+  }
+}

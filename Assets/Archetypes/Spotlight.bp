@@ -1,0 +1,54 @@
+{
+  "GameObject": {
+    "m_components": {
+      "Light": {
+        "m_lightIndex": 2,
+        "m_lightInfo": {
+          "m_color": {
+            "m_value": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.5
+            }
+          },
+          "m_value": {
+            "m_intensity": 0.7071067690849304,
+            "m_spotLight": {
+              "m_inner": 0.7071067690849304,
+              "m_outer": 0.5735764503479004,
+              "m_spotLightIntensity": 5.0
+            }
+          }
+        },
+        "m_lightType": 2
+      },
+      "MeshRenderer": {
+        "m_drawMode": 2
+      }
+    },
+    "m_name": "Spotlight2",
+    "m_transform": {
+      "m_angle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -0.5
+      },
+      "m_position": {
+        "x": 2.0,
+        "y": 5.0,
+        "z": 2.0
+      },
+      "m_rotation": {
+        "w": 0.9689124226570129,
+        "x": 0.0,
+        "y": 0.0,
+        "z": -0.24740397930145264
+      },
+      "m_scale": {
+        "x": 0.20000000298023224,
+        "y": 0.20000000298023224,
+        "z": 0.20000000298023224
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@
   @brief Contain the Implementation of ConfirmationBox
 */
 #include "Graphic/Editor/ConfirmationBox.hpp"
-#include "Graphic/imgui/imgui.h"
+#include "imgui/imgui.h"
 #include "Graphic/Window.hpp"
 
 #include "Core/Macros.hpp"

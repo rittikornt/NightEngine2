@@ -14,8 +14,8 @@
 #include "Physics/PhysicUtilities.hpp"
 #include "Physics/PhysicsDebugDrawer.hpp"
 
-#include "Core/ECS/Components/Rigidbody.hpp"
-#include "Core/ECS/Components/Transform.hpp"
+#include "Core/EC/Components/Rigidbody.hpp"
+#include "Core/EC/Components/Transform.hpp"
 
 using namespace Core::ECS::Components;
 using namespace Core;

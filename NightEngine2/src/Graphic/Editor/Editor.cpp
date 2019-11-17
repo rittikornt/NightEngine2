@@ -8,9 +8,9 @@
 
 //Graphic
 #include "Graphic/Window.hpp"
-#include "Graphic/imgui/imgui.h"
-#include "Graphic/imgui/imgui_impl_glfw.h"
-#include "Graphic/imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 //Editor
 #include "Graphic/Editor/DevConsole.hpp"
@@ -26,8 +26,8 @@
 
 //Core
 #include "Core/Logger.hpp"
-#include "Core/ECS/Factory.hpp"
-#include "Core/ECS/GameObject.hpp"
+#include "Core/EC/Factory.hpp"
+#include "Core/EC/GameObject.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Core/GameStatus.hpp"
 

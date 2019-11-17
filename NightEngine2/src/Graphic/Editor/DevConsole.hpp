@@ -4,7 +4,7 @@
   @brief Contain the Interface of DevConsole
 */
 #pragma once
-#include "Graphic/imgui/imgui.h"
+#include "imgui/imgui.h"
 
 #include "Core/Message/IMessageHandler.hpp"   //Handle msg
 #include "Core/Message/MessageObjectList.hpp" //Msg contents

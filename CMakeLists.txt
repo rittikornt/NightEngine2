@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 project(NightEngine2)
 
+# Turn on the ability to create folders to organize projects (.vcproj)
+# It creates "CMakePredefinedTargets" folder by default and adds CMake
+# defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -24,6 +29,7 @@ option(BUILD_OPENGL3_DEMOS OFF)
 option(BUILD_UNIT_TESTS OFF)
 add_subdirectory(NightEngine2/thirdparty/bullet)
 
+add_subdirectory(NightEngine2/)
 #****************************************************************
 
 if(MSVC)
@@ -59,25 +65,7 @@ file(GLOB PROJECT_SOURCES_IMGUI NightEngine2/thirdparty/imgui/imgui/*.cpp
                                 NightEngine2/thirdparty/imgui/imgui/*.h)
 
 file(GLOB PROJECT_SOURCES_CORE NightEngine2/src/Core/*.cpp
-                               NightEngine2/src/Core/*.hpp
-							   NightEngine2/src/Core/EC/*.cpp
-                               NightEngine2/src/Core/EC/*.hpp
-                               NightEngine2/src/Core/Serialization/*.cpp
-                               NightEngine2/src/Core/Serialization/*.hpp
-							   NightEngine2/src/Core/Reflection/*.cpp
-                               NightEngine2/src/Core/Reflection/*.hpp
-							   NightEngine2/src/Core/Utility/*.cpp
-                               NightEngine2/src/Core/Utility/*.hpp)
-                    
-file(GLOB PROJECT_SOURCES_COMPONENTS NightEngine2/src/Core/EC/Components/*.cpp
-                                    NightEngine2/src/Core/EC/Components/*.hpp)
-
-file(GLOB PROJECT_SOURCES_CONTAINER 
-                                NightEngine2/src/Core/Container/*.cpp
-                                NightEngine2/src/Core/Container/*.hpp)
-
-file(GLOB PROJECT_SOURCES_MESSAGE NightEngine2/src/Core/Message/*.cpp
-                               NightEngine2/src/Core/Message/*.hpp)
+                               NightEngine2/src/Core/*.hpp)
 
 file(GLOB PROJECT_SOURCES_GRAPHIC NightEngine2/src/Graphic/*.cpp
                                 NightEngine2/src/Graphic/*.hpp)
@@ -90,8 +78,6 @@ file(GLOB PROJECT_SOURCES_EDITOR  NightEngine2/src/Graphic/Editor/*.cpp
 file(GLOB PROJECT_SOURCES_INPUT NightEngine2/src/Input/*.cpp
                                 NightEngine2/src/Input/*.hpp
                                 NightEngine2/src/Input/*.inl)
-file(GLOB PROJECT_SOURCES_TEST NightEngine2/src/UnitTest/*.cpp
-                               NightEngine2/src/UnitTest/*.hpp)
 
 file(GLOB PROJECT_SOURCES_PHYSIC NightEngine2/src/Physics/*.cpp
                                NightEngine2/src/Physics/*.hpp)
@@ -115,17 +101,13 @@ source_group("src" FILES ${PROJECT_SOURCES})
 source_group("shaders" FILES ${PROJECT_SHADERS})
 
 source_group("src\\Core" FILES ${PROJECT_SOURCES_CORE})
-source_group("src\\Core\\Components" FILES ${PROJECT_SOURCES_COMPONENTS})
-source_group("src\\Core\\Container" FILES ${PROJECT_SOURCES_CONTAINER})
 
 source_group("src\\Physics" FILES ${PROJECT_SOURCES_PHYSIC})
 
-source_group("src\\Message" FILES ${PROJECT_SOURCES_MESSAGE})
 source_group("src\\Graphic" FILES ${PROJECT_SOURCES_GRAPHIC})
 source_group("src\\Graphic\\Postprocess" FILES ${PROJECT_SOURCES_POSTPROCESS})
 source_group("src\\Graphic\\Editor" FILES ${PROJECT_SOURCES_EDITOR})
 source_group("src\\Input" FILES ${PROJECT_SOURCES_INPUT})
-source_group("src\\UnitTest" FILES ${PROJECT_SOURCES_TEST})
 
 source_group("thirdparty" FILES ${THIRDPARTY_SOURCES})
 source_group("thirdparty\\imgui" FILES ${PROJECT_SOURCES_IMGUI})
@@ -136,15 +118,22 @@ add_definitions(-DGLFW_INCLUDE_NONE
                 -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
                                ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
+                               $<TARGET_OBJECTS:NightEngine2_Core>
                                ${PROJECT_SOURCES_IMGUI}
-                               ${THIRDPARTY_SOURCES} ${PROJECT_SOURCES_CONTAINER} ${PROJECT_SOURCES_CORE} 
-                               ${PROJECT_SOURCES_COMPONENTS}
-                                ${PROJECT_SOURCES_MESSAGE} ${PROJECT_SOURCES_GRAPHIC}
+                               ${THIRDPARTY_SOURCES} 
+                               ${PROJECT_SOURCES_CORE} 
+                                ${PROJECT_SOURCES_GRAPHIC}
                                 ${PROJECT_SOURCES_POSTPROCESS}
                                 ${PROJECT_SOURCES_EDITOR}
-                                 ${PROJECT_SOURCES_INPUT} ${PROJECT_SOURCES_TEST} ${PROJECT_SOURCES_PHYSIC})
+                                 ${PROJECT_SOURCES_INPUT} 
+                                 $<TARGET_OBJECTS:NightEngine2_UnitTest> 
+                                 ${PROJECT_SOURCES_PHYSIC})
+
 target_link_libraries(${PROJECT_NAME} assimp glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
                       BulletDynamics BulletCollision LinearMath)
+                      
+# Properties->General->Output Directory
+# "Build/NightEngine2/{Debug/Release}"
 set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})

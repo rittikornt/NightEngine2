@@ -1,0 +1,74 @@
+#****************************************************************
+file(GLOB PROJECT_SOURCES_TEST src/UnitTest/*.cpp
+                               src/UnitTest/*.hpp)
+source_group("src" FILES ${PROJECT_SOURCES_TEST})
+include_directories(src/
+                    thirdparty/glad/include/
+                    thirdparty/glfw/include/
+                    thirdparty/glm/
+                    thirdparty/taocpp_json
+                    thirdparty/imgui)
+
+add_library(NightEngine2_UnitTest OBJECT ${PROJECT_SOURCES_TEST})
+
+# Creates folder "libraries" and adds target project (math.vcproj)
+#set_property(TARGET NightEngine2_UnitTest PROPERTY FOLDER "NightEngine2_UnitTest")
+
+# Properties->General->Output Directory
+set_target_properties(NightEngine2_UnitTest PROPERTIES
+                      RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
+
+# Adds logic to INSTALL.vcproj to copy math.dll to the destination directory
+#install (TARGETS NightEngine2_UnitTest
+#           RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME}
+#           LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+
+#****************************************************************
+file(GLOB PROJECT_SOURCES_REFLECTION src/Core/Reflection/*.cpp
+                               src/Core/Reflection/*.hpp)
+source_group("src\\Reflection" FILES ${PROJECT_SOURCES_REFLECTION})
+
+file(GLOB PROJECT_SOURCES_CONTAINER src/Core/Container/*.cpp
+                                src/Core/Container/*.hpp)
+source_group("src\\Container" FILES ${PROJECT_SOURCES_CONTAINER})
+
+
+file(GLOB PROJECT_SOURCES_EC            src/Core/EC/*.cpp
+                                        src/Core/EC/*.hpp
+                                        src/Core/EC/Components/*.cpp
+                                        src/Core/EC/Components/*.hpp)
+source_group("src\\EC" FILES ${PROJECT_SOURCES_EC})
+
+file(GLOB PROJECT_SOURCES_SERIALIZATION src/Core/Serialization/*.cpp
+                                        src/Core/Serialization/*.hpp)
+source_group("src\\Serialization" FILES ${PROJECT_SOURCES_SERIALIZATION})
+
+file(GLOB PROJECT_SOURCES_CORE src/Core/Utility/*.cpp
+                                src/Core/Utility/*.hpp)
+source_group("src\\" FILES ${PROJECT_SOURCES_CORE})
+
+file(GLOB PROJECT_SOURCES_MESSAGE src/Core/Message/*.cpp
+                               src/Core/Message/*.hpp)
+source_group("src\\Message" FILES ${PROJECT_SOURCES_MESSAGE})
+
+include_directories(src/
+                    ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/assimp/include/
+                    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/assimp/include/
+                    thirdparty/bullet/src/
+                    thirdparty/glad/include/
+                    thirdparty/glfw/include/
+                    thirdparty/glm/
+                    thirdparty/taocpp_json
+                    thirdparty/imgui)
+                    
+add_library(NightEngine2_Core OBJECT ${PROJECT_SOURCES_REFLECTION}
+                                    ${PROJECT_SOURCES_CORE}
+                                    ${PROJECT_SOURCES_CONTAINER}
+                                    ${PROJECT_SOURCES_MESSAGE}
+                                    ${PROJECT_SOURCES_EC}
+                                    ${PROJECT_SOURCES_SERIALIZATION})
+
+# Properties->General->Output Directory
+set_target_properties(NightEngine2_Core PROPERTIES
+                      RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
+#****************************************************************

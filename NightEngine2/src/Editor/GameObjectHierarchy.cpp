@@ -5,7 +5,7 @@
   @brief Contain the Implementation of GameObjectHierarchy
 */
 
-#include "Graphic/Editor/GameObjectHierarchy.hpp"
+#include "Editor/GameObjectHierarchy.hpp"
 #include "imgui/imgui.h"
 #include "Graphic/Window.hpp"
 

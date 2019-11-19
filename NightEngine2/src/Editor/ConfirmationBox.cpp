@@ -4,7 +4,7 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of ConfirmationBox
 */
-#include "Graphic/Editor/ConfirmationBox.hpp"
+#include "Editor/ConfirmationBox.hpp"
 #include "imgui/imgui.h"
 #include "Graphic/Window.hpp"
 

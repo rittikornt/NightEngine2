@@ -5,10 +5,10 @@
   @brief Contain the Implementation of Inspector
 */
 
-#include "Graphic/Editor/Inspector.hpp"
-#include "Graphic/Editor/MemberSerializerEditor.hpp"
-#include "Graphic/Editor/GameObjectHierarchy.hpp"
-#include "Graphic/Editor/ConfirmationBox.hpp"
+#include "Editor/Inspector.hpp"
+#include "Editor/MemberSerializerEditor.hpp"
+#include "Editor/GameObjectHierarchy.hpp"
+#include "Editor/ConfirmationBox.hpp"
 #include "imgui/imgui.h"
 
 #include "Core/EC/GameObject.hpp"

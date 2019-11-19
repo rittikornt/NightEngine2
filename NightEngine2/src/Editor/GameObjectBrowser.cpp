@@ -3,9 +3,9 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of GameObjectBrowser
 */
-#include "Graphic/Editor/GameObjectBrowser.hpp"
-#include "Graphic/Editor/MemberSerializerEditor.hpp"
-#include "Graphic/Editor/ConfirmationBox.hpp"
+#include "Editor/GameObjectBrowser.hpp"
+#include "Editor/MemberSerializerEditor.hpp"
+#include "Editor/ConfirmationBox.hpp"
 
 #include "imgui/imgui.h"
 

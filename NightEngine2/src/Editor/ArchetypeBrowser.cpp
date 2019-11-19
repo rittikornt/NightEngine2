@@ -3,9 +3,9 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of ArchetypeBrowser
 */
-#include "Graphic/Editor/ArchetypeBrowser.hpp"
-#include "Graphic/Editor/MemberSerializerEditor.hpp"
-#include "Graphic/Editor/ConfirmationBox.hpp"
+#include "Editor/ArchetypeBrowser.hpp"
+#include "Editor/MemberSerializerEditor.hpp"
+#include "Editor/ConfirmationBox.hpp"
 
 #include "imgui/imgui.h"
 

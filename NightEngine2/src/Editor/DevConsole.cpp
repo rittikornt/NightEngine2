@@ -5,7 +5,7 @@
 */
 
 #pragma once
-#include "Graphic/Editor/DevConsole.hpp"
+#include "Editor/DevConsole.hpp"
 
 //#include "Core/Lua/LuaCore.hpp"
 #include "UnitTest/UnitTest.hpp"

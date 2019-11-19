@@ -4,7 +4,7 @@
   @brief Contain the Implementation of Editor
 */
 
-#include "Graphic/Editor/Editor.hpp"
+#include "Editor.hpp"
 
 //Graphic
 #include "Graphic/Window.hpp"
@@ -13,13 +13,13 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 //Editor
-#include "Graphic/Editor/DevConsole.hpp"
-#include "Graphic/Editor/MemberSerializerEditor.hpp"
-#include "Graphic/Editor/ConfirmationBox.hpp"
-#include "Graphic/Editor/GameObjectBrowser.hpp"
-#include "Graphic/Editor/ArchetypeBrowser.hpp"
-#include "Graphic/Editor/GameObjectHierarchy.hpp"
-#include "Graphic/Editor/Inspector.hpp"
+#include "Editor/DevConsole.hpp"
+#include "Editor/MemberSerializerEditor.hpp"
+#include "Editor/ConfirmationBox.hpp"
+#include "Editor/GameObjectBrowser.hpp"
+#include "Editor/ArchetypeBrowser.hpp"
+#include "Editor/GameObjectHierarchy.hpp"
+#include "Editor/Inspector.hpp"
 
 //Input
 #include "Input/Input.hpp"

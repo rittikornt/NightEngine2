@@ -5,7 +5,7 @@
 */
 #include "Graphic/GraphicCore.hpp"
 #include "Graphic/Window.hpp"
-#include "Graphic/Editor/Editor.hpp"
+#include "Editor.hpp"
 
 //FrameBuffer Test
 #include "Graphic/FrameBufferObject.hpp"

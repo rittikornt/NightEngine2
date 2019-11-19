@@ -3,7 +3,7 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of World
 */
-#include "Core/World.hpp"
+#include "World.hpp"
 #include <iostream>
 
 //++Remove Later, for testing

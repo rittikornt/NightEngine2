@@ -56,25 +56,14 @@ include_directories(NightEngine2/src/
 
 file(GLOB THIRDPARTY_SOURCES NightEngine2/thirdparty/glad/src/glad.c)
 
-file(GLOB PROJECT_HEADERS NightEngine2/src/*.hpp
-                         NightEngine2/src/*.h)
-#file(GLOB_RECURSE PROJECT_SOURCES NightEngine2/Sources/*.cpp)
-file(GLOB PROJECT_SOURCES NightEngine2/src/*.cpp)
-
 file(GLOB PROJECT_SOURCES_IMGUI NightEngine2/thirdparty/imgui/imgui/*.cpp
                                 NightEngine2/thirdparty/imgui/imgui/*.h)
 
-file(GLOB PROJECT_SOURCES_CORE NightEngine2/src/Core/*.cpp
-                               NightEngine2/src/Core/*.hpp)
+#file(GLOB_RECURSE PROJECT_SOURCES NightEngine2/Sources/*.cpp)
+file(GLOB PROJECT_SOURCES NightEngine2/src/*.cpp
+                        NightEngine2/src/*.hpp
+                        NightEngine2/src/*.h)
 
-file(GLOB PROJECT_SOURCES_GRAPHIC NightEngine2/src/Graphic/*.cpp
-                                NightEngine2/src/Graphic/*.hpp)
-                             
-file(GLOB PROJECT_SOURCES_POSTPROCESS NightEngine2/src/Graphic/Postprocess/*.cpp
-                                NightEngine2/src/Graphic/Postprocess/*.hpp)
-
-file(GLOB PROJECT_SOURCES_EDITOR  NightEngine2/src/Graphic/Editor/*.cpp
-                                  NightEngine2/src/Graphic/Editor/*.hpp)
 file(GLOB PROJECT_SOURCES_INPUT NightEngine2/src/Input/*.cpp
                                 NightEngine2/src/Input/*.hpp
                                 NightEngine2/src/Input/*.inl)
@@ -95,18 +84,13 @@ file(GLOB PROJECT_CONFIGS CMakeLists.txt
 #****************************************************************
 
 #https://stackoverflow.com/questions/31422680/how-to-set-visual-studio-filters-for-nested-sub-directory-using-cmake
-source_group("Headers" FILES ${PROJECT_HEADERS})
 source_group("src" FILES ${PROJECT_SOURCES})
 
 source_group("shaders" FILES ${PROJECT_SHADERS})
 
-source_group("src\\Core" FILES ${PROJECT_SOURCES_CORE})
-
 source_group("src\\Physics" FILES ${PROJECT_SOURCES_PHYSIC})
 
-source_group("src\\Graphic" FILES ${PROJECT_SOURCES_GRAPHIC})
-source_group("src\\Graphic\\Postprocess" FILES ${PROJECT_SOURCES_POSTPROCESS})
-source_group("src\\Graphic\\Editor" FILES ${PROJECT_SOURCES_EDITOR})
+source_group("src\\Editor" FILES ${PROJECT_SOURCES_EDITOR})
 source_group("src\\Input" FILES ${PROJECT_SOURCES_INPUT})
 
 source_group("thirdparty" FILES ${THIRDPARTY_SOURCES})
@@ -116,18 +100,16 @@ source_group("thirdparty\\imgui" FILES ${PROJECT_SOURCES_IMGUI})
 
 add_definitions(-DGLFW_INCLUDE_NONE
                 -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
                                ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
                                $<TARGET_OBJECTS:NightEngine2_Core>
                                ${PROJECT_SOURCES_IMGUI}
                                ${THIRDPARTY_SOURCES} 
-                               ${PROJECT_SOURCES_CORE} 
-                                ${PROJECT_SOURCES_GRAPHIC}
-                                ${PROJECT_SOURCES_POSTPROCESS}
-                                ${PROJECT_SOURCES_EDITOR}
-                                 ${PROJECT_SOURCES_INPUT} 
-                                 $<TARGET_OBJECTS:NightEngine2_UnitTest> 
-                                 ${PROJECT_SOURCES_PHYSIC})
+                               $<TARGET_OBJECTS:NightEngine2_Graphics> 
+                               $<TARGET_OBJECTS:NightEngine2_Editor> 
+                               ${PROJECT_SOURCES_INPUT} 
+                               $<TARGET_OBJECTS:NightEngine2_UnitTest> 
+                               ${PROJECT_SOURCES_PHYSIC})
 
 target_link_libraries(${PROJECT_NAME} assimp glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES}

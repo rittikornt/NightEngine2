@@ -5,26 +5,26 @@
 */
 #include <thread>
 #include "Core/Message/MessageObjectList.hpp"
-#include "Core/GameStatus.hpp"
+#include "Core/GameTime.hpp"
 #include "Core/Logger.hpp"
 
-namespace World
+namespace NightEngine2
 {
 	using Clock = std::chrono::high_resolution_clock;
 
-  GameStatus & GameStatus::GetInstance(void)
+  GameTime& GameTime::GetInstance(void)
   {
-    static GameStatus stat;
+    static GameTime stat;
     return stat;
   }
 
-  void GameStatus::StartFrame()
+  void GameTime::StartFrame()
 	{
 		// Get the frame start time
 		m_frameStartTime = Clock::now();
 	}
 
-	void GameStatus::EndFrame()
+	void GameTime::EndFrame()
 	{
 		// Time to sleep before next frame
 		auto sleepTime = m_deltaDuration - (Clock::now() - m_frameStartTime);
@@ -46,7 +46,7 @@ namespace World
 													+ (m_newSampleWeight * m_frameRate);
 	}
 
-	void GameStatus::HandleMessage(const Core::GameShouldCloseMessage& msg)
+	void GameTime::HandleMessage(const Core::GameShouldCloseMessage& msg)
 	{
 		m_shouldClose = msg.m_shouldClose;
 	}

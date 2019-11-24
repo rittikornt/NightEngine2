@@ -14,14 +14,14 @@ namespace Core
   struct GameShouldCloseMessage;
 }
 
-namespace World
+namespace NightEngine2
 {
 	constexpr float c_DEFAULT_FPS_CAP = 60.0f;
-  struct GameStatus: public Core::IMessageHandler
+  struct GameTime: public Core::IMessageHandler
   {
     //! @brief Constructors
-		GameStatus() = default;
-		GameStatus(float frameRateCap, float averageFrameRateSample)
+		GameTime() = default;
+		GameTime(float frameRateCap, float averageFrameRateSample)
 			: m_shouldClose(false), m_frameRateCap(frameRateCap)
 			, m_deltaTime(1.0f / frameRateCap)
 			, m_frameRate(frameRateCap), m_averageFrameRate(frameRateCap)
@@ -32,7 +32,7 @@ namespace World
 		{}
 
     //! @brief Get Global Instance
-    static GameStatus& GetInstance(void);
+    static GameTime& GetInstance(void);
 
     //! @brief Start Frame
 		void StartFrame();

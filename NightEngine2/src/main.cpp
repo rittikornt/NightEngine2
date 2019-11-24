@@ -1,11 +1,15 @@
 // Local Headers
-#include "World.hpp"
+#include "NightEngine2.hpp"
 
 int main(int argc, char * argv[])
 {
-    World::Initialize();
-    World::MainLoop();
-    World::Terminate();
+  NightEngine2::Engine* engine = new NightEngine2::Engine();
+  {
+    engine->Initialize();
+    engine->MainLoop();
+    engine->Terminate();
+  }
+  delete engine;
 
-    return 0;
+  return 0;
 }

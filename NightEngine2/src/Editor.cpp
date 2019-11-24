@@ -29,7 +29,7 @@
 #include "Core/EC/Factory.hpp"
 #include "Core/EC/GameObject.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
-#include "Core/GameStatus.hpp"
+#include "Core/GameTime.hpp"
 
 //Opengl
 #include <glad/glad.h>
@@ -139,7 +139,6 @@ namespace Editor
   //********************************************
   // Top Mainmenu
   //********************************************
-
   void DrawTopMenuFile()
   {
     ImGui::MenuItem("File menu", NULL, false, false);
@@ -304,7 +303,7 @@ namespace Editor
       //Fps debug text
       ImGui::TextColored(ImVec4(1, 1, 0, 1), "fps: "); ImGui::SameLine(0, 5);
       
-      auto fps = World::GameStatus::GetInstance().m_averageFrameRate;
+      auto fps = NightEngine2::GameTime::GetInstance().m_averageFrameRate;
       ImGui::Text("%.1f (%.3f ms)", fps, 1000.0f / fps); ImGui::SameLine(0, 5);
       
       //ImGui::Text("%.1f (%.3f ms)", ImGui::GetIO().Framerate,1000.0f / ImGui::GetIO().Framerate);

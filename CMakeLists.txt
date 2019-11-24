@@ -11,17 +11,40 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 #****************************************************************
+set_property(GLOBAL PROPERTY nightengine2_target_list)
+function(add_nightengine2_target name)
+    get_property(local_target GLOBAL PROPERTY nightengine2_target_list)
+    set_property(GLOBAL PROPERTY nightengine2_target_list ${local_target} ${name})
+    add_library(${name} ${ARGN})
+endfunction()
 
+add_subdirectory(NightEngine2/)
+get_property(local_target GLOBAL PROPERTY nightengine2_target_list)
+message("nightengine2_target_list: ${local_target}")
+#****************************************************************
+
+# override add_library function to cache libs for organizing it in a folder
+set_property(GLOBAL PROPERTY target_list)
+function(add_library name)
+    #message("Adding library ${name}")
+    get_property(local_target GLOBAL PROPERTY target_list)
+    set_property(GLOBAL PROPERTY target_list ${local_target} ${name})
+    _add_library(${name} ${ARGN})
+endfunction()
+
+# GLFW
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
 option(GLFW_BUILD_TESTS OFF)
 add_subdirectory(NightEngine2/thirdparty/glfw)
 
+# Assimp
 option(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
 option(ASSIMP_BUILD_SAMPLES OFF)
 option(ASSIMP_BUILD_TESTS OFF)
 add_subdirectory(NightEngine2/thirdparty/assimp)
 
+# Bullet
 option(BUILD_BULLET2_DEMOS OFF)
 option(BUILD_CPU_DEMOS OFF)
 option(BUILD_EXTRAS OFF)
@@ -29,7 +52,16 @@ option(BUILD_OPENGL3_DEMOS OFF)
 option(BUILD_UNIT_TESTS OFF)
 add_subdirectory(NightEngine2/thirdparty/bullet)
 
-add_subdirectory(NightEngine2/)
+# organize all the thirdparty into the solution folder
+#message("target_list: ${target_list}")
+get_property(local_target GLOBAL PROPERTY target_list)
+message("target_list: ${local_target}")
+foreach(arg ${local_target})
+if (TARGET ${arg})
+    message("Add ${arg} to Thirdparty solution folder")
+    set_target_properties(${arg} PROPERTIES FOLDER "Thirdparty")
+    endif()
+endforeach()
 #****************************************************************
 
 if(MSVC)
@@ -118,4 +150,10 @@ target_link_libraries(${PROJECT_NAME} assimp glfw
 # Properties->General->Output Directory
 # "Build/NightEngine2/{Debug/Release}"
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/Output)
+
+# organize all the thirdparty into the solution folder
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "NightEngine2")
+
+get_property(local_target GLOBAL PROPERTY nightengine2_target_list)
+set_target_properties(${local_target} PROPERTIES FOLDER "NightEngine2")

@@ -1,4 +1,7 @@
 #****************************************************************
+# UnitTest
+#****************************************************************
+set(proj_name "NightEngine2_UnitTest")
 file(GLOB PROJECT_SOURCES_TEST src/UnitTest/*.cpp
                                src/UnitTest/*.hpp)
 source_group("src" FILES ${PROJECT_SOURCES_TEST})
@@ -9,21 +12,21 @@ include_directories(src/
                     thirdparty/taocpp_json
                     thirdparty/imgui)
 
-add_library(NightEngine2_UnitTest OBJECT ${PROJECT_SOURCES_TEST})
-
-# Creates folder "libraries" and adds target project (math.vcproj)
-#set_property(TARGET NightEngine2_UnitTest PROPERTY FOLDER "NightEngine2_UnitTest")
+add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_TEST})
 
 # Properties->General->Output Directory
-set_target_properties(NightEngine2_UnitTest PROPERTIES
+set_target_properties(${proj_name} PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 
 # Adds logic to INSTALL.vcproj to copy math.dll to the destination directory
-#install (TARGETS NightEngine2_UnitTest
+#install (TARGETS ${proj_name}
 #           RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME}
 #           LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
 #****************************************************************
+# Graphics
+#****************************************************************
+set(proj_name "NightEngine2_Graphics")
 file(GLOB PROJECT_SOURCES_GRAPHIC src/Graphic/*.cpp
                               src/Graphic/*.hpp)
 source_group("src" FILES ${PROJECT_SOURCES_GRAPHIC})
@@ -43,12 +46,15 @@ include_directories(src/
                     thirdparty/taocpp_json
                     thirdparty/imgui)
 
-add_library(NightEngine2_Graphics OBJECT ${PROJECT_SOURCES_GRAPHIC} ${PROJECT_SOURCES_POSTPROCESS})
+                    add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_GRAPHIC} ${PROJECT_SOURCES_POSTPROCESS})
 
-set_target_properties(NightEngine2_Graphics PROPERTIES
+set_target_properties(${proj_name} PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 
 #****************************************************************
+# Editor
+#****************************************************************
+set(proj_name "NightEngine2_Editor")
 file(GLOB PROJECT_SOURCES_EDITOR src/Editor/*.cpp
                                   src/Editor/*.hpp)
 source_group("src" FILES ${PROJECT_SOURCES_EDITOR})
@@ -64,12 +70,15 @@ include_directories(src/
                     thirdparty/taocpp_json
                     thirdparty/imgui)
 
-add_library(NightEngine2_Editor OBJECT ${PROJECT_SOURCES_EDITOR})
+                    add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_EDITOR})
 
-set_target_properties(NightEngine2_Editor PROPERTIES
+set_target_properties(${proj_name} PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 
 #****************************************************************
+# Core
+#****************************************************************
+set(proj_name "NightEngine2_Core")
 file(GLOB PROJECT_SOURCES_CORE src/Core/Utility/*.cpp
                                 src/Core/Utility/*.hpp
                                 src/Core/*.cpp
@@ -109,7 +118,7 @@ include_directories(src/
                     thirdparty/taocpp_json
                     thirdparty/imgui)
                     
-add_library(NightEngine2_Core OBJECT ${PROJECT_SOURCES_REFLECTION}
+                    add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_REFLECTION}
                                     ${PROJECT_SOURCES_CORE}
                                     ${PROJECT_SOURCES_CONTAINER}
                                     ${PROJECT_SOURCES_MESSAGE}
@@ -117,6 +126,7 @@ add_library(NightEngine2_Core OBJECT ${PROJECT_SOURCES_REFLECTION}
                                     ${PROJECT_SOURCES_SERIALIZATION})
 
 # Properties->General->Output Directory
-set_target_properties(NightEngine2_Core PROPERTIES
+set_target_properties(${proj_name} PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
+
 #****************************************************************

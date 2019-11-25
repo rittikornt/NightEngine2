@@ -5,7 +5,7 @@
 */
 #include "Graphic/Opengl/RenderLoopOpengl.hpp"
 #include "Graphic/Opengl/Window.hpp"
-#include "Editor.hpp"
+#include "Graphic/Editor.hpp"
 
 //FrameBuffer Test
 #include "Graphic/Opengl/FrameBufferObject.hpp"
@@ -658,6 +658,11 @@ namespace Graphic
       // Rendering 
       //*************************************************
       Editor::PreRender();
+
+      //Clear BG first
+      const float clear_color = 0.0f;
+      glClearColor(clear_color, clear_color
+        , clear_color, clear_color);
 
       //*************************************************
       // Depth FBO Pass for shadow

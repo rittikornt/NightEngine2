@@ -65,7 +65,6 @@ namespace NightEngine2
     g_physicScene->Initialize();
 
     //TODO: Scene Init, Update, Terminate
-    //TODO: Spaces Init, Update, Terminate
   }
 
   void Engine::MainLoop(void)

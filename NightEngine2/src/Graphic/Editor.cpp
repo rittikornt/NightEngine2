@@ -5,11 +5,14 @@
 */
 
 #include "Editor.hpp"
+#include <unordered_map>
 
 //Graphic
 #include "Graphic/Opengl/Window.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
+
+//TODO: Somehow make this Graphics API independent
 #include "imgui/imgui_impl_opengl3.h"
 
 //Editor
@@ -31,17 +34,11 @@
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Core/GameTime.hpp"
 
-//Opengl
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <unordered_map>
-
 //Math
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
-#include <GLM/gtx/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 using namespace Core;
 using namespace Core::Factory;
@@ -415,10 +412,6 @@ namespace Editor
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
-    //Clear BG first
-    glClearColor(clear_color.x, clear_color.y
-      , clear_color.z, clear_color.w);
 
     //Receive input
     ProcessInput();

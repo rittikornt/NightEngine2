@@ -6,11 +6,11 @@
 #include "Core/EC/Components/MeshRenderer.hpp"
 #include "Core/EC/GameObject.hpp"
 
-#include "Graphic/Model.hpp"
-#include "Graphic/Vertex.hpp"
-#include "Graphic/Shader.hpp"
+#include "Graphic/Opengl/Model.hpp"
+#include "Graphic/Opengl/Vertex.hpp"
+#include "Graphic/Opengl/Shader.hpp"
 
-#include "Graphic/InstanceDrawer.hpp"
+#include "Graphic/Opengl/InstanceDrawer.hpp"
 
 #include "Core/Serialization/ResourceManager.hpp"
 

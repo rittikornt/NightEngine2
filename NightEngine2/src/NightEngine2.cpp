@@ -13,21 +13,21 @@
 #include "Core/Message/MessageTypeEnum.hpp"
 
 #include "Core/Reflection/ReflectionCore.hpp"
-#include "Core/GameTime.hpp"
 #include "Core/Logger.hpp"
 
-#include "Graphic/GraphicCore.hpp"
+#include "Core/GameTime.hpp"
 #include "Input/Input.hpp"
 
 #include "Core/EC/ArchetypeManager.hpp"
 
 #include "Physics/PhysicsScene.hpp"
-#include "NightEngine2.hpp"
+#include "Graphic/Opengl/RenderLoopOpengl.hpp"
 
 using namespace Core;
 using namespace Core::Container;
 using namespace Core::ECS;
 
+using namespace Graphic;
 using namespace Physics;
 
 namespace NightEngine2
@@ -36,16 +36,17 @@ namespace NightEngine2
   constexpr float      c_FRAMERATE_CAP = 65.0f;
   constexpr float      c_TARGET_DT = 1.0f / c_FRAMERATE_CAP;
   constexpr float      c_AVR_FRAMERATE_SAMPLE = 15.0f;
-  static GameTime*   g_gameStat;
-  static PhysicsScene* g_physicScene;
+
+  //TODO: there should be one per scene
+  static PhysicsScene* g_physicScene = nullptr;
 
   void Engine::Initialize(void)
   {
     Debug::Log << "Engine::Initialize\n";
 
-    g_gameStat = &(GameTime::GetInstance());
-    *g_gameStat = GameTime{ c_FRAMERATE_CAP,c_AVR_FRAMERATE_SAMPLE };
-    g_gameStat->Subscribe(Core::MessageType::MSG_GAMESHOULDQUIT);
+    m_gameTime = &(GameTime::GetInstance());
+    *m_gameTime = GameTime{ c_FRAMERATE_CAP,c_AVR_FRAMERATE_SAMPLE };
+    m_gameTime->Subscribe(Core::MessageType::MSG_GAMESHOULDQUIT);
 
     //Physics
     g_physicScene = new PhysicsScene();
@@ -56,7 +57,8 @@ namespace NightEngine2
     ArchetypeManager::Initialize();
 
     //Runtime
-    Graphic::Initialize();
+    m_renderloop = new RenderLoopOpengl();
+    m_renderloop->Initialize();
     Input::Initialize();
 
     //Physic Init After Graphic
@@ -68,14 +70,14 @@ namespace NightEngine2
 
   void Engine::MainLoop(void)
   {
-    while (!g_gameStat->m_shouldClose)
+    while (!m_gameTime->m_shouldClose)
     {
-      g_gameStat->StartFrame();
+      m_gameTime->StartFrame();
 
-      FixedUpdate(g_gameStat->m_deltaTime);
-      OnUpdate(g_gameStat->m_deltaTime);
+      FixedUpdate(m_gameTime->m_deltaTime);
+      OnUpdate(m_gameTime->m_deltaTime);
 
-      g_gameStat->EndFrame();
+      m_gameTime->EndFrame();
     }
   }
 
@@ -104,8 +106,10 @@ namespace NightEngine2
     //Update Systems
     Input::OnUpdate();
 
+    //TODO: Update all the Components
+
     //Render Frame
-    Graphic::Render(dt);
+    m_renderloop->Render(dt);
   }
 
   void Engine::Terminate(void)
@@ -114,15 +118,16 @@ namespace NightEngine2
 
     //Terminate System
     Input::Terminate();
-    Graphic::Terminate();
+    m_renderloop->Terminate();
 
     ArchetypeManager::Terminate();
     Factory::Terminate();
     Reflection::Terminate();
 
+    delete m_renderloop;
     delete g_physicScene;
 
-    g_gameStat->UnsubscribeAll();
+    m_gameTime->UnsubscribeAll();
   }
 
 } // namespace World

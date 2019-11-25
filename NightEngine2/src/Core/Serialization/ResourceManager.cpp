@@ -10,8 +10,8 @@
 #include "Core/Container/MurmurHash2.hpp"
 #include "Core/Container/Hashmap.hpp"
 
-#include "Graphic/Model.hpp"
-#include "Graphic/Material.hpp"
+#include "Graphic/Opengl/Model.hpp"
+#include "Graphic/Opengl/Material.hpp"
 
 namespace Core
 {

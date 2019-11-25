@@ -7,7 +7,7 @@
 #include "Editor.hpp"
 
 //Graphic
-#include "Graphic/Window.hpp"
+#include "Graphic/Opengl/Window.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"

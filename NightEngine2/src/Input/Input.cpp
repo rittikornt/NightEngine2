@@ -4,7 +4,7 @@
   @brief Contain the Implementation of Input
 */
 #include "Input/Input.hpp"
-#include "Graphic/Window.hpp"
+#include "Graphic/Opengl/Window.hpp"
 #include "Core/Logger.hpp"
 #include "UnitTest/UnitTest.hpp"
 

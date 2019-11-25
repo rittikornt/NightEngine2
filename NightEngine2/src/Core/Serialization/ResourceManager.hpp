@@ -5,7 +5,7 @@
 */
 
 #include "Core/Container/String.hpp"
-#include "Graphic/Texture.hpp"
+#include "Graphic/Opengl/Texture.hpp"
 
 //Forward Declaration
 namespace Graphic

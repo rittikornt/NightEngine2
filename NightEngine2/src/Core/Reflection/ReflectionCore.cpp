@@ -38,9 +38,8 @@
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"
 
-#include "Graphic/Light.hpp"
-#include "Graphic/Material.hpp"
-
+#include "Graphic/Opengl/Light.hpp"
+#include "Graphic/Opengl/Material.hpp"
 
 namespace Core
 {

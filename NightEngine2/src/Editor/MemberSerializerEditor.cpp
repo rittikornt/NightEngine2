@@ -9,7 +9,7 @@
 #include "Core/Reflection/ReflectionMacros.hpp"
 
 #include "Core/EC/GameObject.hpp"
-#include "Graphic/Window.hpp"
+#include "Graphic/Opengl/Window.hpp"
 
 #include "Graphic/Color.hpp"
 

@@ -9,7 +9,7 @@
 
 //#include "Core/Lua/LuaCore.hpp"
 #include "UnitTest/UnitTest.hpp"
-#include "Graphic/Window.hpp"
+#include "Graphic/Opengl/Window.hpp"
 
 #include <ctype.h>          // toupper, isprint
 #include <limits.h>         // INT_MIN, INT_MAX

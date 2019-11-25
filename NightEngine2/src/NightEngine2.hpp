@@ -5,8 +5,14 @@
 */
 #pragma once
 
+namespace Graphic
+{
+  class IRenderLoop;
+}
+
 namespace NightEngine2
 {
+  class GameTime;
   class Engine
   {
   public:
@@ -25,6 +31,8 @@ namespace NightEngine2
     void OnUpdate(float dt);
 
   private:
+    GameTime*   m_gameTime = nullptr;
+    Graphic::IRenderLoop*   m_renderloop = nullptr;
   };
 
 } // namespace NightEngine2

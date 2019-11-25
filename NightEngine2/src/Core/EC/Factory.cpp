@@ -10,7 +10,7 @@
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/ComponentLogic.hpp"
 
-#include "Graphic/Light.hpp"
+#include "Graphic/Opengl/Light.hpp"
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"

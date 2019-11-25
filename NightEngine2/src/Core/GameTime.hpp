@@ -17,8 +17,9 @@ namespace Core
 namespace NightEngine2
 {
 	constexpr float c_DEFAULT_FPS_CAP = 60.0f;
-  struct GameTime: public Core::IMessageHandler
+  class GameTime: public Core::IMessageHandler
   {
+  public:
     //! @brief Constructors
 		GameTime() = default;
 		GameTime(float frameRateCap, float averageFrameRateSample)
@@ -44,7 +45,7 @@ namespace NightEngine2
 		virtual void HandleMessage(const Core::GameShouldCloseMessage& msg);
 
 		///////////////////////////////////////////////////////////////////////////
-		//	Public Variable
+		//	Member Variable
 		///////////////////////////////////////////////////////////////////////////
 		using TimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 		using FloatDuration = std::chrono::duration<float>;

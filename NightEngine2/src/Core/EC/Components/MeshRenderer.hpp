@@ -7,8 +7,8 @@
 
 #include "Core/EC/ComponentLogic.hpp"
 #include "Core/EC/Handle.hpp"
-#include "Graphic/Material.hpp"
-#include "Graphic/Mesh.hpp"
+#include "Graphic/Opengl/Material.hpp"
+#include "Graphic/Opengl/Mesh.hpp"
 
 #include <vector>
 

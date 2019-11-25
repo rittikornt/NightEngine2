@@ -11,7 +11,7 @@
 
 #include "Core/EC/GameObject.hpp"
 
-#include "Graphic/Material.hpp"
+#include "Graphic/Opengl/Material.hpp"
 
 //JsonValue
 #include "taocpp_json/include/tao/json/value.hpp"

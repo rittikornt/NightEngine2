@@ -14,7 +14,7 @@
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/ArchetypeManager.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
-#include "Graphic/Window.hpp"
+#include "Graphic/Opengl/Window.hpp"
 
 using namespace Core;
 using namespace Core::ECS;

@@ -31,9 +31,13 @@ file(GLOB PROJECT_SOURCES_GRAPHIC src/Graphic/*.cpp
                               src/Graphic/*.hpp)
 source_group("src" FILES ${PROJECT_SOURCES_GRAPHIC})
 
-file(GLOB PROJECT_SOURCES_POSTPROCESS src/Graphic/Postprocess/*.cpp
-                                      src/Graphic/Postprocess/*.hpp)
-source_group("src\\PostProcess" FILES ${PROJECT_SOURCES_POSTPROCESS})
+file(GLOB PROJECT_SOURCES_GRAPHIC_OPENGL src/Graphic/Opengl/*.cpp
+                              src/Graphic/Opengl/*.hpp)
+source_group("src\\Opengl" FILES ${PROJECT_SOURCES_GRAPHIC_OPENGL})
+
+file(GLOB PROJECT_SOURCES_POSTPROCESS_OPENGL src/Graphic/Opengl/Postprocess/*.cpp
+                                      src/Graphic/Opengl/Postprocess/*.hpp)
+source_group("src\\Opengl\\PostProcess" FILES ${PROJECT_SOURCES_POSTPROCESS_OPENGL})
 
 include_directories(src/
                     ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/assimp/include/
@@ -46,7 +50,9 @@ include_directories(src/
                     thirdparty/taocpp_json
                     thirdparty/imgui)
 
-                    add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_GRAPHIC} ${PROJECT_SOURCES_POSTPROCESS})
+                    add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_GRAPHIC} 
+                                                                ${PROJECT_SOURCES_GRAPHIC_OPENGL} 
+                                                                ${PROJECT_SOURCES_POSTPROCESS_OPENGL})
 
 set_target_properties(${proj_name} PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})

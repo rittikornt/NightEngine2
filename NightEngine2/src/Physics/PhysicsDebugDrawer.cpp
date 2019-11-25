@@ -8,8 +8,8 @@
 
 #include "Core/Logger.hpp"
 #include "Core/EC/Components/Transform.hpp"
-#include "Graphic/CameraObject.hpp"
-#include "Graphic/PrimitiveShape.hpp"
+#include "Graphic/Opengl/CameraObject.hpp"
+#include "Graphic/Opengl/PrimitiveShape.hpp"
 
 #include "Physics/PhysicUtilities.hpp"
 

@@ -13,7 +13,7 @@
 #include "Core/EC/Archetype.hpp"
 
 #include "Core/Reflection/ReflectionMacros.hpp"
-#include "Graphic/Window.hpp"
+#include "Graphic/Opengl/Window.hpp"
 
 #include "Core/EC/ArchetypeManager.hpp"
 

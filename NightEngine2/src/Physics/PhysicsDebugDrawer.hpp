@@ -7,8 +7,8 @@
 #pragma once
 #include "LinearMath/btIDebugDraw.h"
 
-#include "Graphic/VertexArrayObject.hpp"
-#include "Graphic/Shader.hpp"
+#include "Graphic/Opengl/VertexArrayObject.hpp"
+#include "Graphic/Opengl/Shader.hpp"
 #include <vector>
 
 //Forward Declaration

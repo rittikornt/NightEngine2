@@ -21,11 +21,11 @@ namespace Graphic
 	namespace Window
 	{
 		//Window states
-		GLFWwindow* glfwWindow;
-		GLFWmonitor* glfwMonitor;
-		unsigned int windowWidth, windowHeight;
-		float aspectRatio;
-		WindowMode windowMode;
+		static GLFWwindow* g_glfwWindow;
+		static GLFWmonitor* g_glfwMonitor;
+		static unsigned int g_windowWidth, g_windowHeight;
+		static float g_aspectRatio;
+		static WindowMode g_windowMode;
 
 		size_t windowResIndex = 3;
 		const glm::uvec2 windowResolution[] =
@@ -50,8 +50,8 @@ namespace Graphic
 
 		void Initialize(char* title, WindowMode mode)
 		{
-			windowWidth = windowResolution[windowResIndex].x;
-			windowHeight = windowResolution[windowResIndex].y;
+			g_windowWidth = windowResolution[windowResIndex].x;
+			g_windowHeight = windowResolution[windowResIndex].y;
 
 			// Load GLFW and Create a Window
 			glfwInit();
@@ -64,92 +64,95 @@ namespace Graphic
 #endif // __APPLE__
 
 			glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+      glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
-			glfwWindow = glfwCreateWindow(windowWidth, windowHeight
+			g_glfwWindow = glfwCreateWindow(g_windowWidth, g_windowHeight
 				, title, nullptr, nullptr);
 
 			// Check for Valid Context
-			if (glfwWindow == nullptr)
+			if (g_glfwWindow == nullptr)
 			{
 				Debug::Log << Logger::MessageType::ERROR_MSG << "Failed to Create OpenGL Context\n";
 				fprintf(stderr, "Failed to Create OpenGL Context");
 				return;
 			}
 
-			Debug::Log << Logger::MessageType::INFO << "Window::Init(), Address: " << glfwWindow << '\n';
+			Debug::Log << Logger::MessageType::INFO << "Window::Init(), Address: " << g_glfwWindow << '\n';
+
+      //Turn off VSync
+      //SetVSync(false);
 
 			// Create Context and Load OpenGL Functions
-			glfwMakeContextCurrent(glfwWindow);
+			glfwMakeContextCurrent(g_glfwWindow);
 			gladLoadGL();
-      //glfwSwapInterval(1);
 
 			Debug::Log << Logger::MessageType::INFO << "OpenGL " << glGetString(GL_VERSION) << '\n';
 
 			//Get monitor
-			glfwMonitor = glfwGetPrimaryMonitor();
+			g_glfwMonitor = glfwGetPrimaryMonitor();
 			SetWindowMode(mode);
 
 			//Set default aspect ratio
 			SetWindowAspectRatio(c_DEFAULT_ASPECT_RATIO_X, c_DEFAULT_ASPECT_RATIO_Y);
 		
       //Callback when attempted to close window
-      glfwSetWindowCloseCallback(glfwWindow, window_close_callback);
+      glfwSetWindowCloseCallback(g_glfwWindow, window_close_callback);
     }
 
 		void Terminate()
 		{
-			glfwDestroyWindow(glfwWindow);
+			glfwDestroyWindow(g_glfwWindow);
 		}
 
 		/////////////////////////////////////////////////////////////////////////
 
 		bool ShouldClose()
 		{
-			return static_cast<bool>(glfwWindowShouldClose(glfwWindow));
+			return static_cast<bool>(glfwWindowShouldClose(g_glfwWindow));
 		}
 
 		void SwapBuffer()
 		{
 			// Flip Buffers and Draw
-			glfwSwapBuffers(glfwWindow);
+			glfwSwapBuffers(g_glfwWindow);
 		}
 
 		/////////////////////////////////////////////////////////////////////////
 
 		int GetKeyboardInput(int keyCode)
 		{
-			return glfwGetKey(glfwWindow, keyCode);
+			return glfwGetKey(g_glfwWindow, keyCode);
 		}
 
 		int GetMouseInput(int mouseKeyCode)
 		{
-			return glfwGetMouseButton(glfwWindow, mouseKeyCode);
+			return glfwGetMouseButton(g_glfwWindow, mouseKeyCode);
 		}
 
 		GLFWwindow * GetWindow(void)
 		{
-			return glfwWindow;
+			return g_glfwWindow;
 		}
 
 		int GetWidth()
 		{
-			return windowWidth;
+			return g_windowWidth;
 		}
 
 		int GetHeight()
 		{
-			return windowHeight;
+			return g_windowHeight;
 		}
 
 		/////////////////////////////////////////////////////////////////////////
 
 		void RecenterWindow(void)
 		{
-			const GLFWvidmode* vidMode = glfwGetVideoMode(glfwMonitor);
+			const GLFWvidmode* vidMode = glfwGetVideoMode(g_glfwMonitor);
 
-			int posX = (abs(float(vidMode->width - (windowWidth))) * 0.15f);
-			int posY = (abs(float(vidMode->height - (windowHeight))) * 0.15f);
-			glfwSetWindowPos(glfwWindow, posX, posY);
+			int posX = (abs(float(vidMode->width - (g_windowWidth))) * 0.15f);
+			int posY = (abs(float(vidMode->height - (g_windowHeight))) * 0.15f);
+			glfwSetWindowPos(g_glfwWindow, posX, posY);
 
 			//Debug::Log << Logger::MessageType::INFO << "vidMode: (" << vidMode->width << ", " << vidMode->height << ")\n";
 			Debug::Log << Logger::MessageType::INFO << "Recenter Window to: (" << posX << ", " << posY << ")\n";
@@ -168,7 +171,7 @@ namespace Graphic
 
 		void ToggleWindowMode(void)
 		{
-			switch (windowMode)
+			switch (g_windowMode)
 			{
 				case WindowMode::WINDOW:
 				{
@@ -185,16 +188,16 @@ namespace Graphic
 
 		void SetWindowAspectRatio(int width, int height)
 		{
-			aspectRatio = float(c_DEFAULT_ASPECT_RATIO_X) / c_DEFAULT_ASPECT_RATIO_Y;
-			glfwSetWindowAspectRatio(glfwWindow, width, height);
+			g_aspectRatio = float(c_DEFAULT_ASPECT_RATIO_X) / c_DEFAULT_ASPECT_RATIO_Y;
+			glfwSetWindowAspectRatio(g_glfwWindow, width, height);
 		}
 
 		void SetWindowSize(int width, int height)
 		{
-			windowWidth = width;
-			windowHeight = height;
+			g_windowWidth = width;
+			g_windowHeight = height;
 
-			glfwSetWindowSize(glfwWindow, width, height);
+			glfwSetWindowSize(g_glfwWindow, width, height);
 			glViewport(0, 0, width, height);
 
 			Debug::Log << Logger::MessageType::INFO <<"Window Size: " << width << "x" << height <<'\n';
@@ -202,24 +205,24 @@ namespace Graphic
 		
 		void SetWindowMode(WindowMode mode)
 		{
-			windowMode = mode;
+			g_windowMode = mode;
 			switch (mode)
 			{
 				case WindowMode::WINDOW:
 				{
-					glfwSetWindowMonitor(glfwWindow, nullptr
+					glfwSetWindowMonitor(g_glfwWindow, nullptr
 						, 0, 0
-						, windowWidth, windowHeight, c_DEFAULT_REFRESHRATE);
+						, g_windowWidth, g_windowHeight, c_DEFAULT_REFRESHRATE);
 
 					RecenterWindow();
 					break;
 				}
 				case WindowMode::FULLSCREEN:
 				{
-					const GLFWvidmode* vidMode = glfwGetVideoMode(glfwMonitor);
-					glfwSetWindowMonitor(glfwWindow, glfwMonitor
+					const GLFWvidmode* vidMode = glfwGetVideoMode(g_glfwMonitor);
+					glfwSetWindowMonitor(g_glfwWindow, g_glfwMonitor
 						, 0, 0
-						, windowWidth, windowHeight, c_DEFAULT_REFRESHRATE);
+						, g_windowWidth, g_windowHeight, c_DEFAULT_REFRESHRATE);
 					break;
 				}
 			}
@@ -229,7 +232,7 @@ namespace Graphic
 		{
       Debug::Log << Logger::MessageType::INFO 
         << "SetWindowShouldClose: " << shouldClose;
-			glfwSetWindowShouldClose(glfwWindow, shouldClose);
+			glfwSetWindowShouldClose(g_glfwWindow, shouldClose);
 
 			if (shouldClose)
 			{
@@ -246,24 +249,30 @@ namespace Graphic
 			{
 				case CursorMode::NORMAL:
 				{
-					glfwSetInputMode(glfwWindow
+					glfwSetInputMode(g_glfwWindow
 						, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 					break;
 				}
 				case CursorMode::DISABLE:
 				{
-					glfwSetInputMode(glfwWindow
+					glfwSetInputMode(g_glfwWindow
 						, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 					break;
 				}
 				case CursorMode::HIDDEN:
 				{
-					glfwSetInputMode(glfwWindow
+					glfwSetInputMode(g_glfwWindow
 						, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 					break;
 				}
 			}
 		}
+
+    void SetVSync(bool enable)
+    {
+      glfwMakeContextCurrent(g_glfwWindow);
+      glfwSwapInterval(enable? 1: 0);
+    }
 
 	} // Window 
 }	// Graphic 

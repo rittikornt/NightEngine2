@@ -22,14 +22,18 @@ namespace NightEngine2
   public:
     //! @brief Constructors
 		GameTime() = default;
-		GameTime(float frameRateCap, float averageFrameRateSample)
-			: m_shouldClose(false), m_frameRateCap(frameRateCap)
-			, m_deltaTime(1.0f / frameRateCap)
-			, m_frameRate(frameRateCap), m_averageFrameRate(frameRateCap)
+		GameTime(float renderFrameRateCap
+      , float simulationFrameRateCap
+      , float averageFrameRateSample)
+			: m_shouldClose(false)
+      //Frame datas
+			, m_deltaTime(1.0f / renderFrameRateCap)
+			, m_fps(renderFrameRateCap), m_averageFps(renderFrameRateCap)
 			, m_averageFrameRateSample(averageFrameRateSample)
+      //Average FPS weights
 			, m_oldSampleWeight(((m_averageFrameRateSample - 1.0f) / m_averageFrameRateSample))
 			, m_newSampleWeight((1.0f / m_averageFrameRateSample))
-			, m_deltaDuration(1.0f / (m_frameRateCap))
+			, m_deltaDuration(1.0f / (renderFrameRateCap))
 		{}
 
     //! @brief Get Global Instance
@@ -44,6 +48,7 @@ namespace NightEngine2
     //! @brief Handle Close Message
 		virtual void HandleMessage(const Core::GameShouldCloseMessage& msg);
 
+  public:
 		///////////////////////////////////////////////////////////////////////////
 		//	Member Variable
 		///////////////////////////////////////////////////////////////////////////
@@ -51,12 +56,16 @@ namespace NightEngine2
 		using FloatDuration = std::chrono::duration<float>;
 
 		bool	m_shouldClose = false;
-		float m_frameRateCap = c_DEFAULT_FPS_CAP;
 			
+    //Frame datas
 		float m_deltaTime = 1.0f / c_DEFAULT_FPS_CAP;							//Feed into all other system for update
-		float m_frameRate = c_DEFAULT_FPS_CAP;										//For display
-		float m_averageFrameRate = c_DEFAULT_FPS_CAP;							//For display
+		float m_fps = c_DEFAULT_FPS_CAP;										//For display
+		float m_averageFps = c_DEFAULT_FPS_CAP;							//For display
 
+    //Time data (seconds)
+    float m_timeSinceStartup = 0.0f;
+
+    //Average FPS weights
 		float m_averageFrameRateSample = 15;
 		float m_oldSampleWeight = ((m_averageFrameRateSample - 1.0f) / m_averageFrameRateSample);
 		float m_newSampleWeight = (1.0f / m_averageFrameRateSample);

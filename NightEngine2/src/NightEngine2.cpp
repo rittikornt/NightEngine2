@@ -33,8 +33,9 @@ using namespace Physics;
 namespace NightEngine2
 {
   //Game Status Setting
-  constexpr float      c_FRAMERATE_CAP = 65.0f;
-  constexpr float      c_TARGET_DT = 1.0f / c_FRAMERATE_CAP;
+  constexpr float      c_renderFPS = 60.0f;
+  constexpr float      c_simulationFPS = 60.0f;
+  constexpr float      c_TARGET_DT = 1.0f / c_renderFPS;
   constexpr float      c_AVR_FRAMERATE_SAMPLE = 15.0f;
 
   //TODO: there should be one per scene
@@ -45,7 +46,7 @@ namespace NightEngine2
     Debug::Log << "Engine::Initialize\n";
 
     m_gameTime = &(GameTime::GetInstance());
-    *m_gameTime = GameTime{ c_FRAMERATE_CAP,c_AVR_FRAMERATE_SAMPLE };
+    *m_gameTime = GameTime{ c_renderFPS, c_simulationFPS, c_AVR_FRAMERATE_SAMPLE };
     m_gameTime->Subscribe(Core::MessageType::MSG_GAMESHOULDQUIT);
 
     //Physics
@@ -72,10 +73,16 @@ namespace NightEngine2
     while (!m_gameTime->m_shouldClose)
     {
       m_gameTime->StartFrame();
+      {
+        float dt = m_gameTime->m_deltaTime;
 
-      FixedUpdate(m_gameTime->m_deltaTime);
-      OnUpdate(m_gameTime->m_deltaTime);
+        //Update Simulation
+        FixedUpdate(dt);
+        OnUpdate(dt);
 
+        //Render Frame
+        m_renderloop->Render(dt);
+      }
       m_gameTime->EndFrame();
     }
   }
@@ -94,7 +101,6 @@ namespace NightEngine2
 
       accumulator -= c_TARGET_DT;
     }
-
   }
 
   void Engine::OnUpdate(float dt)
@@ -106,9 +112,6 @@ namespace NightEngine2
     Input::OnUpdate();
 
     //TODO: Update all the Components
-
-    //Render Frame
-    m_renderloop->Render(dt);
   }
 
   void Engine::Terminate(void)

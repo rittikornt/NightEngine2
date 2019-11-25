@@ -300,7 +300,7 @@ namespace Editor
       //Fps debug text
       ImGui::TextColored(ImVec4(1, 1, 0, 1), "fps: "); ImGui::SameLine(0, 5);
       
-      auto fps = NightEngine2::GameTime::GetInstance().m_averageFrameRate;
+      auto fps = NightEngine2::GameTime::GetInstance().m_averageFps;
       ImGui::Text("%.1f (%.3f ms)", fps, 1000.0f / fps); ImGui::SameLine(0, 5);
       
       //ImGui::Text("%.1f (%.3f ms)", ImGui::GetIO().Framerate,1000.0f / ImGui::GetIO().Framerate);

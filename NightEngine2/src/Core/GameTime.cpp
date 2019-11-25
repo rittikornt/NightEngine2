@@ -26,24 +26,29 @@ namespace NightEngine2
 
 	void GameTime::EndFrame()
 	{
-		// Time to sleep before next frame
-		auto sleepTime = m_deltaDuration - (Clock::now() - m_frameStartTime);
-		if (sleepTime.count() > 0.0f)
-		{
-			std::this_thread::sleep_for(sleepTime);
-		}
+    // Time to sleep before next frame
+    //if (sleepTime.count() > 0.0f)
+    //{
+    //	std::this_thread::sleep_for(sleepTime);
+    //}
 
-		// Time to wait before next frame
-		//auto timeTarget = m_frameStartTime + m_deltaDuration;
-		//std::this_thread::sleep_until(timeTarget);
+    //Do spinlock-like wait
+    auto sleepTime = m_deltaDuration - (Clock::now() - m_frameStartTime);
+    while (sleepTime.count() >= 0.0f)
+    {
+      sleepTime = m_deltaDuration - (Clock::now() - m_frameStartTime);
+    }
 
 		// Calculate the delta time (ms -> second)
 		m_deltaTime = FloatDuration(Clock::now() - m_frameStartTime).count();
 
+    //Update Time
+    m_timeSinceStartup += m_deltaTime;
+
 		// Calculate framerate
-		m_frameRate = 1.0f / m_deltaTime;
-		m_averageFrameRate = ( m_oldSampleWeight * m_averageFrameRate) 
-													+ (m_newSampleWeight * m_frameRate);
+		m_fps = 1.0f / m_deltaTime;
+		m_averageFps = ( m_oldSampleWeight * m_averageFps) 
+													+ (m_newSampleWeight * m_fps);
 	}
 
 	void GameTime::HandleMessage(const Core::GameShouldCloseMessage& msg)

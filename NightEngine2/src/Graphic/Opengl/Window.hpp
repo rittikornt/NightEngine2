@@ -65,5 +65,6 @@ namespace Graphic
 
 		void SetCursorMode(CursorMode mode);
 
+    void SetVSync(bool enable);
 	} // Window 
 }	// Graphic 

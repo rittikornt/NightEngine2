@@ -85,27 +85,30 @@ namespace Physics
 
   void PhysicsDebugDrawer::Draw(Graphic::CameraObject& cam)
   {
-    //Build new Lines data
-    m_vao.Clear();
-    float* linePtr = &(m_lines[0].m_from.x);
-    m_vao.Build(BufferMode::Dynamic, linePtr
-      , m_lines.size() * sizeof(Line));
-
-    cam.ApplyProjectionMatrix(m_shader);
-    cam.ApplyViewMatrix(m_shader);
-
-    //Draw the Colliders
-    m_shader.Bind();
+    if (m_lines.size() > 0)
     {
-      auto model = Transform::CalculateModelMatrix(glm::vec3(0.0f)
-        , glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-      m_shader.SetUniform("u_model", model);
-      m_vao.DrawVBO(DrawMode::LINES);
-    }
-    m_shader.Unbind();
+      //Build new Lines data
+      m_vao.Clear();
+      float* linePtr = &(m_lines[0].m_from.x);
+      m_vao.Build(BufferMode::Dynamic, linePtr
+        , m_lines.size() * sizeof(Line));
 
-    //Clear Lines data
-    m_lines.clear();
+      cam.ApplyProjectionMatrix(m_shader);
+      cam.ApplyViewMatrix(m_shader);
+
+      //Draw the Colliders
+      m_shader.Bind();
+      {
+        auto model = Transform::CalculateModelMatrix(glm::vec3(0.0f)
+          , glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+        m_shader.SetUniform("u_model", model);
+        m_vao.DrawVBO(DrawMode::LINES);
+      }
+      m_shader.Unbind();
+
+      //Clear Lines data
+      m_lines.clear();
+    }
   }
 
 }

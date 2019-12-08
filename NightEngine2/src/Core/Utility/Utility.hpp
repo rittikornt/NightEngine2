@@ -16,7 +16,7 @@ for (auto p = std::make_pair(false, Core::Utility::StopWatch{ true })	\
 	; !(p.first); p.first = true, p.second.Stop()												\
 	, Core::Debug::Log << "\n//*************************************************\n" \
 	<< "// End PROFILE_BLOCK(" << DESCRIPTION << "): "									\
-	<< p.second.GetElapsedTime() << " ms\n" 														\
+	<< p.second.GetElapsedTimeMilli() << " ms\n" 														\
   << "//*************************************************\n\n")
 
 //! @brief Macros for quick profiling a block of code
@@ -25,7 +25,7 @@ for (auto p = std::make_pair(false, Core::Utility::StopWatch{ true })	\
 	; !(p.first); p.first = true, p.second.Stop()												\
 	, Core::Debug::Log << "\n//*************************************************\n" \
 	<< "// End PROFILE_BLOCK(" << DESCRIPTION << "): "									\
-	<< p.second.GetElapsedTime() << " ms\n" 														\
+	<< p.second.GetElapsedTimeMilli() << " ms\n" 														\
   << "//*************************************************\n")
 
 namespace Core
@@ -38,12 +38,17 @@ namespace Core
 		public:
 			explicit StopWatch(bool start) 
 			{
-				if (start) OnStart();
+				if (start) Start();
 			}
 
-			void OnStart(void);
+			void Start(void);
 			void Stop(void);
-			float GetElapsedTime(void);
+
+			float GetElapsedTimeMilli(void);
+      float GetElapsedTimeMicro(void);
+
+      long long GetStartTimeMilli(void);
+      long long GetStartTimeMicro(void);
 		private:
 			using TimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 			TimePoint m_startTime;
@@ -57,14 +62,13 @@ namespace Core
 			explicit Timer(float time, bool start)
 				: m_curTime(time), m_done(!start) {}
 
-			void OnStart(float time);
+			void Start(float time);
 			void Stop(void);
 			bool OnUpdate(float dt);	//Return true if timer done
 		private:
 			float m_curTime;
 			bool m_done;
 		};
-
   } // Utility
 } // Core
 

@@ -14,6 +14,8 @@
 
 #include "Core/Reflection/ReflectionCore.hpp"
 #include "Core/Logger.hpp"
+#include "Core/Utility/Utility.hpp"
+#include "Core/Utility/Profiling.hpp"
 
 #include "Core/GameTime.hpp"
 #include "Input/Input.hpp"
@@ -43,29 +45,34 @@ namespace NightEngine2
 
   void Engine::Initialize(void)
   {
-    Debug::Log << "Engine::Initialize\n";
+    PROFILE_SESSION_BEGIN(nightengine2_profile_session_init);
+    PROFILE_BLOCK_INSTRUMENT("NightEngine2::Initialize")
+    {
+      Debug::Log << "NightEngine2::Initialize\n";
 
-    m_gameTime = &(GameTime::GetInstance());
-    *m_gameTime = GameTime{ c_renderFPS, c_simulationFPS, c_AVR_FRAMERATE_SAMPLE };
-    m_gameTime->Subscribe(Core::MessageType::MSG_GAMESHOULDQUIT);
+      m_gameTime = &(GameTime::GetInstance());
+      *m_gameTime = GameTime{ c_renderFPS, c_simulationFPS, c_AVR_FRAMERATE_SAMPLE };
+      m_gameTime->Subscribe(Core::MessageType::MSG_GAMESHOULDQUIT);
 
-    //Physics
-    g_physicScene = new PhysicsScene();
+      //Physics
+      g_physicScene = new PhysicsScene();
 
-    //Core
-    Reflection::Initialize();
-    Factory::Initialize();
-    ArchetypeManager::Initialize();
+      //Core
+      Reflection::Initialize();
+      Factory::Initialize();
+      ArchetypeManager::Initialize();
 
-    //Runtime
-    m_renderloop = new RenderLoopOpengl();
-    m_renderloop->Initialize();
-    Input::Initialize();
+      //Runtime
+      m_renderloop = new RenderLoopOpengl();
+      m_renderloop->Initialize();
+      Input::Initialize();
 
-    //Physic Init After Graphic
-    g_physicScene->Initialize();
+      //Physic Init After Graphic
+      g_physicScene->Initialize();
 
-    //TODO: Scene Init, Update, Terminate
+      //TODO: Scene Init, Update, Terminate
+    }
+    PROFILE_SESSION_END();
   }
 
   void Engine::MainLoop(void)
@@ -73,17 +80,31 @@ namespace NightEngine2
     while (!m_gameTime->m_shouldClose)
     {
       m_gameTime->StartFrame();
+      PROFILE_BLOCK_INSTRUMENT("GameLoop")
       {
         float dt = m_gameTime->m_deltaTime;
 
         //Update Simulation
-        FixedUpdate(dt);
-        OnUpdate(dt);
+        PROFILE_BLOCK_INSTRUMENT("FixedUpdate")
+        {
+          FixedUpdate(dt);
+        }
+
+        PROFILE_BLOCK_INSTRUMENT("Update")
+        {
+          OnUpdate(dt);
+        }
 
         //Render Frame
-        m_renderloop->Render(dt);
+        PROFILE_BLOCK_INSTRUMENT("RenderLoop")
+        {
+          m_renderloop->Render(dt);
+        }
       }
-      m_gameTime->EndFrame();
+      PROFILE_BLOCK_INSTRUMENT("EndFrame")
+      {
+        m_gameTime->EndFrame();
+      }
     }
   }
 
@@ -116,20 +137,25 @@ namespace NightEngine2
 
   void Engine::Terminate(void)
   {
-    Debug::Log << "Engine::Terminate\n";
+    PROFILE_SESSION_BEGIN(nightengine2_profile_session_terminate);
+    PROFILE_BLOCK_INSTRUMENT("NightEngine2::Terminate")
+    {
+      Debug::Log << "NightEngine2::Terminate\n";
 
-    //Terminate System
-    Input::Terminate();
-    m_renderloop->Terminate();
+      //Terminate System
+      Input::Terminate();
+      m_renderloop->Terminate();
 
-    ArchetypeManager::Terminate();
-    Factory::Terminate();
-    Reflection::Terminate();
+      ArchetypeManager::Terminate();
+      Factory::Terminate();
+      Reflection::Terminate();
 
-    delete m_renderloop;
-    delete g_physicScene;
+      delete m_renderloop;
+      delete g_physicScene;
 
-    m_gameTime->UnsubscribeAll();
+      m_gameTime->UnsubscribeAll();
+    }
+    PROFILE_SESSION_END();
   }
 
 } // namespace World

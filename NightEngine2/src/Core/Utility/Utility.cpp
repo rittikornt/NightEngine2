@@ -9,7 +9,7 @@ namespace Core
 {
 	namespace Utility
 	{
-		void StopWatch::OnStart(void)
+		void StopWatch::Start(void)
 		{
 			m_startTime = std::chrono::high_resolution_clock::now();
 		}
@@ -19,12 +19,27 @@ namespace Core
 			m_endTime = std::chrono::high_resolution_clock::now();
 		}
 
-		float StopWatch::GetElapsedTime(void)
+		float StopWatch::GetElapsedTimeMilli(void)
 		{
 			return std::chrono::duration<float, std::milli>(m_endTime - m_startTime).count();
 		}
 
-		void Timer::OnStart(float time)
+    float StopWatch::GetElapsedTimeMicro(void)
+    {
+      return std::chrono::duration<float, std::micro>(m_endTime - m_startTime).count();
+    }
+
+    long long StopWatch::GetStartTimeMilli(void)
+    {
+      return std::chrono::time_point_cast<std::chrono::milliseconds>(m_startTime).time_since_epoch().count();
+    }
+
+    long long StopWatch::GetStartTimeMicro(void)
+    {
+      return std::chrono::time_point_cast<std::chrono::microseconds>(m_startTime).time_since_epoch().count();
+    }
+
+		void Timer::Start(float time)
 		{
 			m_curTime = time;
 			m_done = false;

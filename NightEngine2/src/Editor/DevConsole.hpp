@@ -22,8 +22,7 @@ namespace Editor
     //! @brief Indicating which context the command is currently in
     enum class CommandContext : unsigned
     {
-      COMMAND = 0,
-      LUA
+      COMMAND = 0
     };
 
     //! @brief Handle LogMessage
@@ -83,6 +82,9 @@ namespace Editor
     //*****************************************
     // CommandFunc
     //*****************************************
+    void StartProfilingSession(void);
+    void EndProfilingSession(void);
+
     void ExecuteLuaCommand(void);
     void ShowHelp(void);
     void ShowHistory(void);

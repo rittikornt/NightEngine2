@@ -10,6 +10,8 @@
 //#include "Core/Lua/LuaCore.hpp"
 #include "UnitTest/UnitTest.hpp"
 #include "Graphic/Opengl/Window.hpp"
+#include "Core/Utility/Profiling.hpp"
+#include "Core/Serialization/FileSystem.hpp"
 
 #include <ctype.h>          // toupper, isprint
 #include <limits.h>         // INT_MIN, INT_MAX
@@ -46,9 +48,8 @@ namespace Editor
     AddCommand("CLEAR", &DevConsole::ClearLog);
     AddCommand("UNITTEST", &DevConsole::RunUnitTest);
 
-    AddCommand("LUA", &DevConsole::ExecuteLuaCommand);
-    AddCommand("LUACONTEXT", &DevConsole::LuaContext);
-    AddCommand("LUAEND", &DevConsole::LuaEnd);
+    AddCommand("BEGINPROFILE", &DevConsole::StartProfilingSession);
+    AddCommand("ENDPROFILE", &DevConsole::EndProfilingSession);
 
     //Init Log
     AddLog("//******************************");
@@ -215,11 +216,6 @@ namespace Editor
         case CommandContext::COMMAND:
         {
           HandleInputCommand(m_InputBuf);
-          break;
-        }
-        case CommandContext::LUA:
-        {
-          HandleInputLua(m_InputBuf);
           break;
         }
       }
@@ -426,12 +422,14 @@ namespace Editor
   // CommandFunc
   //***************************************
 
-  void DevConsole::ExecuteLuaCommand(void)
+  void DevConsole::StartProfilingSession(void)
   {
-    if (m_Arguments.size() > 0)
-    {
-      //Core::LuaCore::SafeScript(m_Arguments[0]);
-    }
+    PROFILE_SESSION_BEGIN(nightengine2_profile_session_runtime);
+  }
+
+  void DevConsole::EndProfilingSession(void)
+  {
+    PROFILE_SESSION_END();
   }
 
   void DevConsole::ShowHelp(void)
@@ -446,17 +444,6 @@ namespace Editor
     int first = m_History.Size - 10;
     for (int i = first > 0 ? first : 0; i < m_History.Size; i++)
       AddLog("%3d: %s\n", i, m_History[i]);
-  }
-
-  void DevConsole::LuaContext(void)
-  {
-    m_Context = CommandContext::LUA;
-  }
-
-  void DevConsole::LuaEnd(void)
-  {
-    ExecuteLuaCommand();
-    m_Context = CommandContext::COMMAND;
   }
 
   void DevConsole::RunUnitTest(void)

@@ -1,36 +1,21 @@
 /*!
   @file GraphicCore.cpp
   @author Rittikorn Tangtrongchit
-  @brief Contain the Implementation of GraphicCore
+  @brief Contain the Implementation of RenderLoopOpengl
 */
 #include "Graphic/Opengl/RenderLoopOpengl.hpp"
 #include "Graphic/Opengl/Window.hpp"
 #include "Graphic/Editor.hpp"
-
-//FrameBuffer Test
-#include "Graphic/Opengl/FrameBufferObject.hpp"
-#include "Graphic/Opengl/RenderBufferObject.hpp"
 
 #include "Graphic/Opengl/PrimitiveShape.hpp"
 #include "Graphic/Opengl/InstanceDrawer.hpp"
 
 //TODO: Remove these later
 #include "Graphic/Opengl/CameraObject.hpp"
-#include "Graphic/Opengl/Material.hpp"
-#include "Graphic/Opengl/VertexArrayObject.hpp"
-#include "Graphic/Opengl/Vertex.hpp"
 #include "Graphic/Opengl/Model.hpp"
 #include "Graphic/Opengl/Light.hpp"
-#include "Graphic/Opengl/Cubemap.hpp"
-#include "Graphic/Opengl/UniformBufferObject.hpp"
-#include "Graphic/Opengl/GBuffer.hpp"
-#include "Graphic/Opengl/IBL.hpp"
 
-//Postprocess
-#include "Postprocess/SSAO.hpp"
-#include "Postprocess/Bloom.hpp"
-#include "Postprocess/FXAA.hpp"
-
+//GameObject
 #include "Core/EC/Components/MeshRenderer.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Factory.hpp"
@@ -64,8 +49,6 @@
 #include "RenderLoopOpengl.hpp"
 
 #define EDITOR_MODE true
-#define POINTLIGHT_AMOUNT 4
-#define SPOTLIGHT_AMOUNT 4
 
 using namespace Core;
 using namespace Core::Factory;
@@ -79,49 +62,10 @@ using namespace Graphic::Postprocess;
 // Got to start from properly serialize the Scene file (Save/Load)
 namespace Graphic
 {
-  //Uniform Buffer Object
-  UniformBufferObject g_uniformBufferObject;
-
-  //Depth FrameBuffer for Directional Shadow
-  FrameBufferObject   g_depthfbo;
-  Texture             g_shadowMapTexture;
-  Material            g_depthMaterial;
-
-  //Depth FrameBuffer for Point Shadow
-  FrameBufferObject   g_depth2fbo[POINTLIGHT_AMOUNT];
-  Cubemap             g_shadowMapCubemap[POINTLIGHT_AMOUNT];
-  Material            g_depth2Material;
   const std::string   g_lightSpaceMatrices[]{
      "u_lightSpaceMatrices[0]","u_lightSpaceMatrices[1]"
     ,"u_lightSpaceMatrices[2]","u_lightSpaceMatrices[3]"
     ,"u_lightSpaceMatrices[4]" ,"u_lightSpaceMatrices[5]" };
-
-  glm::vec2           g_initResolution;
-  float               g_shadowWidth, g_shadowHeight;
-
-  //Scene FrameBuffer
-  GBuffer             g_gbuffer;
-  FrameBufferObject   g_sceneFbo;
-  Texture             g_sceneTexture;
-  RenderBufferObject  g_sceneRbo;
-
-  //PostProcess
-  Bloom               g_bloomPP;
-  SSAO                g_ssaoPP;
-  FXAA                g_fxaaPP;
-
-  //Screen Quad
-  VertexArrayObject   g_screenVAO;
-  Material            g_screenMaterial;
-  Material            g_screenQuadMaterial;
-
-  //Cubemap IBL
-  IBL                 g_ibl;
-
-  //Material
-  Material     g_defaultMaterial;
-  Material     g_lightingMaterial;
-  Material     g_normalDebug;
 
   //Model
   std::vector<Handle<GameObject>>   g_boxInstances;
@@ -132,15 +76,13 @@ namespace Graphic
   Handle<GameObject>   g_modelGO2;
 
   //Camera
-  CameraObject g_cam{CameraObject::CameraType::PERSPECTIVE
-    ,103.0f};
+  CameraObject g_cam{ CameraObject::CameraType::PERSPECTIVE
+    ,103.0f };
 
   //Light
   Handle<GameObject>   g_dirLight;
   Handle<GameObject>   g_pointLight[POINTLIGHT_AMOUNT];
   Handle<GameObject>   g_spotLight[SPOTLIGHT_AMOUNT];
-  Material             g_billboardMaterial;
-  Texture              g_lightTexture;
 
   //*********************************************
   // Helper Functions
@@ -245,7 +187,7 @@ namespace Graphic
     }
   }
 
-  void DrawScene(bool debugNormal)
+  void RenderLoopOpengl::DrawScene(bool debugNormal)
   {
     //Update View matrix to Shader
     g_uniformBufferObject.FillBuffer(0, sizeof(glm::mat4)
@@ -284,12 +226,13 @@ namespace Graphic
   //*********************************************
   // RenderLoopOpengl
   //*********************************************
-	void RenderLoopOpengl::Initialize(void)
-	{
-		Debug::Log << "Graphic::Initialize\n";
 
-		//Init window
-		Window::Initialize("NightEngine", Window::WindowMode::WINDOW);
+  void RenderLoopOpengl::Initialize(void)
+  {
+    Debug::Log << "Graphic::Initialize\n";
+
+    //Init window
+    Window::Initialize("NightEngine", Window::WindowMode::WINDOW);
 
     //************************************************
     // Opengl Setting
@@ -310,13 +253,13 @@ namespace Graphic
     glEnable(GL_CULL_FACE);
 
 #if(EDITOR_MODE)
-		Editor::Initialize();
+    Editor::Initialize();
 #endif
 
     //************************************************
     // Frame Buffer Object
     //************************************************
-     int width = Window::GetWidth(), height = Window::GetHeight();
+    int width = Window::GetWidth(), height = Window::GetHeight();
 
     //Depth FBO for shadow
     g_initResolution.x = width, g_initResolution.y = height;
@@ -341,17 +284,17 @@ namespace Graphic
       , "Shadow/depth_point.frag", "Shadow/depth_point.geom");
 
     //Scene Texture
-    g_sceneTexture = Texture::GenerateNullTexture(width, height
+    m_sceneTexture = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-    g_sceneRbo.Init(width, height);
+    m_sceneRbo.Init(width, height);
 
     //Scene Frame Buffer
-    g_gbuffer.Init(width, height);
-    g_sceneFbo.Init();
-    g_sceneFbo.AttachTexture(g_sceneTexture);
-    g_sceneFbo.AttachRenderBuffer(g_sceneRbo);
-    g_sceneFbo.Bind();
+    m_gbuffer.Init(width, height);
+    m_sceneFbo.Init();
+    m_sceneFbo.AttachTexture(m_sceneTexture);
+    m_sceneFbo.AttachRenderBuffer(m_sceneRbo);
+    m_sceneFbo.Bind();
 
     //************************************************
     // Postprocess
@@ -386,7 +329,7 @@ namespace Graphic
       , "Rendering/deferred_geometry_pass.frag");
 
     g_defaultMaterial.InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
-      , true ,FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
+      , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures));
@@ -397,7 +340,7 @@ namespace Graphic
     g_lightingMaterial.Bind(false);
     {
       Shader& shader = g_lightingMaterial.GetShader();
-      
+
       //Directional Shadow
       shader.SetUniform("u_shadowMap2D", 6);
       g_shadowMapTexture.BindToTextureUnit(6);
@@ -453,9 +396,9 @@ namespace Graphic
     std::vector<glm::mat4> modelMat;
     for (int i = 0; i < 10; i++)
     {
-      modelMat.push_back( 
+      modelMat.push_back(
         Transform::CalculateModelMatrix(glm::vec3(i, 10.0f, 4.0f)
-        , glm::quat(), glm::vec3(1.0f)));
+          , glm::quat(), glm::vec3(1.0f)));
     }
 
     //Box instances
@@ -470,8 +413,8 @@ namespace Graphic
       auto mr = g.GetComponent("MeshRenderer");
       mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
         , FileSystem::DirectoryType::Models), false);
-      
-      if (i %2 == 0)
+
+      if (i % 2 == 0)
       {
         mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
       }
@@ -507,7 +450,7 @@ namespace Graphic
     c->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
       , g_modelGO1->GetTransform()->GetPosition()
       , Physics::BoxCollider(glm::vec3(1.0f, 0.6f, 1.0f)), 1.0f);
-    
+
     //Model2
     g_modelGO2 = GameObject::Create("Model2", 1);
     g_modelGO2->AddComponent("MeshRenderer");
@@ -559,7 +502,7 @@ namespace Graphic
       mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
       mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
 
-      g_pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f)-6.0f, -1.0f, 0.25f));
+      g_pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f) - 6.0f, -1.0f, 0.25f));
       g_pointLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
       g_pointLight[i]->GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -587,7 +530,7 @@ namespace Graphic
       g_spotLight[i]->AddComponent("Light");
       mr = g_spotLight[i]->GetComponent("Light");
       mr->Get<Light>()->Init(Light::LightType::SPOTLIGHT
-        , 
+        ,
         { glm::vec3(0.0f,0.0f, 0.7f)
           , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
     }
@@ -620,8 +563,8 @@ namespace Graphic
     c = g_floorGO->GetComponent("Rigidbody");
     c->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
       , g_floorGO->GetTransform()->GetPosition()
-      , Physics::BoxCollider(glm::vec3( 10.0f, 1.0f, 10.0f) ) );
-    
+      , Physics::BoxCollider(glm::vec3(10.0f, 1.0f, 10.0f)));
+
     //************************************************
     // Uniform Buffer Object
     //************************************************
@@ -642,17 +585,17 @@ namespace Graphic
     // Build InstanceDrawer
     //************************************************
     InstanceDrawer::BuildAllDrawer();
-	}
+  }
 
-	void RenderLoopOpengl::Render(float dt)
-	{
-		ProcessInput(dt);
+  void RenderLoopOpengl::Render(float dt)
+  {
+    ProcessInput(dt);
 
     //*************************************************
-		// Rendering Loop
+    // Rendering Loop
     //*************************************************
-		if (!Window::ShouldClose())
-		{
+    if (!Window::ShouldClose())
+    {
 #if(EDITOR_MODE)
       //*************************************************
       // Rendering 
@@ -698,7 +641,7 @@ namespace Graphic
       //*************************************************
       glViewport(0, 0, g_shadowWidth, g_shadowWidth);
       const float farPlane = g_cam.m_far;
-      for(int i =0;i < POINTLIGHT_AMOUNT; ++i)
+      for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
       {
         //Shader and Matrices
         auto pointLightComponent = g_pointLight[i]->GetComponent("Light");
@@ -733,7 +676,7 @@ namespace Graphic
       // Geometry Pass
       //*************************************************
       glViewport(0, 0, g_initResolution.x, g_initResolution.y);
-      g_gbuffer.Bind();
+      m_gbuffer.Bind();
       {
         //Clear Buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
@@ -750,14 +693,14 @@ namespace Graphic
         //Draw Scene
         DrawScene(false);
       }
-      g_gbuffer.Unbind();
+      m_gbuffer.Unbind();
 
 
       //*************************************************
       // Lighting Pass
       //*************************************************
-      g_gbuffer.CopyDepthBufferTo(g_sceneFbo.GetID());
-      g_sceneFbo.Bind();
+      m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
+      m_sceneFbo.Bind();
       {
         //Clear Buffer
         glClear(GL_COLOR_BUFFER_BIT);
@@ -770,7 +713,7 @@ namespace Graphic
 
           //Shadow 2D texture
           g_shadowMapTexture.BindToTextureUnit(6);
-          
+
           //Shadow Cubemap texture
           for (int j = 0; j < POINTLIGHT_AMOUNT; ++j)
           {
@@ -783,8 +726,8 @@ namespace Graphic
           g_ibl.m_brdfLUT.BindToTextureUnit(13);
 
           //Bind Gbuffer Texture
-          g_gbuffer.BindTextures();
-          
+          m_gbuffer.BindTextures();
+
           //Camera Position
           g_cam.ApplyCameraInfo(shader);
 
@@ -800,7 +743,7 @@ namespace Graphic
         g_ibl.DrawCubemap(IBL::CubemapType::NORMAL, g_cam);
 
       }
-      g_sceneFbo.Unbind();
+      m_sceneFbo.Unbind();
 
       //*************************************************
       // PostProcess Pass
@@ -822,21 +765,21 @@ namespace Graphic
           //, g_sceneTexture, g_sceneFbo);
 
         //SSAO
-        g_ssaoPP.Apply(g_screenVAO, g_cam, g_gbuffer);
+        g_ssaoPP.Apply(g_screenVAO, g_cam, m_gbuffer);
 
         //Bloom
-        g_bloomPP.Apply(g_screenVAO, g_sceneTexture);
+        g_bloomPP.Apply(g_screenVAO, m_sceneTexture);
       }
 
       //*************************************************
       // Final Pass to the screen
       //*************************************************
       glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
-      glClearColor(1.0f, 1.0f,1.0f,1.0f);
+      glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       //Copy gbuffer depth to the sceneFBO
-      g_gbuffer.CopyDepthBufferTo(g_sceneFbo.GetID());
+      m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
       glDisable(GL_DEPTH_TEST);
 
       //Debugging View
@@ -845,7 +788,7 @@ namespace Graphic
       static bool showLight = true;
       if (Input::GetKeyDown(Input::KeyCode::KEY_0))
       {
-        gBufferIndex = (gBufferIndex + 1) % 
+        gBufferIndex = (gBufferIndex + 1) %
           static_cast<unsigned>(GBufferTarget::Count);
       }
       if (Input::GetKeyDown(Input::KeyCode::KEY_9))
@@ -858,7 +801,7 @@ namespace Graphic
       }
 
       //Draw Screen
-      g_sceneFbo.Bind();
+      m_sceneFbo.Bind();
       {
         g_screenMaterial.Bind(false);
         {
@@ -872,11 +815,11 @@ namespace Graphic
           if (debugDefered)
           {
             shader.SetUniform("u_bloomTexture", 0);
-            g_gbuffer.GetTexture(gBufferIndex).BindToTextureUnit(0);
+            m_gbuffer.GetTexture(gBufferIndex).BindToTextureUnit(0);
           }
           else
           {
-            g_sceneTexture.BindToTextureUnit(0);
+            m_sceneTexture.BindToTextureUnit(0);
             g_bloomPP.m_targetTexture.BindToTextureUnit(1);
             g_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
           }
@@ -914,7 +857,7 @@ namespace Graphic
         glClear(GL_DEPTH_BUFFER_BIT);
         Physics::PhysicsScene::GetPhysicsScene(0)->DebugDraw(g_cam);
       }
-      g_sceneFbo.Unbind();
+      m_sceneFbo.Unbind();
 
       //*************************************************
       // FXAA at the end, Directly onto the screen
@@ -922,14 +865,14 @@ namespace Graphic
       if (enablePostprocess)
       {
         g_fxaaPP.ApplyToScreen(g_screenVAO
-          , g_sceneTexture);
+          , m_sceneTexture);
       }
       else
       {
         g_screenQuadMaterial.Bind(false);
         {
           g_screenQuadMaterial.GetShader().SetUniform("u_screenTexture", 0);
-          g_sceneTexture.BindToTextureUnit(0);
+          m_sceneTexture.BindToTextureUnit(0);
 
           //Draw Quad
           g_screenVAO.Draw();
@@ -941,28 +884,46 @@ namespace Graphic
       // End Rendering 
       //*************************************************
 
-			Editor::PostRender();
+      Editor::PostRender();
 #else
-			// Background Fill Color
-			glClearColor(val, 0.25f, 0.25f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+      // Background Fill Color
+      glClearColor(val, 0.25f, 0.25f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
 #endif
 
-			// Flip Buffers and Draw
-			Window::SwapBuffer();
-			glfwPollEvents();
-		}
-	}
+      // Flip Buffers and Draw
+      Window::SwapBuffer();
+      glfwPollEvents();
+    }
+  }
 
-	void RenderLoopOpengl::Terminate(void)
-	{
-		Debug::Log << "Graphic::Terminate\n";
+  void RenderLoopOpengl::Terminate(void)
+  {
+    Debug::Log << "Graphic::Terminate\n";
+
+    //TODO: Remove later
+    //Manuall Clean up of all GameObject
+    {
+      auto& container = Core::Factory::GetTypeContainer<GameObject>();
+      size_t size = container.Size();
+      auto& _array = container.GetArray();
+
+      for (int i = 0; i < _array.size(); ++i)
+      {
+        if (_array[i].first.m_active)
+        {
+          _array[i].second.UnsubscribeAll();
+          _array[i].second.RemoveAllComponents();
+          _array[i].second.Destroy();
+        }
+      }
+    }
 
 #if(EDITOR_MODE)
-		Editor::Terminate();
+    Editor::Terminate();
 #endif
 
-		Window::Terminate();
-		glfwTerminate();
-	}
+    Window::Terminate();
+    CHECKGL_ERROR();
+  }
 } // Graphic

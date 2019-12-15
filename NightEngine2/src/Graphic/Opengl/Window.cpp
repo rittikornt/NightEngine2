@@ -102,6 +102,7 @@ namespace Graphic
 		void Terminate()
 		{
 			glfwDestroyWindow(g_glfwWindow);
+      glfwTerminate();
 		}
 
 		/////////////////////////////////////////////////////////////////////////
@@ -160,6 +161,7 @@ namespace Graphic
 
 		void ToggleWindowSize(void)
 		{
+      //TODO: Fix bug when changing Window resolution (probably rendertarget size)
 			windowResIndex = (windowResIndex + 1) %
 				((sizeof(windowResolution) / sizeof(glm::uvec2)));
 

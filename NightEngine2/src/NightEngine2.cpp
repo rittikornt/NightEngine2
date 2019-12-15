@@ -25,6 +25,8 @@
 #include "Physics/PhysicsScene.hpp"
 #include "Graphic/Opengl/RenderLoopOpengl.hpp"
 
+#include "Graphic/RenderDoc/RenderDocManager.hpp"
+
 using namespace Core;
 using namespace Core::Container;
 using namespace Core::ECS;
@@ -43,12 +45,15 @@ namespace NightEngine2
   //TODO: there should be one per scene
   static PhysicsScene* g_physicScene = nullptr;
 
+  Engine* Engine::s_instance = nullptr;
+
   void Engine::Initialize(void)
   {
     PROFILE_SESSION_BEGIN(nightengine2_profile_session_init);
     PROFILE_BLOCK_INSTRUMENT("NightEngine2::Initialize")
     {
       Debug::Log << "NightEngine2::Initialize\n";
+      s_instance = this;
 
       m_gameTime = &(GameTime::GetInstance());
       *m_gameTime = GameTime{ c_renderFPS, c_simulationFPS, c_AVR_FRAMERATE_SAMPLE };
@@ -63,8 +68,17 @@ namespace NightEngine2
       ArchetypeManager::Initialize();
 
       //Runtime
-      m_renderloop = new RenderLoopOpengl();
-      m_renderloop->Initialize();
+      if (RenderDocManager::ShouldInitAtStartup())
+      {
+        RenderDocManager::Initialize();
+      }
+
+      if (m_renderloop == nullptr)
+      {
+        m_renderloop = new RenderLoopOpengl();
+        m_renderloop->Initialize();
+      }
+      
       Input::Initialize();
 
       //Physic Init After Graphic
@@ -96,16 +110,41 @@ namespace NightEngine2
         }
 
         //Render Frame
-        PROFILE_BLOCK_INSTRUMENT("RenderLoop")
+        RenderDocManager::StartFrameCapture();
         {
-          m_renderloop->Render(dt);
+          PROFILE_BLOCK_INSTRUMENT("RenderLoop")
+          {
+            m_renderloop->Render(dt);
+          }
         }
+        RenderDocManager::EndFrameCapture(true);
       }
       PROFILE_BLOCK_INSTRUMENT("EndFrame")
       {
         m_gameTime->EndFrame();
       }
+
+      //Defer the reinitialization to at the end of the frame
+      if (m_reinitRenderLoop)
+      {
+        m_reinitRenderLoop = false;
+
+        if (m_renderloop != nullptr)
+        {
+          m_renderloop->Terminate();
+          delete m_renderloop;
+          m_renderloop = nullptr;
+          CHECKGL_ERROR();
+        }
+        m_renderloop = new RenderLoopOpengl();
+        m_renderloop->Initialize();
+      }
     }
+  }
+
+  void Engine::ReInitRenderLoop(void)
+  {
+    m_reinitRenderLoop = true;
   }
 
   void Engine::FixedUpdate(float dt)
@@ -144,13 +183,18 @@ namespace NightEngine2
 
       //Terminate System
       Input::Terminate();
-      m_renderloop->Terminate();
+      if (m_renderloop != nullptr)
+      {
+        m_renderloop->Terminate();
+        delete m_renderloop;
+        m_renderloop = nullptr;
+      }
+      RenderDocManager::Terminate();
 
       ArchetypeManager::Terminate();
       Factory::Terminate();
       Reflection::Terminate();
 
-      delete m_renderloop;
       delete g_physicScene;
 
       m_gameTime->UnsubscribeAll();

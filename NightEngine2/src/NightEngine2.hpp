@@ -25,12 +25,22 @@ namespace NightEngine2
 
     void MainLoop(void);
 
+    void ReInitRenderLoop(void);
+
+    static Engine* GetInstance()
+    {
+      return s_instance;
+    }
+
   private:
     void FixedUpdate(float dt);
 
     void OnUpdate(float dt);
 
   private:
+    static Engine* s_instance;
+    bool m_reinitRenderLoop = false;
+
     GameTime*   m_gameTime = nullptr;
     Graphic::IRenderLoop*   m_renderloop = nullptr;
   };

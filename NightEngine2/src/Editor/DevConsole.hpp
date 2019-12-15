@@ -84,13 +84,10 @@ namespace Editor
     //*****************************************
     void StartProfilingSession(void);
     void EndProfilingSession(void);
+    void RenderDocCapture(void);
 
-    void ExecuteLuaCommand(void);
     void ShowHelp(void);
     void ShowHistory(void);
-
-    void LuaContext(void);
-    void LuaEnd(void);
 
     void RunUnitTest(void);
 

@@ -28,7 +28,9 @@ set_target_properties(${proj_name} PROPERTIES
 #****************************************************************
 set(proj_name "NightEngine2_Graphics")
 file(GLOB PROJECT_SOURCES_GRAPHIC src/Graphic/*.cpp
-                              src/Graphic/*.hpp)
+                              src/Graphic/*.hpp
+                              src/Graphic/RenderDoc/*.hpp
+                              src/Graphic/RenderDoc/*.cpp)
 source_group("src" FILES ${PROJECT_SOURCES_GRAPHIC})
 
 file(GLOB PROJECT_SOURCES_GRAPHIC_OPENGL src/Graphic/Opengl/*.cpp
@@ -48,7 +50,8 @@ include_directories(src/
                     thirdparty/glm/
                     thirdparty/stb/
                     thirdparty/taocpp_json
-                    thirdparty/imgui)
+                    thirdparty/imgui
+                    thirdparty/renderdoc)
 
                     add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_GRAPHIC} 
                                                                 ${PROJECT_SOURCES_GRAPHIC_OPENGL} 

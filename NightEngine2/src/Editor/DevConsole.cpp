@@ -9,9 +9,14 @@
 
 //#include "Core/Lua/LuaCore.hpp"
 #include "UnitTest/UnitTest.hpp"
+
 #include "Graphic/Opengl/Window.hpp"
+#include "Graphic/RenderDoc/RenderDocManager.hpp"
+
 #include "Core/Utility/Profiling.hpp"
 #include "Core/Serialization/FileSystem.hpp"
+
+#include "NightEngine2.hpp"
 
 #include <ctype.h>          // toupper, isprint
 #include <limits.h>         // INT_MIN, INT_MAX
@@ -50,6 +55,8 @@ namespace Editor
 
     AddCommand("BEGINPROFILE", &DevConsole::StartProfilingSession);
     AddCommand("ENDPROFILE", &DevConsole::EndProfilingSession);
+
+    AddCommand("RENDERDOC_CAPTURE", &DevConsole::RenderDocCapture);
 
     //Init Log
     AddLog("//******************************");
@@ -430,6 +437,26 @@ namespace Editor
   void DevConsole::EndProfilingSession(void)
   {
     PROFILE_SESSION_END();
+  }
+
+  void DevConsole::RenderDocCapture(void)
+  {
+    using namespace Graphic;
+   
+    if (RenderDocManager::IsRenderDocAttached())
+    {
+      RenderDocManager::TriggerCapture();
+    }
+    else
+    {
+      //Try to Initialize before trigger capture
+      if (RenderDocManager::Initialize())
+      {
+        RenderDocManager::TriggerCapture();
+        //TODO: in order for this to work, we need to reinit the window
+        NightEngine2::Engine::GetInstance()->ReInitRenderLoop();
+      }
+    }
   }
 
   void DevConsole::ShowHelp(void)

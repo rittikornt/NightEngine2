@@ -4,7 +4,9 @@
   @brief Contain the Implementation of Shader
 */
 // Local Headers
-#include "Shader.hpp"
+#include "Graphic/Opengl/Shader.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
 
@@ -25,6 +27,23 @@ namespace Graphic
     m_filePath = rhs.m_filePath;
 
     return *this;
+  }
+
+  Shader::~Shader()
+  {
+    if (m_programID != (~0))
+    {
+      //TODO: This delete need ref count too
+      //glDeleteProgram(m_programID);
+      DECREMENT_ALLOCATION(Shader);
+    }
+  }
+
+  void Shader::Init(void)
+  {
+    m_programID = glCreateProgram();
+    INCREMENT_ALLOCATION(Shader);
+    m_filePath.reserve(2);
   }
 
   void Shader::Bind() const
@@ -76,7 +95,7 @@ namespace Graphic
 
 	/////////////////////////////////////////////////////////////////////////
 
-	void Shader::AttachShaderFile(const std::string&  filename)
+	void Shader::AttachShaderFile(const std::string& filename)
 	{
     //TODO: Load Shader through ResourceManager and cache it
     Debug::Log << Logger::MessageType::INFO 

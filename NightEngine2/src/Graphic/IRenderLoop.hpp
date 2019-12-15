@@ -10,6 +10,8 @@ namespace Graphic
   class IRenderLoop
   {
   public:
+    virtual ~IRenderLoop() {}
+
     virtual void Initialize(void);
 
     //TODO: remove float dt later, only here for debuging camera

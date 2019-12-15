@@ -9,6 +9,8 @@
 #include "Graphic/Opengl/RenderBufferObject.hpp"
 #include "Graphic/Opengl/Cubemap.hpp"
 
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
 
@@ -23,12 +25,15 @@ namespace Graphic
     if (m_id != ~(0))
     {
       glDeleteFramebuffers(1, &m_id);
+      DECREMENT_ALLOCATION(FrameBufferObject);
+      CHECKGL_ERROR();
     }
   }
 
   void FrameBufferObject::Init(void)
   {
     glGenFramebuffers(1, &m_id);
+    INCREMENT_ALLOCATION(FrameBufferObject);
     CHECKGL_ERROR();
   }
   
@@ -98,11 +103,12 @@ namespace Graphic
     Unbind();
   }
 
-  Texture FrameBufferObject::AttachDepthStencilTexture(float width, float height)
+  TextureIdentifier FrameBufferObject::AttachDepthStencilTexture(float width, float height)
   {
     //Generate ID
     unsigned int textureID;
     glGenTextures(1, &textureID);
+    INCREMENT_ALLOCATION(Texture);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     //Setup Texture
@@ -113,14 +119,15 @@ namespace Graphic
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
     Unbind();
 
-    return Texture(textureID, "DepthStencil");
+    return TextureIdentifier{ textureID, "DepthStencil" };
   }
 
-  Texture FrameBufferObject::AttachDepthTexture(float width, float height)
+  TextureIdentifier FrameBufferObject::AttachDepthTexture(float width, float height)
   {
     //Generate ID
     unsigned int textureID;
     glGenTextures(1, &textureID);
+    INCREMENT_ALLOCATION(Texture);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     //Setup Texture
@@ -140,7 +147,7 @@ namespace Graphic
       glReadBuffer(GL_NONE);
     Unbind();
 
-    return Texture(textureID, "DepthOnly");
+    return TextureIdentifier{ textureID, "DepthOnly" };
   }
 
   void FrameBufferObject::AttachRenderBuffer(RenderBufferObject& rbo)

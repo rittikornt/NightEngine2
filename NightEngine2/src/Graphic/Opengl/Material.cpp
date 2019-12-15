@@ -163,5 +163,4 @@ namespace Graphic
     Debug::Log << Logger::MessageType::INFO 
       << "Saved Material: " << fileName << '\n';
   }
-
 }

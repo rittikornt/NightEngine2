@@ -14,6 +14,7 @@
 #include "Graphic/Opengl/CameraObject.hpp"
 #include "Graphic/Opengl/Model.hpp"
 #include "Graphic/Opengl/Light.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 
 //GameObject
 #include "Core/EC/Components/MeshRenderer.hpp"
@@ -230,9 +231,6 @@ namespace Graphic
   void RenderLoopOpengl::Initialize(void)
   {
     Debug::Log << "Graphic::Initialize\n";
-
-    //Init window
-    Window::Initialize("NightEngine", Window::WindowMode::WINDOW);
 
     //************************************************
     // Opengl Setting
@@ -923,7 +921,6 @@ namespace Graphic
     Editor::Terminate();
 #endif
 
-    Window::Terminate();
-    CHECKGL_ERROR();
+    //Window::Terminate();
   }
 } // Graphic

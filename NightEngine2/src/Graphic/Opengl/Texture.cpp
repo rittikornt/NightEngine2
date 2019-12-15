@@ -4,6 +4,8 @@
   @brief Contain the Implementation of Texture
 */
 #include "Graphic/Opengl/Texture.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
 
@@ -14,10 +16,71 @@
 #include <stb_image.h>
 #undef STB_IMAGE_IMPLEMENTATION
 
+#include <unordered_map>
+
 using namespace Core;
 
 namespace Graphic
 {
+  namespace TextureRefCount
+  {
+    static std::unordered_map<GLint, int> g_textureRefCount;
+
+    void Increment(GLint textureID)
+    {
+      auto it = g_textureRefCount.find(textureID);
+      if (it != g_textureRefCount.end())
+      {
+        ++(it->second);
+      }
+      else
+      {
+        g_textureRefCount[textureID] = 1;
+      }
+    }
+
+    //Return true if Decrement the ref count <= 0
+    bool Decrement(GLint textureID)
+    {
+      auto it = g_textureRefCount.find(textureID);
+      if (it != g_textureRefCount.end())
+      {
+        --(it->second);
+        return it->second <= 0;
+      }
+      else
+      {
+        ASSERT_MSG(false, "Trying to Decrement ref count that doesn't exist");
+      }
+
+      return false;
+    }
+  }
+
+  Texture::Texture(const Texture& texture)
+    : m_textureID(texture.m_textureID)
+    , m_name(texture.m_name)
+    , m_filePath(texture.m_filePath)
+    , m_internalFormat(texture.m_internalFormat)
+  {
+    TextureRefCount::Increment(m_textureID);
+  }
+
+  Texture::Texture(const TextureIdentifier& textureIdentifier)
+    : m_textureID(textureIdentifier.m_textureID)
+    , m_name(textureIdentifier.m_name)
+    , m_filePath(textureIdentifier.m_filePath)
+    , m_internalFormat((Channel)textureIdentifier.m_internalFormat)
+  {
+    TextureRefCount::Increment(m_textureID);
+  }
+
+  Texture::Texture(unsigned int id, const std::string & name)
+    : m_textureID(id), m_name(name)
+  {
+    TextureRefCount::Increment(m_textureID);
+  }
+
   Texture::Texture(const std::string& filePath, Channel channel
 		, FilterMode filterMode, WrapMode wrapMode
     , bool hdrImage)
@@ -27,7 +90,7 @@ namespace Graphic
       , channel, filterMode, wrapMode, hdrImage);
     if (t != nullptr)
     {
-      *this = *t;
+      *this = (*t);
 
       //Assign Filename, path
       auto dirIndex = filePath.find_last_of('/');
@@ -39,6 +102,15 @@ namespace Graphic
 
 	Texture::~Texture()
 	{
+    if (m_textureID != ~(0))
+    {
+      //TODO: This need ref count
+      //glDeleteTextures(1, &m_textureID);
+
+      TextureRefCount::Decrement(m_textureID);
+      DECREMENT_ALLOCATION(Texture);
+      CHECKGL_ERROR();
+    }
 	}
 
 	void Texture::Bind() const
@@ -67,7 +139,7 @@ namespace Graphic
   // Static Method
   //*****************************************************
 
-  Texture Texture::LoadTexture(const std::string& filePath
+  TextureIdentifier Texture::LoadTexture(const std::string& filePath
     , Channel internalFormat
     , FilterMode filterMode, WrapMode wrapMode)
   {
@@ -92,7 +164,7 @@ namespace Graphic
       Channel::RGB : Channel::RGBA;
 
     //Generate Actual Texture Data based on the loaded file
-    Texture t = GenerateTextureData(imgData, width, height
+    TextureIdentifier t = GenerateTextureData(imgData, width, height
       , internalFormat, format
       , filterMode, wrapMode);
 
@@ -101,7 +173,7 @@ namespace Graphic
     return t;
   }
 
-  Texture Texture::LoadHDRTexture(const std::string & filePath
+  TextureIdentifier Texture::LoadHDRTexture(const std::string & filePath
     , Channel internalFormat, FilterMode filterMode, WrapMode wrapMode)
   {
     Debug::Log << Logger::MessageType::INFO
@@ -118,7 +190,7 @@ namespace Graphic
       , &width, &height, &channels, 0);
 
     //Generate Actual Texture Data based on the loaded file
-    Texture t = GenerateTextureData(imgData, width, height
+    TextureIdentifier t = GenerateTextureData(imgData, width, height
       , internalFormat, Channel::RGB
       , filterMode, wrapMode);
 
@@ -127,7 +199,7 @@ namespace Graphic
     return t;
   }
 
-  Texture Texture::GenerateNullTexture(int width, int height
+  TextureIdentifier Texture::GenerateNullTexture(int width, int height
     , Channel internalformat
     , Channel format 
     , FilterMode filterMode, WrapMode wrapMode)
@@ -135,9 +207,10 @@ namespace Graphic
     Debug::Log << Logger::MessageType::INFO
       << "Generating Null Texture\n";
 
-    Texture texture;
+    TextureIdentifier texture;
     //Generate Object
     glGenTextures(1, &(texture.m_textureID));
+    INCREMENT_ALLOCATION(Texture);
     glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
 
     //Choose target based on channel
@@ -162,19 +235,21 @@ namespace Graphic
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER
       , static_cast<GLint>(filterMode));
 
+    CHECKGL_ERROR();
     texture.m_name = "NullTexture";
-    texture.m_internalFormat = internalformat;
+    texture.m_internalFormat = (GLenum)internalformat;
     return texture;
   }
 
-  Texture Texture::GenerateTextureData(void* imgData
+  TextureIdentifier Texture::GenerateTextureData(void* imgData
     , int width, int height
     , Channel internalFormat, Channel format
     , FilterMode filterMode, WrapMode wrapMode)
   {
-    Texture texture;
+    TextureIdentifier texture;
     //Generate Object
     glGenTextures(1, &(texture.m_textureID));
+    INCREMENT_ALLOCATION(Texture);
     glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
 
     //Option
@@ -213,7 +288,7 @@ namespace Graphic
     }
 
     CHECKGL_ERROR();
-    texture.m_internalFormat = internalFormat;
+    texture.m_internalFormat = (GLenum)internalFormat;
     return texture;
   }
 

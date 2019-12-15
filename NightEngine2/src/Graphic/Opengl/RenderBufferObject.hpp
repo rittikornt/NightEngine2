@@ -24,7 +24,7 @@ namespace Graphic
       RenderBufferObject(void):m_id(~(0)) {}
       
       //! @brief Destructor
-      ~RenderBufferObject(void) {}
+      ~RenderBufferObject(void);
 
       //! @brief Initialize the Frame Buffer Object
       void Init(int width, int height

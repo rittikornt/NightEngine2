@@ -16,6 +16,15 @@ namespace Graphic
 {
   class FrameBufferObject;
 
+  //! @brief TextureIdentifier Struct for Texture creation
+  struct TextureIdentifier
+  {
+    GLuint m_textureID = ~(0);
+    std::string m_name = "";
+    std::string m_filePath = "";
+    GLenum m_internalFormat = GL_INVALID_ENUM;
+  };
+
   //! @brief Texture Class
 	class Texture
 	{
@@ -38,7 +47,8 @@ namespace Graphic
       RGB16F = GL_RGB16F,
       RGB32F = GL_RGB32F,
       RGBA16F = GL_RGBA16F,
-      RGBA32F = GL_RGBA32F
+      RGBA32F = GL_RGBA32F,
+      INVALID = GL_INVALID_ENUM
 		};
 		enum class TextureUnit : GLenum
 		{
@@ -90,11 +100,13 @@ namespace Graphic
 		};
 
     //! @brief Constructor
-		Texture(void) = default;
+    Texture(void) = default;
+    Texture& operator=(const Texture&) = default;
 
     //! @brief Constructor
-    Texture(unsigned int id, const std::string& name)
-    : m_textureID(id), m_name(name) {}
+    Texture(const Texture&);
+    Texture(const TextureIdentifier& textureIdentifier);
+    Texture(unsigned int id, const std::string& name);
 
     //! @brief Constructor to load from path
 		Texture(const std::string& filePath, Channel channel = Channel::RGB
@@ -130,21 +142,21 @@ namespace Graphic
     // Static Method
     //*****************************************************
     //! @brief Load file and Generate Texture
-    static Texture LoadTexture(const std::string& filePath, Channel internalFormat = Channel::RGB
+    static TextureIdentifier LoadTexture(const std::string& filePath, Channel internalFormat = Channel::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);
 
     //! @brief Load file and Generate Texture
-    static Texture LoadHDRTexture(const std::string& filePath, Channel internalFormat = Channel::RGB
+    static TextureIdentifier LoadHDRTexture(const std::string& filePath, Channel internalFormat = Channel::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);
 
     //! @brief Generate Null texture for FrameBuffer Attachment
-    static Texture GenerateNullTexture(int width, int height
+    static TextureIdentifier GenerateNullTexture(int width, int height
       , Channel internalformat = Channel::RGB
       , Channel format = Channel::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);
 
     //! @brief Generate Texture from imgData
-    static Texture GenerateTextureData(void* imgData
+    static TextureIdentifier GenerateTextureData(void* imgData
       , int width, int height
       , Channel internalFormat, Channel format
       , FilterMode filterMode, WrapMode wrapMode);
@@ -161,6 +173,5 @@ namespace Graphic
 
     Channel     m_internalFormat;
 	};
-
 } // Graphic
 

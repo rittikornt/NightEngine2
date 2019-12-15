@@ -41,6 +41,7 @@ namespace Graphic
       //Depth Buffer
       m_depthBuffer.Init(width, height);
       m_fbo.AttachRenderBuffer(m_depthBuffer);
+      CHECKGL_ERROR();
 
       //Position color buffer
       m_textures[0] = Texture::GenerateNullTexture(width, height

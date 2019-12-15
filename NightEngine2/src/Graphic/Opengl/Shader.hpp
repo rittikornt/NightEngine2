@@ -34,16 +34,10 @@ namespace Graphic
     Shader& operator=(const Shader& rhs);
 
     //! @brief Destructor
-		~Shader()
-		{
-			if (!(m_programID & (~0)))
-			{
-				glDeleteProgram(m_programID);
-			}
-		}
+    ~Shader();
 
     //! @brief Initialize
-    void		Init(void) { m_programID = glCreateProgram(); m_filePath.reserve(2); }
+    void		Init(void);
 
     //! @brief Bind
     void		Bind(void) const;

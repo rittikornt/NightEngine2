@@ -5,6 +5,7 @@
 */
 
 #include "Graphic/Opengl/UniformBufferObject.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 
 #include "Core/Macros.hpp"
 
@@ -17,12 +18,14 @@ namespace Graphic
     if (m_id != ~(0))
     {
       glDeleteBuffers(1, &m_id);
+      DECREMENT_ALLOCATION(UniformBufferObject);
     }
   }
 
   void UniformBufferObject::Init(std::size_t size, unsigned bufferPointIndex)
   {
     glGenBuffers(1, &m_id);
+    INCREMENT_ALLOCATION(UniformBufferObject);
 
     Bind();
     glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);

@@ -24,6 +24,8 @@
 
 #include "Physics/PhysicsScene.hpp"
 #include "Graphic/Opengl/RenderLoopOpengl.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+#include "Graphic/Opengl/Window.hpp"
 
 #include "Graphic/RenderDoc/RenderDocManager.hpp"
 
@@ -73,8 +75,10 @@ namespace NightEngine2
         RenderDocManager::Initialize();
       }
 
+      //Initialize RenderLoop
       if (m_renderloop == nullptr)
       {
+        Window::Initialize("NightEngine2", Window::WindowMode::WINDOW);
         m_renderloop = new RenderLoopOpengl();
         m_renderloop->Initialize();
       }
@@ -129,15 +133,26 @@ namespace NightEngine2
       {
         m_reinitRenderLoop = false;
 
+        //Terminate RenderLoop
         if (m_renderloop != nullptr)
         {
           m_renderloop->Terminate();
           delete m_renderloop;
           m_renderloop = nullptr;
+
+          Window::Terminate();
+          OpenglAllocationTracker::PrintAllocationState();
           CHECKGL_ERROR();
         }
-        m_renderloop = new RenderLoopOpengl();
-        m_renderloop->Initialize();
+        RenderDocManager::Terminate();
+
+        //Initialize RenderLoop
+        if (m_renderloop == nullptr)
+        {
+          Window::Initialize("NightEngine2", Window::WindowMode::WINDOW);
+          m_renderloop = new RenderLoopOpengl();
+          m_renderloop->Initialize();
+        }
       }
     }
   }
@@ -183,11 +198,20 @@ namespace NightEngine2
 
       //Terminate System
       Input::Terminate();
+
+      //Terminate RenderLoop
       if (m_renderloop != nullptr)
       {
         m_renderloop->Terminate();
         delete m_renderloop;
         m_renderloop = nullptr;
+
+        //At this point, there should be no leaking gl object
+        CHECKGL_ERROR();
+
+        Window::Terminate();
+        OpenglAllocationTracker::PrintAllocationState();
+        CHECKGL_ERROR();
       }
       RenderDocManager::Terminate();
 

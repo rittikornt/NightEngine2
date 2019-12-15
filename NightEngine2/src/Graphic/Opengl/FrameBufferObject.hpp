@@ -10,6 +10,7 @@ namespace Graphic
 {
   //Forward declaration
   class Texture;
+  class TextureIdentifier;
   class RenderBufferObject;
   class Cubemap;
 
@@ -49,10 +50,10 @@ namespace Graphic
       void AttachTexture(Texture& texture, int textureIndex = 0);
 
       //! @brief Attach depth/stencil texture to framebuffer
-      Texture AttachDepthStencilTexture(float width, float height);
+      TextureIdentifier AttachDepthStencilTexture(float width, float height);
 
       //! @brief Attach depth texture to framebuffer
-      Texture AttachDepthTexture(float width, float height);
+      TextureIdentifier AttachDepthTexture(float width, float height);
 
       //! @brief Attach Render buffer to framebuffer
       void AttachRenderBuffer(RenderBufferObject& rbo);

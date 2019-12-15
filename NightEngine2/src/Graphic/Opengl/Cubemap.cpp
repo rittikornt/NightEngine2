@@ -4,6 +4,7 @@
   @brief Contain the Implementation of Cubemap
 */
 #include "Graphic/Opengl/Cubemap.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 
 #include "Core/Logger.hpp"
 #include "Core/Macros.hpp"
@@ -88,6 +89,7 @@ namespace Graphic
     if(m_id != ~(0))
     {
       glDeleteTextures(1, &m_id);
+      DECREMENT_ALLOCATION(Cubemap);
     }
   }
 
@@ -97,6 +99,7 @@ namespace Graphic
   {
     //Init Texures
     glGenTextures(1, &m_id);
+    INCREMENT_ALLOCATION(Cubemap);
     Bind();
     {
       //Load right, left, top, bottom, front, back in order
@@ -176,6 +179,7 @@ namespace Graphic
   {
     //Init Texures
     glGenTextures(1, &m_id);
+    INCREMENT_ALLOCATION(Cubemap);
     Bind();
     {
       //Choose target based on channel
@@ -232,6 +236,7 @@ namespace Graphic
   {
     //Init Texures
     glGenTextures(1, &m_id);
+    INCREMENT_ALLOCATION(Cubemap);
     Bind();
 
     //Init 6 cubemap textures with depth component only

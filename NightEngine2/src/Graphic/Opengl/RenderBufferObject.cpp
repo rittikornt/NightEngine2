@@ -4,14 +4,27 @@
   @brief Contain the Implementation of RenderBufferObject
 */
 #include "Graphic/Opengl/RenderBufferObject.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+
 #include "Core/Macros.hpp"
 
 namespace Graphic
 {
+  RenderBufferObject::~RenderBufferObject(void)
+  {
+    if (m_id != (~0))
+    {
+      //TODO: This delete need ref count too
+      glDeleteRenderbuffers(1, &m_id);
+      DECREMENT_ALLOCATION(RenderBufferObject);
+    }
+  }
+
   void RenderBufferObject::RenderBufferObject::Init(int width, int height
     , Format format)
   {
     glGenRenderbuffers(1, &m_id);
+    INCREMENT_ALLOCATION(RenderBufferObject);
 
     SetBuffer(width, height, format);
   }

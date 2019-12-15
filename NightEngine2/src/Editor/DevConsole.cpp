@@ -452,7 +452,7 @@ namespace Editor
       //Try to Initialize before trigger capture
       if (RenderDocManager::Initialize())
       {
-        RenderDocManager::TriggerCapture();
+        //RenderDocManager::TriggerCapture();
         //TODO: in order for this to work, we need to reinit the window
         NightEngine2::Engine::GetInstance()->ReInitRenderLoop();
       }

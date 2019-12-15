@@ -5,6 +5,8 @@
 */
 #include "Graphic/Opengl/VertexArrayObject.hpp"
 #include "Graphic/Opengl/Vertex.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+
 #include "Core/Macros.hpp"
 
 //"min" in std::min was override by Window Macros
@@ -26,17 +28,21 @@ namespace Graphic
 		if (!(m_objectID & (~0)))
 		{
 			glDeleteVertexArrays(1, &m_objectID);
+      DECREMENT_ALLOCATION(VertexArrayObject);
 		}
 
     if (!(m_instanceBufferID & (~0)))
     {
       glDeleteBuffers(1, &m_instanceBufferID);
+      DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer);
     }
 	}
 
 	void VertexArrayObject::Init(void)
 	{
 		glGenVertexArrays(1, &m_objectID);
+    INCREMENT_ALLOCATION(VertexArrayObject);
+
 		m_vbo.Init();
 		m_ebo.Init();
 	}
@@ -44,6 +50,8 @@ namespace Graphic
   void VertexArrayObject::InitInstanceDraw(size_t dataSize, void* data)
   {
     glGenBuffers(1, &m_instanceBufferID);
+    INCREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer);
+
     glBindBuffer(GL_ARRAY_BUFFER, m_instanceBufferID);
       glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

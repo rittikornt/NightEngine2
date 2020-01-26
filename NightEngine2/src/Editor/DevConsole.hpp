@@ -85,6 +85,7 @@ namespace Editor
     void StartProfilingSession(void);
     void EndProfilingSession(void);
     void RenderDocCapture(void);
+    void ReinitEngine(void);
 
     void ShowHelp(void);
     void ShowHistory(void);

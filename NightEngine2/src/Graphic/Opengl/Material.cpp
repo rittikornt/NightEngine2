@@ -42,7 +42,7 @@ namespace Graphic
   void	Material::InitShader(const std::string& vertexShader
   , const std::string& fragmentShader)
   {
-    m_shader.Init();
+    m_shader.Create();
     m_shader.AttachShaderFile(vertexShader);
     m_shader.AttachShaderFile(fragmentShader);
     m_shader.Link();
@@ -51,7 +51,7 @@ namespace Graphic
   void	Material::InitShader(const std::string& vertexShader
     , const std::string& fragmentShader, const std::string& geometryShader)
   {
-    m_shader.Init();
+    m_shader.Create();
     m_shader.AttachShaderFile(vertexShader);
     m_shader.AttachShaderFile(fragmentShader);
     m_shader.AttachShaderFile(geometryShader);

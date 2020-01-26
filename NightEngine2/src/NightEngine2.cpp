@@ -202,6 +202,8 @@ namespace NightEngine2
       //Terminate RenderLoop
       if (m_renderloop != nullptr)
       {
+        OpenglAllocationTracker::PrintAllocationState();
+
         m_renderloop->Terminate();
         delete m_renderloop;
         m_renderloop = nullptr;
@@ -210,6 +212,7 @@ namespace NightEngine2
         CHECKGL_ERROR();
 
         Window::Terminate();
+
         OpenglAllocationTracker::PrintAllocationState();
         CHECKGL_ERROR();
       }

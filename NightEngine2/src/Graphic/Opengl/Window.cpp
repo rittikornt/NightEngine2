@@ -233,7 +233,7 @@ namespace Graphic
 		void SetWindowShouldClose(bool shouldClose)
 		{
       Debug::Log << Logger::MessageType::INFO 
-        << "SetWindowShouldClose: " << shouldClose;
+        << "SetWindowShouldClose: " << shouldClose << "\n";
 			glfwSetWindowShouldClose(g_glfwWindow, shouldClose);
 
 			if (shouldClose)

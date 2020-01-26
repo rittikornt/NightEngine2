@@ -62,24 +62,24 @@ namespace Graphic
     camera.ApplyProjectionMatrix(m_prefilterMap.GetShader());
 
     //Specular Shader
-    m_prefilterShader.Init();
+    m_prefilterShader.Create();
     m_prefilterShader.AttachShaderFile("IBL/cubemap_prefilteredmap.vert");
     m_prefilterShader.AttachShaderFile("IBL/cubemap_prefilteredmap.frag");
     m_prefilterShader.Link();
 
-    m_brdfShader.Init();
+    m_brdfShader.Create();
     m_brdfShader.AttachShaderFile("IBL/precompute_brdflut.vert");
     m_brdfShader.AttachShaderFile("IBL/precompute_brdflut.frag");
     m_brdfShader.Link();
     
     //HDR to Cubemap Shader
-    m_cubeConversionShader.Init();
+    m_cubeConversionShader.Create();
     m_cubeConversionShader.AttachShaderFile("IBL/equirectangular_to_cubemap.vert");
     m_cubeConversionShader.AttachShaderFile("IBL/equirectangular_to_cubemap.frag");
     m_cubeConversionShader.Link();
 
     //Irradiancemap Shader
-    m_irradianceShader.Init();
+    m_irradianceShader.Create();
     m_irradianceShader.AttachShaderFile("IBL/cubemap_irradiancemap.vert");
     m_irradianceShader.AttachShaderFile("IBL/cubemap_irradiancemap.frag");
     m_irradianceShader.Link();

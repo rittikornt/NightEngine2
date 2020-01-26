@@ -8,6 +8,7 @@
 #include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 
 #include "Core/Macros.hpp"
+#include "Core/Logger.hpp"
 
 //"min" in std::min was override by Window Macros
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
@@ -25,23 +26,45 @@ namespace Graphic
 
   VertexArrayObject::~VertexArrayObject(void)
 	{
-		if (!(m_objectID & (~0)))
+		if (!(m_objectID & (~0)) 
+      && IS_ALLOCATED(VertexArrayObject, m_objectID))
 		{
 			glDeleteVertexArrays(1, &m_objectID);
-      DECREMENT_ALLOCATION(VertexArrayObject);
+      DECREMENT_ALLOCATION(VertexArrayObject, m_objectID);
 		}
 
-    if (!(m_instanceBufferID & (~0)))
+    if (!(m_instanceBufferID & (~0)) 
+      && IS_ALLOCATED(VertexArrayObjectInstanceBuffer, m_instanceBufferID))
     {
       glDeleteBuffers(1, &m_instanceBufferID);
-      DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer);
+      DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, m_instanceBufferID);
     }
 	}
+
+  static void ReleaseVAOID(GLuint shaderID)
+  {
+    glDeleteVertexArrays(1, &shaderID);
+    DECREMENT_ALLOCATION(VertexArrayObject, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  static void ReleaseVAOIBID(GLuint shaderID)
+  {
+    glDeleteBuffers(1, &shaderID);
+    DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  void VertexArrayObject::ReleaseAllLoadedVAO(void)
+  {
+    OpenglAllocationTracker::DeallocateAllObjects("VertexArrayObject", ReleaseVAOID);
+    OpenglAllocationTracker::DeallocateAllObjects("VertexArrayObjectInstanceBuffer", ReleaseVAOIBID);
+  }
 
 	void VertexArrayObject::Init(void)
 	{
 		glGenVertexArrays(1, &m_objectID);
-    INCREMENT_ALLOCATION(VertexArrayObject);
+    INCREMENT_ALLOCATION(VertexArrayObject, m_objectID);
 
 		m_vbo.Init();
 		m_ebo.Init();
@@ -50,7 +73,7 @@ namespace Graphic
   void VertexArrayObject::InitInstanceDraw(size_t dataSize, void* data)
   {
     glGenBuffers(1, &m_instanceBufferID);
-    INCREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer);
+    INCREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, m_instanceBufferID);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_instanceBufferID);
       glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_STATIC_DRAW);

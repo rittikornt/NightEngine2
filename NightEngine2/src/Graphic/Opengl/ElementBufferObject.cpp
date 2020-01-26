@@ -5,6 +5,8 @@
 */
 #include "Graphic/Opengl/ElementBufferObject.hpp"
 #include "Graphic/Opengl/VertexArrayObject.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+
 #include "Core/Macros.hpp"
 
 namespace Graphic
@@ -22,12 +24,26 @@ namespace Graphic
 		if (!(m_objectID & (~0)))
 		{
 			glDeleteBuffers(1, &m_objectID);
+      DECREMENT_ALLOCATION(ElementBufferObject, m_objectID);
 		}
 	}
+
+  static void ReleaseEBOID(GLuint shaderID)
+  {
+    glDeleteBuffers(1, &shaderID);
+    DECREMENT_ALLOCATION(ElementBufferObject, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  void ElementBufferObject::ReleaseAllLoadedEBO(void)
+  {
+    OpenglAllocationTracker::DeallocateAllObjects("ElementBufferObject", ReleaseEBOID);
+  }
 
 	void ElementBufferObject::Init()
 	{
 		glGenBuffers(1, &m_objectID);
+    INCREMENT_ALLOCATION(ElementBufferObject, m_objectID);
 	}
 
   void ElementBufferObject::FillIndex(const std::vector<unsigned>& indexArray)

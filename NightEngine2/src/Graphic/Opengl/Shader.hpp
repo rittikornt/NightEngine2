@@ -20,6 +20,7 @@
 // Standard Headers
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 namespace Graphic
 {
@@ -36,8 +37,14 @@ namespace Graphic
     //! @brief Destructor
     ~Shader();
 
-    //! @brief Initialize
-    void		Init(void);
+    //! @brief Allocate Shader Object
+    void		Create(void);
+
+    //! @brief Deallocate Shader Object
+    void		Release(void);
+
+    //! @brief Deallocate All Shader Object
+    static void ReleaseAllLoadedShaders(void);
 
     //! @brief Bind
     void		Bind(void) const;
@@ -52,11 +59,11 @@ namespace Graphic
     void		Link() const;
 
     //! @brief Get Shader Program ID
-		GLuint  GetProgramID() const { return m_programID; }
+		inline GLuint  GetProgramID() const { return m_programID; }
 
     //! @brief Set the uniform block binding point
     void    SetUniformBlockBindingPoint(const std::string& uniformBlockName, unsigned bufferPointIndex);
-
+    
     //**************************************
     //  SetUniform Overloads
     //**************************************
@@ -97,13 +104,16 @@ namespace Graphic
 	private:
 		GLuint	create_shader(std::string const & filename);
 
-		// Disable Copying
-		Shader(Shader const &) = delete;
-
 		// Private Member Variables
 		GLuint m_programID;
     std::vector<std::string> m_filePath;  //Save shader path to be serialized
+    
+    static std::unordered_set<GLuint> s_loadedShaders;
 	};
 
+  inline bool operator== (Shader const& lhs, Shader const& rhs)
+  {
+    return (lhs.GetProgramID() == rhs.GetProgramID());
+  }
 } // Graphic
 

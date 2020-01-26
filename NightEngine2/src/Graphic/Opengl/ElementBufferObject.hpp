@@ -32,6 +32,9 @@ namespace Graphic
     //! @brief Destructor
     ~ElementBufferObject();
 
+    //! @brief Deallocate All EBO Object
+    static void ReleaseAllLoadedEBO(void);
+
     //! @brief Initialize
 		void Init();
 

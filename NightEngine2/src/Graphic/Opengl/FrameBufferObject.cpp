@@ -25,7 +25,7 @@ namespace Graphic
     if (m_id != ~(0))
     {
       glDeleteFramebuffers(1, &m_id);
-      DECREMENT_ALLOCATION(FrameBufferObject);
+      DECREMENT_ALLOCATION(FrameBufferObject, m_id);
       CHECKGL_ERROR();
     }
   }
@@ -33,7 +33,7 @@ namespace Graphic
   void FrameBufferObject::Init(void)
   {
     glGenFramebuffers(1, &m_id);
-    INCREMENT_ALLOCATION(FrameBufferObject);
+    INCREMENT_ALLOCATION(FrameBufferObject, m_id);
     CHECKGL_ERROR();
   }
   
@@ -108,7 +108,7 @@ namespace Graphic
     //Generate ID
     unsigned int textureID;
     glGenTextures(1, &textureID);
-    INCREMENT_ALLOCATION(Texture);
+    INCREMENT_ALLOCATION(Texture, textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     //Setup Texture
@@ -127,7 +127,7 @@ namespace Graphic
     //Generate ID
     unsigned int textureID;
     glGenTextures(1, &textureID);
-    INCREMENT_ALLOCATION(Texture);
+    INCREMENT_ALLOCATION(Texture, textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     //Setup Texture

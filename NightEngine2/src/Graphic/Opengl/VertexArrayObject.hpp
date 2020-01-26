@@ -39,6 +39,9 @@ namespace Graphic
     //! @brief Destructor
     ~VertexArrayObject(void);
 
+    //! @brief Deallocate all loaded VAO object
+    static void ReleaseAllLoadedVAO(void);
+
     //! @brief Init, generating opengl object ID
 		void Init(void); 
 

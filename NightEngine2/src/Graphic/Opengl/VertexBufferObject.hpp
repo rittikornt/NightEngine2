@@ -32,6 +32,9 @@ namespace Graphic
     //! @brief Destructor
     ~VertexBufferObject();
 
+    //! @brief Deallocate All VBO Object
+    static void ReleaseAllLoadedVBO(void);
+
     //! @brief Initialization
 		void Init();
 

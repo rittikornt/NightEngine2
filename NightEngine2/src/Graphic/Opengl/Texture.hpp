@@ -9,6 +9,7 @@
 
 // Standard Headers
 #include <string>
+#include <unordered_set>
 
 #include "Core/Reflection/ReflectionMacros.hpp"
 
@@ -116,6 +117,12 @@ namespace Graphic
 
     //! @brief Destructors
     ~Texture(void);
+
+    //! @brief Deallocate texture object
+    void Release(void);
+
+    //! @brief Deallocate all loaded texture object
+    static void ReleaseAllLoadedTextures(void);
 
     //! @brief Bind
 		void Bind(void) const;

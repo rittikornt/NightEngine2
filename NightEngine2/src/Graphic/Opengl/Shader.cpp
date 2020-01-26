@@ -31,19 +31,44 @@ namespace Graphic
 
   Shader::~Shader()
   {
-    if (m_programID != (~0))
+    if (IS_ALLOCATED(Shader, m_programID))
     {
-      //TODO: This delete need ref count too
-      //glDeleteProgram(m_programID);
-      DECREMENT_ALLOCATION(Shader);
+      Debug::Log << Logger::MessageType::WARNING
+        << "Shader Leak: " << m_programID << '\n';
     }
   }
 
-  void Shader::Init(void)
+  void Shader::Create(void)
   {
     m_programID = glCreateProgram();
-    INCREMENT_ALLOCATION(Shader);
+    INCREMENT_ALLOCATION(Shader, m_programID);
     m_filePath.reserve(2);
+  }
+
+  void Shader::Release(void)
+  {
+    if (m_programID != (~0))
+    {
+      //TODO: This delete need ref count too
+      glDeleteProgram(m_programID);
+      CHECKGL_ERROR();
+      DECREMENT_ALLOCATION(Shader, m_programID);
+      //TODO: Unload the reference in the ResourceManager as well
+    }
+  }
+
+  static void ReleaseShaderID(GLuint shaderID)
+  {
+    glDeleteProgram(shaderID);
+    DECREMENT_ALLOCATION(Shader, shaderID);
+    CHECKGL_ERROR();
+
+    //TODO: Unload the reference in the ResourceManager as well
+  }
+
+  void Shader::ReleaseAllLoadedShaders(void)
+  {
+    OpenglAllocationTracker::DeallocateAllObjects("Shader", ReleaseShaderID);
   }
 
   void Shader::Bind() const

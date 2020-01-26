@@ -66,9 +66,9 @@ namespace Graphic
     RenderBufferObject  m_sceneRbo;
 
     //PostProcess
-    Postprocess::Bloom               g_bloomPP;
-    Postprocess::SSAO                g_ssaoPP;
-    Postprocess::FXAA                g_fxaaPP;
+    Postprocess::Bloom  g_bloomPP;
+    Postprocess::SSAO   g_ssaoPP;
+    Postprocess::FXAA   g_fxaaPP;
 
     //Screen Quad
     VertexArrayObject   g_screenVAO;
@@ -79,9 +79,9 @@ namespace Graphic
     IBL                 g_ibl;
 
     //Material
-    Material     g_defaultMaterial;
-    Material     g_lightingMaterial;
-    Material     g_normalDebug;
+    Material            g_defaultMaterial;
+    Material            g_lightingMaterial;
+    Material            g_normalDebug;
 
     //Light
     Material             g_billboardMaterial;

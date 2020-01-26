@@ -45,7 +45,7 @@ namespace Physics
      // , Quad::indices, Quad::info);
 
     //Shader
-    m_shader.Init();
+    m_shader.Create();
     m_shader.AttachShaderFile("Debugger/debug_draw.vert");
     m_shader.AttachShaderFile("Debugger/debug_draw.frag");
     m_shader.Link();

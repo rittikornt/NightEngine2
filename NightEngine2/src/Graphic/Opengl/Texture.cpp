@@ -22,48 +22,12 @@ using namespace Core;
 
 namespace Graphic
 {
-  namespace TextureRefCount
-  {
-    static std::unordered_map<GLint, int> g_textureRefCount;
-
-    void Increment(GLint textureID)
-    {
-      auto it = g_textureRefCount.find(textureID);
-      if (it != g_textureRefCount.end())
-      {
-        ++(it->second);
-      }
-      else
-      {
-        g_textureRefCount[textureID] = 1;
-      }
-    }
-
-    //Return true if Decrement the ref count <= 0
-    bool Decrement(GLint textureID)
-    {
-      auto it = g_textureRefCount.find(textureID);
-      if (it != g_textureRefCount.end())
-      {
-        --(it->second);
-        return it->second <= 0;
-      }
-      else
-      {
-        ASSERT_MSG(false, "Trying to Decrement ref count that doesn't exist");
-      }
-
-      return false;
-    }
-  }
-
   Texture::Texture(const Texture& texture)
     : m_textureID(texture.m_textureID)
     , m_name(texture.m_name)
     , m_filePath(texture.m_filePath)
     , m_internalFormat(texture.m_internalFormat)
   {
-    TextureRefCount::Increment(m_textureID);
   }
 
   Texture::Texture(const TextureIdentifier& textureIdentifier)
@@ -72,13 +36,11 @@ namespace Graphic
     , m_filePath(textureIdentifier.m_filePath)
     , m_internalFormat((Channel)textureIdentifier.m_internalFormat)
   {
-    TextureRefCount::Increment(m_textureID);
   }
 
   Texture::Texture(unsigned int id, const std::string & name)
     : m_textureID(id), m_name(name)
   {
-    TextureRefCount::Increment(m_textureID);
   }
 
   Texture::Texture(const std::string& filePath, Channel channel
@@ -102,16 +64,36 @@ namespace Graphic
 
 	Texture::~Texture()
 	{
+    if (IS_ALLOCATED(Texture, m_textureID))
+    {
+      Debug::Log << Logger::MessageType::WARNING
+        << "Texture Leak: " << m_textureID << '\n';
+    }
+	}
+
+  void Texture::Release(void)
+  {
     if (m_textureID != ~(0))
     {
       //TODO: This need ref count
-      //glDeleteTextures(1, &m_textureID);
-
-      TextureRefCount::Decrement(m_textureID);
-      DECREMENT_ALLOCATION(Texture);
+      glDeleteTextures(1, &m_textureID);
       CHECKGL_ERROR();
+      DECREMENT_ALLOCATION(Texture, m_textureID);
     }
-	}
+  }
+
+  static void ReleaseTextureID(GLuint shaderID)
+  {
+    glDeleteTextures(1, &shaderID);
+    CHECKGL_ERROR();
+
+    DECREMENT_ALLOCATION(Texture, shaderID);
+  }
+
+  void Texture::ReleaseAllLoadedTextures(void)
+  {
+    OpenglAllocationTracker::DeallocateAllObjects("Texture", ReleaseTextureID);
+  }
 
 	void Texture::Bind() const
 	{
@@ -210,7 +192,7 @@ namespace Graphic
     TextureIdentifier texture;
     //Generate Object
     glGenTextures(1, &(texture.m_textureID));
-    INCREMENT_ALLOCATION(Texture);
+    INCREMENT_ALLOCATION(Texture, texture.m_textureID);
     glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
 
     //Choose target based on channel
@@ -249,8 +231,11 @@ namespace Graphic
     TextureIdentifier texture;
     //Generate Object
     glGenTextures(1, &(texture.m_textureID));
-    INCREMENT_ALLOCATION(Texture);
+    INCREMENT_ALLOCATION(Texture, texture.m_textureID);
     glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
+
+    Debug::Log << Logger::MessageType::INFO
+      << "Texture Alloc: " << texture.m_textureID << '\n';
 
     //Option
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S

@@ -89,7 +89,7 @@ namespace Graphic
     if(m_id != ~(0))
     {
       glDeleteTextures(1, &m_id);
-      DECREMENT_ALLOCATION(Cubemap);
+      DECREMENT_ALLOCATION(Cubemap, m_id);
     }
   }
 
@@ -99,7 +99,7 @@ namespace Graphic
   {
     //Init Texures
     glGenTextures(1, &m_id);
-    INCREMENT_ALLOCATION(Cubemap);
+    INCREMENT_ALLOCATION(Cubemap, m_id);
     Bind();
     {
       //Load right, left, top, bottom, front, back in order
@@ -148,7 +148,7 @@ namespace Graphic
     Unbind();
 
     //Init Shaders
-    m_shader.Init();
+    m_shader.Create();
     m_shader.AttachShaderFile(vertexShader);
     m_shader.AttachShaderFile(fragmentShader);
     m_shader.Link();
@@ -179,7 +179,7 @@ namespace Graphic
   {
     //Init Texures
     glGenTextures(1, &m_id);
-    INCREMENT_ALLOCATION(Cubemap);
+    INCREMENT_ALLOCATION(Cubemap, m_id);
     Bind();
     {
       //Choose target based on channel
@@ -210,7 +210,7 @@ namespace Graphic
     Unbind();
 
     //Init Shaders
-    m_shader.Init();
+    m_shader.Create();
     m_shader.AttachShaderFile(vertexShader);
     m_shader.AttachShaderFile(fragmentShader);
     m_shader.Link();
@@ -236,7 +236,7 @@ namespace Graphic
   {
     //Init Texures
     glGenTextures(1, &m_id);
-    INCREMENT_ALLOCATION(Cubemap);
+    INCREMENT_ALLOCATION(Cubemap, m_id);
     Bind();
 
     //Init 6 cubemap textures with depth component only

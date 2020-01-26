@@ -7,6 +7,9 @@
 #include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 
 #include "Core/Macros.hpp"
+#include "Core/Logger.hpp"
+
+using namespace Core;
 
 namespace Graphic
 {
@@ -16,7 +19,7 @@ namespace Graphic
     {
       //TODO: This delete need ref count too
       glDeleteRenderbuffers(1, &m_id);
-      DECREMENT_ALLOCATION(RenderBufferObject);
+      DECREMENT_ALLOCATION(RenderBufferObject, m_id);
     }
   }
 
@@ -24,8 +27,7 @@ namespace Graphic
     , Format format)
   {
     glGenRenderbuffers(1, &m_id);
-    INCREMENT_ALLOCATION(RenderBufferObject);
-
+    INCREMENT_ALLOCATION(RenderBufferObject, m_id);
     SetBuffer(width, height, format);
   }
 

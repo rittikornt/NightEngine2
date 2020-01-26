@@ -18,14 +18,14 @@ namespace Graphic
     if (m_id != ~(0))
     {
       glDeleteBuffers(1, &m_id);
-      DECREMENT_ALLOCATION(UniformBufferObject);
+      DECREMENT_ALLOCATION(UniformBufferObject, m_id);
     }
   }
 
   void UniformBufferObject::Init(std::size_t size, unsigned bufferPointIndex)
   {
     glGenBuffers(1, &m_id);
-    INCREMENT_ALLOCATION(UniformBufferObject);
+    INCREMENT_ALLOCATION(UniformBufferObject, m_id);
 
     Bind();
     glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);

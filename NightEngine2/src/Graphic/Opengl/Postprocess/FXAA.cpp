@@ -15,7 +15,7 @@ namespace Graphic
   {
     void FXAA::Init(int width, int height)
     {
-      m_fxaaShader.Init();
+      m_fxaaShader.Create();
       m_fxaaShader.AttachShaderFile("Postprocess/fxaa.vert");
       m_fxaaShader.AttachShaderFile("Postprocess/fxaa.frag");
       m_fxaaShader.Link();

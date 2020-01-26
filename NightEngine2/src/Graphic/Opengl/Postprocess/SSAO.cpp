@@ -30,12 +30,12 @@ namespace Graphic
       m_fbo.Unbind();
 
       //Shader
-      m_ssaoShader.Init();
+      m_ssaoShader.Create();
       m_ssaoShader.AttachShaderFile("Postprocess/ssao.vert");
       m_ssaoShader.AttachShaderFile("Postprocess/ssao.frag");
       m_ssaoShader.Link();
 
-      m_simpleBlur.Init();
+      m_simpleBlur.Create();
       m_simpleBlur.AttachShaderFile("Postprocess/simple_blur.vert");
       m_simpleBlur.AttachShaderFile("Postprocess/simple_blur.frag");
       m_simpleBlur.Link();

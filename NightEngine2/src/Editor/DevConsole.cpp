@@ -57,6 +57,7 @@ namespace Editor
     AddCommand("ENDPROFILE", &DevConsole::EndProfilingSession);
 
     AddCommand("RENDERDOC_CAPTURE", &DevConsole::RenderDocCapture);
+    AddCommand("RESTART", &DevConsole::ReinitEngine);
 
     //Init Log
     AddLog("//******************************");
@@ -457,6 +458,14 @@ namespace Editor
         NightEngine2::Engine::GetInstance()->ReInitRenderLoop();
       }
     }
+  }
+
+  void DevConsole::ReinitEngine(void)
+  {
+    using namespace Graphic;
+
+    //TODO: in order for this to work, we need to reinit the window
+    NightEngine2::Engine::GetInstance()->ReInitRenderLoop();
   }
 
   void DevConsole::ShowHelp(void)

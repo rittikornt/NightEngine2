@@ -885,7 +885,7 @@ namespace Graphic
       Editor::PostRender();
 #else
       // Background Fill Color
-      glClearColor(val, 0.25f, 0.25f, 1.0f);
+      glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 #endif
 
@@ -920,6 +920,15 @@ namespace Graphic
 #if(EDITOR_MODE)
     Editor::Terminate();
 #endif
+
+    Shader::ReleaseAllLoadedShaders();
+    Texture::ReleaseAllLoadedTextures();
+    ElementBufferObject::ReleaseAllLoadedEBO();
+    VertexArrayObject::ReleaseAllLoadedVAO();
+    VertexBufferObject::ReleaseAllLoadedVBO();
+
+    //TODO: we need to release everything here, so we can calls Window::Terminate here
+    // without having delete the RenderLoopOpengl first (to trigger all object destructor)
 
     //Window::Terminate();
   }

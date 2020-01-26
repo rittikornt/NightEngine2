@@ -4,6 +4,7 @@
   @brief Contain the Implementation of VertexBufferObject
 */
 #include "Graphic/Opengl/VertexBufferObject.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 
 #include "Graphic/Opengl/VertexArrayObject.hpp"
 #include "Graphic/Opengl/Vertex.hpp"
@@ -16,12 +17,26 @@ namespace Graphic
 		if (!(m_objectID & (~0)))
 		{
 			glDeleteBuffers(1, &m_objectID);
+      DECREMENT_ALLOCATION(VertexBufferObject, m_objectID);
 		}
+  }
+
+  static void ReleaseVBOID(GLuint shaderID)
+  {
+    glDeleteBuffers(1, &shaderID);
+    DECREMENT_ALLOCATION(VertexBufferObject, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  void VertexBufferObject::ReleaseAllLoadedVBO(void)
+  {
+    OpenglAllocationTracker::DeallocateAllObjects("VertexBufferObject", ReleaseVBOID);
   }
 
 	void VertexBufferObject::Init()
 	{
 		glGenBuffers(1, &m_objectID);
+    INCREMENT_ALLOCATION(VertexBufferObject, m_objectID);
 	}
 
   void VertexBufferObject::FillVertex(const std::vector<float>& floatArray)

@@ -93,6 +93,42 @@ namespace NightEngine2
     PROFILE_SESSION_END();
   }
 
+  void Engine::Terminate(void)
+  {
+    PROFILE_SESSION_BEGIN(nightengine2_profile_session_terminate);
+    PROFILE_BLOCK_INSTRUMENT("NightEngine2::Terminate")
+    {
+      Debug::Log << "NightEngine2::Terminate\n";
+
+      //Terminate System
+      Input::Terminate();
+
+      //Terminate RenderLoop
+      if (m_renderloop != nullptr)
+      {
+        m_renderloop->Terminate();
+        delete m_renderloop;
+        m_renderloop = nullptr;
+
+        //At this point, there should be no leaking gl object
+        CHECKGL_ERROR();
+
+        Window::Terminate();
+        OpenglAllocationTracker::PrintAllocationState();
+      }
+      RenderDocManager::Terminate();
+
+      ArchetypeManager::Terminate();
+      Factory::Terminate();
+      Reflection::Terminate();
+
+      delete g_physicScene;
+
+      m_gameTime->UnsubscribeAll();
+    }
+    PROFILE_SESSION_END();
+  }
+
   void Engine::MainLoop(void)
   {
     while (!m_gameTime->m_shouldClose)
@@ -132,34 +168,17 @@ namespace NightEngine2
       if (m_reinitRenderLoop)
       {
         m_reinitRenderLoop = false;
-
-        //Terminate RenderLoop
-        if (m_renderloop != nullptr)
-        {
-          m_renderloop->Terminate();
-          delete m_renderloop;
-          m_renderloop = nullptr;
-
-          Window::Terminate();
-          OpenglAllocationTracker::PrintAllocationState();
-          CHECKGL_ERROR();
-        }
-        RenderDocManager::Terminate();
-
-        //Initialize RenderLoop
-        if (m_renderloop == nullptr)
-        {
-          Window::Initialize("NightEngine2", Window::WindowMode::WINDOW);
-          m_renderloop = new RenderLoopOpengl();
-          m_renderloop->Initialize();
-        }
+        ReInitRenderLoop_Internal();
       }
     }
   }
 
-  void Engine::ReInitRenderLoop(void)
+  ///////////////////////////////////////////////////////
+
+  void Engine::ReInitRenderLoop(bool shouldAttachRenderDoc)
   {
     m_reinitRenderLoop = true;
+    m_shouldAttachRenderDoc = shouldAttachRenderDoc;
   }
 
   void Engine::FixedUpdate(float dt)
@@ -189,44 +208,42 @@ namespace NightEngine2
     //TODO: Update all the Components
   }
 
-  void Engine::Terminate(void)
+  void Engine::ReInitRenderLoop_Internal(void)
   {
-    PROFILE_SESSION_BEGIN(nightengine2_profile_session_terminate);
-    PROFILE_BLOCK_INSTRUMENT("NightEngine2::Terminate")
+    //Terminate RenderLoop
+    if (m_renderloop != nullptr)
     {
-      Debug::Log << "NightEngine2::Terminate\n";
+      m_renderloop->Terminate();
+      delete m_renderloop;
+      m_renderloop = nullptr;
 
-      //Terminate System
-      Input::Terminate();
+      //At this point, there should be no leaking gl object
+      CHECKGL_ERROR();
 
-      //Terminate RenderLoop
-      if (m_renderloop != nullptr)
-      {
-        OpenglAllocationTracker::PrintAllocationState();
-
-        m_renderloop->Terminate();
-        delete m_renderloop;
-        m_renderloop = nullptr;
-
-        //At this point, there should be no leaking gl object
-        CHECKGL_ERROR();
-
-        Window::Terminate();
-
-        OpenglAllocationTracker::PrintAllocationState();
-        CHECKGL_ERROR();
-      }
-      RenderDocManager::Terminate();
-
-      ArchetypeManager::Terminate();
-      Factory::Terminate();
-      Reflection::Terminate();
-
-      delete g_physicScene;
-
-      m_gameTime->UnsubscribeAll();
+      Window::Terminate();
+      OpenglAllocationTracker::PrintAllocationState();
     }
-    PROFILE_SESSION_END();
+
+    //Uninitialize RenderDoc if it is attached
+    if (RenderDocManager::IsRenderDocAttached())
+    {
+      RenderDocManager::Terminate();
+    }
+
+    //Initialize RenderDoc if we need to
+    if (m_shouldAttachRenderDoc)
+    {
+      ASSERT_MSG(RenderDocManager::Initialize(), "Failed to initialize RenderDocManager\n");
+    }
+
+    //Initialize RenderLoop
+    if (m_renderloop == nullptr)
+    {
+      Window::Initialize("NightEngine2", Window::WindowMode::WINDOW);
+      m_renderloop = new RenderLoopOpengl();
+      m_renderloop->Initialize();
+      CHECKGL_ERROR();
+    }
   }
 
 } // namespace World

@@ -25,7 +25,7 @@ namespace NightEngine2
 
     void MainLoop(void);
 
-    void ReInitRenderLoop(void);
+    void ReInitRenderLoop(bool shouldAttachRenderDoc);
 
     static Engine* GetInstance()
     {
@@ -37,9 +37,11 @@ namespace NightEngine2
 
     void OnUpdate(float dt);
 
+    void ReInitRenderLoop_Internal(void);
   private:
     static Engine* s_instance;
     bool m_reinitRenderLoop = false;
+    bool m_shouldAttachRenderDoc = false;
 
     GameTime*   m_gameTime = nullptr;
     Graphic::IRenderLoop*   m_renderloop = nullptr;

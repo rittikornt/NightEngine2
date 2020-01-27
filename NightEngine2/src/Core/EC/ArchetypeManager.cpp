@@ -82,13 +82,13 @@ namespace Core
 
       void Initialize(void)
       {
-        Debug::Log << "ArchetypeManager::Initialize";
+        Debug::Log << "ArchetypeManager::Initialize\n";
         RefreshArchetypeList();
       }
 
       void Terminate(void)
       {
-        Debug::Log << "ArchetypeManager::Terminate";
+        Debug::Log << "ArchetypeManager::Terminate\n";
       }
 
       ///////////////////////////////////////////////////////////

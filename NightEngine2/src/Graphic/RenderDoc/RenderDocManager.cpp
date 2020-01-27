@@ -140,12 +140,15 @@ namespace Graphic
           unsigned int pathLen;
           g_renderDocAPI->GetCapture(numCapture - 1, nullptr, &pathLen, nullptr);
           
+          //TODO: use a fixed size char[] instead of newing here
           char* filename = new char[pathLen];
           {
             g_renderDocAPI->GetCapture(numCapture - 1, filename, nullptr, nullptr);
 
             if (launchRenderDoc)
             {
+              // TODO: we might be able to somehow attach the renderdoc to NightEngine2 process
+              //  with some RenderDoc commandline arguments
               auto renderdoc_exe = ShellExecute(nullptr, "open"
                 , g_renderDocEXEPath, filename, nullptr, true);
             }

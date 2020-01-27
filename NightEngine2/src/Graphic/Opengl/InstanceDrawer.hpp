@@ -70,7 +70,7 @@ namespace Graphic
   namespace InstanceDrawer
   {
     //! @brief Contain data to be drawn along with its MeshRenderer
-    struct InstanceDrawerInfo
+    struct BatchInfo
     {
       using RendererHandle = Core::Factory::HandleObject;
 
@@ -82,7 +82,7 @@ namespace Graphic
       //! @brief Add to the reference array, to retrieve their model matrix later
       void AddMeshRenderer(RendererHandle mrHandle);
 
-      //! @brief Buffer all MeshRenderer ModelMatrices
+      //! @brief Buffer all MeshRenderer ModelMatrices to GPU
       void Build(void);
 
       //! @brief Draw all instances of meshes
@@ -96,13 +96,16 @@ namespace Graphic
       unsigned int m_shaderID;
       unsigned int m_polygonCount;
     };
-    using InstanceMap = std::map<Core::Container::U64, InstanceDrawerInfo>;
+    using DrawBatchMap = std::map<Core::Container::U64, BatchInfo>;
 
-    //! @brief Get internal map
-    InstanceMap& GetInstanceMap(void);
+    //! @brief Get internal Draw batch map map<U64 signature, DrawInfo>
+    DrawBatchMap& GetInternalDrawBatchMap(void);
 
     //! @brief Register the MeshRenderer to the Drawer
     void RegisterInstance(Core::ECS::Components::MeshRenderer& meshRenderer);
+
+    //! @brief Unregister all the MeshRenderer from the Drawer
+    void UnregisterAllInstances(void);
 
     //! @brief Build all the drawer
     void BuildAllDrawer(void);

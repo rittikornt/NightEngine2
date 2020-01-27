@@ -115,9 +115,11 @@ namespace Graphic
     }
   }
 
+  /////////////////////////////////////////////////////////////
+
   namespace InstanceDrawer
   {
-    void InstanceDrawerInfo::AddMeshRenderer(RendererHandle mrHandle)
+    void BatchInfo::AddMeshRenderer(RendererHandle mrHandle)
     {
       m_meshrenderers.emplace_back(mrHandle);
 
@@ -128,7 +130,7 @@ namespace Graphic
       }
     }
 
-    void InstanceDrawerInfo::Build(void)
+    void BatchInfo::Build(void)
     {
       //Save model matrix of each meshRenderer
       for (auto& handle : m_meshrenderers)
@@ -146,7 +148,7 @@ namespace Graphic
       }
     }
 
-    void InstanceDrawerInfo::DrawInstances(void)
+    void BatchInfo::DrawInstances(void)
     {
       //TODO: Set Uniform for u_model to represent all the object's position
 
@@ -156,15 +158,15 @@ namespace Graphic
       }
     }
 
-    InstanceMap & GetInstanceMap(void)
+    DrawBatchMap& GetInternalDrawBatchMap(void)
     {
-      static InstanceMap map;
+      static DrawBatchMap map;
       return map;
     }
 
     void RegisterInstance(MeshRenderer& meshRenderer)
     {
-      auto& map = GetInstanceMap();
+      auto& map = GetInternalDrawBatchMap();
 
       //TODO: Signature that make more sense
       //(Material + MeshName?) as Signature
@@ -180,15 +182,21 @@ namespace Graphic
       auto it = map.find(key);
       if (it == map.end())
       {
-        map.insert({ key, InstanceDrawerInfo() });
+        map.insert({ key, BatchInfo() });
       }
 
       map[key].AddMeshRenderer(meshRenderer.GetHandle());
     }
 
+    void UnregisterAllInstances(void)
+    {
+      auto& map = GetInternalDrawBatchMap();
+      map.clear();
+    }
+
     void BuildAllDrawer(void)
     {
-      auto& map = GetInstanceMap();
+      auto& map = GetInternalDrawBatchMap();
       for (auto it = map.begin()
         ; it != map.end(); ++it)
       {
@@ -202,7 +210,7 @@ namespace Graphic
       , "Shader doesn't support Instances Rendering");
       shader.SetUniform("u_instanceRendering", true);
 
-      auto& map = GetInstanceMap();
+      auto& map = GetInternalDrawBatchMap();
       for (auto it = map.begin()
         ; it != map.end(); ++it)
       {

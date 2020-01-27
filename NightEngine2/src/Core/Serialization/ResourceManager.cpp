@@ -3,6 +3,7 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of ResourceManager
 */
+#include "Core/Logger.hpp"
 
 #include "Core/Serialization/ResourceManager.hpp"
 #include "Core/Serialization/Serialization.hpp"
@@ -16,11 +17,32 @@
 namespace Core
 {
   using namespace Graphic;
+  using namespace Container;
+
+  template<typename T>
+  static Container::Hashmap<U64, T>& GetHashMap()
+  {
+    static Container::Hashmap<U64, T> hashmap;
+    return hashmap;
+  }
+
+  void ResourceManager::ClearAllData(void)
+  {
+    Debug::Log << Logger::MessageType::INFO
+      << " ResourceManager:ClearAllData()\n";
+
+    //TODO: CLear things
+    auto& hashmap = GetHashMap<Material>();
+    hashmap.clear();
+    auto& hashmap2 = GetHashMap<Texture>();
+    hashmap2.clear();
+    auto& hashmap3 = GetHashMap<Model>();
+    hashmap3.clear();
+  }
 
   Graphic::Material* ResourceManager::LoadMaterialResource(const Container::String& fileName)
   {
-    using namespace Container;
-    static Container::Hashmap<U64, Material> hashmap;
+    Container::Hashmap<U64, Material>& hashmap = GetHashMap<Material>();
 
     //Generate unique key for each Material File
     Container::String newKeyStr{ fileName };
@@ -51,8 +73,7 @@ namespace Core
     , Texture::Channel channel, Texture::FilterMode filterMode
     , Texture::WrapMode wrapMode, bool hdrImage)
   {
-    using namespace Container;
-    static Container::Hashmap<U64, Texture> hashmap;
+    Container::Hashmap<U64, Texture>& hashmap = GetHashMap<Texture>();
 
     //Generate unique key for each Texture Setting
     Container::String newKeyStr{ filePath };
@@ -88,8 +109,7 @@ namespace Core
 
   Graphic::Model* ResourceManager::LoadModelResource(const Container::String & filePath)
   {
-    using namespace Container;
-    static Container::Hashmap<U64, Model> hashmap;
+    Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
 
     //Generate unique key for each Texture Setting
     Container::String newKeyStr{ filePath };
@@ -110,5 +130,4 @@ namespace Core
 
     return &(hashmap[key]);
   }
-
 }

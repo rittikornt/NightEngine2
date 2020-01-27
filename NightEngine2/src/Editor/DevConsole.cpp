@@ -57,7 +57,7 @@ namespace Editor
     AddCommand("ENDPROFILE", &DevConsole::EndProfilingSession);
 
     AddCommand("RENDERDOC_CAPTURE", &DevConsole::RenderDocCapture);
-    AddCommand("RESTART", &DevConsole::ReinitEngine);
+    AddCommand("RESTART_WINDOW", &DevConsole::ReinitEngine);
 
     //Init Log
     AddLog("//******************************");
@@ -450,13 +450,9 @@ namespace Editor
     }
     else
     {
-      //Try to Initialize before trigger capture
-      if (RenderDocManager::Initialize())
-      {
-        //RenderDocManager::TriggerCapture();
-        //TODO: in order for this to work, we need to reinit the window
-        NightEngine2::Engine::GetInstance()->ReInitRenderLoop();
-      }
+      //Reinit the RenderLoop with RenderDoc attached
+      //TODO: in order for this to work, we need to reinit the window
+      NightEngine2::Engine::GetInstance()->ReInitRenderLoop(true);
     }
   }
 
@@ -465,7 +461,7 @@ namespace Editor
     using namespace Graphic;
 
     //TODO: in order for this to work, we need to reinit the window
-    NightEngine2::Engine::GetInstance()->ReInitRenderLoop();
+    NightEngine2::Engine::GetInstance()->ReInitRenderLoop(false);
   }
 
   void DevConsole::ShowHelp(void)

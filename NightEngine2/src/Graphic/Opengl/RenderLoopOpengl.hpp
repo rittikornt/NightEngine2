@@ -41,6 +41,8 @@ namespace Graphic
     virtual void Terminate(void) override;
 
   private:
+    void Render(void);
+
     void DrawScene(bool debugNormal);
 
     //Uniform Buffer Object

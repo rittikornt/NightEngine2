@@ -21,6 +21,9 @@ namespace Core
     //TODO: Return by Handle instead of raw pointer
 
     //! @brief Static Function for Load and Cache Material File
+    static void ClearAllData(void);
+
+    //! @brief Static Function for Load and Cache Material File
     static Graphic::Material* LoadMaterialResource(const Container::String& fileName);
     
     //! @brief Static Function for Load and Cache Texture

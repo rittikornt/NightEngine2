@@ -1,1 +1,1 @@
-{"otherData": {},"traceEvents":[
+{"otherData": {},"traceEvents":[{"cat":"function","dur":247317,"name":"NightEngine2::Terminate","ph":"X","pid":0,"tid":8882921037786552942,"ts":726091639772}]}

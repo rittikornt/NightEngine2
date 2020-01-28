@@ -836,6 +836,7 @@ namespace Graphic
     mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
       , FileSystem::DirectoryType::Models), true);
     mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
+    g_defaultMaterial.SetParams(0.2f, 0.1f);
     mr->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
     g_floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
     g_floorGO->GetTransform()->SetScale(glm::vec3(20.0f, 1.0f, 20.0f));

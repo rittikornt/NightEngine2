@@ -102,6 +102,7 @@ void main()
 	{
 		discard;
 	}
+	normal = normalize(normal);
 
   //Sample Values from G-buffer
 	vec3 fragPos = texture(u_gbufferResult.m_positionTex, ourTexCoord).rgb;
@@ -173,18 +174,19 @@ void main()
 	const float MAX_REFLECTION_LOD = 4.0;
 	vec3 ReflectedDir = reflect(-ViewDir, normal);
 
-	//Lookup precomputed
+	//Get specular IBL from BRDFlut and prefilteredMap (specular color)
+	//BRDFLut store precomputed BRDF response for each (angle between N and lightDir, roughness)
 	vec3 prefilteredColor = textureLod(u_prefilterMap
 		, ReflectedDir, roughness * MAX_REFLECTION_LOD).rgb;
-	vec2 brdf = texture(u_brdfLUT, vec2(NdotV, roughness)).rg;
-	vec3 specularColor = prefilteredColor * (F * brdf.x + brdf.y);
+	vec2 envBRDF = texture(u_brdfLUT, vec2(NdotV, roughness)).rg;
+	vec3 indirectSpecularColor = prefilteredColor * (F * envBRDF.x + envBRDF.y);
 
-	//Diffuse part
+	//IBL Indirect Diffuse part
 	vec3 irradiance = texture(u_irradianceMap, normal).rgb;
 	vec3 diffuseColor = kD * (irradiance * diffuse.rgb);
 	
 	//Ambient
-	vec3 ambient = diffuseColor + specularColor;
+	vec3 ambient = diffuseColor + indirectSpecularColor;
 	vec3 color = (ambient * shadow * u_ambientStrength) + Lo;
 	o_fragColor = vec4(color, 1.0);
 

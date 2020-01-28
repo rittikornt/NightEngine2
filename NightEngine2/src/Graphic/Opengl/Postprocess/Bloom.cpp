@@ -76,7 +76,7 @@ namespace Graphic
       m_bloomShader.Unbind();
 
       m_blurIteration = 6;
-      m_bloomThreshold = 4.0f;
+      m_bloomThreshold = 6.0f;
     }
 
     void Bloom::Apply(VertexArrayObject& screenQuad

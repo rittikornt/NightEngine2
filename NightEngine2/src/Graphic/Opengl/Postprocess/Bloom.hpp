@@ -31,7 +31,7 @@ namespace Graphic
       Shader            m_bloomShader;
 
       //Settings
-      float             m_bloomThreshold = 3.2f;
+      float             m_bloomThreshold = 4.0f;
       unsigned          m_blurIteration = 10;
       glm::vec2         m_blurDir;
 

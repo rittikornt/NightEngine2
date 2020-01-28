@@ -50,6 +50,9 @@ namespace Graphic
       //! @brief Unbind the Shader
       void Unbind(void);
 
+      //! @brief Set the material params
+      inline void SetParams(float roughness, float metallic) { m_roughnessValue = roughness; m_metallicValue = metallic; }
+
       //! @brief Load Material from File
       static Material* LoadMaterial(const std::string& fileName);
 
@@ -66,10 +69,10 @@ namespace Graphic
       bool      m_useNormal = false;
 
       Texture   m_roughnessTexture;
-      float 	  m_roughnessValue    = 0.0f;
+      float 	  m_roughnessValue    = 0.01f;
 
       Texture   m_metallicTexture;
-      float 	  m_metallicValue     = 0.0f;
+      float 	  m_metallicValue     = 0.1f;
 
       Texture   m_emissiveTexture;
       float 	  m_emissiveStrength = 15.0f;

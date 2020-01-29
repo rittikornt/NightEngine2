@@ -69,8 +69,8 @@ void main()
     //Transform sampled position to clip-space
     vec4 clipPos = vec4(samplePos, 1.0);
     clipPos = u_projection * clipPos;       //View to clip-space
-    clipPos.xyz /= clipPos.w;               //Perspective division
-    clipPos.xyz = clipPos.xyz * 0.5 + 0.5;  //Remap to [0.0,1.0]
+    clipPos.xyz /= clipPos.w;               //Perspective division to NDC
+    clipPos.xyz = clipPos.xyz * 0.5 + 0.5;  //Remap to Screen space [0.0,1.0]
 
     //Sample depth from world position
     float closestDepth = (u_view * texture(u_gbufferResult.m_positionTex, clipPos.xy) ).z;

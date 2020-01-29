@@ -70,17 +70,6 @@ void main()
 								, u_material.m_roughnessValue);
 	roughness = max(0.01, roughness);	//Somehow 0 roughness doesn't behave properly
 
-	//Specular Antialiasing to filter the roughness value
-	//https://twitter.com/longbool/status/1221773633263165440
-	//http://www.jp.square-enix.com/tech/library/pdf/ImprovedGeometricSpecularAA.pdf
-	float roughness2 = roughness * roughness;
-	vec3 dndu = dFdx(normal);
-	vec3 dndv = dFdy(normal);
-	float variance = 0.25 * (dot(dndu, dndu) + dot(dndv, dndv));
-	float kernelRoughness2 = min(2.0 * variance, 0.18);
-	float filteredRoughness2 = clamp(roughness2 + kernelRoughness2, 0.0, 1.0);
-	roughness = filteredRoughness2;
-
 	o_roughnessMetallic.r = roughness;
 	o_roughnessMetallic.g = max(texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
 								, u_material.m_metallicValue);

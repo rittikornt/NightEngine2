@@ -94,6 +94,9 @@ float CalculateDirectionShadow(vec4 fragLightSpacePos
 float CalculatePointShadow(int lightIndex, vec3 fragPos
 , vec3 lightPos, vec3 camPos);
 
+//Specular Antialiasing
+float GetFilteredRoughness(float roughness, vec3 worldNormal);
+
 void main()
 {
 	//Discard if normal is black
@@ -115,9 +118,9 @@ void main()
 	vec3 ViewDir = normalize(u_cameraInfo.m_position - fragPos);
 
 	//From GBuffer
-	float roughness = specularTex.r; //0.2;
+	float roughness = GetFilteredRoughness(specularTex.r, normal); //0.2;
 	float metallic = specularTex.g; //1.0;
-
+	
 	//Directional Light
 	vec3 DirLightDir = normalize(u_dirLightInfo.m_direction);
 	vec3 DirHalfway = normalize(ViewDir + DirLightDir);
@@ -414,4 +417,17 @@ vec3 CalculateIrradiance(vec3 ViewDir,vec3 LightDir, vec3 Halfway, vec3 Normal
 
 	//Irradiance (Lo)
 	return Fr * radiance * NdotL;
+}
+
+float GetFilteredRoughness(float roughness, vec3 worldNormal)
+{
+	//Specular Antialiasing to filter the roughness value
+	//https://twitter.com/longbool/status/1221773633263165440
+	//http://www.jp.square-enix.com/tech/library/pdf/ImprovedGeometricSpecularAA.pdf
+	float roughness2 = roughness * roughness;
+	vec3 dndu = dFdx(worldNormal);
+	vec3 dndv = dFdy(worldNormal);
+	float variance = 0.25 * (dot(dndu, dndu) + dot(dndv, dndv));
+	float kernelRoughness2 = min(2.0 * variance, 0.18);
+	return clamp(roughness2 + kernelRoughness2, 0.0, 1.0);
 }

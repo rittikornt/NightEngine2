@@ -4,6 +4,7 @@
   @brief Contain the Implementation of ResourceManager
 */
 #include "Core/Logger.hpp"
+#include "Core/Utility/Utility.hpp"
 
 #include "Core/Serialization/ResourceManager.hpp"
 #include "Core/Serialization/Serialization.hpp"
@@ -13,6 +14,9 @@
 
 #include "Graphic/Opengl/Model.hpp"
 #include "Graphic/Opengl/Material.hpp"
+
+#include <mutex>
+#include <future>
 
 namespace Core
 {
@@ -107,7 +111,9 @@ namespace Core
     return &(hashmap[key]);
   }
 
-  Graphic::Model* ResourceManager::LoadModelResource(const Container::String & filePath)
+  /////////////////////////////////////////////////////////////////
+
+  Graphic::Model* ResourceManager::LoadModelResource(const Container::String& filePath)
   {
     Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
 
@@ -124,10 +130,66 @@ namespace Core
       return &(it->second);
     }
 
-    //Generate new Model
-    Model newModel{ filePath };
-    hashmap.insert({ key, newModel });
+    Core::Utility::StopWatch stopWatch{ true };
+    {
+      //Generate new Model
+      Model newModel{ filePath };
+      hashmap.insert({ key, newModel });
+    }
+    stopWatch.Stop();
+    Debug::Log << Logger::MessageType::INFO 
+      << "Loaded Model: " << filePath << " [" << stopWatch.GetElapsedTimeMilli() << " ms]\n";
 
     return &(hashmap[key]);
+  }
+
+  static std::mutex g_modelsMutex;
+  static void LoadModels_Task(Container::String filePath, U64 key)
+  {
+    Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
+
+    //Load Mesh
+    Model newModel{ filePath, false };
+
+    std::lock_guard<std::mutex> guard(g_modelsMutex);
+    Debug::Log << Logger::MessageType::INFO
+      << "Loading Model: " << filePath << '\n';
+    hashmap.insert({ key, newModel });
+  }
+
+  void ResourceManager::PreloadModelsResourceAsync(const Container::Vector<Container::String>& filePaths)
+  {
+    Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
+    Container::Vector<std::future<void>> futures;
+
+    Debug::Log << Logger::MessageType::INFO
+      << "**************************************************************\n";
+    Core::Utility::StopWatch stopWatch{ true };
+    {
+      //Launch Async Tasks
+      for (auto filePath : filePaths)
+      {
+        //Convert to U64 Hash key
+        U64 key = Container::ConvertToHash(filePath.c_str(), filePath.size());
+
+        //Only load model that is unloaded
+        auto it = hashmap.find(key);
+        if (it == hashmap.end())
+        {
+          futures.push_back(std::async(std::launch::async, LoadModels_Task, filePath, key));
+        }
+      }
+
+      for (int i = 0; i < futures.size(); ++i)
+      {
+        futures[i].wait();
+      }
+    }
+    stopWatch.Stop();
+
+    Debug::Log << Logger::MessageType::INFO
+      << "Loaded Models: [" << stopWatch.GetElapsedTimeMilli() << " ms]\n";
+    Debug::Log << Logger::MessageType::INFO
+      << "**************************************************************\n";
   }
 }

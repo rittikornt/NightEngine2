@@ -35,5 +35,7 @@ namespace Core
 
     //! @brief Static Function for Load and Cache Model
     static Graphic::Model* LoadModelResource(const Container::String& filePath);
+    
+    static void PreloadModelsResourceAsync(const Container::Vector<Container::String>& filePaths);
   };
 }

@@ -20,7 +20,7 @@ namespace Graphic
       Model(void) = default;
 
       //! @brief Constructor for loading Model from path
-      Model(const std::string& path);
+      Model(const std::string& path, bool allowPrint = true);
 
       //! @brief Draw the Model
       void Draw(void);

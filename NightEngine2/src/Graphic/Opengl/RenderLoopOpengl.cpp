@@ -671,14 +671,29 @@ namespace Graphic
       , Texture::Channel::RGBA);
 
     //************************************************
+    // Preloading Models
+    //************************************************
+    {
+      std::vector<std::string> filePaths{ 
+        FileSystem::GetFilePath("Cube.obj", FileSystem::DirectoryType::Models), 
+        FileSystem::GetFilePath("Torus.obj", FileSystem::DirectoryType::Models),
+        FileSystem::GetFilePath("guts-berserker/guts.fbx", FileSystem::DirectoryType::Models),
+        FileSystem::GetFilePath("Quad.obj", FileSystem::DirectoryType::Models),
+        FileSystem::GetFilePath("Sphere.obj", FileSystem::DirectoryType::Models)};
+      ResourceManager::PreloadModelsResourceAsync(filePaths);
+    }
+
+    //************************************************
     // Setup Box, Model GameObjects
     //************************************************
-    std::vector<glm::mat4> modelMat;
-    for (int i = 0; i < 10; i++)
     {
-      modelMat.push_back(
-        Transform::CalculateModelMatrix(glm::vec3(i, 10.0f, 4.0f)
-          , glm::quat(), glm::vec3(1.0f)));
+      std::vector<glm::mat4> modelMat;
+      for (int i = 0; i < 10; i++)
+      {
+        modelMat.push_back(
+          Transform::CalculateModelMatrix(glm::vec3(i, 10.0f, 4.0f)
+            , glm::quat(), glm::vec3(1.0f)));
+      }
     }
 
     //Box instances

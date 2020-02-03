@@ -13,8 +13,14 @@ using namespace Core;
 
 namespace Graphic
 {
-  Model::Model(const std::string& path)
+  Model::Model(const std::string& path, bool allowPrint)
   {
+    if (allowPrint)
+    {
+      Debug::Log << Logger::MessageType::INFO
+        << "Loading Model: " << path << '\n';
+    }
+
     LoadModel(path);
   }
 
@@ -31,9 +37,6 @@ namespace Graphic
   //*****************************************
   void Model::LoadModel(const std::string& path)
   {
-    Debug::Log << Logger::MessageType::INFO
-      << "Loading Model: " << path << '\n';
-
     Assimp::Importer import;
     const aiScene* scene = import.ReadFile(path
     , aiProcess_Triangulate | aiProcess_FlipUVs

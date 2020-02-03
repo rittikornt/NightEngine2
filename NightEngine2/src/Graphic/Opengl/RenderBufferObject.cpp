@@ -13,14 +13,27 @@ using namespace Core;
 
 namespace Graphic
 {
+  static void ReleaseRBOID(GLuint shaderID)
+  {
+    //TODO: This delete need ref count too
+    glDeleteRenderbuffers(1, &shaderID);
+    DECREMENT_ALLOCATION(RenderBufferObject, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  REGISTER_DEALLOCATION_FUNC(RenderBufferObject, ReleaseRBOID)
+
+  /////////////////////////////////////////////////////////////////////////
+
   RenderBufferObject::~RenderBufferObject(void)
   {
-    if (m_id != (~0))
-    {
-      //TODO: This delete need ref count too
-      glDeleteRenderbuffers(1, &m_id);
-      DECREMENT_ALLOCATION(RenderBufferObject, m_id);
-    }
+    CHECK_LEAK(RenderBufferObject, m_id);
+    //if (m_id != (~0))
+    //{
+    //  //TODO: This delete need ref count too
+    //  glDeleteRenderbuffers(1, &m_id);
+    //  DECREMENT_ALLOCATION(RenderBufferObject, m_id);
+    //}
   }
 
   void RenderBufferObject::RenderBufferObject::Init(int width, int height

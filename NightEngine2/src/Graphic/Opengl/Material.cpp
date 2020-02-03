@@ -139,6 +139,8 @@ namespace Graphic
   Material* Material::LoadMaterial(const std::string& fileName)
   {
     Debug::Log << Logger::MessageType::INFO
+      << "***********************************\n";
+    Debug::Log << Logger::MessageType::INFO
       << "Loading Material: " << fileName << '\n';
 
     //Load the Material through ResourceManager
@@ -147,6 +149,8 @@ namespace Graphic
 
     Debug::Log << Logger::MessageType::INFO
       << "Loaded Material: " << fileName << '\n';
+    Debug::Log << Logger::MessageType::INFO
+      << "***********************************\n";
 
     return newMat;
   }

@@ -18,6 +18,17 @@ using namespace Core;
 
 namespace Graphic
 {
+  static void ReleaseCubemapID(GLuint shaderID)
+  {
+    glDeleteTextures(1, &shaderID);
+    DECREMENT_ALLOCATION(Cubemap, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  REGISTER_DEALLOCATION_FUNC(Cubemap, ReleaseCubemapID)
+
+  /////////////////////////////////////////////////////////////////////////
+
   const std::vector<float> cubemapVertices{
     // positions          
     -1.0f,  1.0f, -1.0f,
@@ -86,11 +97,12 @@ namespace Graphic
 
   Cubemap::~Cubemap(void)
   {
-    if(m_id != ~(0))
-    {
-      glDeleteTextures(1, &m_id);
-      DECREMENT_ALLOCATION(Cubemap, m_id);
-    }
+    CHECK_LEAK(Cubemap, m_id);
+    //if(m_id != ~(0))
+    //{
+    //  glDeleteTextures(1, &m_id);
+    //  DECREMENT_ALLOCATION(Cubemap, m_id);
+    //}
   }
 
   void Cubemap::Init(std::vector<std::string>& fileNames,const std::string& vertexShader

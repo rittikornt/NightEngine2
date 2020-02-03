@@ -13,13 +13,25 @@
 
 namespace Graphic
 {
+  static void ReleaseShaderID(GLuint shaderID)
+  {
+    glDeleteBuffers(1, &shaderID);
+    DECREMENT_ALLOCATION(UniformBufferObject, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  REGISTER_DEALLOCATION_FUNC(UniformBufferObject, ReleaseShaderID)
+
+  /////////////////////////////////////////////////////////////////////////
+
   UniformBufferObject::~UniformBufferObject(void)
   {
-    if (m_id != ~(0))
-    {
-      glDeleteBuffers(1, &m_id);
-      DECREMENT_ALLOCATION(UniformBufferObject, m_id);
-    }
+    CHECK_LEAK(UniformBufferObject, m_id);
+    //if (m_id != ~(0))
+    //{
+    //  glDeleteBuffers(1, &m_id);
+    //  DECREMENT_ALLOCATION(UniformBufferObject, m_id);
+    //}
   }
 
   void UniformBufferObject::Init(std::size_t size, unsigned bufferPointIndex)

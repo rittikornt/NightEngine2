@@ -11,6 +11,17 @@
 
 namespace Graphic
 {
+  static void ReleaseEBOID(GLuint shaderID)
+  {
+    glDeleteBuffers(1, &shaderID);
+    DECREMENT_ALLOCATION(ElementBufferObject, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  REGISTER_DEALLOCATION_FUNC(ElementBufferObject, ReleaseEBOID)
+
+  /////////////////////////////////////////////////////////////////////////
+
 	ElementBufferObject::DrawMethod ElementBufferObject::s_drawMode = ElementBufferObject::DrawMethod::FILL;
 
 	void ElementBufferObject::SetDrawMethod(DrawMethod mode)
@@ -21,19 +32,13 @@ namespace Graphic
 
 	ElementBufferObject::~ElementBufferObject()
 	{
-		if (!(m_objectID & (~0)))
-		{
-			glDeleteBuffers(1, &m_objectID);
-      DECREMENT_ALLOCATION(ElementBufferObject, m_objectID);
-		}
+    CHECK_LEAK(ElementBufferObject, m_objectID);
+		//if (!(m_objectID & (~0)))
+		//{
+		//	glDeleteBuffers(1, &m_objectID);
+    //  DECREMENT_ALLOCATION(ElementBufferObject, m_objectID);
+		//}
 	}
-
-  static void ReleaseEBOID(GLuint shaderID)
-  {
-    glDeleteBuffers(1, &shaderID);
-    DECREMENT_ALLOCATION(ElementBufferObject, shaderID);
-    CHECKGL_ERROR();
-  }
 
   void ElementBufferObject::ReleaseAllLoadedEBO(void)
   {

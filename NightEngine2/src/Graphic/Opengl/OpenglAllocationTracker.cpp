@@ -6,7 +6,6 @@
 #include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 #include "Core/Logger.hpp"
 
-#include <unordered_map>
 #include <string>
 
 using namespace Core;
@@ -55,13 +54,46 @@ namespace Graphic
     return it2 != it->second.end()? true: false;
   }
 
+  bool OpenglAllocationTracker::CheckLeak(const char* typeName, unsigned int id)
+  {
+    auto leak = Exist(typeName, id);
+    if (leak)
+    {
+      Debug::Log << Logger::MessageType::WARNING
+        << typeName << " Leak: " << id << '\n';
+    }
+    return leak;
+  }
+
   std::unordered_set<unsigned int>& OpenglAllocationTracker::GetAllocatedObjectID(const char* typeName)
   {
     auto it = s_allocationTracker.find(typeName);
     return it->second;
   }
 
-  void OpenglAllocationTracker::DeallocateAllObjects(const char * typeName, DeallcateFunc func)
+  void OpenglAllocationTracker::DeallocateAllLoadedObjects(void)
+  {
+    //TODO:
+    std::vector<std::string> typeNames;
+    typeNames.reserve(s_allocationTracker.size());
+
+    for (auto trackerPair : s_allocationTracker)
+    {
+      typeNames.emplace_back(trackerPair.first);
+    }
+
+    for (auto typeName : typeNames)
+    {
+      auto func = GLDeallocationFunctions::GetDeallocateFunc(typeName);
+
+      if (func != nullptr)
+      {
+        DeallocateAllObjects(typeName, func);
+      }
+    }
+  }
+
+  void OpenglAllocationTracker::DeallocateAllObjects(std::string typeName, DeallcateFunc func)
   {
     auto it = s_allocationTracker.find(typeName);
     if (it != s_allocationTracker.end())
@@ -107,5 +139,37 @@ namespace Graphic
       Debug::Log << "-" << pair.first << ": " << pair.second.size() << "\n";
     }
     Debug::Log << "*****************************************************\n";
+  }
+
+  ///////////////////////////////////////////////////
+
+  GLDeallocationFunctions::GLDeallocationFunctions(std::string typeName, DeallcateFunc func)
+  {
+    RegisterDeallocateFunc(typeName, func);
+  }
+
+  std::unordered_map<std::string, DeallcateFunc>& GLDeallocationFunctions::GetDataMap(void)
+  {
+    static std::unordered_map<std::string, DeallcateFunc> funcMap;
+    return funcMap;
+  }
+
+  void GLDeallocationFunctions::RegisterDeallocateFunc(std::string typeName, DeallcateFunc func)
+  {
+    auto& funcMap = GetDataMap();
+    funcMap.insert({ typeName, func });
+  }
+
+  DeallcateFunc GLDeallocationFunctions::GetDeallocateFunc(std::string typeName)
+  {
+    auto& funcMap = GetDataMap();
+    auto it = funcMap.find(typeName);
+    if (it != funcMap.end())
+    {
+      return it->second;
+    }
+
+    //ASSERT_MSG(false, "Trying access a deallocation function that's doesn't exist\n");
+    return nullptr;
   }
 } // Graphic

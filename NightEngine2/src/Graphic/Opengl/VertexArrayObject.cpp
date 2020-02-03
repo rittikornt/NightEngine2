@@ -15,32 +15,6 @@
 
 namespace Graphic
 {
-  VertexArrayObject::VertexArrayObject(BufferMode mode
-    , const Vertex* vertexArray, size_t vertexArraySize
-    , const unsigned* indexArray, size_t indexArraySize)
-  {
-    Init();
-    Build(mode, vertexArray, vertexArraySize
-      , indexArray, indexArraySize);
-  }
-
-  VertexArrayObject::~VertexArrayObject(void)
-	{
-		if (!(m_objectID & (~0)) 
-      && IS_ALLOCATED(VertexArrayObject, m_objectID))
-		{
-			glDeleteVertexArrays(1, &m_objectID);
-      DECREMENT_ALLOCATION(VertexArrayObject, m_objectID);
-		}
-
-    if (!(m_instanceBufferID & (~0)) 
-      && IS_ALLOCATED(VertexArrayObjectInstanceBuffer, m_instanceBufferID))
-    {
-      glDeleteBuffers(1, &m_instanceBufferID);
-      DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, m_instanceBufferID);
-    }
-	}
-
   static void ReleaseVAOID(GLuint shaderID)
   {
     glDeleteVertexArrays(1, &shaderID);
@@ -54,6 +28,39 @@ namespace Graphic
     DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, shaderID);
     CHECKGL_ERROR();
   }
+
+  REGISTER_DEALLOCATION_FUNC(VertexArrayObject, ReleaseVAOID)
+  REGISTER_DEALLOCATION_FUNC(VertexArrayObjectInstanceBuffer, ReleaseVAOIBID)
+
+  /////////////////////////////////////////////////////////////////////////
+
+  VertexArrayObject::VertexArrayObject(BufferMode mode
+    , const Vertex* vertexArray, size_t vertexArraySize
+    , const unsigned* indexArray, size_t indexArraySize)
+  {
+    Init();
+    Build(mode, vertexArray, vertexArraySize
+      , indexArray, indexArraySize);
+  }
+
+  VertexArrayObject::~VertexArrayObject(void)
+	{
+    CHECK_LEAK(VertexArrayObject, m_objectID);
+    CHECK_LEAK(VertexArrayObjectInstanceBuffer, m_instanceBufferID);
+		//if (!(m_objectID & (~0)) 
+    //  && IS_ALLOCATED(VertexArrayObject, m_objectID))
+		//{
+		//	glDeleteVertexArrays(1, &m_objectID);
+    //  DECREMENT_ALLOCATION(VertexArrayObject, m_objectID);
+		//}
+    //
+    //if (!(m_instanceBufferID & (~0)) 
+    //  && IS_ALLOCATED(VertexArrayObjectInstanceBuffer, m_instanceBufferID))
+    //{
+    //  glDeleteBuffers(1, &m_instanceBufferID);
+    //  DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, m_instanceBufferID);
+    //}
+	}
 
   void VertexArrayObject::ReleaseAllLoadedVAO(void)
   {

@@ -12,20 +12,25 @@
 
 namespace Graphic
 {
-  VertexBufferObject::~VertexBufferObject()
-  {
-		if (!(m_objectID & (~0)))
-		{
-			glDeleteBuffers(1, &m_objectID);
-      DECREMENT_ALLOCATION(VertexBufferObject, m_objectID);
-		}
-  }
-
   static void ReleaseVBOID(GLuint shaderID)
   {
     glDeleteBuffers(1, &shaderID);
     DECREMENT_ALLOCATION(VertexBufferObject, shaderID);
     CHECKGL_ERROR();
+  }
+
+  REGISTER_DEALLOCATION_FUNC(VertexBufferObject, ReleaseVBOID)
+
+  /////////////////////////////////////////////////////////////////////////
+
+  VertexBufferObject::~VertexBufferObject()
+  {
+    CHECK_LEAK(VertexBufferObject, m_objectID);
+		//if (!(m_objectID & (~0)))
+		//{
+		//	glDeleteBuffers(1, &m_objectID);
+    //  DECREMENT_ALLOCATION(VertexBufferObject, m_objectID);
+		//}
   }
 
   void VertexBufferObject::ReleaseAllLoadedVBO(void)

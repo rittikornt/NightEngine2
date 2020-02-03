@@ -21,6 +21,17 @@ using namespace Core;
 
 namespace Graphic
 {
+  static void ReleaseShaderID(GLuint shaderID)
+  {
+    glDeleteProgram(shaderID);
+    DECREMENT_ALLOCATION(Shader, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  REGISTER_DEALLOCATION_FUNC(Shader, ReleaseShaderID)
+
+  /////////////////////////////////////////////////////////////////////////
+
   Shader& Shader::operator=(const Shader& rhs)
   {
     m_programID = rhs.m_programID;
@@ -31,11 +42,12 @@ namespace Graphic
 
   Shader::~Shader()
   {
-    if (IS_ALLOCATED(Shader, m_programID))
-    {
-      Debug::Log << Logger::MessageType::WARNING
-        << "Shader Leak: " << m_programID << '\n';
-    }
+    CHECK_LEAK(Shader, m_programID);
+    //if (IS_ALLOCATED(Shader, m_programID))
+    //{
+    //  Debug::Log << Logger::MessageType::WARNING
+    //    << "Shader Leak: " << m_programID << '\n';
+    //}
   }
 
   void Shader::Create(void)
@@ -55,15 +67,6 @@ namespace Graphic
       DECREMENT_ALLOCATION(Shader, m_programID);
       //TODO: Unload the reference in the ResourceManager as well
     }
-  }
-
-  static void ReleaseShaderID(GLuint shaderID)
-  {
-    glDeleteProgram(shaderID);
-    DECREMENT_ALLOCATION(Shader, shaderID);
-    CHECKGL_ERROR();
-
-    //TODO: Unload the reference in the ResourceManager as well
   }
 
   void Shader::ReleaseAllLoadedShaders(void)

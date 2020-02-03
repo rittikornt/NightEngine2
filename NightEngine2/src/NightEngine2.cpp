@@ -109,12 +109,6 @@ namespace NightEngine2
         m_renderloop->Terminate();
         delete m_renderloop;
         m_renderloop = nullptr;
-
-        //At this point, there should be no leaking gl object
-        CHECKGL_ERROR();
-
-        Window::Terminate();
-        OpenglAllocationTracker::PrintAllocationState();
       }
       RenderDocManager::Terminate();
 
@@ -216,12 +210,6 @@ namespace NightEngine2
       m_renderloop->Terminate();
       delete m_renderloop;
       m_renderloop = nullptr;
-
-      //At this point, there should be no leaking gl object
-      CHECKGL_ERROR();
-
-      Window::Terminate();
-      OpenglAllocationTracker::PrintAllocationState();
     }
 
     //Uninitialize RenderDoc if it is attached

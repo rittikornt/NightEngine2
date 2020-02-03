@@ -22,6 +22,18 @@ using namespace Core;
 
 namespace Graphic
 {
+  static void ReleaseTextureID(GLuint shaderID)
+  {
+    glDeleteTextures(1, &shaderID);
+    CHECKGL_ERROR();
+
+    DECREMENT_ALLOCATION(Texture, shaderID);
+  }
+
+  REGISTER_DEALLOCATION_FUNC(Texture, ReleaseTextureID)
+
+  /////////////////////////////////////////////////////////////////////////
+
   Texture::Texture(const Texture& texture)
     : m_textureID(texture.m_textureID)
     , m_name(texture.m_name)
@@ -64,11 +76,12 @@ namespace Graphic
 
 	Texture::~Texture()
 	{
-    if (IS_ALLOCATED(Texture, m_textureID))
-    {
-      Debug::Log << Logger::MessageType::WARNING
-        << "Texture Leak: " << m_textureID << '\n';
-    }
+    CHECK_LEAK(Texture, m_textureID);
+    //if (IS_ALLOCATED(Texture, m_textureID))
+    //{
+    //  Debug::Log << Logger::MessageType::WARNING
+    //    << "Texture Leak: " << m_textureID << '\n';
+    //}
 	}
 
   void Texture::Release(void)
@@ -80,14 +93,6 @@ namespace Graphic
       CHECKGL_ERROR();
       DECREMENT_ALLOCATION(Texture, m_textureID);
     }
-  }
-
-  static void ReleaseTextureID(GLuint shaderID)
-  {
-    glDeleteTextures(1, &shaderID);
-    CHECKGL_ERROR();
-
-    DECREMENT_ALLOCATION(Texture, shaderID);
   }
 
   void Texture::ReleaseAllLoadedTextures(void)

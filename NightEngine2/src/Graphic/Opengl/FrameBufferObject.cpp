@@ -20,14 +20,26 @@ using namespace Core;
 
 namespace Graphic
 {
+  static void ReleaseFBOID(GLuint shaderID)
+  {
+    glDeleteFramebuffers(1, &shaderID);
+    DECREMENT_ALLOCATION(FrameBufferObject, shaderID);
+    CHECKGL_ERROR();
+  }
+
+  REGISTER_DEALLOCATION_FUNC(FrameBufferObject, ReleaseFBOID)
+
+  /////////////////////////////////////////////////////////////////////////
+
   FrameBufferObject::~FrameBufferObject(void)
   {
-    if (m_id != ~(0))
-    {
-      glDeleteFramebuffers(1, &m_id);
-      DECREMENT_ALLOCATION(FrameBufferObject, m_id);
-      CHECKGL_ERROR();
-    }
+    CHECK_LEAK(FrameBufferObject, m_id);
+    //if (m_id != ~(0))
+    //{
+    //  glDeleteFramebuffers(1, &m_id);
+    //  DECREMENT_ALLOCATION(FrameBufferObject, m_id);
+    //  CHECKGL_ERROR();
+    //}
   }
 
   void FrameBufferObject::Init(void)

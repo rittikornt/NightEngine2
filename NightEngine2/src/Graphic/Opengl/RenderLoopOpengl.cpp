@@ -919,19 +919,11 @@ namespace Graphic
     Editor::Terminate();
 #endif
 
-    Shader::ReleaseAllLoadedShaders();
-    Texture::ReleaseAllLoadedTextures();
-    ElementBufferObject::ReleaseAllLoadedEBO();
-    VertexArrayObject::ReleaseAllLoadedVAO();
-    VertexBufferObject::ReleaseAllLoadedVBO();
-
+    //Clean up all the loaded gl object and all the cached data in ResourceManager
+    OpenglAllocationTracker::DeallocateAllLoadedObjects();
     Core::ResourceManager::ClearAllData();
 
-    //TODO: Need to Cleanup all the Loaded Assets in ResourceManager
-
-    //TODO: we need to release everything here, so we can calls Window::Terminate here
-    // without having delete the RenderLoopOpengl first (to trigger all object destructor)
-
-    //Window::Terminate();
+    Window::Terminate();
+    OpenglAllocationTracker::PrintAllocationState();
   }
 } // Graphic

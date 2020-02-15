@@ -54,7 +54,7 @@ void main()
 
     //Remap to range [-1,1]
     normal = normalize(normal * 2.0 - 1.0);
-    normal.xy *= u_material.m_normalMultiplier;
+    normal.xz *= u_material.m_normalMultiplier;
 
     //Transform to world space
     normal = normalize(fs_in.ourTBNMatrix * normal);

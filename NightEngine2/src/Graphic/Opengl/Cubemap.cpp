@@ -165,12 +165,7 @@ namespace Graphic
     m_shader.AttachShaderFile(fragmentShader);
     m_shader.Link();
 
-    //Cubemap samplerCube to use TextureUnit0
-    m_shader.Bind();
-    {
-      m_shader.SetUniform("u_cubemap", 0);
-    }
-    m_shader.Unbind();
+    RefreshTextureUniforms();
 
     //Init VAO
     AttributePointerInfo info{ 1, std::vector<unsigned>{3}
@@ -227,12 +222,7 @@ namespace Graphic
     m_shader.AttachShaderFile(fragmentShader);
     m_shader.Link();
 
-    //Cubemap samplerCube to use TextureUnit0
-    m_shader.Bind();
-    {
-      m_shader.SetUniform("u_cubemap", 0);
-    }
-    m_shader.Unbind();
+    RefreshTextureUniforms();
 
     //Init VAO
     AttributePointerInfo info{ 1, std::vector<unsigned>{3}
@@ -325,6 +315,16 @@ namespace Graphic
     glDepthMask(GL_TRUE);
 
     CHECKGL_ERROR();
+  }
+
+  void Cubemap::RefreshTextureUniforms(void)
+  {
+    //Cubemap samplerCube to use TextureUnit0
+    m_shader.Bind();
+    {
+      m_shader.SetUniform("u_cubemap", 0);
+    }
+    m_shader.Unbind();
   }
 
   std::vector<std::string> Cubemap::GetCubemapFileNames(std::string name)

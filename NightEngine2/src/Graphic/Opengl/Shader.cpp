@@ -6,6 +6,7 @@
 // Local Headers
 #include "Graphic/Opengl/Shader.hpp"
 #include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+#include "Graphic/ShaderTracker.hpp"
 
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
@@ -29,6 +30,14 @@ namespace Graphic
   }
 
   REGISTER_DEALLOCATION_FUNC(Shader, ReleaseShaderID)
+  
+  struct ShaderHashFN 
+  {
+    size_t operator() (const Shader &shader) const 
+    {
+      return (size_t)(shader.GetProgramID());
+    }
+  };
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -43,11 +52,6 @@ namespace Graphic
   Shader::~Shader()
   {
     CHECK_LEAK(Shader, m_programID);
-    //if (IS_ALLOCATED(Shader, m_programID))
-    //{
-    //  Debug::Log << Logger::MessageType::WARNING
-    //    << "Shader Leak: " << m_programID << '\n';
-    //}
   }
 
   void Shader::Create(void)
@@ -55,6 +59,8 @@ namespace Graphic
     m_programID = glCreateProgram();
     INCREMENT_ALLOCATION(Shader, m_programID);
     m_filePath.reserve(2);
+
+    ShaderTracker::Add(*this);
   }
 
   void Shader::Release(void)
@@ -66,6 +72,8 @@ namespace Graphic
       CHECKGL_ERROR();
       DECREMENT_ALLOCATION(Shader, m_programID);
       //TODO: Unload the reference in the ResourceManager as well
+
+      ShaderTracker::Remove(*this);
     }
   }
 
@@ -121,78 +129,6 @@ namespace Graphic
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
-	/////////////////////////////////////////////////////////////////////////
-
-	void Shader::AttachShaderFile(const std::string& filename)
-	{
-    //TODO: Load Shader through ResourceManager and cache it
-    Debug::Log << Logger::MessageType::INFO 
-      << "Loading Shader: " << filename << '\n';
-
-		// Load GLSL Shader Source from File
-		std::string path = PROJECT_DIR_SOURCE_SHADER;
-    path += filename;
-		std::ifstream fd(path);
-		auto src = std::string(std::istreambuf_iterator<char>(fd),
-			(std::istreambuf_iterator<char>()));
-
-		GLint status;
-
-		// Create a Shader Object
-		const char * source = src.c_str();
-		auto shader = create_shader(filename);
-		glShaderSource(shader, 1, &source, nullptr);
-		glCompileShader(shader);
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-
-		// Display the Build Log on Error
-		if (status == false)
-		{
-			GLint length;
-			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
-			std::unique_ptr<char[]> buffer(new char[length]);
-			glGetShaderInfoLog(shader, length, nullptr, buffer.get());
-			
-			Debug::Log << Logger::MessageType::ERROR_MSG 
-        <<filename.c_str() << '\n' << buffer.get();
-      ASSERT_TRUE(false);
-			//fprintf(stderr, "%s\n%s", filename.c_str(), buffer.get());
-		}
-
-		// Attach the Shader and Free Allocated Memory
-		glAttachShader(m_programID, shader);
-		glDeleteShader(shader);
-
-    CHECKGL_ERROR();
-
-    m_filePath.push_back(path);
-	}
-
-	void Shader::Link() const
-	{
-		GLint status;
-
-		glLinkProgram(m_programID);
-		glGetProgramiv(m_programID, GL_LINK_STATUS, &status);
-
-		//Check for Link Error
-		if (!status)
-		{
-			GLint length;
-			glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &length);
-			std::unique_ptr<char[]> buffer(new char[length]);
-			glGetProgramInfoLog(m_programID, length, nullptr, buffer.get());
-
-			Debug::Log << Logger::MessageType::ERROR_MSG 
-        << buffer.get();
-      ASSERT_TRUE(false);
-			//fprintf(stderr, "%s", buffer.get());
-		}
-		ASSERT_TRUE(status == true);
-
-    CHECKGL_ERROR();
-	}
-
   void Shader::SetUniformBlockBindingPoint(const std::string& uniformBlockName, unsigned bufferPointIndex)
   {
     unsigned int uniformBlockIndex = glGetUniformBlockIndex(m_programID, uniformBlockName.c_str());
@@ -202,23 +138,208 @@ namespace Graphic
         << "Trying to retrieve invalid Uniform Block Index\n";
       ASSERT_TRUE(false);
     }
-    
+
     glUniformBlockBinding(m_programID, uniformBlockIndex, bufferPointIndex);
   }
 
 	/////////////////////////////////////////////////////////////////////////
 
-	GLuint Shader::create_shader(std::string const & filename)
+  bool Shader::AttachShaderFile(const std::string& filename)
+	{
+    //TODO: Load Shader through ResourceManager and cache it
+    Debug::Log << Logger::MessageType::INFO 
+      << "Loading Shader: " << filename << '\n';
+
+		// Load GLSL Shader Source from File
+    std::string path = PROJECT_DIR_SOURCE_SHADER + filename;
+    m_filePath.emplace_back(path);
+		auto srcCodeStr = LoadShaderSourceCode(path);
+
+		// Create a Shader Object
+		auto shaderID = CreateShaderObject(filename);
+    bool success = CompileShader(shaderID, srcCodeStr.c_str());
+    ASSERT_TRUE(success);
+
+		// Attach the Shader and Free Allocated Memory
+    if (success)
+    {
+  		glAttachShader(m_programID, shaderID);
+    }
+		glDeleteShader(shaderID);
+
+    CHECKGL_ERROR();
+
+    return success;
+	}
+
+  bool Shader::AttachShaderFileFromPath(const std::string& filePath)
+  {
+    //TODO: Load Shader through ResourceManager and cache it
+    Debug::Log << Logger::MessageType::INFO
+      << "Loading Shader: " << filePath << '\n';
+
+    // Load GLSL Shader Source from File
+    m_filePath.emplace_back(filePath);
+    auto srcCodeStr = LoadShaderSourceCode(filePath);
+
+    // Create a Shader Object
+    auto shaderID = CreateShaderObject(filePath);
+    bool success = CompileShader(shaderID, srcCodeStr.c_str());
+
+    // Attach the Shader and Free Allocated Memory
+    if (success)
+    {
+      glAttachShader(m_programID, shaderID);
+    }
+    glDeleteShader(shaderID);
+
+    CHECKGL_ERROR();
+
+    return success;
+  }
+
+  bool Shader::Link() const
+	{
+		glLinkProgram(m_programID);
+
+		//Check for Link Error
+    GLint status;
+    glGetProgramiv(m_programID, GL_LINK_STATUS, &status);
+		if (!status)
+		{
+			GLint length;
+			glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &length);
+			std::unique_ptr<char[]> buffer(new char[length]);
+			glGetProgramInfoLog(m_programID, length, nullptr, buffer.get());
+
+			Debug::Log << Logger::MessageType::ERROR_MSG 
+        << buffer.get();
+		}
+		ASSERT_TRUE(status == true);
+    CHECKGL_ERROR();
+
+    return status;
+	}
+
+  bool Shader::LinkNoAssert() const
+  {
+    glLinkProgram(m_programID);
+
+    //Check for Link Error
+    GLint status;
+    glGetProgramiv(m_programID, GL_LINK_STATUS, &status);
+    if (!status)
+    {
+      GLint length;
+      glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &length);
+      std::unique_ptr<char[]> buffer(new char[length]);
+      glGetProgramInfoLog(m_programID, length, nullptr, buffer.get());
+
+      Debug::Log << Logger::MessageType::ERROR_MSG
+        << buffer.get();
+    }
+    CHECKGL_ERROR();
+
+    return status;
+  }
+
+  void Shader::RecompileShader(void)
+  {
+    if (IS_ALLOCATED(Shader, m_programID))
+    {
+      Debug::Log << Logger::MessageType::INFO
+        << "**********************************\n";
+      Debug::Log << Logger::MessageType::INFO
+        << "RecompileShader: " << m_programID << '\n';
+
+      // Create a new temp Shader here
+      // Do all of this again without Asseting, its okay to fail compiling
+      Shader tempShader;
+      tempShader.Create();
+
+      //Attach Shader to the program and link the program
+      bool success = true;
+      for (auto path : m_filePath)
+      {
+        success &= tempShader.AttachShaderFileFromPath(path);
+      }
+      success &= tempShader.LinkNoAssert();
+
+      //If Compiled and linked successfully
+      if (success)
+      {
+        this->Release();
+        *this = tempShader;
+
+        ShaderTracker::Remove(tempShader);
+        ShaderTracker::Add(*this);
+      }
+      else
+      {
+        Debug::Log << Logger::MessageType::ERROR_MSG
+          << "Shader::RecompileShader: Failed [" << m_programID << "]\n";
+      }
+      Debug::Log << Logger::MessageType::INFO
+        << "**********************************\n";
+    }
+  }
+
+	/////////////////////////////////////////////////////////////////////////
+
+	GLuint Shader::CreateShaderObject(const std::string const& filename)
 	{
 		auto index = filename.rfind(".");
 		auto ext = filename.substr(index + 1);
-		if (ext == "comp") return glCreateShader(GL_COMPUTE_SHADER);
-		else if (ext == "frag") return glCreateShader(GL_FRAGMENT_SHADER);
-		else if (ext == "geom") return glCreateShader(GL_GEOMETRY_SHADER);
-		else if (ext == "vert") return glCreateShader(GL_VERTEX_SHADER);
+    if (ext == "comp")
+    {
+      return glCreateShader(GL_COMPUTE_SHADER);
+    }
+    else if (ext == "frag")
+    {
+      return glCreateShader(GL_FRAGMENT_SHADER);
+    }
+    else if (ext == "geom")
+    {
+      return glCreateShader(GL_GEOMETRY_SHADER);
+    }
+    else if (ext == "vert")
+    {
+      return glCreateShader(GL_VERTEX_SHADER);
+    }
 		
 		return false;
 	}
 
+  std::string Shader::LoadShaderSourceCode(const std::string& filePath)
+  {
+    std::ifstream fd(filePath);
+    std::string sourceCode = std::string(std::istreambuf_iterator<char>(fd),
+      (std::istreambuf_iterator<char>()));
+
+    //TODO: some preprocessing shader code here before returning
+    return sourceCode;
+  }
+
+  bool Shader::CompileShader(GLuint shaderID, const char* sourceCode)
+  {
+    glShaderSource(shaderID, 1, &sourceCode, nullptr);
+    glCompileShader(shaderID);
+
+    // Display the Build Log on Error
+    GLint status;
+    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &status);
+    if (status == false)
+    {
+      GLint length;
+      glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &length);
+      std::unique_ptr<char[]> buffer(new char[length]);
+      glGetShaderInfoLog(shaderID, length, nullptr, buffer.get());
+
+      Debug::Log << Logger::MessageType::ERROR_MSG
+        << m_filePath[m_filePath.size()-1].c_str() << '\n' << buffer.get();
+    }
+
+    return status;
+  }
 } // Graphic
 

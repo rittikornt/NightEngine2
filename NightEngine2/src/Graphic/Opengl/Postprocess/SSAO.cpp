@@ -41,18 +41,7 @@ namespace Graphic
       m_simpleBlur.Link();
 
       //Set Uniform
-      m_ssaoShader.Bind();
-      {
-        m_ssaoShader.SetUniform("u_gbufferResult.m_positionTex", 0);
-        m_ssaoShader.SetUniform("u_gbufferResult.m_normalTex", 1);
-        m_ssaoShader.SetUniform("u_noiseTexture", 2);
-      }
-      m_ssaoShader.Unbind();
-      m_simpleBlur.Bind();
-      {
-        m_simpleBlur.SetUniform("u_screenTexture", 0);
-      }
-      m_simpleBlur.Unbind();
+      RefreshTextureUniforms();
 
       //Sample kernel
       std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
@@ -153,6 +142,24 @@ namespace Graphic
         glClear(GL_COLOR_BUFFER_BIT);
       }
       m_fbo.Unbind();
+    }
+
+    void SSAO::RefreshTextureUniforms(void)
+    {
+      //Set Uniform
+      m_ssaoShader.Bind();
+      {
+        m_ssaoShader.SetUniform("u_gbufferResult.m_positionTex", 0);
+        m_ssaoShader.SetUniform("u_gbufferResult.m_normalTex", 1);
+        m_ssaoShader.SetUniform("u_noiseTexture", 2);
+      }
+      m_ssaoShader.Unbind();
+
+      m_simpleBlur.Bind();
+      {
+        m_simpleBlur.SetUniform("u_screenTexture", 0);
+      }
+      m_simpleBlur.Unbind();
     }
   }
 }

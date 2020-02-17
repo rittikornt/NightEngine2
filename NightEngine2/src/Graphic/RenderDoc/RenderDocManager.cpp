@@ -104,6 +104,8 @@ namespace Graphic
       {
         auto result = FreeLibrary(g_renderDocDLL);;
       }
+
+      g_attached = false;
     }
 
     bool IsRenderDocAttached()

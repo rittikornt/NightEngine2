@@ -53,27 +53,7 @@ namespace Graphic
       m_bloomShader.Link();
       
       //Set Uniform
-      m_thresholdShader.Bind();
-      {
-        m_thresholdShader.SetUniform("u_screenTexture", 0);
-      }
-      m_thresholdShader.Unbind();
-
-      m_blurShader.Bind();
-      {
-        m_blurShader.SetUniform("u_screenTexture", 0);
-      }
-      m_blurShader.Unbind();
-
-      m_bloomShader.Bind();
-      {
-        m_bloomShader.SetUniform("u_screenTexture[0]", 0);
-        m_bloomShader.SetUniform("u_screenTexture[1]", 1);
-        m_bloomShader.SetUniform("u_screenTexture[2]", 2);
-        m_bloomShader.SetUniform("u_screenTexture[3]", 3);
-        m_bloomShader.SetUniform("u_screenTexture[4]", 4);
-      }
-      m_bloomShader.Unbind();
+      RefreshTextureUniforms();
 
       m_blurIteration = 6;
       m_bloomThreshold = 6.0f;
@@ -192,6 +172,31 @@ namespace Graphic
         glClear(GL_COLOR_BUFFER_BIT);
       }
       m_bloomFbo.Unbind();
+    }
+
+    void Bloom::RefreshTextureUniforms(void)
+    {
+      m_thresholdShader.Bind();
+      {
+        m_thresholdShader.SetUniform("u_screenTexture", 0);
+      }
+      m_thresholdShader.Unbind();
+
+      m_blurShader.Bind();
+      {
+        m_blurShader.SetUniform("u_screenTexture", 0);
+      }
+      m_blurShader.Unbind();
+
+      m_bloomShader.Bind();
+      {
+        m_bloomShader.SetUniform("u_screenTexture[0]", 0);
+        m_bloomShader.SetUniform("u_screenTexture[1]", 1);
+        m_bloomShader.SetUniform("u_screenTexture[2]", 2);
+        m_bloomShader.SetUniform("u_screenTexture[3]", 3);
+        m_bloomShader.SetUniform("u_screenTexture[4]", 4);
+      }
+      m_bloomShader.Unbind();
     }
   }
 }

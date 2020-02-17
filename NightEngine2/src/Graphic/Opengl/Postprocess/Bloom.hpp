@@ -49,6 +49,9 @@ namespace Graphic
 
       //! @brief Clear Color on fbo texture
       void Clear(void);
+
+      //! @brief Refresh Texture Uniforms binding unit
+      void RefreshTextureUniforms(void);
     };
   }
 }

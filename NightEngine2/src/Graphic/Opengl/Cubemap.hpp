@@ -57,6 +57,9 @@ namespace Graphic
       //! @brief Get Shader of this Cubemap
       Shader& GetShader(void){return m_shader;}
 
+      //! @brief Refresh Texture Uniforms binding unit
+      void RefreshTextureUniforms(void);
+
       //! @brief Get cubemap filenames
       static std::vector<std::string> GetCubemapFileNames(std::string name);
     private:

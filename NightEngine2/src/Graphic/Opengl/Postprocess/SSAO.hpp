@@ -51,8 +51,11 @@ namespace Graphic
       //! @brief Clear Color on fbo texture
       void Clear(void);
 
+      //! @brief Refresh states
+      void RefreshTextureUniforms(void);
+
       //! @brief Lerp
-      float Lerp(float a, float b, float f)
+      inline float Lerp(float a, float b, float f)
       {
         return a + f * (b - a);
       }

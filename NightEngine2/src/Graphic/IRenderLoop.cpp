@@ -17,4 +17,8 @@ namespace Graphic
 	{
 	}
 
+  void IRenderLoop::OnRecompiledShader(void)
+  {
+  }
+
 } // Graphic

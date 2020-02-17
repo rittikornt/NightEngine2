@@ -34,6 +34,9 @@ namespace Graphic
       //! @brief Apply FXAA to the screen directly
       void ApplyToScreen(VertexArrayObject& screenQuad
         , Texture& screenTexture);
+
+      //! @brief Refresh Texture Uniforms binding unit
+      void RefreshTextureUniforms(void);
     };
   }
 }

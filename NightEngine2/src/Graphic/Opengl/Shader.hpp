@@ -20,7 +20,6 @@
 // Standard Headers
 #include <string>
 #include <vector>
-#include <unordered_set>
 
 namespace Graphic
 {
@@ -53,17 +52,23 @@ namespace Graphic
 		void		Unbind(void) const;
 
     //! @brief Attach shader file
-		void		AttachShaderFile(const std::string& filename);
+		bool		AttachShaderFile(const std::string& filename);
+
+    //! @brief Attach shader file
+    bool		AttachShaderFileFromPath(const std::string& filePath);
 
     //! @brief Link the shader
-    void		Link() const;
+    bool		Link() const;
+
+    //! @brief Link the shader
+    bool		LinkNoAssert() const;
 
     //! @brief Get Shader Program ID
 		inline GLuint  GetProgramID() const { return m_programID; }
 
-    //! @brief Set the uniform block binding point
-    void    SetUniformBlockBindingPoint(const std::string& uniformBlockName, unsigned bufferPointIndex);
-    
+    //! @brief Recompile this shader based on the filePath
+    void    RecompileShader(void);
+
     //**************************************
     //  SetUniform Overloads
     //**************************************
@@ -74,6 +79,9 @@ namespace Graphic
 		static void	SetUniform(unsigned int location, const glm::vec3& value);
 		static void	SetUniform(unsigned int location, const glm::vec4& value);
 		static void	SetUniform(unsigned int location, glm::mat4 const & matrix);
+
+    //! @brief Set the uniform block binding point
+    void    SetUniformBlockBindingPoint(const std::string& uniformBlockName, unsigned bufferPointIndex);
 
     //! @brief Set Uniform Function
     template<typename T> 
@@ -102,15 +110,16 @@ namespace Graphic
     }
 
 	private:
-		GLuint	create_shader(std::string const & filename);
+		GLuint	CreateShaderObject(const std::string const & filename);
+    std::string LoadShaderSourceCode(const std::string& filePath);
+    bool CompileShader(GLuint shaderID, const char* sourceCode);
 
 		// Private Member Variables
 		GLuint m_programID;
     std::vector<std::string> m_filePath;  //Save shader path to be serialized
-    
-    static std::unordered_set<GLuint> s_loadedShaders;
 	};
 
+  //! @brief Two Shader are the same if they have the same programID
   inline bool operator== (Shader const& lhs, Shader const& rhs)
   {
     return (lhs.GetProgramID() == rhs.GetProgramID());

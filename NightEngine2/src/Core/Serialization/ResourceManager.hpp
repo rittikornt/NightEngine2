@@ -25,7 +25,10 @@ namespace Core
 
     //! @brief Static Function for Load and Cache Material File
     static Graphic::Material* LoadMaterialResource(const Container::String& fileName);
-    
+
+    //! @brief Static Function refreshing material texture binding unit
+    static void RefreshMaterialTextureUniforms();
+
     //! @brief Static Function for Load and Cache Texture
     static Graphic::Texture* LoadTextureResource(const Container::String& filePath
       , Graphic::Texture::Channel channel = Graphic::Texture::Channel::RGB

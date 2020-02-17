@@ -20,6 +20,7 @@ namespace Graphic
       m_fxaaShader.AttachShaderFile("Postprocess/fxaa.frag");
       m_fxaaShader.Link();
 
+      RefreshTextureUniforms();
       m_resolution = glm::vec2(width, height);
     }
 
@@ -31,8 +32,6 @@ namespace Graphic
         m_fxaaShader.Bind();
         {
           m_fxaaShader.SetUniform("u_resolution", m_resolution);
-          m_fxaaShader.SetUniform("u_screenTexture", 0);
-
           screenTexture.BindToTextureUnit(0);
 
           //Draw Quad
@@ -48,12 +47,19 @@ namespace Graphic
       m_fxaaShader.Bind();
       {
         m_fxaaShader.SetUniform("u_resolution", m_resolution);
-        m_fxaaShader.SetUniform("u_screenTexture", 0);
-
         screenTexture.BindToTextureUnit(0);
 
         //Draw Quad
         screenQuad.Draw();
+      }
+      m_fxaaShader.Unbind();
+    }
+
+    void FXAA::RefreshTextureUniforms(void)
+    {
+      m_fxaaShader.Bind();
+      {
+        m_fxaaShader.SetUniform("u_screenTexture", 0);
       }
       m_fxaaShader.Unbind();
     }

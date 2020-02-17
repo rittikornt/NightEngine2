@@ -39,7 +39,8 @@ namespace Graphic
     virtual void Render(float dt) override;
 
     virtual void Terminate(void) override;
-
+    
+    virtual void OnRecompiledShader(void) override;
   private:
     void Render(void);
 

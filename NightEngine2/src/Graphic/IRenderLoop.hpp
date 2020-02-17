@@ -18,6 +18,8 @@ namespace Graphic
     virtual void Render(float dt) = 0;
 
     virtual void Terminate(void);
+
+    virtual void OnRecompiledShader(void);
   };
 } // Graphic
 

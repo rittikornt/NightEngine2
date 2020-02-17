@@ -13,6 +13,14 @@ namespace Graphic
 namespace NightEngine2
 {
   class GameTime;
+  
+  enum class PostRenderEngineEvent
+  {
+    RestartWindow = 0,
+    AttachRenderDoc,
+    RecompileShader
+  };
+
   class Engine
   {
   public:
@@ -25,7 +33,7 @@ namespace NightEngine2
 
     void MainLoop(void);
 
-    void ReInitRenderLoop(bool shouldAttachRenderDoc);
+    void SendPostRenderEvent(PostRenderEngineEvent event);
 
     static Engine* GetInstance()
     {
@@ -40,7 +48,9 @@ namespace NightEngine2
     void ReInitRenderLoop_Internal(void);
   private:
     static Engine* s_instance;
-    bool m_reinitRenderLoop = false;
+    bool m_triggerPostRenderEvent = false;
+    PostRenderEngineEvent m_event;
+
     bool m_shouldAttachRenderDoc = false;
 
     GameTime*   m_gameTime = nullptr;

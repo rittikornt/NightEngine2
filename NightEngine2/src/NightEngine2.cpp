@@ -26,6 +26,7 @@
 #include "Graphic/Opengl/RenderLoopOpengl.hpp"
 #include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 #include "Graphic/Opengl/Window.hpp"
+#include "Graphic/ShaderTracker.hpp"
 
 #include "Graphic/RenderDoc/RenderDocManager.hpp"
 
@@ -159,20 +160,35 @@ namespace NightEngine2
       }
 
       //Defer the reinitialization to at the end of the frame
-      if (m_reinitRenderLoop)
+      if (m_triggerPostRenderEvent)
       {
-        m_reinitRenderLoop = false;
-        ReInitRenderLoop_Internal();
+        m_triggerPostRenderEvent = false;
+
+        switch (m_event)
+        {
+        case NightEngine2::PostRenderEngineEvent::RestartWindow:
+          m_shouldAttachRenderDoc = false;
+          ReInitRenderLoop_Internal();
+          break;
+        case NightEngine2::PostRenderEngineEvent::AttachRenderDoc:
+          m_shouldAttachRenderDoc = true;
+          ReInitRenderLoop_Internal();
+          break;
+        case NightEngine2::PostRenderEngineEvent::RecompileShader:
+          ShaderTracker::RecompileAllShaders();
+          m_renderloop->OnRecompiledShader();
+          break;
+        }
       }
     }
   }
 
   ///////////////////////////////////////////////////////
 
-  void Engine::ReInitRenderLoop(bool shouldAttachRenderDoc)
+  void Engine::SendPostRenderEvent(PostRenderEngineEvent event)
   {
-    m_reinitRenderLoop = true;
-    m_shouldAttachRenderDoc = shouldAttachRenderDoc;
+    m_triggerPostRenderEvent = true;
+    m_event = event;
   }
 
   void Engine::FixedUpdate(float dt)

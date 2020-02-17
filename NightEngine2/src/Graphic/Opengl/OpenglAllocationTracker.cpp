@@ -6,6 +6,8 @@
 #include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 #include "Core/Logger.hpp"
 
+#include "Graphic/Opengl/Shader.hpp"
+
 #include <string>
 
 using namespace Core;

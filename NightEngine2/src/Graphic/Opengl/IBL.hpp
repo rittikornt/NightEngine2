@@ -21,7 +21,7 @@ namespace Graphic
   {
     enum class CubemapType
     {
-      NORMAL = 0,
+      SKYBOX = 0,
       IRRADIANCE, //Diffuse
       PREFILTERED //Specular
     };
@@ -64,6 +64,9 @@ namespace Graphic
     void BakeBRDFLUT(glm::ivec2 resolution, VertexArrayObject& screenVAO);
 
     //! brief Draw cubemap
-    void DrawCubemap(CubemapType type, CameraObject camera);
+    void DrawCubemap(CubemapType type, CameraObject& camera);
+
+    //! @brief Refresh states
+    void RefreshTextureUniforms(CameraObject& camera);
   };
 }

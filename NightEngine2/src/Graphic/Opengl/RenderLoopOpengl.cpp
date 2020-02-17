@@ -15,6 +15,7 @@
 #include "Graphic/Opengl/Model.hpp"
 #include "Graphic/Opengl/Light.hpp"
 #include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+#include "Graphic/ShaderTracker.hpp"
 
 //GameObject
 #include "Core/EC/Components/MeshRenderer.hpp"
@@ -78,7 +79,7 @@ namespace Graphic
   Handle<GameObject>   g_modelGO2;
 
   //Camera
-  CameraObject g_cam{ CameraObject::CameraType::PERSPECTIVE
+  CameraObject g_camera{ CameraObject::CameraType::PERSPECTIVE
     ,103.0f };
 
   //Light
@@ -111,50 +112,50 @@ namespace Graphic
       }
       if (Input::GetKeyHold(KeyCode::KEY_W))
       {
-        g_cam.Move(glm::vec3(0.0f, 0.0f, moveSpeed *dt));
+        g_camera.Move(glm::vec3(0.0f, 0.0f, moveSpeed *dt));
       }
       if (Input::GetKeyHold(KeyCode::KEY_S))
       {
-        g_cam.Move(glm::vec3(0.0f, 0.0f, -moveSpeed * dt));
+        g_camera.Move(glm::vec3(0.0f, 0.0f, -moveSpeed * dt));
       }
       if (Input::GetKeyHold(KeyCode::KEY_D))
       {
-        g_cam.Move(glm::vec3(moveSpeed*dt, 0.0f, 0.0f));
+        g_camera.Move(glm::vec3(moveSpeed*dt, 0.0f, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_A))
       {
-        g_cam.Move(glm::vec3(-moveSpeed * dt, 0.0f, 0.0f));
+        g_camera.Move(glm::vec3(-moveSpeed * dt, 0.0f, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_Q))
       {
-        g_cam.Move(glm::vec3(0.0f, -moveSpeed * dt, 0.0f));
+        g_camera.Move(glm::vec3(0.0f, -moveSpeed * dt, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_E))
       {
-        g_cam.Move(glm::vec3(0.0f, moveSpeed * dt, 0.0f));
+        g_camera.Move(glm::vec3(0.0f, moveSpeed * dt, 0.0f));
       }
 
       if (Input::GetKeyHold(KeyCode::KEY_LEFT))
       {
-        g_cam.Rotate(glm::vec3(0.0f, -rotateSpeed * dt, 0.0f));
+        g_camera.Rotate(glm::vec3(0.0f, -rotateSpeed * dt, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_RIGHT))
       {
-        g_cam.Rotate(glm::vec3(0.0f, rotateSpeed * dt, 0.0f));
+        g_camera.Rotate(glm::vec3(0.0f, rotateSpeed * dt, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_UP))
       {
-        g_cam.Rotate(glm::vec3(rotateSpeed * dt, 0.0f, 0.0f));
+        g_camera.Rotate(glm::vec3(rotateSpeed * dt, 0.0f, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_DOWN))
       {
-        g_cam.Rotate(glm::vec3(-rotateSpeed * dt, 0.0f, 0.0f));
+        g_camera.Rotate(glm::vec3(-rotateSpeed * dt, 0.0f, 0.0f));
       }
 
       glm::vec2 offset = Input::GetMouseOffset();
       float pitch = -offset.y * mouseSpeed * dt;
       float yaw = offset.x * mouseSpeed * dt;
-      g_cam.Rotate(glm::vec3(pitch
+      g_camera.Rotate(glm::vec3(pitch
         , yaw, 0.0f));
     }
   }
@@ -204,7 +205,7 @@ namespace Graphic
     //Shader and Matrices
     auto lightComponent = g_dirLight->GetComponent("Light");
     auto& lightSpaceMatrix = lightComponent->Get<Light>()
-      ->CalculateLightSpaceMatrix(g_cam, 10.0f, 0.01f, 100.0f);
+      ->CalculateLightSpaceMatrix(g_camera, 10.0f, 0.01f, 100.0f);
 
     //Draw pass to FBO
     g_depthfbo.Bind();
@@ -229,7 +230,7 @@ namespace Graphic
     // Depth FBO Pass for point shadow
     //*************************************************
     glViewport(0, 0, g_shadowWidth, g_shadowWidth);
-    const float farPlane = g_cam.m_far;
+    const float farPlane = g_camera.m_far;
     for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
     {
       //Shader and Matrices
@@ -318,7 +319,7 @@ namespace Graphic
         m_gbuffer.BindTextures();
 
         //Camera Position
-        g_cam.ApplyCameraInfo(shader);
+        g_camera.ApplyCameraInfo(shader);
 
         //Apply Light information to the Shader
         ApplyLight(shader);
@@ -329,7 +330,7 @@ namespace Graphic
       g_lightingMaterial.Unbind();
 
       //Draw Cubemap
-      g_ibl.DrawCubemap(IBL::CubemapType::NORMAL, g_cam);
+      g_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
 
     }
     m_sceneFbo.Unbind();
@@ -354,7 +355,7 @@ namespace Graphic
         //, g_sceneTexture, g_sceneFbo);
 
       //SSAO
-      g_ssaoPP.Apply(g_screenVAO, g_cam, m_gbuffer);
+      g_ssaoPP.Apply(g_screenVAO, g_camera, m_gbuffer);
 
       //Bloom
       g_bloomPP.Apply(g_screenVAO, m_sceneTexture);
@@ -372,21 +373,21 @@ namespace Graphic
     glDisable(GL_DEPTH_TEST);
 
     //Debugging View
-    static size_t gBufferIndex = 0;
-    static bool debugDefered = false;
-    static bool showLight = true;
+    static size_t g_bufferIndex = 0;
+    static bool g_debugDeferred = false;
+    static bool g_showLight = true;
     if (Input::GetKeyDown(Input::KeyCode::KEY_0))
     {
-      gBufferIndex = (gBufferIndex + 1) %
+      g_bufferIndex = (g_bufferIndex + 1) %
         static_cast<unsigned>(GBufferTarget::Count);
     }
     if (Input::GetKeyDown(Input::KeyCode::KEY_9))
     {
-      debugDefered = !debugDefered;
+      g_debugDeferred = !g_debugDeferred;
     }
     if (Input::GetKeyDown(Input::KeyCode::KEY_7))
     {
-      showLight = !showLight;
+      g_showLight = !g_showLight;
     }
 
     //Draw Screen
@@ -401,10 +402,10 @@ namespace Graphic
         shader.SetUniform("u_exposure", 1.0f);
 
         //Scene Texture
-        if (debugDefered)
+        if (g_debugDeferred)
         {
           shader.SetUniform("u_bloomTexture", 0);
-          m_gbuffer.GetTexture(gBufferIndex).BindToTextureUnit(0);
+          m_gbuffer.GetTexture(g_bufferIndex).BindToTextureUnit(0);
         }
         else
         {
@@ -421,12 +422,12 @@ namespace Graphic
       //*************************************************
       // Forward Rendering afterward
       //*************************************************
-      if (showLight)
+      if (g_showLight)
       {
         glEnable(GL_DEPTH_TEST);
         Texture::SetBlendMode(true);
         //Draw Light Icons Billboard
-        g_cam.ApplyViewMatrix(g_billboardMaterial.GetShader());
+        g_camera.ApplyViewMatrix(g_billboardMaterial.GetShader());
         g_billboardMaterial.Bind(false);
         {
           Shader& shader = g_billboardMaterial.GetShader();
@@ -444,7 +445,7 @@ namespace Graphic
       // Physics Debug Draw
       //*************************************************
       glClear(GL_DEPTH_BUFFER_BIT);
-      Physics::PhysicsScene::GetPhysicsScene(0)->DebugDraw(g_cam);
+      Physics::PhysicsScene::GetPhysicsScene(0)->DebugDraw(g_camera);
     }
     m_sceneFbo.Unbind();
 
@@ -474,10 +475,10 @@ namespace Graphic
   {
     //Update View matrix to Shader
     g_uniformBufferObject.FillBuffer(0, sizeof(glm::mat4)
-      , glm::value_ptr(g_cam.GetViewMatix()));
+      , glm::value_ptr(g_camera.GetViewMatix()));
 
-    //g_cam.ApplyViewMatrix(g_defaultMaterial.GetShader());
-    g_cam.ApplyViewMatrix(g_normalDebug.GetShader());
+    //g_camera.ApplyViewMatrix(g_defaultMaterial.GetShader());
+    g_camera.ApplyViewMatrix(g_normalDebug.GetShader());
 
     //Bind Shader
     g_defaultMaterial.Bind();
@@ -509,7 +510,6 @@ namespace Graphic
   //*********************************************
   // RenderLoopOpengl
   //*********************************************
-
   void RenderLoopOpengl::Initialize(void)
   {
     Debug::Log << "Graphic::Initialize\n";
@@ -600,7 +600,7 @@ namespace Graphic
     // Cubemap
     //************************************************
     //IBL
-    g_ibl.Init(g_cam, g_screenVAO);
+    g_ibl.Init(g_camera, g_screenVAO);
 
     //************************************************
     // Material
@@ -867,15 +867,15 @@ namespace Graphic
     g_defaultMaterial.GetShader().SetUniformBlockBindingPoint("u_matrices", 0);
     g_uniformBufferObject.Init(sizeof(glm::mat4) * 2, 0);
     g_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
-      , glm::value_ptr(g_cam.GetProjectionMatrix()));
+      , glm::value_ptr(g_camera.GetProjectionMatrix()));
 
     //************************************************
     // Init Projection Matrix
     //************************************************
     //Set Projection Matrix once
-    //g_cam.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
-    g_cam.ApplyProjectionMatrix(g_billboardMaterial.GetShader());
-    g_cam.ApplyProjectionMatrix(g_normalDebug.GetShader());
+    //g_camera.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
+    g_camera.ApplyProjectionMatrix(g_billboardMaterial.GetShader());
+    g_camera.ApplyProjectionMatrix(g_normalDebug.GetShader());
 
     //************************************************
     // Build InstanceDrawer
@@ -940,5 +940,57 @@ namespace Graphic
 
     Window::Terminate();
     OpenglAllocationTracker::PrintAllocationState();
+    ShaderTracker::Clear();
+  }
+
+  void RenderLoopOpengl::OnRecompiledShader(void)
+  {
+    //Geometry Pass
+    g_defaultMaterial.RefreshTextureUniforms();
+    ResourceManager::RefreshMaterialTextureUniforms();
+
+    //Lighting Pass
+    g_lightingMaterial.Bind(false);
+    {
+      Shader& shader = g_lightingMaterial.GetShader();
+
+      //Directional Shadow
+      shader.SetUniform("u_shadowMap2D", 6);
+      g_shadowMapTexture.BindToTextureUnit(6);
+
+      //Point Shadow
+      shader.SetUniform("u_shadowMap[0]", 7);
+      shader.SetUniform("u_shadowMap[1]", 8);
+      shader.SetUniform("u_shadowMap[2]", 9);
+      shader.SetUniform("u_shadowMap[3]", 10);
+
+      //IBL
+      shader.SetUniform("u_irradianceMap", 11);
+      shader.SetUniform("u_prefilterMap", 12);
+      shader.SetUniform("u_brdfLUT", 13);
+
+      //Gbuffer's texture
+      shader.SetUniform("u_gbufferResult.m_positionTex"
+        , 0);
+      shader.SetUniform("u_gbufferResult.m_normalTex"
+        , 1);
+      shader.SetUniform("u_gbufferResult.m_albedoTex"
+        , 2);
+      shader.SetUniform("u_gbufferResult.m_specularTex"
+        , 3);
+      shader.SetUniform("u_gbufferResult.m_emissiveTex"
+        , 4);
+      shader.SetUniform("u_gbufferResult.m_lightSpacePos"
+        , 5);
+    }
+    g_lightingMaterial.Unbind();
+    
+    //IBL
+    g_ibl.RefreshTextureUniforms(g_camera);
+
+    //Postprocessing
+    g_ssaoPP.RefreshTextureUniforms();
+    g_bloomPP.RefreshTextureUniforms();
+    g_fxaaPP.RefreshTextureUniforms();
   }
 } // Graphic

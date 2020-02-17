@@ -41,6 +41,9 @@ namespace Graphic
         , const std::string& metallicTexture
         , const std::string& emissiveTextureFile);
 
+      //! @brief Initialize Texture
+      void RefreshTextureUniforms(void) const;
+
       //! @brief Get Shader
       Shader& GetShader(void) { return m_shader; }
 

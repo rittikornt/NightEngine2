@@ -62,15 +62,24 @@ namespace Core
     }
 
     //Generate new Material
-    Material newMat;
+    hashmap.insert({ key, Material() });
+    auto& newMat = hashmap[key];
 
     Serialization::Deserialize(newMat
       , fileName
       , FileSystem::DirectoryType::Materials);
 
-    hashmap.insert({ key, newMat });
+    return &newMat;
+  }
 
-    return &(hashmap[key]);
+  void ResourceManager::RefreshMaterialTextureUniforms()
+  {
+    Container::Hashmap<U64, Material>& hashmap = GetHashMap<Material>();
+
+    for (auto& pair : hashmap)
+    {
+      pair.second.RefreshTextureUniforms();
+    }
   }
 
   Texture* ResourceManager::LoadTextureResource(const Container::String& filePath

@@ -12,6 +12,7 @@
 
 #include "Graphic/Opengl/Window.hpp"
 #include "Graphic/RenderDoc/RenderDocManager.hpp"
+#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
 
 #include "Core/Utility/Profiling.hpp"
 #include "Core/Serialization/FileSystem.hpp"
@@ -57,7 +58,8 @@ namespace Editor
     AddCommand("ENDPROFILE", &DevConsole::EndProfilingSession);
 
     AddCommand("RENDERDOC_CAPTURE", &DevConsole::RenderDocCapture);
-    AddCommand("RESTART_WINDOW", &DevConsole::ReinitEngine);
+    AddCommand("RESTART_WINDOW", &DevConsole::RestartWindow);
+    AddCommand("COMPILE_SHADERS", &DevConsole::RecompileShaders);
 
     //Init Log
     AddLog("//******************************");
@@ -452,16 +454,23 @@ namespace Editor
     {
       //Reinit the RenderLoop with RenderDoc attached
       //TODO: in order for this to work, we need to reinit the window
-      NightEngine2::Engine::GetInstance()->ReInitRenderLoop(true);
+      NightEngine2::Engine::GetInstance()->SendPostRenderEvent(NightEngine2::PostRenderEngineEvent::AttachRenderDoc);
     }
   }
 
-  void DevConsole::ReinitEngine(void)
+  void DevConsole::RestartWindow(void)
   {
     using namespace Graphic;
 
     //TODO: in order for this to work, we need to reinit the window
-    NightEngine2::Engine::GetInstance()->ReInitRenderLoop(false);
+    NightEngine2::Engine::GetInstance()->SendPostRenderEvent(NightEngine2::PostRenderEngineEvent::RestartWindow);
+  }
+
+  void DevConsole::RecompileShaders(void)
+  {
+    using namespace Graphic;
+
+    NightEngine2::Engine::GetInstance()->SendPostRenderEvent(NightEngine2::PostRenderEngineEvent::RecompileShader);
   }
 
   void DevConsole::ShowHelp(void)

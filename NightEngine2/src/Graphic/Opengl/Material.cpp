@@ -65,17 +65,7 @@ namespace Graphic
     , const std::string& emissiveTextureFile)
   {
     m_useNormal = useNormal;
-
-    m_shader.Bind();
-    {
-      m_shader.SetUniform("u_material.m_normalMultiplier", m_normalMultiplier);
-      m_shader.SetUniform("u_material.m_diffuseMap", 0);
-      m_shader.SetUniform("u_material.m_normalMap", 1);
-      m_shader.SetUniform("u_material.m_roughnessMap", 2);
-      m_shader.SetUniform("u_material.m_metallicMap", 3);
-      m_shader.SetUniform("u_material.m_emissiveMap", 4);
-    }
-    m_shader.Unbind();
+    RefreshTextureUniforms();
 
     if (diffuseTextureFile.size() > 0)
     {
@@ -102,6 +92,20 @@ namespace Graphic
       m_emissiveTexture = Texture(emissiveTextureFile
         , Texture::Channel::RGB);
     }
+  }
+
+  void Material::RefreshTextureUniforms(void) const
+  {
+    m_shader.Bind();
+    {
+      m_shader.SetUniform("u_material.m_normalMultiplier", m_normalMultiplier);
+      m_shader.SetUniform("u_material.m_diffuseMap", 0);
+      m_shader.SetUniform("u_material.m_normalMap", 1);
+      m_shader.SetUniform("u_material.m_roughnessMap", 2);
+      m_shader.SetUniform("u_material.m_metallicMap", 3);
+      m_shader.SetUniform("u_material.m_emissiveMap", 4);
+    }
+    m_shader.Unbind();
   }
 
   void Material::Bind(bool useTexture)

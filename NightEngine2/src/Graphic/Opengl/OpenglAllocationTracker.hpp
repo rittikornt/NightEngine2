@@ -31,6 +31,7 @@
 namespace Graphic
 {
   using DeallcateFunc = void (*)(unsigned int);
+  class Shader;
   
   struct OpenglAllocationTracker
 	{

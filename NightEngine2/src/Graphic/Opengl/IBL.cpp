@@ -262,11 +262,11 @@ namespace Graphic
     m_captureFBO.Unbind();
   }
 
-  void IBL::DrawCubemap(CubemapType type, CameraObject camera)
+  void IBL::DrawCubemap(CubemapType type, CameraObject& camera)
   {
     switch (type)
     {
-      case CubemapType::NORMAL:
+      case CubemapType::SKYBOX:
       {
         camera.ApplyViewMatrix(m_cubemap);
         m_cubemap.Draw();
@@ -286,6 +286,17 @@ namespace Graphic
       }
     }
 
+  }
+
+  void IBL::RefreshTextureUniforms(CameraObject& camera)
+  {
+    m_cubemap.RefreshTextureUniforms();
+    m_irradianceCubemap.RefreshTextureUniforms();
+    m_prefilterMap.RefreshTextureUniforms();
+
+    camera.ApplyProjectionMatrix(m_cubemap.GetShader());
+    camera.ApplyProjectionMatrix(m_irradianceCubemap.GetShader());
+    camera.ApplyProjectionMatrix(m_prefilterMap.GetShader());
   }
 }
 

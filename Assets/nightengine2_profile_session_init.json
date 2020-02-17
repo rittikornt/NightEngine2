@@ -1,1 +1,1 @@
-{"otherData": {},"traceEvents":[{"cat":"function","dur":4.80115e+06,"name":"NightEngine2::Initialize","ph":"X","pid":0,"tid":9941268726493992507,"ts":179630958605}]}
+{"otherData": {},"traceEvents":[{"cat":"function","dur":4.82735e+06,"name":"NightEngine2::Initialize","ph":"X","pid":0,"tid":8737815331723780269,"ts":235992134211}]}

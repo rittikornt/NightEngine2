@@ -268,9 +268,11 @@ namespace Graphic
       //If Compiled and linked successfully
       if (success)
       {
+        //Release old program
         this->Release();
         *this = tempShader;
 
+        //Remove tempShader pointer from the Tracker, add this pointer instead
         ShaderTracker::Remove(tempShader);
         ShaderTracker::Add(*this);
       }
@@ -278,6 +280,9 @@ namespace Graphic
       {
         Debug::Log << Logger::MessageType::ERROR_MSG
           << "Shader::RecompileShader: Failed [" << m_programID << "]\n";
+        
+        //Release the tempShader that failed to compile
+        tempShader.Release();
       }
       Debug::Log << Logger::MessageType::INFO
         << "**********************************\n";

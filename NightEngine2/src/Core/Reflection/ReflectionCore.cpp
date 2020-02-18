@@ -50,9 +50,6 @@ namespace Core
     {
 			Debug::Log << "ReflectionCore::Initialize\n";
 
-      //Invoke all the Reflection initialization functions
-      ReflectionInitFunctions::InvokeAll();
-
 			//***********************************************
 			//	Primitive/std
 			//***********************************************
@@ -160,7 +157,6 @@ namespace Core
       //	Graphic
       //***********************************************
       using namespace Graphic;
-      //LOGINFO_METATYPE(Material);
 
       //***********************************************
       //	ComponentLogic
@@ -192,38 +188,8 @@ namespace Core
         ADD_MEMBER_PUBLIC(Light::LightInfo, m_color);
         ADD_MEMBER_PUBLIC(Light::LightInfo, m_value);
       }
-      REGISTER_METATYPE_WITHBASE(Light, ComponentLogic
-        , InheritType::PUBLIC);
-      {
-        ADD_MEMBER_PRIVATE(Light, m_lightType);
-        ADD_MEMBER_PRIVATE(Light, m_lightInfo);
-        ADD_MEMBER_PRIVATE(Light, m_lightIndex);
-      }
 
-      REGISTER_METATYPE_WITHBASE(Transform, ComponentLogic
-        , InheritType::PUBLIC);
-      {
-        ADD_MEMBER_PRIVATE(Transform, m_position);
-        ADD_MEMBER_PRIVATE(Transform, m_angle);
-        ADD_MEMBER_PRIVATE(Transform, m_scale);
-        ADD_MEMBER_PRIVATE(Transform, m_rotation);
-        ADD_MEMBER_PRIVATE(Transform, m_modelMatrix, false);
-      }
-      REGISTER_METATYPE_WITHBASE(Rigidbody, ComponentLogic
-        , InheritType::PUBLIC);
-      {
-        ADD_MEMBER_PRIVATE(Rigidbody, m_mass);
-        ADD_MEMBER_PRIVATE(Rigidbody, m_static);
-      }
       REGISTER_METATYPE(Material*);
-      REGISTER_METATYPE_WITHBASE(MeshRenderer, ComponentLogic
-        , InheritType::PUBLIC);
-      {
-        ADD_MEMBER_PRIVATE(MeshRenderer, m_material);
-        ADD_MEMBER_PRIVATE(MeshRenderer, m_drawMode);
-        ADD_MEMBER_PRIVATE(MeshRenderer, m_meshCount);
-        ADD_MEMBER_PRIVATE(MeshRenderer, m_castShadow);
-      }
 
       //Test Components
       REGISTER_METATYPE_WITHBASE(Controller, ComponentLogic
@@ -295,6 +261,14 @@ namespace Core
 					ADD_MEMBER_PROTECED(ThirdDerivedClass, m_thirdPrivateDerived_float);
 				}
 			}
+
+      //Invoke all the Reflection initialization functions
+      ReflectionInitFunctions::InvokeAll();
+      //LOGINFO_METATYPE(ComponentLogic);
+      //LOGINFO_METATYPE(Transform);
+      //LOGINFO_METATYPE(Light);
+      //LOGINFO_METATYPE(Rigidbody);
+      //LOGINFO_METATYPE(Material);
     }
 
     void Terminate()

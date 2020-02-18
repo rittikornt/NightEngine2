@@ -22,7 +22,17 @@ namespace Core
       //! @brief Special Component that live within GameObject
       class Transform: public ComponentLogic
       {
-        REFLECTABLE_TYPE();
+        REFLECTABLE_TYPE_BLOCK()
+        {
+          META_REGISTERER_WITHBASE(Transform, ComponentLogic
+            , InheritType::PUBLIC, true
+            , nullptr, nullptr)
+            .MR_ADD_MEMBER_PRIVATE(Transform, m_position, true)
+            .MR_ADD_MEMBER_PRIVATE(Transform, m_angle, true)
+            .MR_ADD_MEMBER_PRIVATE(Transform, m_scale, true)
+            .MR_ADD_MEMBER_PRIVATE(Transform, m_rotation, true)
+            .MR_ADD_MEMBER_PRIVATE(Transform, m_modelMatrix, false);
+        }
       public:
         //! @brief Default Constructor
         Transform(void);

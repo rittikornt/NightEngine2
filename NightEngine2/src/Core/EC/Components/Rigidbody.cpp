@@ -25,7 +25,8 @@ namespace Core
   {
     namespace Components
     {
-      
+      INIT_REFLECTION_FOR(Rigidbody)
+
       void Rigidbody::OnAwake(void)
       {
 

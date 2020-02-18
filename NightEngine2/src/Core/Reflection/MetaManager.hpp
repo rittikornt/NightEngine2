@@ -104,6 +104,7 @@ namespace Core
 
       static void InvokeAll()
       {
+        //TODO: Care about initialization precedence
         auto& funcs = GetFunctions();
         for (int i=0; i < funcs.size(); ++i)
         {

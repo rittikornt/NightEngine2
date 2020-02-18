@@ -181,8 +181,8 @@ ReflectionManager::RegisterType<RawType<TYPE>>(#TYPE, MURMURHASH2(TYPE)\
 
 #define META_REGISTERER_WITHBASE(TYPE, BASETYPE, INHERITTYPE, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static Core::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
         = Core::Reflection::MetaRegisterer<TYPE>() \
-          .RegisterType(NEWNAME, MURMURHASH2(TYPE) \
-            , sizeof(TYPE), { BASETYPE, INHERITTYPE} \
+          .RegisterType(#TYPE, MURMURHASH2(TYPE) \
+            , sizeof(TYPE), { ReflectionManager::GetMetaType<RawType<BASETYPE>>(), INHERITTYPE} \
             , SERIALIZER, DESERIALIZER, SHOULDSERIALIZED)
 
 /////////////////////////////////////////////////

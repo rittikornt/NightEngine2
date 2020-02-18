@@ -26,7 +26,16 @@ namespace Core
     {
       class MeshRenderer: public ComponentLogic
       {
-        REFLECTABLE_TYPE();
+        REFLECTABLE_TYPE_BLOCK()
+        {
+          META_REGISTERER_WITHBASE(MeshRenderer, ComponentLogic
+            , InheritType::PUBLIC, true
+            , nullptr, nullptr)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_material, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_drawMode, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_meshCount, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_castShadow, true);
+        }
         public:
           enum class DrawMode : unsigned
           {

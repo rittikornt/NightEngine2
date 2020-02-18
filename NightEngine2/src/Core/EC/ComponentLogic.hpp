@@ -57,7 +57,7 @@ namespace Core
 		// Possible Solution: Template Curiously Recurring Pattern (AutoLister<T>)
 		class ComponentLogic: public Core::IMessageHandler
 		{
-			REFLECTABLE_TYPE();
+      REFLECTABLE_TYPE();
     public:
       //! @brief Constructor
       ComponentLogic() : m_uniqueID(s_uniqueIDCounter++) {}

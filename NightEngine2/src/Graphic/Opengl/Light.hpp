@@ -17,7 +17,15 @@ namespace Graphic
 
   class Light : public Core::ECS::ComponentLogic
   {
-     REFLECTABLE_TYPE();
+    REFLECTABLE_TYPE_BLOCK()
+    {
+      META_REGISTERER_WITHBASE(Light, Core::ECS::ComponentLogic
+        , InheritType::PUBLIC, true
+        , nullptr, nullptr)
+        .MR_ADD_MEMBER_PROTECTED(Light, m_lightType, true)
+        .MR_ADD_MEMBER_PROTECTED(Light, m_lightInfo, true)
+        .MR_ADD_MEMBER_PROTECTED(Light, m_lightIndex, true);
+    }
     public:
       //! @brief Light information
       struct LightInfo

@@ -18,6 +18,8 @@ namespace Core
   {
     namespace Components
     {
+      INIT_REFLECTION_FOR(Transform)
+
       Transform::Transform(void)
         : m_position(0.0f), m_scale(1.0f), m_angle(0.0f)
         , m_rotation(), m_modelMatrix(1.0f), m_dirty(false)

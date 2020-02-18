@@ -31,7 +31,14 @@ namespace Core
 
       class Rigidbody: public ComponentLogic
       {
-        REFLECTABLE_TYPE();
+        REFLECTABLE_TYPE_BLOCK()
+        {
+          META_REGISTERER_WITHBASE(Rigidbody, ComponentLogic
+            , InheritType::PUBLIC, true
+            , nullptr, nullptr)
+            .MR_ADD_MEMBER_PROTECTED(Rigidbody, m_mass, true)
+            .MR_ADD_MEMBER_PROTECTED(Rigidbody, m_static, true);
+        }
       public:
 
         //! @brief On Awake

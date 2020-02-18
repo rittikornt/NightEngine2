@@ -15,6 +15,7 @@ using namespace Core;
 
 namespace Graphic
 {
+  INIT_REFLECTION_FOR(Light)
   static const std::string g_pointLightStr[] =
   { "u_pointLightInfo[0]", "u_pointLightInfo[1]", "u_pointLightInfo[2]"
    , "u_pointLightInfo[3]", "u_pointLightInfo[4]" };

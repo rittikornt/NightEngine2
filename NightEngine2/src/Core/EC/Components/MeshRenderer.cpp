@@ -22,6 +22,8 @@ namespace Core
   {
     namespace Components
     {
+      INIT_REFLECTION_FOR(MeshRenderer)
+
       void MeshRenderer::InitMesh(const std::vector<Graphic::Vertex>& vertices
         , const std::vector<unsigned>& indices
         , bool castShadow, bool buildNow)

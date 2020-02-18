@@ -9,7 +9,6 @@ namespace Core
 {
   namespace Reflection
   {
-
 		/*!
 		@brief Register MetaType into a map
 		*/
@@ -31,15 +30,6 @@ namespace Core
 
 			//Make sure this return nullptr if not found
 			return it->second;
-		}
-
-		/*!
-		@brief Get the instance of MetaMap
-		*/
-		MetaManager::MetaMap& MetaManager::GetMetaMap(void)
-		{
-			static MetaMap map;
-			return map;
 		}
 
 	}

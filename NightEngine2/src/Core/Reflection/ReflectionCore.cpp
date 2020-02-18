@@ -50,6 +50,9 @@ namespace Core
     {
 			Debug::Log << "ReflectionCore::Initialize\n";
 
+      //Invoke all the Reflection initialization functions
+      ReflectionInitFunctions::InvokeAll();
+
 			//***********************************************
 			//	Primitive/std
 			//***********************************************
@@ -157,19 +160,7 @@ namespace Core
       //	Graphic
       //***********************************************
       using namespace Graphic;
-      REGISTER_METATYPE_WITH_SERIALIZER(Material
-        , true, DefaultSerializer<Material&>, DefaultDeserializer<Material&>);
-      {
-        ADD_MEMBER_PRIVATE(Material, m_diffuseColor);
-
-        ADD_MEMBER_PRIVATE(Material, m_normalMultiplier);
-        ADD_MEMBER_PRIVATE(Material, m_useNormal);
-
-        ADD_MEMBER_PRIVATE(Material, m_roughnessValue);
-        ADD_MEMBER_PRIVATE(Material, m_metallicValue);
-
-        ADD_MEMBER_PRIVATE(Material, m_emissiveStrength);
-      }
+      //LOGINFO_METATYPE(Material);
 
       //***********************************************
       //	ComponentLogic

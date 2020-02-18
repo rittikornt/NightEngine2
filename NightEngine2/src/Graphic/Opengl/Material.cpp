@@ -7,12 +7,15 @@
 #include "Graphic/Opengl/Material.hpp"
 
 #include "Core/Serialization/Serialization.hpp"
+#include "Core/Serialization/SerializeFunction.hpp"
 #include "Core/Serialization/ResourceManager.hpp"
 
 using namespace Core;
 
 namespace Graphic
 {
+  INIT_REFLECTION_FOR(Material)
+
   Material::Material(const Material& rhs)
   {
     *this = rhs;

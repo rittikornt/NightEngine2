@@ -5,6 +5,7 @@
 */
 #pragma once
 #include "Core/Container/Map.hpp"
+#include "Core/Container/Vector.hpp"
 #include "Core/Container/String.hpp"
 #include "Core/Container/PrimitiveType.hpp"
 
@@ -19,7 +20,7 @@ namespace Core
     class MetaType;
 
 		/*!
-		@brief For Managing  MetaType
+		@brief Static class that manage MetaType
 		*/
     class MetaManager
     {
@@ -29,9 +30,16 @@ namespace Core
         static void Register(const Container::String& name, MetaType* metaType);
         static MetaType* Lookup(const Container::String& name);
 
-				static MetaMap& GetMetaMap(void);
+        ///////////////////////////////////////////////////////////////
 
-				/*! @brief Get an instance of MetaType */
+        /*! @brief Get global instance of MetaMap */
+				static MetaMap& GetMetaMap(void)
+        {
+          static MetaMap map;
+          return map;
+        }
+
+				/*! @brief Get global instance of a specific MetaType */
 				template<typename TYPE>
 				static MetaType* GetMetaType(void)
 				{
@@ -39,9 +47,11 @@ namespace Core
 					return &instance;
 				}
 
+        ///////////////////////////////////////////////////////////////
+
 				/*! @brief Create and Register type into MetaType Map */
 				template<typename TYPE>
-				static void RegisterType(Container::String name, Container::U64 hash
+				static void RegisterType(Container::String typeName, Container::U64 hash
         , size_t size, BaseClass baseClass
 				, typename MetaType::SerializeFn serializeFn = nullptr
 				, typename MetaType::DeserializeFn deserializeFn = nullptr
@@ -50,12 +60,12 @@ namespace Core
 					MetaType* metaType = GetMetaType<TYPE>();
 
 					//Init value and register itself to Manager
-					(*metaType).Init(name, hash, size, baseClass
+					(*metaType).Init(typeName, hash, size, baseClass
 					, serializeFn == nullptr? Serialization::DefaultSerializer<TYPE>: serializeFn
 					, deserializeFn == nullptr? Serialization::DefaultDeserializer<TYPE>: deserializeFn
           , shouldSerialized);
 
-					Register(name, metaType);
+					Register(typeName, metaType);
 				}
 
 				/*! @brief Add member to a TYPE */
@@ -70,6 +80,79 @@ namespace Core
 					metaType->AddMember(name, offset, GetMetaType<MEMBERTYPE>()
             , accessType, shouldSerialized);
 				}
+    };
+
+    ///////////////////////////////////////////////////////////////
+
+    /*!
+    @brief Global class for storing function pointer to be called to init some metatype
+    */
+    struct ReflectionInitFunctions
+    {
+      using ReflectionInitFn = void(*)(void);
+      static Core::Container::Vector<ReflectionInitFn>& GetFunctions()
+      {
+        static Core::Container::Vector<ReflectionInitFn> funcs;
+        return funcs;
+      }
+
+      static void Add(ReflectionInitFn func)
+      {
+        auto& funcs = GetFunctions();
+        funcs.emplace_back(func);
+      }
+
+      static void InvokeAll()
+      {
+        auto& funcs = GetFunctions();
+        for (int i=0; i < funcs.size(); ++i)
+        {
+          funcs[i]();
+        }
+      }
+    };
+
+    /*!
+    @brief Class for registering reflection initialization functions
+    */
+    template<typename TYPE>
+    struct ReflectionInitFunctionsRegisterer
+    {
+      ReflectionInitFunctionsRegisterer()
+      {
+        ReflectionInitFunctions::Add(&TYPE::ReflectionInit);
+      }
+    };
+
+    /*!
+    @brief Class for registering metatype 
+    */
+    template<typename TYPE>
+    class MetaRegisterer
+    {
+    public:
+      MetaRegisterer<TYPE> RegisterType(Container::String typeName, Container::U64 hash
+        , size_t size, BaseClass baseClass
+        , typename MetaType::SerializeFn serializeFn = nullptr
+        , typename MetaType::DeserializeFn deserializeFn = nullptr
+        , bool shouldSerialized = true)
+      {
+        ReflectionManager::RegisterType<RawType<TYPE>>(typeName, hash
+          , sizeof(TYPE), baseClass
+          , serializeFn, deserializeFn, shouldSerialized);
+
+        ReflectionInitFunctions::Add(TYPE::ReflectionInit);
+        return *this;
+      }
+
+      template<typename MEMBERTYPE>
+      MetaRegisterer<TYPE> AddMember(const Container::String& memberTypeName, MEMBERTYPE TYPE::*member
+        , Member::AccessType accessType, bool shouldSerialized = true)
+      {
+        ReflectionManager::AddMember<RawType<TYPE>>(memberTypeName, member
+          , accessType, shouldSerialized);
+        return *this;
+      }
     };
   }
 }

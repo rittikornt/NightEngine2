@@ -30,14 +30,6 @@ namespace Graphic
   }
 
   REGISTER_DEALLOCATION_FUNC(Shader, ReleaseShaderID)
-  
-  struct ShaderHashFN 
-  {
-    size_t operator() (const Shader &shader) const 
-    {
-      return (size_t)(shader.GetProgramID());
-    }
-  };
 
   /////////////////////////////////////////////////////////////////////////
 

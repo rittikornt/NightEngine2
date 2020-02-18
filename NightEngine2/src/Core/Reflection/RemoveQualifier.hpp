@@ -43,11 +43,11 @@ namespace Core
     {
       using RawType = typename RemoveQualifier<T*>::RawType;
     };
-
-		/*!
-		@brief Alias for shorter use
-		*/
-		template<typename T>
-		using RawType = typename RemoveQualifier<T>::RawType;
   }
 }
+
+/*!
+@brief Alias for shorter use
+*/
+template<typename T>
+using RawType = typename Core::Reflection::RemoveQualifier<T>::RawType;

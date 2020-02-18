@@ -13,7 +13,18 @@ namespace Graphic
 {
   class Material
   {
-    REFLECTABLE_TYPE();
+    REFLECTABLE_TYPE_BLOCK()
+    {
+      META_REGISTERER(Material, true
+        , Core::Serialization::DefaultSerializer<Material&>
+        , Core::Serialization::DefaultDeserializer<Material&>)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_diffuseColor, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_normalMultiplier, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_useNormal, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_roughnessValue, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_metallicValue, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_emissiveStrength, true);
+    }
 
     public:
       //! @brief default constructor
@@ -80,5 +91,4 @@ namespace Graphic
       Texture   m_emissiveTexture;
       float 	  m_emissiveStrength = 15.0f;
   };
-  
 }

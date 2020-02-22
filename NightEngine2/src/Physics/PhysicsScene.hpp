@@ -44,7 +44,7 @@ namespace Physics
 
   struct CollisionResult
   {
-    NightEngine::Factory::Handle<NightEngine::EC::GameObject> m_gameObject;
+    NightEngine::EC::Handle<NightEngine::EC::GameObject> m_gameObject;
     btAlignedObjectArray<btVector3>              m_collidePoint;
   };
 
@@ -95,8 +95,8 @@ namespace Physics
       btAlignedObjectArray<btCollisionShape*>        m_collisionShapes;
 
       //Collision Pair that update every physic tick
-      std::unordered_map<NightEngine::Factory::HandleObject, CollisionResult
-        , NightEngine::Factory::HandleObjectHash>           m_collisionMap;
+      std::unordered_map<NightEngine::EC::HandleObject, CollisionResult
+        , NightEngine::EC::HandleObjectHash>           m_collisionMap;
 
       //All existing physic scene
       static std::vector<PhysicsScene*>              s_physicScenes;

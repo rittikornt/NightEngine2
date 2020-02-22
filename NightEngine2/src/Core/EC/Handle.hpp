@@ -12,7 +12,7 @@ namespace NightEngine
 {
 	using namespace Container;
 
-  namespace Factory
+  namespace EC
   {
 		//! @brief Handle for Object lookup, destroy
 		struct HandleObject

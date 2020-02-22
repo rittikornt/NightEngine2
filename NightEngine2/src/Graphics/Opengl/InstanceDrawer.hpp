@@ -34,7 +34,7 @@ namespace Rendering
 
   namespace Drawer
   {
-    using DrawContainer = std::vector<NightEngine::Factory::HandleObject>;
+    using DrawContainer = std::vector<NightEngine::EC::HandleObject>;
 
     enum class DrawPass: unsigned
     {
@@ -72,7 +72,7 @@ namespace Rendering
     //! @brief Contain data to be drawn along with its MeshRenderer
     struct BatchInfo
     {
-      using RendererHandle = NightEngine::Factory::HandleObject;
+      using RendererHandle = NightEngine::EC::HandleObject;
 
       std::vector<glm::mat4> m_data;                //Model matrices to be drawn
       std::vector<Mesh>      m_meshes;              //All meshes accociate with meshRenderer

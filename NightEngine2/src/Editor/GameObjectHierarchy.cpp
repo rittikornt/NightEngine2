@@ -25,7 +25,7 @@ namespace Editor
     }
   }
 
-  void Hierarchy::Draw(bool * open)
+  void Hierarchy::Draw(bool* open)
   {
     float height = Window::GetHeight() * 0.5f;
     ImGui::SetNextWindowPos(ImVec2(Window::GetWidth() - 310, 20), ImGuiCond_Appearing);

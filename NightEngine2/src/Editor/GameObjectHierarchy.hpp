@@ -35,10 +35,10 @@ namespace Editor
     void DrawHierarchyTree(ImGuiTextFilter& filter);
 
     //! @brief Get reference to boolean
-    bool& GetBool(void) { return m_show; }
+    inline bool& GetBool(void) { return m_show; }
 
     //! @brief Get selected gameobject
-    NightEngine::EC::GameObject* GetSelectedGameObject(void) { return m_curSelected; }
+    inline NightEngine::EC::GameObject* GetSelectedGameObject(void) { return m_curSelected; }
   private:
     NightEngine::EC::GameObject* m_curSelected;
     std::unordered_set<int> m_selectedIndexSet;

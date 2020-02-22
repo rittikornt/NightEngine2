@@ -44,10 +44,10 @@ namespace NightEngine
       ~GameObject();
 
       //! @brief Create GameObject from Factory
-      static Factory::Handle<GameObject> Create(const char* name, size_t reserveSize);
+      static Handle<GameObject> Create(const char* name, size_t reserveSize);
 
       //! @brief Get GameObject Handle
-      Factory::Handle<GameObject> GetHandle(void) const { return m_handle; }
+      Handle<GameObject> GetHandle(void) const { return m_handle; }
 
       //! @brief Initialize the GameObject
       void Init(void);
@@ -91,9 +91,9 @@ namespace NightEngine
       void								RemoveAllComponents();
 		private:
 			Container::String                      m_name;
-      Factory::Handle<GameObject>            m_handle;
+      Handle<GameObject>            m_handle;
 			Container::Vector<ComponentHandle>     m_components;
-      Factory::Handle<Components::Transform> m_transform;
+      Handle<Components::Transform> m_transform;
 		};
 
     //********************************************

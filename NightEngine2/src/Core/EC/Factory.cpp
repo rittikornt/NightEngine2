@@ -10,7 +10,7 @@
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/ComponentLogic.hpp"
 
-#include "Graphic/Opengl/Light.hpp"
+#include "Graphics/Opengl/Light.hpp"
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"
@@ -82,6 +82,8 @@ namespace NightEngine
 			FACTORY_CREATOR_REGISTER(Controller);
 			FACTORY_CREATOR_REGISTER(CharacterInfo);
 			FACTORY_CREATOR_REGISTER(CTimer);
+
+      //TODO: Get the reflection registerer to init this creator
 		}
 
 		HandleObject Create(const char* typeName)

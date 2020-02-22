@@ -12,7 +12,7 @@
 #include "Core/EC/GameObject.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Core/EC/ArchetypeManager.hpp"
-#include "Graphic/Opengl/Window.hpp"
+#include "Graphics/Opengl/Window.hpp"
 
 using namespace NightEngine;
 using namespace NightEngine::EC;

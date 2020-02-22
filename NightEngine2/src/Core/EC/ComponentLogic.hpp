@@ -21,7 +21,7 @@ namespace NightEngine
     //! @brief Handle for accessing Component
 		struct ComponentHandle
 		{
-			Factory::HandleObject m_handle;	   //Handle for lookup
+			HandleObject m_handle;	   //Handle for lookup
       Reflection::MetaType* m_metaType;  //Type of the component
 
       //! @brief Constructor
@@ -29,7 +29,7 @@ namespace NightEngine
 
       //! @brief Explicit Constructor
 			explicit ComponentHandle(GameObject* gameObject
-				, Factory::HandleObject handle, Reflection::MetaType* metaType);
+				, HandleObject handle, Reflection::MetaType* metaType);
 
       //! @brief Getter
       template<typename T>
@@ -81,7 +81,7 @@ namespace NightEngine
       ComponentLogicID GetUID() const{ return m_uniqueID;}
 
       //! @brief Get Handle to this ComponentLogic
-      Factory::HandleObject GetHandle(void) { return m_handle; }
+      HandleObject GetHandle(void) { return m_handle; }
 
       //! @brief Get GameObject Reference
       inline GameObject* GetGameObject(void) const { return m_gameObject; }
@@ -94,7 +94,7 @@ namespace NightEngine
 
 			ComponentLogicID      m_uniqueID;	    //Unique id for each component
 			GameObject*           m_gameObject;	  //TODO: Use handle instead
-      Factory::HandleObject m_handle;       //Handle to itself
+      HandleObject m_handle;       //Handle to itself
 
 			static ComponentLogicID s_uniqueIDCounter;
 		};

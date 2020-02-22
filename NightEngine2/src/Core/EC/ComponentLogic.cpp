@@ -12,7 +12,7 @@ namespace NightEngine
 		ComponentLogicID ComponentLogic::s_uniqueIDCounter = 0;
 
 		ComponentHandle::ComponentHandle(GameObject* gameObject
-			, Factory::HandleObject handle, Reflection::MetaType* metaType)
+			, HandleObject handle, Reflection::MetaType* metaType)
 			: m_handle(handle), m_metaType(metaType)
 		{
       auto cl = Get<ComponentLogic>();

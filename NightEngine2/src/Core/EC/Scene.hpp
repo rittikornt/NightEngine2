@@ -5,6 +5,7 @@
 */
 
 #pragma once
+#include "Core/EC/SceneNode.hpp"
 
 namespace NightEngine
 {
@@ -19,6 +20,5 @@ namespace NightEngine
 
         //TODO: Store Serializable SceneGraph
     };
-
   }
 }

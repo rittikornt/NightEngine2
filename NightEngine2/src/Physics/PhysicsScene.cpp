@@ -173,9 +173,9 @@ namespace Physics
         const btCollisionObject* obB = contactManifold->getBody1();
 
         //Lookup Collided GameObject
-        auto rigidbody1 = Factory::HandleObject::LookupHandle<Rigidbody>(obA->getUserPointer()
+        auto rigidbody1 = EC::HandleObject::LookupHandle<Rigidbody>(obA->getUserPointer()
           , obA->getUserIndex(), obA->getUserIndex2());
-        auto rigidbody2 = Factory::HandleObject::LookupHandle<Rigidbody>(obB->getUserPointer()
+        auto rigidbody2 = EC::HandleObject::LookupHandle<Rigidbody>(obB->getUserPointer()
           , obB->getUserIndex(), obB->getUserIndex2());
 
         //Update Collision Map

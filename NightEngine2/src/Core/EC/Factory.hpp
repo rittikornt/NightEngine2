@@ -24,11 +24,11 @@ namespace NightEngine
     void Terminate(void);
 
     //! @brief Create Object from typeName
-		HandleObject Create(const char* typeName);
+    EC::HandleObject Create(const char* typeName);
 
     //! @brief Create Object from typeName
 		template<class T>
-		Handle<T> Create(const char* typeName);
+    EC::Handle<T> Create(const char* typeName);
 
     //! @brief Get the slotmap that internally store object of type T
 		template<class T>
@@ -55,7 +55,7 @@ namespace NightEngine
 		};
 
 		//Global Variable
-		extern ObjectFactory<HandleObject> g_factory;
+		extern ObjectFactory<EC::HandleObject> g_factory;
 
 		//**********************************************
 		// Class Definition
@@ -80,9 +80,9 @@ namespace NightEngine
     // Functions Definition
     //**********************************************
 		template<class T>
-		Handle<T> Create(const char* typeName)
+    EC::Handle<T> Create(const char* typeName)
 		{
-			return Handle<T>(Create(typeName));
+			return EC::Handle<T>(Create(typeName));
 		}
 
 		template<class T>

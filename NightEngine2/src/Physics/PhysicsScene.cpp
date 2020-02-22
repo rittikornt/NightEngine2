@@ -17,8 +17,8 @@
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/Transform.hpp"
 
-using namespace Core::ECS::Components;
-using namespace Core;
+using namespace NightEngine::EC::Components;
+using namespace NightEngine;
 
 namespace Physics
 {
@@ -82,7 +82,7 @@ namespace Physics
     m_collisionShapes.push_back(&shape);
   }
 
-  void PhysicsScene::AddRigidBody(Core::ECS::Components::Rigidbody& rigidbody)
+  void PhysicsScene::AddRigidBody(NightEngine::EC::Components::Rigidbody& rigidbody)
   {
     //Add RigidBody to World
     m_world->addRigidBody(rigidbody.GetBTRigidBody());
@@ -90,7 +90,7 @@ namespace Physics
     m_rigidbodys.emplace_back(&rigidbody);
   }
 
-  void PhysicsScene::RemoveRigidBody(Core::ECS::Components::Rigidbody& rigidbody)
+  void PhysicsScene::RemoveRigidBody(NightEngine::EC::Components::Rigidbody& rigidbody)
   {
     //Linear Search
     for (int j = m_world->getNumCollisionObjects() - 1; j > -1; --j)
@@ -129,7 +129,7 @@ namespace Physics
     rigidbody.SetBTRigidBody(nullptr);
   }
 
-  CollisionResult* PhysicsScene::GetCollisionResult(const Core::ECS::GameObject& gameObject)
+  CollisionResult* PhysicsScene::GetCollisionResult(const NightEngine::EC::GameObject& gameObject)
   {
     auto& it = m_collisionMap.find(gameObject.GetHandle().m_handle);
     if (it != m_collisionMap.end())
@@ -212,7 +212,7 @@ namespace Physics
     m_world->debugDrawWorld();
   }
 
-  void PhysicsScene::DebugDraw(Graphic::CameraObject& cam)
+  void PhysicsScene::DebugDraw(Rendering::CameraObject& cam)
   {
     m_debugDrawer->Draw(cam);
   }

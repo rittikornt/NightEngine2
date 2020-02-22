@@ -8,7 +8,7 @@
 #include "Core/GameTime.hpp"
 #include "Core/Logger.hpp"
 
-namespace NightEngine2
+namespace NightEngine
 {
 	using Clock = std::chrono::high_resolution_clock;
 
@@ -51,7 +51,7 @@ namespace NightEngine2
 													+ (m_newSampleWeight * m_fps);
 	}
 
-	void GameTime::HandleMessage(const Core::GameShouldCloseMessage& msg)
+	void GameTime::HandleMessage(const NightEngine::GameShouldCloseMessage& msg)
 	{
 		m_shouldClose = msg.m_shouldClose;
 	}

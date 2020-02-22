@@ -5,12 +5,12 @@
 */
 #pragma once
 
-namespace Graphic
+namespace Rendering
 {
   class IRenderLoop;
 }
 
-namespace NightEngine2
+namespace NightEngine
 {
   class GameTime;
   
@@ -54,7 +54,7 @@ namespace NightEngine2
     bool m_shouldAttachRenderDoc = false;
 
     GameTime*   m_gameTime = nullptr;
-    Graphic::IRenderLoop*   m_renderloop = nullptr;
+    Rendering::IRenderLoop*   m_renderloop = nullptr;
   };
 
-} // namespace NightEngine2
+} // namespace NightEngine

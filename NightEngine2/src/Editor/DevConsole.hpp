@@ -14,7 +14,7 @@
 
 namespace Editor
 {
-  class DevConsole: public Core::IMessageHandler
+  class DevConsole: public NightEngine::IMessageHandler
   {
   public:
     using CommandFn = void(DevConsole::*)(void);
@@ -26,7 +26,7 @@ namespace Editor
     };
 
     //! @brief Handle LogMessage
-    virtual void HandleMessage(const Core::LogMessage& msg);
+    virtual void HandleMessage(const NightEngine::LogMessage& msg);
 
     //! @brief Constructor
     DevConsole();

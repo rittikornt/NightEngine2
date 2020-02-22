@@ -12,9 +12,9 @@
 #include "Core/Message/MessageObjectList.hpp" //Msg contents
 #include "Core/Utility/Utility.hpp"     //PROFILE_BLOCK()
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace Components
     {
@@ -39,7 +39,7 @@ namespace Core
       //*************************************************
       // Handle Message
       //*************************************************
-      void Transform::HandleMessage(const Core::TransformMessage& msg)
+      void Transform::HandleMessage(const NightEngine::TransformMessage& msg)
       {
         if (msg.m_targetName != m_gameObject->GetName()) 
         { 

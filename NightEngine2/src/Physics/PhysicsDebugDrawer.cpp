@@ -8,15 +8,15 @@
 
 #include "Core/Logger.hpp"
 #include "Core/EC/Components/Transform.hpp"
-#include "Graphic/Opengl/CameraObject.hpp"
-#include "Graphic/Opengl/PrimitiveShape.hpp"
+#include "Graphics/Opengl/CameraObject.hpp"
+#include "Graphics/Opengl/PrimitiveShape.hpp"
 
 #include "Physics/PhysicUtilities.hpp"
 
-using namespace Core;
-using namespace Core::ECS::Components;
-using namespace Graphic;
-using namespace Graphic::PrimitiveShape;
+using namespace NightEngine;
+using namespace NightEngine::EC::Components;
+using namespace Rendering;
+using namespace Rendering::PrimitiveShape;
 
 namespace Physics
 {
@@ -83,7 +83,7 @@ namespace Physics
 
   }
 
-  void PhysicsDebugDrawer::Draw(Graphic::CameraObject& cam)
+  void PhysicsDebugDrawer::Draw(Rendering::CameraObject& cam)
   {
     if (m_lines.size() > 0)
     {

@@ -9,7 +9,7 @@
 #include <memory>
 #include <fstream>
 
-namespace Core
+namespace NightEngine
 {
   namespace FileSystem
   {

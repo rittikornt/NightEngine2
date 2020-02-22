@@ -12,7 +12,7 @@
 #include "Core/Reflection/MetaType.hpp"
 #include "Core/Serialization/SerializeFunction.hpp"
 
-namespace Core
+namespace NightEngine
 {
   namespace Reflection
   {
@@ -90,9 +90,9 @@ namespace Core
     struct ReflectionInitFunctions
     {
       using ReflectionInitFn = void(*)(void);
-      static Core::Container::Vector<ReflectionInitFn>& GetFunctions()
+      static NightEngine::Container::Vector<ReflectionInitFn>& GetFunctions()
       {
-        static Core::Container::Vector<ReflectionInitFn> funcs;
+        static NightEngine::Container::Vector<ReflectionInitFn> funcs;
         return funcs;
       }
 

@@ -3,7 +3,7 @@
 
 int main(int argc, char * argv[])
 {
-  NightEngine2::Engine* engine = new NightEngine2::Engine();
+  NightEngine::Engine* engine = new NightEngine::Engine();
   {
     engine->Initialize();
     engine->MainLoop();

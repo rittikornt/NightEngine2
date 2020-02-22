@@ -15,7 +15,7 @@
 #include "taocpp_json/include/tao/json/as.hpp"
 #include "taocpp_json/include/tao/json/basic_value.hpp"
 
-namespace Core
+namespace NightEngine
 {
   namespace Serialization
   {
@@ -25,7 +25,7 @@ namespace Core
 		template<typename T>
 		void Serialize(const T& objectToSerialize, std::ostream& out)
 		{
-			using namespace Core::Reflection;
+			using namespace NightEngine::Reflection;
 			//Variable for type T
 			MetaType* metaType = METATYPE(T);
 			Variable var{ metaType, const_cast<T*>(&objectToSerialize) };
@@ -38,9 +38,9 @@ namespace Core
 		//! @brief Serialization Function for specifying serialize function
 		template<typename T>
 		void Serialize(const T& objectToSerialize, std::ostream& out
-		, typename Core::Reflection::MetaType::SerializeFn function)
+		, typename NightEngine::Reflection::MetaType::SerializeFn function)
 		{
-			using namespace Core::Reflection;
+			using namespace NightEngine::Reflection;
 			//Variable for type T
 			MetaType* metaType = METATYPE(T);
 			Variable var{ metaType, const_cast<T*>(&objectToSerialize) };
@@ -66,7 +66,7 @@ namespace Core
 		void Deserialize(T& outObject, const std::string& fileName
 			, FileSystem::DirectoryType dirType)
 		{
-			using namespace Core::Reflection;
+			using namespace NightEngine::Reflection;
 			using namespace tao::json;
 
 			//Variable for type T
@@ -91,9 +91,9 @@ namespace Core
 		template<typename T>
 		void Deserialize(T& outObject, const std::string& fileName
 			, FileSystem::DirectoryType dirType
-			, typename Core::Reflection::MetaType::DeserializeFn function)
+			, typename NightEngine::Reflection::MetaType::DeserializeFn function)
 		{
-			using namespace Core::Reflection;
+			using namespace NightEngine::Reflection;
 			using namespace tao::json;
 
 			//Variable for type T

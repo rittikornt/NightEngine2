@@ -5,7 +5,7 @@
 */
 #pragma once
 
-namespace Core
+namespace NightEngine
 {
   namespace Reflection
   {

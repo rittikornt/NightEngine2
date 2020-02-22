@@ -7,7 +7,7 @@
 #pragma once
 #include "Editor/DevConsole.hpp"
 
-//#include "Core/Lua/LuaCore.hpp"
+//#include "NightEngine/Lua/LuaCore.hpp"
 #include "UnitTest/UnitTest.hpp"
 
 #include "Graphic/Opengl/Window.hpp"
@@ -36,7 +36,7 @@ namespace Editor
   //***************************************
   // Definition
   //***************************************
-  void DevConsole::HandleMessage(const Core::LogMessage& msg)
+  void DevConsole::HandleMessage(const NightEngine::LogMessage& msg)
   {
     AddLog(msg.m_string.c_str());
   }
@@ -67,7 +67,7 @@ namespace Editor
     AddLog("//******************************\n\n");
 
     //To receive log from Logger
-    using namespace Core;
+    using namespace NightEngine;
     Subscribe("MSG_LOGMESSAGE");
   }
 
@@ -102,7 +102,7 @@ namespace Editor
 
   void DevConsole::Draw(const char *title, bool *p_open, bool focus)
   {
-    ImGui::SetNextWindowPos(ImVec2(5, Graphic::Window::GetHeight() - 305), ImGuiCond_Appearing);
+    ImGui::SetNextWindowPos(ImVec2(5, Rendering::Window::GetHeight() - 305), ImGuiCond_Appearing);
     ImGui::SetNextWindowSize(ImVec2(520, 300), ImGuiCond_Appearing);
     if (!ImGui::Begin(title, p_open))
     {
@@ -444,7 +444,7 @@ namespace Editor
 
   void DevConsole::RenderDocCapture(void)
   {
-    using namespace Graphic;
+    using namespace Rendering;
    
     if (RenderDocManager::IsRenderDocAttached())
     {
@@ -454,23 +454,23 @@ namespace Editor
     {
       //Reinit the RenderLoop with RenderDoc attached
       //TODO: in order for this to work, we need to reinit the window
-      NightEngine2::Engine::GetInstance()->SendPostRenderEvent(NightEngine2::PostRenderEngineEvent::AttachRenderDoc);
+      NightEngine::Engine::GetInstance()->SendPostRenderEvent(NightEngine::PostRenderEngineEvent::AttachRenderDoc);
     }
   }
 
   void DevConsole::RestartWindow(void)
   {
-    using namespace Graphic;
+    using namespace Rendering;
 
     //TODO: in order for this to work, we need to reinit the window
-    NightEngine2::Engine::GetInstance()->SendPostRenderEvent(NightEngine2::PostRenderEngineEvent::RestartWindow);
+    NightEngine::Engine::GetInstance()->SendPostRenderEvent(NightEngine::PostRenderEngineEvent::RestartWindow);
   }
 
   void DevConsole::RecompileShaders(void)
   {
-    using namespace Graphic;
+    using namespace Rendering;
 
-    NightEngine2::Engine::GetInstance()->SendPostRenderEvent(NightEngine2::PostRenderEngineEvent::RecompileShader);
+    NightEngine::Engine::GetInstance()->SendPostRenderEvent(NightEngine::PostRenderEngineEvent::RecompileShader);
   }
 
   void DevConsole::ShowHelp(void)

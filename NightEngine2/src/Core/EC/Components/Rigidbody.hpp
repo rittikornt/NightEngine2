@@ -21,9 +21,9 @@ namespace Physics
   class Collider;
 }
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace Components
     {

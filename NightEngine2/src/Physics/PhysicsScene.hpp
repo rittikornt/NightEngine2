@@ -21,9 +21,9 @@ class btSequentialImpulseConstraintSolver;
 class btDiscreteDynamicsWorld;
 class btCollisionShape;
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace Components
     {
@@ -33,7 +33,7 @@ namespace Core
 }
 
 //Forward Declaration
-namespace Graphic
+namespace Rendering
 {
   struct CameraObject;
 }
@@ -44,7 +44,7 @@ namespace Physics
 
   struct CollisionResult
   {
-    Core::Factory::Handle<Core::ECS::GameObject> m_gameObject;
+    NightEngine::Factory::Handle<NightEngine::EC::GameObject> m_gameObject;
     btAlignedObjectArray<btVector3>              m_collidePoint;
   };
 
@@ -61,19 +61,19 @@ namespace Physics
       void AddCollisionShape(btCollisionShape& shape);
 
       //! brief Add RigidBody to the Scene
-      void AddRigidBody(Core::ECS::Components::Rigidbody& rigidbody);
+      void AddRigidBody(NightEngine::EC::Components::Rigidbody& rigidbody);
 
       //! brief Remove RigidBody from the Scene
-      void RemoveRigidBody(Core::ECS::Components::Rigidbody& rigidbody);
+      void RemoveRigidBody(NightEngine::EC::Components::Rigidbody& rigidbody);
 
       //! brief Get Collision Result
-      CollisionResult* GetCollisionResult(const Core::ECS::GameObject& gameObject);
+      CollisionResult* GetCollisionResult(const NightEngine::EC::GameObject& gameObject);
 
       //! brief Update the Scene
       void Update(float dt);
 
       //! brief Draw the Debug Colliders
-      void DebugDraw(Graphic::CameraObject& cam);
+      void DebugDraw(Rendering::CameraObject& cam);
 
       //! brief Destructor
       ~PhysicsScene(void);
@@ -91,12 +91,12 @@ namespace Physics
       
       PhysicsDebugDrawer*                     m_debugDrawer = nullptr;
 
-      std::vector<Core::ECS::Components::Rigidbody*> m_rigidbodys;
+      std::vector<NightEngine::EC::Components::Rigidbody*> m_rigidbodys;
       btAlignedObjectArray<btCollisionShape*>        m_collisionShapes;
 
       //Collision Pair that update every physic tick
-      std::unordered_map<Core::Factory::HandleObject, CollisionResult
-        , Core::Factory::HandleObjectHash>           m_collisionMap;
+      std::unordered_map<NightEngine::Factory::HandleObject, CollisionResult
+        , NightEngine::Factory::HandleObjectHash>           m_collisionMap;
 
       //All existing physic scene
       static std::vector<PhysicsScene*>              s_physicScenes;

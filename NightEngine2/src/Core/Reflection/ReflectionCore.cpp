@@ -23,7 +23,7 @@
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include "glm/mat4x4.hpp"
-#include "Graphic/Color.hpp"
+#include "Graphics/Color.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "GLM/gtx/quaternion.hpp"
@@ -38,10 +38,10 @@
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"
 
-#include "Graphic/Opengl/Light.hpp"
-#include "Graphic/Opengl/Material.hpp"
+#include "Graphics/Opengl/Light.hpp"
+#include "Graphics/Opengl/Material.hpp"
 
-namespace Core
+namespace NightEngine
 {
   namespace Reflection
   {
@@ -53,7 +53,7 @@ namespace Core
 			//***********************************************
 			//	Primitive/std
 			//***********************************************
-      using namespace Core::Container;
+      using namespace NightEngine::Container;
 
 			REGISTER_METATYPE(int);
 			REGISTER_METATYPE(int*);
@@ -71,7 +71,7 @@ namespace Core
       //***********************************************
       {
         using namespace glm;
-        using namespace Graphic;
+        using namespace Rendering;
         REGISTER_METATYPE(vec2);
         {
           ADD_MEMBER_PUBLIC(vec2, x);
@@ -111,8 +111,8 @@ namespace Core
       //***********************************************
       //	Archetypes
       //***********************************************
-      using namespace Core::ECS;
-      using namespace Core::ECS::ArchetypeManager;
+      using namespace NightEngine::EC;
+      using namespace NightEngine::EC::ArchetypeManager;
       REGISTER_METATYPE_WITH_SERIALIZER(Archetype, true
       , SerializeArchetype, DeserializeArchetype);
       {
@@ -132,10 +132,10 @@ namespace Core
       }
 
 			//***********************************************
-			//	ECS
+			//	EC
 			//***********************************************
-      using namespace Core::ECS::Components;
-      using namespace Core::Serialization;
+      using namespace NightEngine::EC::Components;
+      using namespace NightEngine::Serialization;
 			REGISTER_METATYPE(IMessageHandler);
 
       //GameObject with special Serialization Function
@@ -154,9 +154,9 @@ namespace Core
         , DefaultDeserializer<unsigned>);
 
       //***********************************************
-      //	Graphic
+      //	Rendering
       //***********************************************
-      using namespace Graphic;
+      using namespace Rendering;
 
       //***********************************************
       //	ComponentLogic

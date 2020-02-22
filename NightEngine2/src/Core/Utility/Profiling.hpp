@@ -11,14 +11,14 @@
 #include <functional>
 
 //! @brief Macros for getting global profiling instrumentor
-#define GET_GLOBAL_PROFILER() Core::Profiling::Instrumentor::Get()
+#define GET_GLOBAL_PROFILER() NightEngine::Profiling::Instrumentor::Get()
 
 #if DEBUG_MODE
 //! @brief Macros for starting a profiling session
 #define PROFILE_SESSION_BEGIN(DESCRIPTION)	\
   GET_GLOBAL_PROFILER().BeginSession(STR_INNER(DESCRIPTION) \
-, Core::FileSystem::GetFilePath( STR_CAT(DESCRIPTION, .json) \
-  , Core::FileSystem::DirectoryType::Assets))
+, NightEngine::FileSystem::GetFilePath( STR_CAT(DESCRIPTION, .json) \
+  , NightEngine::FileSystem::DirectoryType::Assets))
 
 //! @brief Macros for ending a profiling session
 #define PROFILE_SESSION_END()	\
@@ -27,10 +27,10 @@
 //! @brief Macros for profiling a block of code and record it
   #define PROFILE_BLOCK_INSTRUMENT(DESCRIPTION)	\
   for (auto p = std::make_pair(false                                      \
-    , Core::Utility::StopWatch{ true });                                  \
+    , NightEngine::Utility::StopWatch{ true });                                  \
 	    !(p.first); p.first = true, p.second.Stop()												  \
 	  , GET_GLOBAL_PROFILER().WriteProfile(                                 \
-      Core::Profiling::ProfileData{DESCRIPTION                            \
+      NightEngine::Profiling::ProfileData{DESCRIPTION                            \
     ,p.second.GetStartTimeMicro(), p.second.GetElapsedTimeMicro(), std::hash<std::thread::id>{}(std::this_thread::get_id()) }))
 #else
   #define PROFILE_SESSION_BEGIN(DESCRIPTION)
@@ -39,7 +39,7 @@
 #endif
 
 
-namespace Core
+namespace NightEngine
 {
   namespace Profiling
   {
@@ -81,5 +81,5 @@ namespace Core
       Session m_session;
     };
   }
-} // Core
+} // NightEngine
 

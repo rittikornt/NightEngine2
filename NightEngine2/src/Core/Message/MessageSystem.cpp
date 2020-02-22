@@ -10,7 +10,7 @@
 #include <algorithm>
 
 
-namespace Core
+namespace NightEngine
 {
 #define REGISTER_MESSAGE(MSG) #MSG ,
 	const char* msgTypeName[] =
@@ -126,4 +126,4 @@ namespace Core
 		}
 	}
 
-}	// Core
+}	// NightEngine

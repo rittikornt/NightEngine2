@@ -5,9 +5,9 @@
 */
 
 #include "Core/EC/SceneNode.hpp"
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
   }
 }

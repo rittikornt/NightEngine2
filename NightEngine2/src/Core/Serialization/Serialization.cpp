@@ -5,7 +5,7 @@
 */
 #include "Core/Serialization/Serialization.hpp"
 
-namespace Core
+namespace NightEngine
 {
   namespace Serialization
   {

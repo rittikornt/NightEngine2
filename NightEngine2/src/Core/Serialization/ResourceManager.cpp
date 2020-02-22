@@ -12,15 +12,15 @@
 #include "Core/Container/MurmurHash2.hpp"
 #include "Core/Container/Hashmap.hpp"
 
-#include "Graphic/Opengl/Model.hpp"
-#include "Graphic/Opengl/Material.hpp"
+#include "Graphics/Opengl/Model.hpp"
+#include "Graphics/Opengl/Material.hpp"
 
 #include <mutex>
 #include <future>
 
-namespace Core
+namespace NightEngine
 {
-  using namespace Graphic;
+  using namespace Rendering;
   using namespace Container;
 
   template<typename T>
@@ -44,7 +44,7 @@ namespace Core
     hashmap3.clear();
   }
 
-  Graphic::Material* ResourceManager::LoadMaterialResource(const Container::String& fileName)
+  Rendering::Material* ResourceManager::LoadMaterialResource(const Container::String& fileName)
   {
     Container::Hashmap<U64, Material>& hashmap = GetHashMap<Material>();
 
@@ -122,7 +122,7 @@ namespace Core
 
   /////////////////////////////////////////////////////////////////
 
-  Graphic::Model* ResourceManager::LoadModelResource(const Container::String& filePath)
+  Rendering::Model* ResourceManager::LoadModelResource(const Container::String& filePath)
   {
     Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
 
@@ -139,7 +139,7 @@ namespace Core
       return &(it->second);
     }
 
-    Core::Utility::StopWatch stopWatch{ true };
+    NightEngine::Utility::StopWatch stopWatch{ true };
     {
       //Generate new Model
       Model newModel{ filePath };
@@ -173,7 +173,7 @@ namespace Core
 
     Debug::Log << Logger::MessageType::INFO
       << "**************************************************************\n";
-    Core::Utility::StopWatch stopWatch{ true };
+    NightEngine::Utility::StopWatch stopWatch{ true };
     {
       //Launch Async Tasks
       for (auto filePath : filePaths)

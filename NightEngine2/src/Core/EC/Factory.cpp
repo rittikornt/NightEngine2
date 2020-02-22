@@ -38,12 +38,12 @@
 	}	\
 	Creator<HandleObject> TYPE##Creator(Create##TYPE, #TYPE);																			 
 
-namespace Core
+namespace NightEngine
 {
 	using namespace Container;
-  using namespace Graphic;
-	using namespace ECS;
-  using namespace ECS::Components;
+  using namespace Rendering;
+	using namespace EC;
+  using namespace EC::Components;
 	namespace Factory
 	{
     //**********************************************************

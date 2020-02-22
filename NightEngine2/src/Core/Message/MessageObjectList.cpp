@@ -8,7 +8,7 @@
 
 //Header of the Message Declaration
 
-namespace Core
+namespace NightEngine
 {
   //All MessageObject should be Define here
 	MSG_GENERATE_METHOD_DEF(TestMessage)

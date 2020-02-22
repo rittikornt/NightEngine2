@@ -5,9 +5,9 @@
 */
 #include "Core/EC/ComponentLogic.hpp"
 
-namespace Core
+namespace NightEngine
 {
-	namespace ECS
+	namespace EC
 	{
 		ComponentLogicID ComponentLogic::s_uniqueIDCounter = 0;
 

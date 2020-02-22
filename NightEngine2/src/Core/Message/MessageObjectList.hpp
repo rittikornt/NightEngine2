@@ -11,7 +11,7 @@
 #include "Core/Message/MessageTypeEnum.hpp"		//Enum List
 
 
-namespace Core
+namespace NightEngine
 {
 	struct TestMessage : public MessageObject
 	{

@@ -10,9 +10,9 @@
 #include "Core/Container/PrimitiveType.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
 
-namespace Core
+namespace NightEngine
 {
-	namespace ECS
+	namespace EC
 	{
 		//Forward Declaration
 		class GameObject;
@@ -55,7 +55,7 @@ namespace Core
 		//TODO: someway of storing all type inheriting from ComponentLogic
 		// for iterating each Component Container in Scene Update()
 		// Possible Solution: Template Curiously Recurring Pattern (AutoLister<T>)
-		class ComponentLogic: public Core::IMessageHandler
+		class ComponentLogic: public NightEngine::IMessageHandler
 		{
       REFLECTABLE_TYPE();
     public:

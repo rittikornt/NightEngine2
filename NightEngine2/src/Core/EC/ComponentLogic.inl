@@ -1,8 +1,8 @@
 #include "ComponentLogic.hpp"
 
-namespace Core
+namespace NightEngine
 {
-	namespace ECS
+	namespace EC
 	{
 	}
 }

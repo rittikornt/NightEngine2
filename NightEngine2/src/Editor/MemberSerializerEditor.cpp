@@ -9,13 +9,13 @@
 #include "Core/Reflection/ReflectionMacros.hpp"
 
 #include "Core/EC/GameObject.hpp"
-#include "Graphic/Opengl/Window.hpp"
+#include "Graphics/Opengl/Window.hpp"
 
-#include "Graphic/Color.hpp"
+#include "Graphics/Color.hpp"
 
-using namespace Core::ECS;
-using namespace Core;
-using namespace Graphic;
+using namespace NightEngine::EC;
+using namespace NightEngine;
+using namespace Rendering;
 
 namespace Editor
 {

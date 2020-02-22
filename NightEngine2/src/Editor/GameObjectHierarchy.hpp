@@ -9,9 +9,9 @@
 //Forward declaration
 struct ImGuiTextFilter;
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     class GameObject;
   }
@@ -38,9 +38,9 @@ namespace Editor
     bool& GetBool(void) { return m_show; }
 
     //! @brief Get selected gameobject
-    Core::ECS::GameObject* GetSelectedGameObject(void) { return m_curSelected; }
+    NightEngine::EC::GameObject* GetSelectedGameObject(void) { return m_curSelected; }
   private:
-    Core::ECS::GameObject* m_curSelected;
+    NightEngine::EC::GameObject* m_curSelected;
     std::unordered_set<int> m_selectedIndexSet;
     bool m_show = true;
   };

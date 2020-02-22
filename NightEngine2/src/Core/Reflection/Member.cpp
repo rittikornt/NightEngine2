@@ -8,7 +8,7 @@
 
 #include "Core/Reflection/MetaType.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	namespace Reflection
 	{

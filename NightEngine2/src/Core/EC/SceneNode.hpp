@@ -6,9 +6,9 @@
 
 #pragma once
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     struct SceneNode
     {

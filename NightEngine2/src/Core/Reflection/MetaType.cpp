@@ -9,7 +9,7 @@
 #include "Core/Macros.hpp"
 #include "Core/Reflection/Variable.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	namespace Reflection
 	{

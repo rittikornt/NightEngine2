@@ -5,7 +5,7 @@
 */
 #include "Core/Utility/Utility.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	namespace Utility
 	{
@@ -61,4 +61,4 @@ namespace Core
 			return m_curTime < 0.0f ? true : false;
 		}
 	} // Utility
-} // Core
+} // NightEngine

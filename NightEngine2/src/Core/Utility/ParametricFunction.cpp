@@ -6,7 +6,7 @@
 #include "Core/Utility/ParametricFunction.hpp"
 #include <math.h>
 
-namespace Core
+namespace NightEngine
 {
 	namespace Utility
 	{
@@ -20,5 +20,5 @@ namespace Core
 
 		} // Parametric
 	} // Utility
-} // Core
+} // NightEngine
 

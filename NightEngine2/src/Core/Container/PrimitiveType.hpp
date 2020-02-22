@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Core
+namespace NightEngine
 {
   namespace Container
   {

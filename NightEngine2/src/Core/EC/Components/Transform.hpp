@@ -13,9 +13,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "GLM/gtx/quaternion.hpp"
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace Components
     {
@@ -46,7 +46,7 @@ namespace Core
         // Handle Message
         //*************************************************
         //! @brief Handle Message
-        virtual void HandleMessage(const Core::TransformMessage& msg) override;
+        virtual void HandleMessage(const NightEngine::TransformMessage& msg) override;
 
         //*************************************************
         // Getter

@@ -5,15 +5,15 @@
 */
 
 #include "Core/Container/String.hpp"
-#include "Graphic/Opengl/Texture.hpp"
+#include "Graphics/Opengl/Texture.hpp"
 
 //Forward Declaration
-namespace Graphic
+namespace Rendering
 {
   class Model;
 }
 
-namespace Core
+namespace NightEngine
 {
   class ResourceManager
   {
@@ -24,20 +24,20 @@ namespace Core
     static void ClearAllData(void);
 
     //! @brief Static Function for Load and Cache Material File
-    static Graphic::Material* LoadMaterialResource(const Container::String& fileName);
+    static Rendering::Material* LoadMaterialResource(const Container::String& fileName);
 
     //! @brief Static Function refreshing material texture binding unit
     static void RefreshMaterialTextureUniforms();
 
     //! @brief Static Function for Load and Cache Texture
-    static Graphic::Texture* LoadTextureResource(const Container::String& filePath
-      , Graphic::Texture::Channel channel = Graphic::Texture::Channel::RGB
-      , Graphic::Texture::FilterMode filterMode = Graphic::Texture::FilterMode::LINEAR
-      , Graphic::Texture::WrapMode wrapMode = Graphic::Texture::WrapMode::REPEAT
+    static Rendering::Texture* LoadTextureResource(const Container::String& filePath
+      , Rendering::Texture::Channel channel = Rendering::Texture::Channel::RGB
+      , Rendering::Texture::FilterMode filterMode = Rendering::Texture::FilterMode::LINEAR
+      , Rendering::Texture::WrapMode wrapMode = Rendering::Texture::WrapMode::REPEAT
       , bool hdrImage = false);
 
     //! @brief Static Function for Load and Cache Model
-    static Graphic::Model* LoadModelResource(const Container::String& filePath);
+    static Rendering::Model* LoadModelResource(const Container::String& filePath);
     
     static void PreloadModelsResourceAsync(const Container::Vector<Container::String>& filePaths);
   };

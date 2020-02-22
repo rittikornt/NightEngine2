@@ -10,7 +10,7 @@
 
 #include "Core/Macros.hpp"
 
-namespace Core
+namespace NightEngine
 {
   namespace Reflection
   {

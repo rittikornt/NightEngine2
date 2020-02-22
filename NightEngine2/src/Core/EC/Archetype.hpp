@@ -11,19 +11,19 @@
 #include "Core/Container/String.hpp"
 #include <unordered_set>
 
-namespace Core
+namespace NightEngine
 {
   //Forward declaration
   namespace Reflection
   {
     class Variable;
   }
-  namespace ECS
+  namespace EC
   {
     class GameObject;
   }
 
-  namespace ECS
+  namespace EC
   {
     //! @brief Class describing a set of components
     struct Archetype

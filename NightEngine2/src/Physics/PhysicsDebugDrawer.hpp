@@ -7,12 +7,12 @@
 #pragma once
 #include "LinearMath/btIDebugDraw.h"
 
-#include "Graphic/Opengl/VertexArrayObject.hpp"
-#include "Graphic/Opengl/Shader.hpp"
+#include "Graphics/Opengl/VertexArrayObject.hpp"
+#include "Graphics/Opengl/Shader.hpp"
 #include <vector>
 
 //Forward Declaration
-namespace Graphic
+namespace Rendering
 {
   struct CameraObject;
 }
@@ -50,12 +50,12 @@ namespace Physics
 	   virtual int    getDebugMode(void) const { return m_debugMode; }
 	
      //!brief Debug Draw Loop
-     void           Draw(Graphic::CameraObject& cam);
+     void           Draw(Rendering::CameraObject& cam);
 	private: 
 	   int                        m_debugMode;
 	
-     Graphic::Shader            m_shader;
-     Graphic::VertexArrayObject m_vao;
+     Rendering::Shader            m_shader;
+     Rendering::VertexArrayObject m_vao;
      std::vector<Line>          m_lines;
 	};
 }

@@ -5,7 +5,7 @@
 */
 #pragma once
 
-namespace Core
+namespace NightEngine
 {
   //! @brief Should only be include in the .cpp file
 #define REGISTER_MESSAGE(MSG) MSG,
@@ -17,4 +17,4 @@ namespace Core
 	};
 #undef REGISTER_MESSAGE
 
-} // Core
+} // NightEngine

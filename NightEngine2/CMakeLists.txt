@@ -27,18 +27,18 @@ set_target_properties(${proj_name} PROPERTIES
 # Graphics
 #****************************************************************
 set(proj_name "NightEngine2_Graphics")
-file(GLOB PROJECT_SOURCES_GRAPHIC src/Graphic/*.cpp
-                              src/Graphic/*.hpp
-                              src/Graphic/RenderDoc/*.hpp
-                              src/Graphic/RenderDoc/*.cpp)
+file(GLOB PROJECT_SOURCES_GRAPHIC src/Graphics/*.cpp
+                              src/Graphics/*.hpp
+                              src/Graphics/RenderDoc/*.hpp
+                              src/Graphics/RenderDoc/*.cpp)
 source_group("src" FILES ${PROJECT_SOURCES_GRAPHIC})
 
-file(GLOB PROJECT_SOURCES_GRAPHIC_OPENGL src/Graphic/Opengl/*.cpp
-                              src/Graphic/Opengl/*.hpp)
+file(GLOB PROJECT_SOURCES_GRAPHIC_OPENGL src/Graphics/Opengl/*.cpp
+                              src/Graphics/Opengl/*.hpp)
 source_group("src\\Opengl" FILES ${PROJECT_SOURCES_GRAPHIC_OPENGL})
 
-file(GLOB PROJECT_SOURCES_POSTPROCESS_OPENGL src/Graphic/Opengl/Postprocess/*.cpp
-                                      src/Graphic/Opengl/Postprocess/*.hpp)
+file(GLOB PROJECT_SOURCES_POSTPROCESS_OPENGL src/Graphics/Opengl/Postprocess/*.cpp
+                                      src/Graphics/Opengl/Postprocess/*.hpp)
 source_group("src\\Opengl\\PostProcess" FILES ${PROJECT_SOURCES_POSTPROCESS_OPENGL})
 
 include_directories(src/

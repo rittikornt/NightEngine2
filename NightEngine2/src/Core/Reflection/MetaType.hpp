@@ -14,7 +14,7 @@
 #include "taocpp_json/include/tao/json/value.hpp"
 #include "taocpp_json/include/tao/json/basic_value.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	using JsonValue = tao::json::value;
 	using ValueObject = tao::json::basic_value<tao::json::traits>;

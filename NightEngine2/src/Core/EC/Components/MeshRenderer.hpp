@@ -7,20 +7,20 @@
 
 #include "Core/EC/ComponentLogic.hpp"
 #include "Core/EC/Handle.hpp"
-#include "Graphic/Opengl/Material.hpp"
-#include "Graphic/Opengl/Mesh.hpp"
+#include "Graphics/Opengl/Material.hpp"
+#include "Graphics/Opengl/Mesh.hpp"
 
 #include <vector>
 
-namespace Graphic
+namespace Rendering
 {
   //Forward Declaration
   class Shader;
 }
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace Components
     {
@@ -49,13 +49,13 @@ namespace Core
           };
 
           //! @brief Init from mesh information
-          void InitMesh(const std::vector<Graphic::Vertex>& vertices
+          void InitMesh(const std::vector<Rendering::Vertex>& vertices
             , const std::vector<unsigned>& indices
             , bool castShadow = true
             , bool buildNow = true);
 
           //! @brief Init from mesh information
-          void InitMesh(const Graphic::Vertex* vertices, size_t vertexArraySize
+          void InitMesh(const Rendering::Vertex* vertices, size_t vertexArraySize
             , const unsigned* indices, size_t indexArraySize
             , bool castShadow = true
             , bool buildNow = true);
@@ -67,16 +67,16 @@ namespace Core
           void UnregisterDrawMode(DrawMode mode);
 
           //! @brief Set Material
-          void SetMaterial(Graphic::Material* material) { m_material = material; }
+          void SetMaterial(Rendering::Material* material) { m_material = material; }
 
           //! @brief Get Material
-          Graphic::Material* GetMaterial(void) { return m_material; }
+          Rendering::Material* GetMaterial(void) { return m_material; }
 
           //! @brief Get Material
           glm::mat4 GetModelMatrix(void);
 
           //! @brief Get Meshes
-          const std::vector<Graphic::Mesh>& GetMeshes(void) { return m_meshes; }
+          const std::vector<Rendering::Mesh>& GetMeshes(void) { return m_meshes; }
 
           //! @brief Check if casting shadow
           bool IsCastingShadow(void) { return m_castShadow; }
@@ -88,10 +88,10 @@ namespace Core
           void DrawMeshes(void);
 
           //! @brief Draw mesh without binding material
-          void DrawWithoutBind(bool useTexture, Graphic::Shader& shader);
+          void DrawWithoutBind(bool useTexture, Rendering::Shader& shader);
 
           //! @brief Draw mesh based on mode
-          void DrawWithMode(bool useTexture, Graphic::Shader& shader);
+          void DrawWithMode(bool useTexture, Rendering::Shader& shader);
 
           //! @brief Loading Model from path
           void LoadModel(const std::string& path
@@ -107,10 +107,10 @@ namespace Core
           void LoadMaterial(std::string fileName);
         private:
           //TODO: use handle instead of pointer
-          Graphic::Material*           m_material;
+          Rendering::Material*           m_material;
 
           //TODO: Vector<Handle<Mesh>> instead
-          std::vector<Graphic::Mesh>   m_meshes;
+          std::vector<Rendering::Mesh>   m_meshes;
           unsigned                     m_meshCount = 0;
 
           bool                         m_castShadow = true;

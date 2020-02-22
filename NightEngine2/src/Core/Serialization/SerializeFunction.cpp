@@ -11,7 +11,7 @@
 
 #include "Core/EC/GameObject.hpp"
 
-#include "Graphic/Opengl/Material.hpp"
+#include "Graphics/Opengl/Material.hpp"
 
 //JsonValue
 #include "taocpp_json/include/tao/json/value.hpp"
@@ -44,12 +44,12 @@ template<> void DefaultDeserializer<TYPE>(ValueObject& valueObject, Reflection::
 
 using JsonValue = tao::json::value;
 
-using namespace Core::ECS;
-using namespace Core::Reflection;
+using namespace NightEngine::EC;
+using namespace NightEngine::Reflection;
 
-using namespace Graphic;
+using namespace Rendering;
 
-namespace Core
+namespace NightEngine
 {
 	namespace Serialization
 	{
@@ -180,7 +180,7 @@ namespace Core
     DEFINE_DEFAULT_DESERIALIZER(std::string)
 
     template <>
-    void DefaultDeserializer<Core::ECS::GameObject&>(ValueObject& valueObject
+    void DefaultDeserializer<NightEngine::EC::GameObject&>(ValueObject& valueObject
       , Reflection::Variable& variable)
     {
       auto& gameObject = variable.GetValue<GameObject>();

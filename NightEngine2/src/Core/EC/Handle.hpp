@@ -8,7 +8,7 @@
 #include "Core/Container/Slotmap.hpp"
 #include "Core/Container/MurmurHash2.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	using namespace Container;
 
@@ -153,7 +153,7 @@ namespace Core
     {
       std::size_t operator()(const HandleObject& handle) const
       {
-        return Core::Container::ConvertToHash(reinterpret_cast<const char*>(&handle)
+        return NightEngine::Container::ConvertToHash(reinterpret_cast<const char*>(&handle)
           , sizeof(handle));
       }
     };

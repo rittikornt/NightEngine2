@@ -6,9 +6,9 @@
 
 #include "Core/EC/SceneManager.hpp"
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace SceneManager
     {

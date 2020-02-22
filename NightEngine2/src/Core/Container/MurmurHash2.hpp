@@ -7,9 +7,9 @@
 #pragma once
 #include "Core/Container/PrimitiveType.hpp"
 
-#define MURMURHASH2(TYPE) Core::Container::ConvertToHash(#TYPE, sizeof(#TYPE)-1)
+#define MURMURHASH2(TYPE) NightEngine::Container::ConvertToHash(#TYPE, sizeof(#TYPE)-1)
 
-namespace Core
+namespace NightEngine
 {
   namespace Container
   {
@@ -68,4 +68,4 @@ namespace Core
     }
     
   } // namespace Container
-} // namespace Core
+} // namespace NightEngine

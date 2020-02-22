@@ -10,7 +10,7 @@
 #include "Core/Container/MurmurHash2.hpp"
 #include <string>
 
-namespace Core
+namespace NightEngine
 {
 	//Forward declaration
 	class IMessageHandler;
@@ -51,7 +51,7 @@ namespace Core
 		{
 				std::size_t operator()(const std::string& key) const 
 				{
-					return Core::Container::ConvertToHash(key.c_str(), key.size());
+					return NightEngine::Container::ConvertToHash(key.c_str(), key.size());
 				}
 		};
 		using IHandlerList = Container::Vector<IMessageHandler *>;
@@ -60,4 +60,4 @@ namespace Core
 		MessageMap m_msgHandlerMap;
 	};
 
-} // namespace Core
+} // namespace NightEngine

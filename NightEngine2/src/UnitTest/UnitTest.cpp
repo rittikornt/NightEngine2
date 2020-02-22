@@ -31,11 +31,11 @@
 
 #include <string> 
 
-using namespace Core::Utility;
-using namespace Core::Container;
-using namespace Core::Factory;
-using namespace Core;
-using namespace ECS;
+using namespace NightEngine::Utility;
+using namespace NightEngine::Container;
+using namespace NightEngine::Factory;
+using namespace NightEngine;
+using namespace EC;
 
 namespace UnitTest
 {
@@ -432,12 +432,12 @@ namespace UnitTest
 		Handle<CTimer> timer_1, timer_2;
 
 		//Create
-		controller_1	= Core::Factory::Create<Controller>("Controller");
-		controller_2	= Core::Factory::Create<Controller>("Controller");
-		character_1		= Core::Factory::Create<CharacterInfo>("CharacterInfo");
-		character_2		= Core::Factory::Create<CharacterInfo>("CharacterInfo");
-		timer_1				= Core::Factory::Create<CTimer>("CTimer");
-		timer_2				= Core::Factory::Create<CTimer>("CTimer");
+		controller_1	= NightEngine::Factory::Create<Controller>("Controller");
+		controller_2	= NightEngine::Factory::Create<Controller>("Controller");
+		character_1		= NightEngine::Factory::Create<CharacterInfo>("CharacterInfo");
+		character_2		= NightEngine::Factory::Create<CharacterInfo>("CharacterInfo");
+		timer_1				= NightEngine::Factory::Create<CTimer>("CTimer");
+		timer_2				= NightEngine::Factory::Create<CTimer>("CTimer");
 
 		SECTION("ComponentUID_Correctness")
 		{
@@ -477,12 +477,12 @@ namespace UnitTest
 		SECTION("Create/Destroy")
 		{
 			//Create All
-			auto& container = Core::Factory::GetTypeContainer<GameObject>();
+			auto& container = NightEngine::Factory::GetTypeContainer<GameObject>();
       size_t size = container.Size();
 
 			for (int i = 0; i < gameObjSize; ++i)
 			{
-				gameobj[i] = Core::Factory::Create<GameObject>("GameObject");
+				gameobj[i] = NightEngine::Factory::Create<GameObject>("GameObject");
 			}
 
 			//Destroy All
@@ -498,12 +498,12 @@ namespace UnitTest
 		SECTION("Add/Get/Remove_Components")
 		{
 			//Create All
-			auto& container = Core::Factory::GetTypeContainer<GameObject>();
+			auto& container = NightEngine::Factory::GetTypeContainer<GameObject>();
 			size_t size = container.Size();
 
 			for (int i = 0; i < gameObjSize; ++i)
 			{
-				gameobj[i] = Core::Factory::Create<GameObject>("GameObject");
+				gameobj[i] = NightEngine::Factory::Create<GameObject>("GameObject");
 				gameobj[i]->AddComponent("CharacterInfo");
 				gameobj[i]->AddComponent("Controller");
 			}
@@ -538,12 +538,12 @@ namespace UnitTest
 		SECTION("HandleAccess_Message")
 		{
 			//Create All
-			auto& container = Core::Factory::GetTypeContainer<GameObject>();
+			auto& container = NightEngine::Factory::GetTypeContainer<GameObject>();
       size_t size = container.Size();
 
 			for (int i = 0; i < gameObjSize; ++i)
 			{
-				gameobj[i] = Core::Factory::Create<GameObject>("GameObject");
+				gameobj[i] = NightEngine::Factory::Create<GameObject>("GameObject");
 				gameobj[i]->Subscribe(MessageType::MSG_PLAYERUPDATE);
 
 				std::string name{ "GameObject" };
@@ -568,7 +568,7 @@ namespace UnitTest
 		SECTION("Container_Access_Loop")
 		{
 			//Loops over the internal container
-			auto& container = Core::Factory::GetTypeContainer<GameObject>();
+			auto& container = NightEngine::Factory::GetTypeContainer<GameObject>();
       size_t size = container.Size();
 
 			auto& _array = container.GetArray();
@@ -576,7 +576,7 @@ namespace UnitTest
 			//Create
 			for (int i = 0; i < gameObjSize; ++i)
 			{
-				gameobj[i] = Core::Factory::Create<GameObject>("GameObject");
+				gameobj[i] = NightEngine::Factory::Create<GameObject>("GameObject");
 				
 				std::string name{ "GameObject" };
 				name += std::to_string(i);
@@ -655,16 +655,16 @@ namespace UnitTest
 			{
 				//Test Primitive Serialization
 				int i = 22222;
-				Core::Serialization::SerializeToFile(i, "UnitTest_Serialization_Int.json"
+				NightEngine::Serialization::SerializeToFile(i, "UnitTest_Serialization_Int.json"
 					, FileSystem::DirectoryType::Assets);
 				float f = 55.444f;
-				Core::Serialization::SerializeToFile(f, "UnitTest_Serialization_Float.json"
+				NightEngine::Serialization::SerializeToFile(f, "UnitTest_Serialization_Float.json"
 					, FileSystem::DirectoryType::Assets);
 				unsigned u = 255u;
-				Core::Serialization::SerializeToFile(u, "UnitTest_Serialization_Unsigned.json"
+				NightEngine::Serialization::SerializeToFile(u, "UnitTest_Serialization_Unsigned.json"
 					, FileSystem::DirectoryType::Assets);
 				bool b = false;
-				Core::Serialization::SerializeToFile(b, "UnitTest_Serialization_Boolean.json"
+				NightEngine::Serialization::SerializeToFile(b, "UnitTest_Serialization_Boolean.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Test Primitive Deserialization
@@ -679,13 +679,13 @@ namespace UnitTest
 				REQUIRE(u != dU);
 				REQUIRE(b != dB);
 
-				Core::Serialization::Deserialize(dI, "UnitTest_Serialization_Int.json"
+				NightEngine::Serialization::Deserialize(dI, "UnitTest_Serialization_Int.json"
 					, FileSystem::DirectoryType::Assets);
-				Core::Serialization::Deserialize(dF, "UnitTest_Serialization_Float.json"
+				NightEngine::Serialization::Deserialize(dF, "UnitTest_Serialization_Float.json"
 					, FileSystem::DirectoryType::Assets);
-				Core::Serialization::Deserialize(dU, "UnitTest_Serialization_Unsigned.json"
+				NightEngine::Serialization::Deserialize(dU, "UnitTest_Serialization_Unsigned.json"
 					, FileSystem::DirectoryType::Assets);
-				Core::Serialization::Deserialize(dB, "UnitTest_Serialization_Boolean.json"
+				NightEngine::Serialization::Deserialize(dB, "UnitTest_Serialization_Boolean.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Equal after deserialize
@@ -699,7 +699,7 @@ namespace UnitTest
 			{
 				//Test Class Serialization
 				PODStruct pod{ true,-55, 66, 777.77f };
-				Core::Serialization::SerializeToFile(pod, "UnitTest_Serialization_PODStruct.json"
+				NightEngine::Serialization::SerializeToFile(pod, "UnitTest_Serialization_PODStruct.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Not equal on init
@@ -707,7 +707,7 @@ namespace UnitTest
 				REQUIRE(pod != dpod);
 
 				//Test Class Deserialization
-				Core::Serialization::Deserialize(dpod, "UnitTest_Serialization_PODStruct.json"
+				NightEngine::Serialization::Deserialize(dpod, "UnitTest_Serialization_PODStruct.json"
 					, FileSystem::DirectoryType::Assets);
 				REQUIRE(pod == dpod);
 			}
@@ -716,7 +716,7 @@ namespace UnitTest
 			{
 				//Test Class Serialization
 				ClassWithProtected t{ true, -3, 4u, 5.55f, false,-11,22,33.33f };
-				Core::Serialization::SerializeToFile(t, "UnitTest_Serialization_ClassWithProtected.json"
+				NightEngine::Serialization::SerializeToFile(t, "UnitTest_Serialization_ClassWithProtected.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Not equal on init
@@ -724,7 +724,7 @@ namespace UnitTest
 				REQUIRE(t != dT);
 
 				//Test Class Deserialization
-				Core::Serialization::Deserialize(dT, "UnitTest_Serialization_ClassWithProtected.json"
+				NightEngine::Serialization::Deserialize(dT, "UnitTest_Serialization_ClassWithProtected.json"
 					, FileSystem::DirectoryType::Assets);
 				REQUIRE(t == dT);
 			}
@@ -734,7 +734,7 @@ namespace UnitTest
 				//Test Class Serialization
 				DerivedClass dc{ {true, -3, 4u, 5.55f, false,-11,22,33.33f},
 				{ true,-111,222,333.33f },{ false,-1111,2222,3333.33f } };
-				Core::Serialization::SerializeToFile(dc, "UnitTest_Serialization_DerivedClass.json"
+				NightEngine::Serialization::SerializeToFile(dc, "UnitTest_Serialization_DerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Not equal on init
@@ -742,11 +742,11 @@ namespace UnitTest
 				REQUIRE(dc != ddc);
 
 				//Test Class Deserialization
-				Core::Serialization::Deserialize(ddc, "UnitTest_Serialization_DerivedClass.json"
+				NightEngine::Serialization::Deserialize(ddc, "UnitTest_Serialization_DerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
         if (debugPrint)
         {
-          Core::Serialization::Serialize(ddc, std::cout);
+          NightEngine::Serialization::Serialize(ddc, std::cout);
         }
 				REQUIRE(dc == ddc);
 			}
@@ -756,7 +756,7 @@ namespace UnitTest
 				//Test Class Serialization
 				SecondDerivedClass dc{ DerivedClass{ { true, -3, 4u, 5.55f, false,-11,22,33.33f },
 				{ true,-111,222,333.33f },{ false,-1111,2222,3333.33f } }, -9999, 3456.34f };
-				Core::Serialization::SerializeToFile(dc, "UnitTest_Serialization_SecondDerivedClass.json"
+				NightEngine::Serialization::SerializeToFile(dc, "UnitTest_Serialization_SecondDerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Not equal on init
@@ -764,12 +764,12 @@ namespace UnitTest
 				REQUIRE(dc != ddc);
 
 				//Test Class Deserialization
-				Core::Serialization::Deserialize(ddc, "UnitTest_Serialization_SecondDerivedClass.json"
+				NightEngine::Serialization::Deserialize(ddc, "UnitTest_Serialization_SecondDerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
         
         if (debugPrint)
         {
-          Core::Serialization::Serialize(ddc, std::cout);
+          NightEngine::Serialization::Serialize(ddc, std::cout);
           std::cout << '\n';
         }
 				REQUIRE(dc == ddc);
@@ -777,7 +777,7 @@ namespace UnitTest
 				//Test Class Serialization
 				SecondPrivateDerivedClass sdc{ DerivedClass{ { true, -3, 4u, 5.55f, false,-11,22,33.33f },
 				{ true,-111,222,333.33f },{ false,-1111,2222,3333.33f } }, -9999, 3456.34f };
-				Core::Serialization::SerializeToFile(sdc, "UnitTest_Serialization_SecondPrivateDerivedClass.json"
+				NightEngine::Serialization::SerializeToFile(sdc, "UnitTest_Serialization_SecondPrivateDerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Not equal on init
@@ -785,11 +785,11 @@ namespace UnitTest
 				REQUIRE(sdc != dsdc);
 
 				//Test Class Deserialization
-				Core::Serialization::Deserialize(dsdc, "UnitTest_Serialization_SecondPrivateDerivedClass.json"
+				NightEngine::Serialization::Deserialize(dsdc, "UnitTest_Serialization_SecondPrivateDerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
         if (debugPrint)
         {
-          Core::Serialization::Serialize(dsdc, std::cout);
+          NightEngine::Serialization::Serialize(dsdc, std::cout);
           std::cout << '\n';
         }
 				REQUIRE(sdc == dsdc);
@@ -800,7 +800,7 @@ namespace UnitTest
 				//Test Class Serialization
 				ThirdDerivedClass td{ SecondPrivateDerivedClass{DerivedClass(), -111, 5432.10f}
 				,-45425, 322.55f };
-				Core::Serialization::SerializeToFile(td, "UnitTest_Serialization_ThirdDerivedClass.json"
+				NightEngine::Serialization::SerializeToFile(td, "UnitTest_Serialization_ThirdDerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
 
 				//Not equal on init
@@ -808,11 +808,11 @@ namespace UnitTest
 				REQUIRE(td != dtd);
 
 				//Test Class Deserialization
-				Core::Serialization::Deserialize(dtd, "UnitTest_Serialization_ThirdDerivedClass.json"
+				NightEngine::Serialization::Deserialize(dtd, "UnitTest_Serialization_ThirdDerivedClass.json"
 					, FileSystem::DirectoryType::Assets);
         if (debugPrint)
         {
-          Core::Serialization::Serialize(dtd, std::cout);
+          NightEngine::Serialization::Serialize(dtd, std::cout);
           std::cout << '\n';
         }
 				REQUIRE(td == dtd);

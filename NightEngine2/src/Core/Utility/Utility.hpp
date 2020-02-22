@@ -9,26 +9,26 @@
 
 //! @brief Macros for quick profiling a block of code
 #define PROFILE_BLOCK(DESCRIPTION)	\
-Core::Debug::Log << "\n//*************************************************\n" \
+NightEngine::Debug::Log << "\n//*************************************************\n" \
 								 << "// Start PROFILE_BLOCK(" << DESCRIPTION << ")\n" \
 								 << "//*************************************************\n\n"; \
-for (auto p = std::make_pair(false, Core::Utility::StopWatch{ true })	\
+for (auto p = std::make_pair(false, NightEngine::Utility::StopWatch{ true })	\
 	; !(p.first); p.first = true, p.second.Stop()												\
-	, Core::Debug::Log << "\n//*************************************************\n" \
+	, NightEngine::Debug::Log << "\n//*************************************************\n" \
 	<< "// End PROFILE_BLOCK(" << DESCRIPTION << "): "									\
 	<< p.second.GetElapsedTimeMilli() << " ms\n" 														\
   << "//*************************************************\n\n")
 
 //! @brief Macros for quick profiling a block of code
 #define PROFILE_BLOCK_SINGLELINE(DESCRIPTION)	\
-for (auto p = std::make_pair(false, Core::Utility::StopWatch{ true })	\
+for (auto p = std::make_pair(false, NightEngine::Utility::StopWatch{ true })	\
 	; !(p.first); p.first = true, p.second.Stop()												\
-	, Core::Debug::Log << "\n//*************************************************\n" \
+	, NightEngine::Debug::Log << "\n//*************************************************\n" \
 	<< "// End PROFILE_BLOCK(" << DESCRIPTION << "): "									\
 	<< p.second.GetElapsedTimeMilli() << " ms\n" 														\
   << "//*************************************************\n")
 
-namespace Core
+namespace NightEngine
 {
   namespace Utility
   {
@@ -70,5 +70,5 @@ namespace Core
 			bool m_done;
 		};
   } // Utility
-} // Core
+} // NightEngine
 

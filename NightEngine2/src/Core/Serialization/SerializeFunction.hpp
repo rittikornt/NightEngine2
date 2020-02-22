@@ -25,14 +25,14 @@ JsonValue DefaultSerializer<TYPE>(Reflection::Variable& variable)
 template <> \
 void DefaultDeserializer<TYPE>(ValueObject& valueObject, Reflection::Variable& variable)
 
-namespace Graphic
+namespace Rendering
 {
   class Material;
 }
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     class GameObject;
   }
@@ -88,10 +88,10 @@ namespace Core
 
     //GameObject
     template <>
-    JsonValue DefaultSerializer<Core::ECS::GameObject&>(Reflection::Variable& variable);
+    JsonValue DefaultSerializer<NightEngine::EC::GameObject&>(Reflection::Variable& variable);
 
     template <>
-    JsonValue DefaultSerializer<Graphic::Material&>(Reflection::Variable& variable);
+    JsonValue DefaultSerializer<Rendering::Material&>(Reflection::Variable& variable);
 
 		//***********************************************************************
 		// Deserialize
@@ -150,9 +150,9 @@ namespace Core
 
     //GameObject
     template <>
-    void DefaultDeserializer<Core::ECS::GameObject&>(ValueObject& valueObject, Reflection::Variable& variable);
+    void DefaultDeserializer<NightEngine::EC::GameObject&>(ValueObject& valueObject, Reflection::Variable& variable);
 
     template <>
-    void DefaultDeserializer<Graphic::Material&>(ValueObject& valueObject, Reflection::Variable& variable);
+    void DefaultDeserializer<Rendering::Material&>(ValueObject& valueObject, Reflection::Variable& variable);
 	}
 }

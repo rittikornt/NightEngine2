@@ -6,7 +6,7 @@
 #pragma once
 #include "glm/vec3.hpp"
 
-namespace Core
+namespace NightEngine
 {
   namespace Utility
   {
@@ -105,5 +105,5 @@ namespace Core
 			}
 		} // Parametric
   } // Utility
-} // Core
+} // NightEngine
 

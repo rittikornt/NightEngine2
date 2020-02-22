@@ -4,7 +4,7 @@
   @brief Contain the Implementation of Input
 */
 #include "Input/Input.hpp"
-#include "Graphic/Opengl/Window.hpp"
+#include "Graphics/Opengl/Window.hpp"
 #include "Core/Logger.hpp"
 #include "UnitTest/UnitTest.hpp"
 
@@ -13,8 +13,8 @@
 #include "Core/Container/Vector.hpp"
 
 using namespace std;
-using namespace Core;
-using namespace Graphic;
+using namespace NightEngine;
+using namespace Rendering;
 
 #define EPILSON 0.08f
 #define JOYSTICK_MAX 4
@@ -153,7 +153,7 @@ namespace Input
 		//Check previous and current state
 		int key = static_cast<int>(keyCode);
 		KeyState previousState = g_keyStateMap[keyCode];
-		bool press = Graphic::Window::GetKeyboardInput(key) == GLFW_PRESS;
+		bool press = Rendering::Window::GetKeyboardInput(key) == GLFW_PRESS;
 
 		//Result Key State
 		KeyState state = KeyState::KEY_NONE;
@@ -185,7 +185,7 @@ namespace Input
 		//Check previous and current state
 		int key = static_cast<int>(keyCode);
 		KeyState previousState = g_mouseStateMap[keyCode];
-		bool press = Graphic::Window::GetMouseInput(key) == GLFW_PRESS;
+		bool press = Rendering::Window::GetMouseInput(key) == GLFW_PRESS;
 
 		//Result Key State
 		KeyState state = KeyState::KEY_NONE;

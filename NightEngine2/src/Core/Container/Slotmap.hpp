@@ -9,7 +9,7 @@
 #include "Core/Container/Vector.hpp"
 #include "Core/Container/PrimitiveType.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	namespace Container
 	{

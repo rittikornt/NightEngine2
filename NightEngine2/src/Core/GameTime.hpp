@@ -8,16 +8,16 @@
 #include <chrono>
 #include "Core/Message/IMessageHandler.hpp"
 
-namespace Core
+namespace NightEngine
 {
   //Forward declaration
   struct GameShouldCloseMessage;
 }
 
-namespace NightEngine2
+namespace NightEngine
 {
 	constexpr float c_DEFAULT_FPS_CAP = 60.0f;
-  class GameTime: public Core::IMessageHandler
+  class GameTime: public NightEngine::IMessageHandler
   {
   public:
     //! @brief Constructors
@@ -46,7 +46,7 @@ namespace NightEngine2
 		void EndFrame();
 
     //! @brief Handle Close Message
-		virtual void HandleMessage(const Core::GameShouldCloseMessage& msg);
+		virtual void HandleMessage(const NightEngine::GameShouldCloseMessage& msg);
 
   public:
 		///////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@
 //! @brief for swapping to EASTL later on?
 #include <string>
 
-namespace Core
+namespace NightEngine
 {
   namespace Container
   {

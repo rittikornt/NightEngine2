@@ -11,7 +11,7 @@
 #include "Core/Container/Hashmap.hpp"
 #include "Core/Container/PrimitiveType.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	using namespace Container;
 

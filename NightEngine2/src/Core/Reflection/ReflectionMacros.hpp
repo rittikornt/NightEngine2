@@ -17,10 +17,10 @@
 #include "Core/Macros.hpp"
 #include "Core/Container/MurmurHash2.hpp"
 
-using ReflectionManager = Core::Reflection::MetaManager;
+using ReflectionManager = NightEngine::Reflection::MetaManager;
 
-using InheritType = Core::Reflection::BaseClass::InheritType;
-using AccessType = Core::Reflection::Member::AccessType;
+using InheritType = NightEngine::Reflection::BaseClass::InheritType;
+using AccessType = NightEngine::Reflection::Member::AccessType;
 
 //************************************************************
 // Register Type Within a ReflectionCore.cpp Initialization
@@ -125,25 +125,25 @@ ReflectionManager::RegisterType<RawType<TYPE>>(#TYPE, MURMURHASH2(TYPE)\
 
 //! @brief Give reflection system access to a class/struct private/protected section
 #define REFLECTABLE_TYPE() \
-		friend void Core::Reflection::Initialize(void); \
+		friend void NightEngine::Reflection::Initialize(void); \
     template <typename T> \
-    friend Core::JsonValue Core::Serialization::DefaultSerializer(Core::Reflection::Variable&); \
+    friend NightEngine::JsonValue NightEngine::Serialization::DefaultSerializer(NightEngine::Reflection::Variable&); \
     template <typename T> \
-    friend void Core::Serialization::DefaultDeserializer(Core::ValueObject&,Core::Reflection::Variable&);
+    friend void NightEngine::Serialization::DefaultDeserializer(NightEngine::ValueObject&,NightEngine::Reflection::Variable&);
 
 //! @brief Give reflection system access to a class/struct private/protected section
 #define REFLECTABLE_TYPE_BLOCK() \
     public: \
-		friend void Core::Reflection::Initialize(void); \
+		friend void NightEngine::Reflection::Initialize(void); \
     template <typename T> \
-    friend Core::JsonValue Core::Serialization::DefaultSerializer(Core::Reflection::Variable&); \
+    friend NightEngine::JsonValue NightEngine::Serialization::DefaultSerializer(NightEngine::Reflection::Variable&); \
     template <typename T> \
-    friend void Core::Serialization::DefaultDeserializer(Core::ValueObject&,Core::Reflection::Variable&); \
+    friend void NightEngine::Serialization::DefaultDeserializer(NightEngine::ValueObject&,NightEngine::Reflection::Variable&); \
     static void ReflectionInit()
 
 //! @brief Register reflection init function to the global class to be called at init time, must be in .cpp file
 #define INIT_REFLECTION_FOR(TYPE) \
-    static Core::Reflection::ReflectionInitFunctionsRegisterer<TYPE> g_registerer##TYPE; \
+    static NightEngine::Reflection::ReflectionInitFunctionsRegisterer<TYPE> g_registerer##TYPE; \
 //************************************************************
 // Getter Macros
 //************************************************************
@@ -167,20 +167,20 @@ ReflectionManager::RegisterType<RawType<TYPE>>(#TYPE, MURMURHASH2(TYPE)\
 //************************************************************
 // META Registerer Macros
 //************************************************************
-#define META_REGISTERER(TYPE, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static Core::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
-        = Core::Reflection::MetaRegisterer<TYPE>() \
+#define META_REGISTERER(TYPE, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static NightEngine::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
+        = NightEngine::Reflection::MetaRegisterer<TYPE>() \
           .RegisterType(#TYPE, MURMURHASH2(TYPE) \
             , sizeof(TYPE), { nullptr, InheritType::PUBLIC} \
             , SERIALIZER, DESERIALIZER, SHOULDSERIALIZED)
 
-#define META_REGISTERER_WITHNAME(TYPE, NEWNAME, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static Core::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
-        = Core::Reflection::MetaRegisterer<TYPE>() \
+#define META_REGISTERER_WITHNAME(TYPE, NEWNAME, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static NightEngine::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
+        = NightEngine::Reflection::MetaRegisterer<TYPE>() \
           .RegisterType(NEWNAME, MURMURHASH2(TYPE) \
             , sizeof(TYPE), { nullptr, InheritType::PUBLIC} \
             , SERIALIZER, DESERIALIZER, SHOULDSERIALIZED)
 
-#define META_REGISTERER_WITHBASE(TYPE, BASETYPE, INHERITTYPE, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static Core::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
-        = Core::Reflection::MetaRegisterer<TYPE>() \
+#define META_REGISTERER_WITHBASE(TYPE, BASETYPE, INHERITTYPE, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static NightEngine::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
+        = NightEngine::Reflection::MetaRegisterer<TYPE>() \
           .RegisterType(#TYPE, MURMURHASH2(TYPE) \
             , sizeof(TYPE), { ReflectionManager::GetMetaType<RawType<BASETYPE>>(), INHERITTYPE} \
             , SERIALIZER, DESERIALIZER, SHOULDSERIALIZED)

@@ -23,7 +23,7 @@ virtual void SendMessageTo(IMessageHandler & handler) const	\
 	handler.HandleMessage(*this);	\
 }	
 
-namespace Core
+namespace NightEngine
 {
   //Forward declaration
   class IMessageHandler;

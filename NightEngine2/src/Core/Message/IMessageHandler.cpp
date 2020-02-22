@@ -6,7 +6,7 @@
 #include "Core/Message/IMessageHandler.hpp"
 #include "Core/Message/MessageSystem.hpp"
 
-namespace Core
+namespace NightEngine
 {
   IMessageHandler::~IMessageHandler()
   {

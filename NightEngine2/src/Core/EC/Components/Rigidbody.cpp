@@ -19,9 +19,9 @@
 #include "Physics/PhysicUtilities.hpp"
 #include "Physics/Collider.hpp"
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace Components
     {
@@ -76,7 +76,7 @@ namespace Core
         scene.AddRigidBody(*this);
       }
 
-      Core::ECS::Components::Transform* Rigidbody::GetTransform(void)
+      NightEngine::EC::Components::Transform* Rigidbody::GetTransform(void)
       {
         return m_gameObject->GetTransform();
       }

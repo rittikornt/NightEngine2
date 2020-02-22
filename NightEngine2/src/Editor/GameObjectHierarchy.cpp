@@ -7,13 +7,13 @@
 
 #include "Editor/GameObjectHierarchy.hpp"
 #include "imgui/imgui.h"
-#include "Graphic/Opengl/Window.hpp"
+#include "Graphics/Opengl/Window.hpp"
 
 #include "Core/EC/GameObject.hpp"
 
-using namespace Core;
-using namespace Graphic;
-using namespace Core::ECS;
+using namespace NightEngine;
+using namespace Rendering;
+using namespace NightEngine::EC;
 
 namespace Editor
 {

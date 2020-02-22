@@ -12,11 +12,11 @@
 #include "Core/Container/Map.hpp"
 #include "Core/Container/String.hpp"
 
-using namespace Core::Serialization;
+using namespace NightEngine::Serialization;
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     class GameObject;
     struct Archetype;
@@ -48,11 +48,11 @@ namespace Core
 
       //! @brief Save to Blueprint
       void SaveToBlueprint(const std::string& name
-        , Core::ECS::GameObject& gameObject);
+        , NightEngine::EC::GameObject& gameObject);
 
       //! @brief Load Blueprint
       void LoadBlueprint(const std::string& name
-        , Core::ECS::GameObject& gameObject);
+        , NightEngine::EC::GameObject& gameObject);
 
       ///////////////////////////////////////////////////////////
 
@@ -64,15 +64,15 @@ namespace Core
 
       //! @brief Save to Archetype
       void SaveToArchetype(const std::string& name
-        , Core::ECS::GameObject& gameObject);
+        , NightEngine::EC::GameObject& gameObject);
 
       //! @brief Save to Archetype
       void SaveToArchetype(const std::string& name
-        , Core::ECS::Archetype& archetype);
+        , NightEngine::EC::Archetype& archetype);
 
       //! @brief Load Archetype
       void LoadArchetype(const std::string& name
-        , Core::ECS::GameObject& gameObject);
+        , NightEngine::EC::GameObject& gameObject);
 
       //! @brief Remove from Archetype
       void RemoveFromArchetype(std::string name);
@@ -82,7 +82,7 @@ namespace Core
         ,const std::string& newName);
 
       //! @brief Check if gameObject is a specific Archetype
-      bool IsArchetype(Core::ECS::GameObject& gameObject
+      bool IsArchetype(NightEngine::EC::GameObject& gameObject
         ,Archetype& archetype);
     }
   }

@@ -6,25 +6,25 @@
 #include "Core/EC/Components/MeshRenderer.hpp"
 #include "Core/EC/GameObject.hpp"
 
-#include "Graphic/Opengl/Model.hpp"
-#include "Graphic/Opengl/Vertex.hpp"
-#include "Graphic/Opengl/Shader.hpp"
+#include "Graphics/Opengl/Model.hpp"
+#include "Graphics/Opengl/Vertex.hpp"
+#include "Graphics/Opengl/Shader.hpp"
 
-#include "Graphic/Opengl/InstanceDrawer.hpp"
+#include "Graphics/Opengl/InstanceDrawer.hpp"
 
 #include "Core/Serialization/ResourceManager.hpp"
 
-using namespace Graphic;
+using namespace Rendering;
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace Components
     {
       INIT_REFLECTION_FOR(MeshRenderer)
 
-      void MeshRenderer::InitMesh(const std::vector<Graphic::Vertex>& vertices
+      void MeshRenderer::InitMesh(const std::vector<Rendering::Vertex>& vertices
         , const std::vector<unsigned>& indices
         , bool castShadow, bool buildNow)
       {
@@ -179,7 +179,7 @@ namespace Core
         }
       }
 
-      void MeshRenderer::DrawWithoutBind(bool useTexture, Graphic::Shader& shader)
+      void MeshRenderer::DrawWithoutBind(bool useTexture, Rendering::Shader& shader)
       {
         //SetUniform Modelmatrix
         auto t = m_gameObject->GetTransform();
@@ -190,7 +190,7 @@ namespace Core
         DrawMeshes();
       }
 
-      void MeshRenderer::DrawWithMode(bool useTexture, Graphic::Shader& shader)
+      void MeshRenderer::DrawWithMode(bool useTexture, Rendering::Shader& shader)
       {
         ASSERT_TRUE(m_drawMode != DrawMode::UNINITIALIZED);
 

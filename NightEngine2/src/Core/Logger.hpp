@@ -11,7 +11,7 @@
 #include <sstream>
 #include <chrono>
 
-namespace Core
+namespace NightEngine
 {
 	class Logger
 	{
@@ -49,7 +49,7 @@ namespace Core
 		template<typename T>
 		Logger& operator<<(const T& message)
 		{
-      using namespace Core;
+      using namespace NightEngine;
 
 			// Send message to Logger
 			std::cout << message;

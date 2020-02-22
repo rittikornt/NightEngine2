@@ -16,23 +16,23 @@
 #include "Core/Reflection/ReflectionMacros.hpp"
 
 //Forward declaration
-namespace Core
+namespace NightEngine
 {
 	class IMessageHandler;
 	class PlayerUpdateMessage;
 }
 
-namespace Core
+namespace NightEngine
 {
-	namespace ECS
+	namespace EC
 	{
     //! @brief GameObject Class
-		class GameObject : public Core::IMessageHandler
+		class GameObject : public NightEngine::IMessageHandler
 		{
       REFLECTABLE_TYPE();
 		public:
       //! @brief HandleMessage Override
-			virtual void HandleMessage(const Core::PlayerUpdateMessage &msg);
+			virtual void HandleMessage(const NightEngine::PlayerUpdateMessage &msg);
 
       //! @brief Constructor
 			GameObject();

@@ -8,7 +8,7 @@
 #include "Core/Macros.hpp"
 #include <sys/stat.h>
 
-namespace Core
+namespace NightEngine
 {
 	namespace FileSystem
 	{

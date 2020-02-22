@@ -23,21 +23,21 @@
 #include "Core/EC/ArchetypeManager.hpp"
 
 #include "Physics/PhysicsScene.hpp"
-#include "Graphic/Opengl/RenderLoopOpengl.hpp"
-#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
-#include "Graphic/Opengl/Window.hpp"
-#include "Graphic/ShaderTracker.hpp"
+#include "Graphics/RenderLoopOpengl.hpp"
+#include "Graphics/Opengl/OpenglAllocationTracker.hpp"
+#include "Graphics/Opengl/Window.hpp"
+#include "Graphics/ShaderTracker.hpp"
 
-#include "Graphic/RenderDoc/RenderDocManager.hpp"
+#include "Graphics/RenderDoc/RenderDocManager.hpp"
 
-using namespace Core;
-using namespace Core::Container;
-using namespace Core::ECS;
+using namespace NightEngine;
+using namespace NightEngine::Container;
+using namespace NightEngine::EC;
 
-using namespace Graphic;
+using namespace Rendering;
 using namespace Physics;
 
-namespace NightEngine2
+namespace NightEngine
 {
   //Game Status Setting
   constexpr float      c_renderFPS = 60.0f;
@@ -53,19 +53,19 @@ namespace NightEngine2
   void Engine::Initialize(void)
   {
     PROFILE_SESSION_BEGIN(nightengine2_profile_session_init);
-    PROFILE_BLOCK_INSTRUMENT("NightEngine2::Initialize")
+    PROFILE_BLOCK_INSTRUMENT("NightEngine::Initialize")
     {
-      Debug::Log << "NightEngine2::Initialize\n";
+      Debug::Log << "NightEngine::Initialize\n";
       s_instance = this;
 
       m_gameTime = &(GameTime::GetInstance());
       *m_gameTime = GameTime{ c_renderFPS, c_simulationFPS, c_AVR_FRAMERATE_SAMPLE };
-      m_gameTime->Subscribe(Core::MessageType::MSG_GAMESHOULDQUIT);
+      m_gameTime->Subscribe(NightEngine::MessageType::MSG_GAMESHOULDQUIT);
 
       //Physics
       g_physicScene = new PhysicsScene();
 
-      //Core
+      //NightEngine
       Reflection::Initialize();
       Factory::Initialize();
       ArchetypeManager::Initialize();
@@ -79,14 +79,14 @@ namespace NightEngine2
       //Initialize RenderLoop
       if (m_renderloop == nullptr)
       {
-        Window::Initialize("NightEngine2", Window::WindowMode::WINDOW);
+        Window::Initialize("NightEngine", Window::WindowMode::WINDOW);
         m_renderloop = new RenderLoopOpengl();
         m_renderloop->Initialize();
       }
       
       Input::Initialize();
 
-      //Physic Init After Graphic
+      //Physic Init After Rendering
       g_physicScene->Initialize();
 
       //TODO: Scene Init, Update, Terminate
@@ -97,9 +97,9 @@ namespace NightEngine2
   void Engine::Terminate(void)
   {
     PROFILE_SESSION_BEGIN(nightengine2_profile_session_terminate);
-    PROFILE_BLOCK_INSTRUMENT("NightEngine2::Terminate")
+    PROFILE_BLOCK_INSTRUMENT("NightEngine::Terminate")
     {
-      Debug::Log << "NightEngine2::Terminate\n";
+      Debug::Log << "NightEngine::Terminate\n";
 
       //Terminate System
       Input::Terminate();
@@ -166,15 +166,15 @@ namespace NightEngine2
 
         switch (m_event)
         {
-        case NightEngine2::PostRenderEngineEvent::RestartWindow:
+        case NightEngine::PostRenderEngineEvent::RestartWindow:
           m_shouldAttachRenderDoc = false;
           ReInitRenderLoop_Internal();
           break;
-        case NightEngine2::PostRenderEngineEvent::AttachRenderDoc:
+        case NightEngine::PostRenderEngineEvent::AttachRenderDoc:
           m_shouldAttachRenderDoc = true;
           ReInitRenderLoop_Internal();
           break;
-        case NightEngine2::PostRenderEngineEvent::RecompileShader:
+        case NightEngine::PostRenderEngineEvent::RecompileShader:
           ShaderTracker::RecompileAllShaders();
           m_renderloop->OnRecompiledShader();
           break;
@@ -243,7 +243,7 @@ namespace NightEngine2
     //Initialize RenderLoop
     if (m_renderloop == nullptr)
     {
-      Window::Initialize("NightEngine2", Window::WindowMode::WINDOW);
+      Window::Initialize("NightEngine", Window::WindowMode::WINDOW);
       m_renderloop = new RenderLoopOpengl();
       m_renderloop->Initialize();
       CHECKGL_ERROR();

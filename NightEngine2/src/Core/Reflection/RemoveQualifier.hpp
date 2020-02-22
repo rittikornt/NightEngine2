@@ -5,7 +5,7 @@
 */
 #pragma once
 
-namespace Core
+namespace NightEngine
 {
   namespace Reflection
   {
@@ -50,4 +50,4 @@ namespace Core
 @brief Alias for shorter use
 */
 template<typename T>
-using RawType = typename Core::Reflection::RemoveQualifier<T>::RawType;
+using RawType = typename NightEngine::Reflection::RemoveQualifier<T>::RawType;

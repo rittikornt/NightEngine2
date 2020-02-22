@@ -6,11 +6,11 @@
 */
 #include "Editor/ConfirmationBox.hpp"
 #include "imgui/imgui.h"
-#include "Graphic/Opengl/Window.hpp"
+#include "Graphics/Opengl/Window.hpp"
 
 #include "Core/Macros.hpp"
 
-using namespace Graphic;
+using namespace Rendering;
 
 namespace Editor
 {

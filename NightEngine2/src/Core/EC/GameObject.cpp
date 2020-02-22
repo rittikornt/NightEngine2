@@ -8,15 +8,15 @@
 #include "Core/Message/MessageObjectList.hpp"
 #include "Core/Logger.hpp"
 
-using namespace Core;
-using namespace Core::Factory;
-using namespace Core::ECS::Components;
+using namespace NightEngine;
+using namespace NightEngine::Factory;
+using namespace NightEngine::EC::Components;
 
-namespace Core
+namespace NightEngine
 {
-	namespace ECS
+	namespace EC
 	{
-		void GameObject::HandleMessage(const Core::PlayerUpdateMessage & msg)
+		void GameObject::HandleMessage(const NightEngine::PlayerUpdateMessage & msg)
 		{
 			Debug::Log << "(" << m_name << ") HandleMessage: " << msg.m_updateAmount << ", Address: " << this << '\n';
 		}

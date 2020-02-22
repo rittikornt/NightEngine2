@@ -12,11 +12,11 @@
 
 #include "Core/Macros.hpp"
 
-using namespace Core::Reflection;
+using namespace NightEngine::Reflection;
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     Archetype::Archetype(const Container::String& name,GameObject& gameObject)
      : m_name(name)

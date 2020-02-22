@@ -6,7 +6,7 @@
 #include "Core/Utility/Profiling.hpp"
 #include "Core/Logger.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	namespace Profiling
 	{
@@ -77,4 +77,4 @@ namespace Core
     }
 
 	} // Profiling
-} // Core
+} // NightEngine

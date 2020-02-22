@@ -15,7 +15,7 @@
 #define POINTER_OFFSET(VOIDPTR, OFFSET)\
 	(reinterpret_cast<void*>(reinterpret_cast<char*>(VOIDPTR) + (OFFSET) ))
 
-namespace Core
+namespace NightEngine
 {
 	using JsonValue = tao::json::value;
 	using ValueObject = tao::json::basic_value<tao::json::traits>;

@@ -12,11 +12,11 @@
 
 #include "Core/Reflection/Variable.hpp"
 
-using namespace Core::Reflection;
+using namespace NightEngine::Reflection;
 
-namespace Core
+namespace NightEngine
 {
-  namespace ECS
+  namespace EC
   {
     namespace ArchetypeManager
     {
@@ -93,7 +93,7 @@ namespace Core
 
       ///////////////////////////////////////////////////////////
 
-      void SaveToBlueprint(const std::string& name, Core::ECS::GameObject & gameObject)
+      void SaveToBlueprint(const std::string& name, NightEngine::EC::GameObject & gameObject)
       {
         std::string fileName{ name };
         fileName += ".bp";
@@ -105,7 +105,7 @@ namespace Core
           << "Saved Blueprint:" << fileName << '\n';
       }
 
-      void LoadBlueprint(const std::string & name, Core::ECS::GameObject& gameObject)
+      void LoadBlueprint(const std::string & name, NightEngine::EC::GameObject& gameObject)
       {
         std::string fileName{ name };
         fileName += ".bp";
@@ -134,7 +134,7 @@ namespace Core
           , FileSystem::DirectoryType::Archetypes);
       }
 
-      void SaveToArchetype(const std::string & name, Core::ECS::GameObject& gameObject)
+      void SaveToArchetype(const std::string & name, NightEngine::EC::GameObject& gameObject)
       {
         //Add Archetype to ArchetypeList
         g_archetypeList.m_archetypes.insert({ name, Archetype(name,gameObject)});
@@ -148,7 +148,7 @@ namespace Core
           << "Saved to ArchetypeList: " << name << '\n';
       }
 
-      void SaveToArchetype(const std::string& name, Core::ECS::Archetype & archetype)
+      void SaveToArchetype(const std::string& name, NightEngine::EC::Archetype & archetype)
       {
         //Add Archetype to ArchetypeList
         archetype.m_name = name;
@@ -163,7 +163,7 @@ namespace Core
           << "Saved to ArchetypeList: " << name << '\n';
       }
 
-      void LoadArchetype(const std::string& name, Core::ECS::GameObject & gameObject)
+      void LoadArchetype(const std::string& name, NightEngine::EC::GameObject & gameObject)
       {
         //Lookup from table
         auto it = g_archetypeList.m_archetypes.find(name);
@@ -232,7 +232,7 @@ namespace Core
         }
       }
 
-      bool IsArchetype(Core::ECS::GameObject & gameObject
+      bool IsArchetype(NightEngine::EC::GameObject & gameObject
         , Archetype& archetype)
       {
         auto& components = gameObject.GetAllComponents();

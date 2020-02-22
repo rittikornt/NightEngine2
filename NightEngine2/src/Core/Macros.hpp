@@ -48,9 +48,9 @@
 
 	//Trace
 	#ifdef _WIN32
-		#define TRACE() Core::Debug::Log.Print(Core::Logger::MessageType::INFO,__FUNCSIG__);
+		#define TRACE() NightEngine::Debug::Log.Print(NightEngine::Logger::MessageType::INFO,__FUNCSIG__);
 	#else
-		#define TRACE() Core::Debug::Log.Print(Core::Logger::MessageType::INFO,__PRETTY_FUNCTION__);
+		#define TRACE() NightEngine::Debug::Log.Print(NightEngine::Logger::MessageType::INFO,__PRETTY_FUNCTION__);
 	#endif
 
 	//Debug Break
@@ -72,7 +72,7 @@
 		{																																										\
 			if(!(EXP))																																	\
 			{																																									\
-				Core::Debug::Log << Core::Logger::MessageType::ERROR_MSG << "Debug assertion \""		\
+				NightEngine::Debug::Log << NightEngine::Logger::MessageType::ERROR_MSG << "Debug assertion \""		\
 					<< #EXP << "\" FAILED in: " << __func__ << ", line: " << __LINE__				\
 					<< ", file: " << __FILE__ << '\n';																				\
 				DEBUG_BREAK();																																	\
@@ -83,10 +83,10 @@
 		  {																																										\
 			  if(!(EXP))																																	      \
 			  {																																									\
-				  Core::Debug::Log << Core::Logger::MessageType::ERROR_MSG << "Debug assertion \""		\
+				  NightEngine::Debug::Log << NightEngine::Logger::MessageType::ERROR_MSG << "Debug assertion \""		\
 					  << #EXP << "\" FAILED in: " << __func__ << ", line: " << __LINE__				      \
 					  << ", file: " << __FILE__ << '\n';                                            \
-          Core::Debug::Log << Core::Logger::MessageType::ERROR_MSG << ERRORMSG << '\n';       \
+          NightEngine::Debug::Log << NightEngine::Logger::MessageType::ERROR_MSG << ERRORMSG << '\n';       \
 				  DEBUG_BREAK();																																	\
 			  }																																									\
 		  } while(0)																																	
@@ -134,7 +134,7 @@
 				default:                                                                 \
 					text = "Unknown error";                                                \
 			}                                                                          \
-			Core::Debug::Log << Core::Logger::MessageType::ERROR_MSG <<											\
+			NightEngine::Debug::Log << NightEngine::Logger::MessageType::ERROR_MSG <<											\
 				"OpenGL error encountered! " << __func__ << ", line " << __LINE__        \
 				<< ", file " << __FILE__ << ": " << text << std::endl;                   \
 			DEBUG_BREAK();                                                             \

@@ -9,7 +9,7 @@
 #include "Core/Message/MessageSystem.hpp"
 #include "Core/Message/MessageObjectList.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	namespace Debug
 	{
@@ -60,7 +60,7 @@ namespace Core
 
   Logger & Logger::operator<<(const std::string& message)
   {
-    using namespace Core;
+    using namespace NightEngine;
 
     // Send message to Logger
     std::cout << message;
@@ -82,7 +82,7 @@ namespace Core
 
   Logger & Logger::operator<<(const char* message)
   {
-    using namespace Core;
+    using namespace NightEngine;
 
     // Send message to Logger
     std::cout <<  message;
@@ -104,7 +104,7 @@ namespace Core
 
   Logger & Logger::operator<<(const char & message)
   {
-    using namespace Core;
+    using namespace NightEngine;
 
     // Send message to Logger
     std::cout << message;

@@ -5,7 +5,7 @@
 */
 #include "Core/Reflection/MetaManager.hpp"
 
-namespace Core
+namespace NightEngine
 {
   namespace Reflection
   {

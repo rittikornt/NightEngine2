@@ -9,7 +9,7 @@
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Core/Macros.hpp"
 
-namespace Core
+namespace NightEngine
 {
 	//Forward declaration
   enum class BroadcastScope : uint8_t;
@@ -51,4 +51,4 @@ namespace Core
       //Gameplay
 
   };
-} // Core
+} // NightEngine

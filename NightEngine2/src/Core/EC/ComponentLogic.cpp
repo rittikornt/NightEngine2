@@ -4,6 +4,7 @@
   @brief Contain the Implementation of ComponentLogic
 */
 #include "Core/EC/ComponentLogic.hpp"
+#include "Core/EC/GameObject.hpp"
 
 namespace NightEngine
 {
@@ -16,7 +17,7 @@ namespace NightEngine
 			: m_handle(handle), m_metaType(metaType)
 		{
       auto cl = Get<ComponentLogic>();
-      cl->m_gameObject = gameObject;
+      cl->m_gameObject = gameObject->GetHandle();
       cl->m_handle = handle;
 		}
 	}

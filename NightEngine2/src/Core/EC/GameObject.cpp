@@ -22,7 +22,7 @@ namespace NightEngine
 		}
 
     GameObject::GameObject()
-      : m_name("Uninit")
+      : m_name("Uninitialized")
     {
     }
 
@@ -34,12 +34,6 @@ namespace NightEngine
 
     GameObject::~GameObject()
     {
-      /*auto t = m_transform.Get();
-      if (t != nullptr)
-      {
-        t->OnDestroy();
-      }
-      m_transform.Destroy();*/
     }
 
     Handle<GameObject> GameObject::Create(const char* name, size_t reserveSize)
@@ -60,7 +54,7 @@ namespace NightEngine
       
       //Init Transform
       auto t = m_transform.Get();
-      t->SetGameObject(this);
+      t->SetGameObject(m_handle);
       t->OnAwake();
     }
 
@@ -104,7 +98,7 @@ namespace NightEngine
 
       //Initialize
       auto& handle = m_components.back();
-      handle.Get<ComponentLogic>()->SetGameObject(this);
+      handle.Get<ComponentLogic>()->SetGameObject(m_handle);
       handle.Get<ComponentLogic>()->OnAwake();
 
 			return &(handle);

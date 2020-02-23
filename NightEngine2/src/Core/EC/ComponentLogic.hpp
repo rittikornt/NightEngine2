@@ -6,6 +6,7 @@
 #pragma once
 #include "Core/Message/IMessageHandler.hpp"
 #include "Core/EC/Factory.hpp"
+#include "Core/EC/Handle.hpp"
 
 #include "Core/Container/PrimitiveType.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
@@ -78,81 +79,25 @@ namespace NightEngine
       virtual void OnDestroy(void) {}
 
       //! @brief Get Unique ID of this component
-      ComponentLogicID GetUID() const{ return m_uniqueID;}
+      inline ComponentLogicID GetUID() const{ return m_uniqueID;}
 
       //! @brief Get Handle to this ComponentLogic
-      HandleObject GetHandle(void) { return m_handle; }
+      inline HandleObject GetHandle(void) { return m_handle; }
 
       //! @brief Get GameObject Reference
-      inline GameObject* GetGameObject(void) const { return m_gameObject; }
+      inline const Handle<GameObject>& GetGameObject(void) const { return m_gameObject; }
 
       //! @brief Set GameObject Reference
-      void SetGameObject(GameObject* gameObject) { m_gameObject = gameObject; }
+      inline void SetGameObject(Handle<GameObject> gameObject) { m_gameObject = gameObject; }
 
 		protected:
 			friend struct  ComponentHandle;
 
 			ComponentLogicID      m_uniqueID;	    //Unique id for each component
-			GameObject*           m_gameObject;	  //TODO: Use handle instead
+			Handle<GameObject>    m_gameObject;	  //TODO: Use handle instead
       HandleObject m_handle;       //Handle to itself
 
 			static ComponentLogicID s_uniqueIDCounter;
-		};
-
-    //**********************************************
-		// TEST COMPONENT
-    //**********************************************
-		class Controller : public ComponentLogic
-		{
-      REFLECTABLE_TYPE();
-		public:
-			virtual void OnUpdate(float dt) override
-			{
-			}
-
-		private:
-		};
-
-		class CharacterInfo : public ComponentLogic
-		{
-      REFLECTABLE_TYPE();
-		public:
-			virtual void OnUpdate(float dt) override
-			{
-			}
-
-			void SetMoveSpeed(float speed)
-			{
-				m_moveSpeed = speed;
-			}
-
-			float GetMoveSpeed() const
-			{
-				return m_moveSpeed;
-			}
-
-		private:
-			float m_moveSpeed = 10.0f;
-			float m_health = 100.0f;
-			float m_maxHealth = 100.0f;
-		};
-
-		class CTimer : public ComponentLogic
-		{
-      REFLECTABLE_TYPE();
-		public:
-			virtual void OnUpdate(float dt) override
-			{
-				m_timer += dt;
-			}
-
-			float GetTimer() const
-			{
-				return m_timer;
-			}
-
-		private:
-			float m_timer = 0.0f;
 		};
   }
 }

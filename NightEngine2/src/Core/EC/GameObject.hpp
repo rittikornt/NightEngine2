@@ -91,7 +91,7 @@ namespace NightEngine
       void								RemoveAllComponents();
 		private:
 			Container::String                      m_name;
-      Handle<GameObject>            m_handle;
+      Handle<GameObject>                     m_handle;
 			Container::Vector<ComponentHandle>     m_components;
       Handle<Components::Transform> m_transform;
 		};

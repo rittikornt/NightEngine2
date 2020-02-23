@@ -102,7 +102,7 @@ namespace Rendering
   glm::mat4& Light::CalculateLightSpaceMatrix(CameraObject camera
     , float size, float near_, float far_)
   {
-    ASSERT_TRUE(m_gameObject != nullptr);
+    ASSERT_TRUE(m_gameObject.IsValid());
     ASSERT_TRUE(m_gameObject->GetTransform() != nullptr);
 
     auto transform = m_gameObject->GetTransform();
@@ -126,7 +126,7 @@ namespace Rendering
   std::vector<glm::mat4>& Light::CalculateLightSpaceMatrices(float size, float aspect
     , float near_, float far_)
   {
-    ASSERT_TRUE(m_gameObject != nullptr);
+    ASSERT_TRUE(m_gameObject.IsValid());
     ASSERT_TRUE(m_gameObject->GetTransform() != nullptr);
 
     std::vector<glm::mat4> lightSpaceMatrices;

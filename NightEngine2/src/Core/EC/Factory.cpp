@@ -12,6 +12,7 @@
 #include "Core/EC/Scene.hpp"
 
 #include "Graphics/Opengl/Light.hpp"
+#include "Core/EC/Components/TestComponent.hpp"
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"

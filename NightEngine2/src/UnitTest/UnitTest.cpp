@@ -8,6 +8,7 @@
 #include "Core/EC/Factory.hpp"
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/ComponentLogic.hpp"
+#include "Core/EC/Components/TestComponent.hpp"
 
 #include "Core/Logger.hpp"
 #include "Core/Utility/Utility.hpp"

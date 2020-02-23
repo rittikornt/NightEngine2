@@ -34,6 +34,7 @@
 
 //Components
 #include "Core/EC/ComponentLogic.hpp"
+#include "Core/EC/Components/TestComponent.hpp"
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"

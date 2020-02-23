@@ -84,7 +84,7 @@ namespace NightEngine
 
       Physics::CollisionResult* Rigidbody::GetCollisionResult(void) const
       {
-        ASSERT_TRUE(m_gameObject != nullptr);
+        ASSERT_TRUE(m_gameObject.IsValid());
         return m_scene->GetCollisionResult(*m_gameObject);
       }
 

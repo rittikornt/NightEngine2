@@ -5,12 +5,36 @@
 */
 #pragma once
 #include "Core/Container/String.hpp"
+#include "Core/Container/Vector.hpp"
+
 #include "Core/EC/Handle.hpp"
+#include "Core/EC/ComponentLogic.hpp"
+
+#include "Graphics/Opengl/Light.hpp"
+
+namespace Rendering
+{
+  class Material;
+}
 
 namespace NightEngine
 {
   namespace EC
   {
+    struct SceneLights
+    {
+      Container::Vector<EC::ComponentHandle*> dirLights;
+      Container::Vector<EC::ComponentHandle*> pointLights;
+      Container::Vector<EC::ComponentHandle*> spotLights;
+
+      inline void Clear()
+      {
+        dirLights.clear();
+        pointLights.clear();
+        spotLights.clear();
+      }
+    };
+
     class Scene;
     namespace SceneManager
     {
@@ -36,6 +60,10 @@ namespace NightEngine
 
       //!@brief Load scene through ResourceManager
       Handle<Scene> LoadScene(Container::String sceneFile);
+
+      bool GetLights(SceneLights& sceneLights);
+
+      Rendering::Material& GetDefaultMaterial(void);
     }
   }
 }

@@ -82,7 +82,7 @@ namespace Rendering
     IBL                 g_ibl;
 
     //Material
-    Material            g_defaultMaterial;
+    Material*           g_defaultMaterial;
     Material            g_lightingMaterial;
     Material            g_normalDebug;
 

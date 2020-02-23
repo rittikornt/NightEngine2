@@ -24,6 +24,8 @@
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/Handle.hpp"
 
+#include "Core/EC/SceneManager.hpp"
+
 //Subsystem
 #include "Core/Serialization/ResourceManager.hpp"
 #include "Core/Logger.hpp"
@@ -49,7 +51,6 @@
 #include <btBulletCollisionCommon.h>
 #include "Physics/PhysicsScene.hpp"
 #include "Physics/Collider.hpp"
-#include "RenderLoopOpengl.hpp"
 
 #define EDITOR_MODE true
 
@@ -70,22 +71,14 @@ namespace Rendering
     ,"u_lightSpaceMatrices[2]","u_lightSpaceMatrices[3]"
     ,"u_lightSpaceMatrices[4]" ,"u_lightSpaceMatrices[5]" };
 
-  //Model
-  std::vector<Handle<GameObject>>   g_boxInstances;
-
-  Handle<GameObject>   g_sphereGO;
-  Handle<GameObject>   g_floorGO;
-  Handle<GameObject>   g_modelGO1;
-  Handle<GameObject>   g_modelGO2;
-
   //Camera
-  CameraObject g_camera{ CameraObject::CameraType::PERSPECTIVE
+  static CameraObject g_camera{ CameraObject::CameraType::PERSPECTIVE
     ,103.0f };
 
   //Light
-  Handle<GameObject>   g_dirLight;
-  Handle<GameObject>   g_pointLight[POINTLIGHT_AMOUNT];
-  Handle<GameObject>   g_spotLight[SPOTLIGHT_AMOUNT];
+  static Handle<GameObject>   g_dirLight;
+  static Handle<GameObject>   g_pointLight[POINTLIGHT_AMOUNT];
+  static Handle<GameObject>   g_spotLight[SPOTLIGHT_AMOUNT];
 
   //*********************************************
   // Helper Functions
@@ -273,12 +266,12 @@ namespace Rendering
         | GL_STENCIL_BUFFER_BIT);
 
       //Set Uniform
-      g_defaultMaterial.Bind();
+      g_defaultMaterial->Bind();
       {
-        Shader& shader = g_defaultMaterial.GetShader();
+        Shader& shader = g_defaultMaterial->GetShader();
         shader.SetUniform("u_lightSpaceMatrix", lightSpaceMatrix);
       }
-      g_defaultMaterial.Unbind();
+      g_defaultMaterial->Unbind();
 
       //Draw Scene
       DrawScene(false);
@@ -445,7 +438,11 @@ namespace Rendering
       // Physics Debug Draw
       //*************************************************
       glClear(GL_DEPTH_BUFFER_BIT);
-      Physics::PhysicsScene::GetPhysicsScene(0)->DebugDraw(g_camera);
+      auto physicsScene = Physics::PhysicsScene::GetPhysicsScene(0);
+      if (physicsScene != nullptr)
+      {
+        physicsScene->DebugDraw(g_camera);
+      }
     }
     m_sceneFbo.Unbind();
 
@@ -481,9 +478,9 @@ namespace Rendering
     g_camera.ApplyViewMatrix(g_normalDebug.GetShader());
 
     //Bind Shader
-    g_defaultMaterial.Bind();
+    g_defaultMaterial->Bind();
     {
-      Shader& shader = g_defaultMaterial.GetShader();
+      Shader& shader = g_defaultMaterial->GetShader();
 
       //Draw Static Instances
       InstanceDrawer::DrawInstances(shader);
@@ -494,7 +491,7 @@ namespace Rendering
       //Draw Custom Pass
       Drawer::Draw(Drawer::DrawPass::CUSTOM);
     }
-    g_defaultMaterial.Unbind();
+    g_defaultMaterial->Unbind();
 
     //For debugging normal
     if (debugNormal)
@@ -605,10 +602,11 @@ namespace Rendering
     //************************************************
     // Material
     //************************************************
-    g_defaultMaterial.InitShader("Rendering/deferred_geometry_pass.vert"
+    g_defaultMaterial = &(SceneManager::GetDefaultMaterial());
+    g_defaultMaterial->InitShader("Rendering/deferred_geometry_pass.vert"
       , "Rendering/deferred_geometry_pass.frag");
 
-    g_defaultMaterial.InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
+    g_defaultMaterial->InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
@@ -671,19 +669,6 @@ namespace Rendering
       , Texture::Channel::RGBA);
 
     //************************************************
-    // Preloading Models
-    //************************************************
-    {
-      std::vector<std::string> filePaths{ 
-        FileSystem::GetFilePath("Cube.obj", FileSystem::DirectoryType::Models), 
-        FileSystem::GetFilePath("Torus.obj", FileSystem::DirectoryType::Models),
-        FileSystem::GetFilePath("guts-berserker/guts.fbx", FileSystem::DirectoryType::Models),
-        FileSystem::GetFilePath("Quad.obj", FileSystem::DirectoryType::Models),
-        FileSystem::GetFilePath("Sphere.obj", FileSystem::DirectoryType::Models)};
-      ResourceManager::PreloadModelsResourceAsync(filePaths);
-    }
-
-    //************************************************
     // Setup Box, Model GameObjects
     //************************************************
     {
@@ -695,73 +680,6 @@ namespace Rendering
             , glm::quat(), glm::vec3(1.0f)));
       }
     }
-
-    //Box instances
-    g_boxInstances.reserve(1000);
-    int y = 0, x = 0;
-    for (int i = 0; i < 1000; ++i)
-    {
-      std::string name = "BoxInstances" + std::to_string(i);
-      g_boxInstances.emplace_back(GameObject::Create(name.c_str(), 2));
-      GameObject& g = *g_boxInstances.back().Get();
-      g.AddComponent("MeshRenderer");
-      auto mr = g.GetComponent("MeshRenderer");
-      mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
-        , FileSystem::DirectoryType::Models), false);
-
-      if (i % 2 == 0)
-      {
-        mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-      }
-      else
-      {
-        mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-      }
-      mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::STATIC);
-
-      g.GetTransform()->SetPosition(glm::vec3(x, y, -10.0f));
-      g.GetTransform()->SetScale(glm::vec3(1.0f));
-      g.GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, -0.5f));
-
-      //Arrange position collumn/row
-      ++x;
-      if (x >= 50)
-      {
-        x = 0;
-        ++y;
-      }
-    }
-
-    //Model1
-    g_modelGO1 = GameObject::Create("Model1", 1);
-    g_modelGO1->AddComponent("MeshRenderer");
-    auto c = g_modelGO1->GetComponent("MeshRenderer");
-    c->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Torus.obj"
-      , FileSystem::DirectoryType::Models), true);
-    c->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
-    g_modelGO1->GetTransform()->SetPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
-    //g_modelGO1->AddComponent("Rigidbody");
-    //c = g_modelGO1->GetComponent("Rigidbody");
-    //c->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
-    //  , g_modelGO1->GetTransform()->GetPosition()
-    //  , Physics::BoxCollider(glm::vec3(1.0f, 0.6f, 1.0f)), 1.0f);
-
-    //Model2
-    g_modelGO2 = GameObject::Create("Model2", 1);
-    g_modelGO2->AddComponent("MeshRenderer");
-    c = g_modelGO2->GetComponent("MeshRenderer");
-    c->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("guts-berserker/guts.fbx"
-      , FileSystem::DirectoryType::Models), true);
-    c->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::CUSTOM);
-    c->Get<MeshRenderer>()->LoadMaterial("Guts.mat");
-    g_modelGO2->GetTransform()->SetPosition(glm::vec3(2.0f, 10.0f, 0.0f));
-    g_modelGO2->GetTransform()->SetScale(glm::vec3(4.5f, 4.5f, 4.5f));
-    //g_modelGO2->AddComponent("Rigidbody");
-    //c = g_modelGO2->GetComponent("Rigidbody");
-    //c->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
-    //  , g_modelGO2->GetTransform()->GetPosition()
-    //  , Physics::CylinderCollider(glm::vec3(1.0f))//Physics::CapsuleCollider(1.0f, 2.0f)
-    //  , 1.0f);
 
     //Dirlight
     g_dirLight = GameObject::Create("Dirlight", 2);
@@ -830,41 +748,10 @@ namespace Rendering
           , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
     }
 
-    //Sphere
-    g_sphereGO = GameObject::Create("Sphere", 1);
-    g_sphereGO->AddComponent("MeshRenderer");
-    mr = g_sphereGO->GetComponent("MeshRenderer");
-    mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Sphere.obj"
-      , FileSystem::DirectoryType::Models), true);
-    mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
-    g_sphereGO->GetTransform()->SetPosition(glm::vec3(2.0f, -2.6f, 0.0f));
-    //g_sphereGO->AddComponent("Rigidbody");
-    //c = g_sphereGO->GetComponent("Rigidbody");
-    //c->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
-    //  , glm::vec3(0.0f, 50.0f, 0.0f)//g_sphereGO->GetTransform()->GetPosition()
-    //  , Physics::SphereCollider(1.0f), 1.0f);
-
-    //Floor
-    g_floorGO = GameObject::Create("Floor", 1);
-    g_floorGO->AddComponent("MeshRenderer");
-    mr = g_floorGO->GetComponent("MeshRenderer");
-    mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
-      , FileSystem::DirectoryType::Models), true);
-    mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
-    g_defaultMaterial.SetParams(0.2f, 0.1f);
-    mr->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
-    g_floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
-    g_floorGO->GetTransform()->SetScale(glm::vec3(20.0f, 1.0f, 20.0f));
-    //g_floorGO->AddComponent("Rigidbody");
-    //c = g_floorGO->GetComponent("Rigidbody");
-    //c->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
-    //  , g_floorGO->GetTransform()->GetPosition()
-    //  , Physics::BoxCollider(glm::vec3(10.0f, 1.0f, 10.0f)));
-
     //************************************************
     // Uniform Buffer Object
     //************************************************
-    g_defaultMaterial.GetShader().SetUniformBlockBindingPoint("u_matrices", 0);
+    g_defaultMaterial->GetShader().SetUniformBlockBindingPoint("u_matrices", 0);
     g_uniformBufferObject.Init(sizeof(glm::mat4) * 2, 0);
     g_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
       , glm::value_ptr(g_camera.GetProjectionMatrix()));
@@ -876,11 +763,6 @@ namespace Rendering
     //g_camera.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
     g_camera.ApplyProjectionMatrix(g_billboardMaterial.GetShader());
     g_camera.ApplyProjectionMatrix(g_normalDebug.GetShader());
-
-    //************************************************
-    // Build InstanceDrawer
-    //************************************************
-    InstanceDrawer::BuildAllDrawer();
   }
 
   void RenderLoopOpengl::Render(float dt)
@@ -946,7 +828,7 @@ namespace Rendering
   void RenderLoopOpengl::OnRecompiledShader(void)
   {
     //Geometry Pass
-    g_defaultMaterial.RefreshTextureUniforms();
+    g_defaultMaterial->RefreshTextureUniforms();
     ResourceManager::RefreshMaterialTextureUniforms();
 
     //Lighting Pass

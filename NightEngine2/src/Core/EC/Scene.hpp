@@ -29,6 +29,8 @@ namespace NightEngine
 
         void AddGameObject(Handle<GameObject> gameObject);
 
+        inline const Container::Vector<SceneNode>& GetSceneNodes() const { return m_sceneNodes; }
+        inline const Container::Vector<Handle<GameObject>>& GetAllGameObjects() const { return m_sceneGameObjects; }
       private:
         bool m_active = false;
         //TODO: Store set of Components to Update

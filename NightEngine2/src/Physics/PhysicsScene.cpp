@@ -251,6 +251,17 @@ namespace Physics
     delete m_broadPhase;
     delete m_collisionDispatcher;
     delete m_collisionConfig;
+
+    //Remove this PhysicsScene from the global scenes list
+    for (auto it = s_physicScenes.begin(); 
+      it != s_physicScenes.end(); ++it)
+    {
+      if (*it == this)
+      {
+        s_physicScenes.erase(it);
+        break;
+      }
+    }
   }
 
   PhysicsScene* PhysicsScene::GetPhysicsScene(int sceneIndex)

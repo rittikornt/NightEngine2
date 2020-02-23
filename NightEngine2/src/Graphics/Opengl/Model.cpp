@@ -3,9 +3,9 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of Model
 */
-#include "Graphic/Opengl/Model.hpp"
-#include "Graphic/Opengl/Vertex.hpp"
-#include "Graphic/Opengl/Texture.hpp"
+#include "Graphics/Opengl/Model.hpp"
+#include "Graphics/Opengl/Vertex.hpp"
+#include "Graphics/Opengl/Texture.hpp"
 
 #include "Core/Logger.hpp"
 

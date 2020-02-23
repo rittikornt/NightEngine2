@@ -64,6 +64,9 @@ namespace Rendering
       //! @brief Unbind the Shader
       void Unbind(void);
 
+      //! @brief Clear Material
+      void Clear(void);
+
       //! @brief Set the material params
       inline void SetParams(float roughness, float metallic) { m_roughnessValue = roughness; m_metallicValue = metallic; }
 

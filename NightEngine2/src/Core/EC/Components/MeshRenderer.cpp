@@ -238,6 +238,7 @@ namespace NightEngine
             }
             shader.Unbind();
 
+            // (Outline Part)
             //Only draw on 0 value, without writing to stencil
             //But write to depth buffer too
             glStencilFunc(GL_NOTEQUAL, 1, 0xFF);

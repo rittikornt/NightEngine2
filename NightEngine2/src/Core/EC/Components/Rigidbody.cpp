@@ -29,7 +29,8 @@ namespace NightEngine
 
       void Rigidbody::OnAwake(void)
       {
-
+        m_rigidBody = nullptr;
+        m_scene = nullptr;
       }
 
       void Rigidbody::Initialize(Physics::PhysicsScene& scene, glm::vec3 initPosition

@@ -69,7 +69,6 @@ namespace NightEngine
       //NightEngine
       Reflection::Initialize();
       Factory::Initialize();
-      SceneManager::Initialize();
       ArchetypeManager::Initialize();
 
       //Runtime
@@ -85,11 +84,12 @@ namespace NightEngine
         m_renderloop = new RenderLoopOpengl();
         m_renderloop->Initialize();
       }
-      
-      Input::Initialize();
 
       //Physic Init After Rendering
       g_physicScene->Initialize();
+
+      SceneManager::Initialize();
+      Input::Initialize();
 
       //TODO: Scene Init, Update, Terminate
     }
@@ -105,6 +105,7 @@ namespace NightEngine
 
       //Terminate System
       Input::Terminate();
+      SceneManager::Terminate();
 
       //Terminate RenderLoop
       if (m_renderloop != nullptr)
@@ -115,12 +116,12 @@ namespace NightEngine
       }
       RenderDocManager::Terminate();
 
+      delete g_physicScene;
+
       ArchetypeManager::Terminate();
-      SceneManager::Terminate();
       Factory::Terminate();
       Reflection::Terminate();
 
-      delete g_physicScene;
 
       m_gameTime->UnsubscribeAll();
     }
@@ -223,35 +224,51 @@ namespace NightEngine
     //TODO: Update all the Components
   }
 
+  ///////////////////////////////////////////////////////
+
   void Engine::ReInitRenderLoop_Internal(void)
   {
-    //Terminate RenderLoop
-    if (m_renderloop != nullptr)
+    //Terminate
     {
-      m_renderloop->Terminate();
-      delete m_renderloop;
-      m_renderloop = nullptr;
+      //Terminate RenderLoop
+      if (m_renderloop != nullptr)
+      {
+        m_renderloop->Terminate();
+        delete m_renderloop;
+        m_renderloop = nullptr;
+      }
+      SceneManager::Terminate();
+
+      //Uninitialize RenderDoc if it is attached
+      if (RenderDocManager::IsRenderDocAttached())
+      {
+        RenderDocManager::Terminate();
+      }
+      delete g_physicScene;
     }
 
-    //Uninitialize RenderDoc if it is attached
-    if (RenderDocManager::IsRenderDocAttached())
+    //Initialize
     {
-      RenderDocManager::Terminate();
-    }
+      g_physicScene = new PhysicsScene();
 
-    //Initialize RenderDoc if we need to
-    if (m_shouldAttachRenderDoc)
-    {
-      ASSERT_MSG(RenderDocManager::Initialize(), "Failed to initialize RenderDocManager\n");
-    }
+      //Initialize RenderDoc if we need to
+      if (m_shouldAttachRenderDoc)
+      {
+        ASSERT_MSG(RenderDocManager::Initialize(), "Failed to initialize RenderDocManager\n");
+      }
 
-    //Initialize RenderLoop
-    if (m_renderloop == nullptr)
-    {
-      Window::Initialize("NightEngine", Window::WindowMode::WINDOW);
-      m_renderloop = new RenderLoopOpengl();
-      m_renderloop->Initialize();
-      CHECKGL_ERROR();
+      //Initialize RenderLoop
+      if (m_renderloop == nullptr)
+      {
+        Window::Initialize("NightEngine", Window::WindowMode::WINDOW);
+        m_renderloop = new RenderLoopOpengl();
+        m_renderloop->Initialize();
+        CHECKGL_ERROR();
+      }
+      //Physic Init After Rendering
+      g_physicScene->Initialize();
+
+      SceneManager::Initialize();
     }
   }
 

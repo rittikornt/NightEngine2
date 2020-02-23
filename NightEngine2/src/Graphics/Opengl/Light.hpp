@@ -11,6 +11,7 @@
 
 #include <glm/mat4x4.hpp>
 
+//TODO: maybe this class shouldn't be in Rendering namespace?
 namespace Rendering
 {
   struct CameraObject;
@@ -68,7 +69,10 @@ namespace Rendering
       void ApplyLightInfo(Shader& shader);
 
       //! @brief Get Light information
-      const LightInfo& GetLightInfo(void) { return m_lightInfo; }
+      inline const LightInfo& GetLightInfo(void) const { return m_lightInfo; }
+
+      //! @brief Get Light information
+      inline LightType GetLightType(void) { return m_lightType; }
 
       //! @brief Calculate Light Space Matrix for Shadow calculation
       glm::mat4& CalculateLightSpaceMatrix(CameraObject camera, float size

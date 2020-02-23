@@ -10,9 +10,9 @@
 //#include "NightEngine/Lua/LuaCore.hpp"
 #include "UnitTest/UnitTest.hpp"
 
-#include "Graphic/Opengl/Window.hpp"
-#include "Graphic/RenderDoc/RenderDocManager.hpp"
-#include "Graphic/Opengl/OpenglAllocationTracker.hpp"
+#include "Graphics/Opengl/Window.hpp"
+#include "Graphics/RenderDoc/RenderDocManager.hpp"
+#include "Graphics/Opengl/OpenglAllocationTracker.hpp"
 
 #include "Core/Utility/Profiling.hpp"
 #include "Core/Serialization/FileSystem.hpp"

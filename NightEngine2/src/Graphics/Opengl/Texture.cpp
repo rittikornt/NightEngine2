@@ -76,7 +76,10 @@ namespace Rendering
 
 	Texture::~Texture()
 	{
-    CHECK_LEAK(Texture, m_textureID);
+    if (m_textureID != ~(0))
+    {
+      CHECK_LEAK(Texture, m_textureID);
+    }
     //if (IS_ALLOCATED(Texture, m_textureID))
     //{
     //  Debug::Log << Logger::MessageType::WARNING

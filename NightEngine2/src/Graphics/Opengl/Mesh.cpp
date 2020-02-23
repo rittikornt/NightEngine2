@@ -4,7 +4,7 @@
   @brief Contain the Implementation of Mesh
 */
 
-#include "Graphic/Opengl/Mesh.hpp"
+#include "Graphics/Opengl/Mesh.hpp"
 
 namespace Rendering
 {

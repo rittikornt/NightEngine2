@@ -69,6 +69,9 @@ namespace Rendering
     //! @brief Recompile this shader based on the filePath
     void    RecompileShader(void);
 
+    //! @brief Clear Shader Variable
+    void Clear(void) { m_programID = ~(0); m_filePath.clear(); }
+
     //**************************************
     //  SetUniform Overloads
     //**************************************

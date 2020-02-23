@@ -4,7 +4,7 @@
   @brief Contain the Implementation of File
 */
 
-#include "Graphic/Opengl/Material.hpp"
+#include "Graphics/Opengl/Material.hpp"
 
 #include "Core/Serialization/Serialization.hpp"
 #include "Core/Serialization/SerializeFunction.hpp"
@@ -141,6 +141,17 @@ namespace Rendering
   void Material::Unbind(void)
   {
     m_shader.Unbind();
+  }
+
+  void Material::Clear(void)
+  {
+    m_shader.Clear();
+
+    m_diffuseTexture.Clear();
+    m_normalTexture.Clear();
+    m_roughnessTexture.Clear();
+    m_metallicTexture.Clear();
+    m_emissiveTexture.Clear();
   }
 
   Material* Material::LoadMaterial(const std::string& fileName)

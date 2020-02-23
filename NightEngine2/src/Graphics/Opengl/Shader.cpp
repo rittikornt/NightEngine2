@@ -43,7 +43,10 @@ namespace Rendering
 
   Shader::~Shader()
   {
-    CHECK_LEAK(Shader, m_programID);
+    if (m_programID != ~(0))
+    {
+      CHECK_LEAK(Shader, m_programID);
+    }
   }
 
   void Shader::Create(void)

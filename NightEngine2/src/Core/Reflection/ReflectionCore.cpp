@@ -162,6 +162,8 @@ namespace NightEngine
       //***********************************************
       //	ComponentLogic
       //***********************************************
+      REGISTER_METATYPE_WITH_SERIALIZER(Handle<GameObject>, true
+        , nullptr, nullptr);
       REGISTER_METATYPE_WITHBASE(ComponentLogic, IMessageHandler
         , InheritType::PUBLIC);
       {

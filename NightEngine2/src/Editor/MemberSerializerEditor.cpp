@@ -106,6 +106,13 @@ namespace Editor
       ImGui::Text("0x%x", &data);
     }
     });
+    m_typeEditorMap.insert({ "Handle<GameObject>",
+      [](Reflection::Variable& variable, const char* memberName)
+    {
+      auto data = variable.GetValue<Handle<GameObject>>();
+      ImGui::Text(data->GetName().c_str());
+    }
+      });
     m_typeEditorMap.insert({ "int",
       [](Reflection::Variable& variable, const char* memberName)
     {

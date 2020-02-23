@@ -23,9 +23,9 @@ namespace NightEngine
   {
     struct SceneLights
     {
-      Container::Vector<EC::ComponentHandle*> dirLights;
-      Container::Vector<EC::ComponentHandle*> pointLights;
-      Container::Vector<EC::ComponentHandle*> spotLights;
+      Container::Vector<Handle<GameObject>> dirLights;
+      Container::Vector<Handle<GameObject>> pointLights;
+      Container::Vector<Handle<GameObject>> spotLights;
 
       inline void Clear()
       {
@@ -61,9 +61,13 @@ namespace NightEngine
       //!@brief Load scene through ResourceManager
       Handle<Scene> LoadScene(Container::String sceneFile);
 
+      /////////////////////////////////////////
+
       bool GetLights(SceneLights& sceneLights);
 
       Rendering::Material& GetDefaultMaterial(void);
+
+      Rendering::Material& GetBillBoardMaterial(void);
     }
   }
 }

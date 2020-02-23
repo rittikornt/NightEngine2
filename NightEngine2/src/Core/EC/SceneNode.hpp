@@ -16,8 +16,7 @@ namespace NightEngine
   {
     struct SceneNode
     {
-      SceneNode() = default;
-      explicit inline SceneNode(int childCount)
+      inline void Reserve(int childCount)
       {
         m_children.reserve(childCount);
       }
@@ -32,8 +31,8 @@ namespace NightEngine
         m_parentIndex = parentIndex;
       }
 
+      int m_parentIndex = -1;
       std::unordered_set<int> m_children;
-      int m_parentIndex;
     };
   }
 }

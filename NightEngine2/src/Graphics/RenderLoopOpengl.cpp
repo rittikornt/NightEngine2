@@ -32,6 +32,7 @@
 #include "Core/Serialization/FileSystem.hpp"
 #include "Core/Serialization/Serialization.hpp"
 #include "Input/Input.hpp"
+#include "Physics/PhysicsScene.hpp"
 
 // System Headers
 #include <assimp/Importer.hpp>
@@ -46,11 +47,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <assimp/anim.h>
-
-//TODO: Remove Later
-#include <btBulletCollisionCommon.h>
-#include "Physics/PhysicsScene.hpp"
-#include "Physics/Collider.hpp"
 
 #define EDITOR_MODE true
 
@@ -75,10 +71,7 @@ namespace Rendering
   static CameraObject g_camera{ CameraObject::CameraType::PERSPECTIVE
     ,103.0f };
 
-  //Light
-  static Handle<GameObject>   g_dirLight;
-  static Handle<GameObject>   g_pointLight[POINTLIGHT_AMOUNT];
-  static Handle<GameObject>   g_spotLight[SPOTLIGHT_AMOUNT];
+  static SceneLights g_sceneLights;
 
   //*********************************************
   // Helper Functions
@@ -191,33 +184,42 @@ namespace Rendering
       , clear_color, clear_color);
 
     //*************************************************
-    // Depth FBO Pass for shadow
+    // Depth FBO Pass for directional light shadow
     //*************************************************
     glViewport(0, 0, g_shadowWidth, g_shadowHeight);
     glEnable(GL_DEPTH_TEST);
     //Shader and Matrices
-    auto lightComponent = g_dirLight->GetComponent("Light");
-    auto& lightSpaceMatrix = lightComponent->Get<Light>()
-      ->CalculateLightSpaceMatrix(g_camera, 10.0f, 0.01f, 100.0f);
-
-    //Draw pass to FBO
-    g_depthfbo.Bind();
+    if (g_sceneLights.dirLights.size() == 0)
     {
-      glClear(GL_DEPTH_BUFFER_BIT);
-      g_depthMaterial.Bind(false);
-      {
-        g_depthMaterial.GetShader().SetUniform("u_lightSpaceMatrix"
-          , lightSpaceMatrix);
-
-        //Draw all Mesh with depthMaterial
-        Drawer::DrawShadowWithoutBind(g_depthMaterial.GetShader()
-          , Drawer::DrawPass::BATCH);
-        Drawer::DrawShadowWithoutBind(g_depthMaterial.GetShader()
-          , Drawer::DrawPass::CUSTOM);
-      }
-      g_depthMaterial.Unbind();
+      SceneManager::GetLights(g_sceneLights);
     }
-    g_depthfbo.Unbind();
+
+    glm::mat4 lightSpaceMatrix;
+    if (g_sceneLights.dirLights.size() > 0)
+    {
+      auto lightComponent = g_sceneLights.dirLights[0]->GetComponent("Light");
+      lightSpaceMatrix = lightComponent->Get<Light>()
+        ->CalculateLightSpaceMatrix(g_camera, 10.0f, 0.01f, 100.0f);
+
+      //Draw pass to FBO
+      g_depthfbo.Bind();
+      {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        g_depthMaterial.Bind(false);
+        {
+          g_depthMaterial.GetShader().SetUniform("u_lightSpaceMatrix"
+            , lightSpaceMatrix);
+
+          //Draw all Mesh with depthMaterial
+          Drawer::DrawShadowWithoutBind(g_depthMaterial.GetShader()
+            , Drawer::DrawPass::BATCH);
+          Drawer::DrawShadowWithoutBind(g_depthMaterial.GetShader()
+            , Drawer::DrawPass::CUSTOM);
+        }
+        g_depthMaterial.Unbind();
+      }
+      g_depthfbo.Unbind();
+    }
 
     //*************************************************
     // Depth FBO Pass for point shadow
@@ -227,7 +229,7 @@ namespace Rendering
     for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
     {
       //Shader and Matrices
-      auto pointLightComponent = g_pointLight[i]->GetComponent("Light");
+      auto pointLightComponent = g_sceneLights.pointLights[i]->GetComponent("Light");
       auto& lightSpaceMatrices = pointLightComponent->Get<Light>()
         ->CalculateLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
 
@@ -244,7 +246,7 @@ namespace Rendering
               , lightSpaceMatrices[i]);
           }
           g_depth2Material.GetShader().SetUniform("u_lightPos"
-            , g_pointLight[i]->GetTransform()->GetPosition());
+            , g_sceneLights.pointLights[i]->GetTransform()->GetPosition());
           g_depth2Material.GetShader().SetUniform("u_farPlane"
             , farPlane);
           //Draw all Mesh with depthMaterial
@@ -420,17 +422,17 @@ namespace Rendering
         glEnable(GL_DEPTH_TEST);
         Texture::SetBlendMode(true);
         //Draw Light Icons Billboard
-        g_camera.ApplyViewMatrix(g_billboardMaterial.GetShader());
-        g_billboardMaterial.Bind(false);
+        g_camera.ApplyViewMatrix(g_billboardMaterial->GetShader());
+        g_billboardMaterial->Bind(false);
         {
-          Shader& shader = g_billboardMaterial.GetShader();
+          Shader& shader = g_billboardMaterial->GetShader();
           shader.SetUniform("u_texture", 0);
           g_lightTexture.BindToTextureUnit(0);
 
           Drawer::DrawWithoutBind(shader
             , Drawer::DrawPass::DEBUG);
         }
-        g_billboardMaterial.Unbind();
+        g_billboardMaterial->Unbind();
         Texture::SetBlendMode(false);
       }
 
@@ -659,11 +661,12 @@ namespace Rendering
     g_normalDebug.Unbind();
 
     //Debug material
-    g_billboardMaterial.InitShader("Debugger/debug_billboard.vert"
+    g_billboardMaterial = &(SceneManager::GetBillBoardMaterial());
+    g_billboardMaterial->InitShader("Debugger/debug_billboard.vert"
       , "Debugger/debug_fragment.frag");
-    g_billboardMaterial.Bind(false);
-    g_billboardMaterial.GetShader().SetUniform("u_color", glm::vec3(1.0f));
-    g_billboardMaterial.Unbind();
+    g_billboardMaterial->Bind(false);
+    g_billboardMaterial->GetShader().SetUniform("u_color", glm::vec3(1.0f));
+    g_billboardMaterial->Unbind();
 
     g_lightTexture = Texture(FileSystem::GetFilePath("Icon_Light.png", FileSystem::DirectoryType::Textures)
       , Texture::Channel::RGBA);
@@ -681,72 +684,72 @@ namespace Rendering
       }
     }
 
-    //Dirlight
-    g_dirLight = GameObject::Create("Dirlight", 2);
-    g_dirLight->AddComponent("CharacterInfo");
-    g_dirLight->AddComponent("MeshRenderer");
-    auto mr = g_dirLight->GetComponent("MeshRenderer");
-    mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-      , FileSystem::DirectoryType::Models), true);
-    mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-    mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+    ////Dirlight
+    //g_dirLight = GameObject::Create("Dirlight", 2);
+    //g_dirLight->AddComponent("CharacterInfo");
+    //g_dirLight->AddComponent("MeshRenderer");
+    //auto mr = g_dirLight->GetComponent("MeshRenderer");
+    //mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
+    //  , FileSystem::DirectoryType::Models), true);
+    //mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
+    //mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
 
-    g_dirLight->GetTransform()->SetPosition(glm::vec3(0.0f, 15.0f, 2.0f));
-    g_dirLight->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-    g_dirLight->GetTransform()->SetEulerAngle(glm::vec3(2.0f, 0.0f, 0.0f));
+    //g_dirLight->GetTransform()->SetPosition(glm::vec3(0.0f, 15.0f, 2.0f));
+    //g_dirLight->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+    //g_dirLight->GetTransform()->SetEulerAngle(glm::vec3(2.0f, 0.0f, 0.0f));
 
-    g_dirLight->AddComponent("Light");
-    mr = g_dirLight->GetComponent("Light");
-    mr->Get<Light>()->Init(Light::LightType::DIRECTIONAL
-      , { glm::vec3(1.0f)
-      ,{ Light::LightInfo::Value{ 0.5f } } }, 0);
+    //g_dirLight->AddComponent("Light");
+    //mr = g_dirLight->GetComponent("Light");
+    //mr->Get<Light>()->Init(Light::LightType::DIRECTIONAL
+    //  , { glm::vec3(1.0f)
+    //  ,{ Light::LightInfo::Value{ 0.5f } } }, 0);
 
-    //Spotlight
-    for (size_t i = 0; i < SPOTLIGHT_AMOUNT; ++i)
-    {
-      //Point light
-      std::string name{ "Pointlight" };
-      name += std::to_string(i);
-      g_pointLight[i] = GameObject::Create(name.c_str(), 2);
-      g_pointLight[i]->AddComponent("MeshRenderer");
-      mr = g_pointLight[i]->GetComponent("MeshRenderer");
-      mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-        , FileSystem::DirectoryType::Models), true, false);
-      mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-      mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
+    ////Spotlight
+    //for (size_t i = 0; i < SPOTLIGHT_AMOUNT; ++i)
+    //{
+    //  //Point light
+    //  std::string name{ "Pointlight" };
+    //  name += std::to_string(i);
+    //  g_pointLight[i] = GameObject::Create(name.c_str(), 2);
+    //  g_pointLight[i]->AddComponent("MeshRenderer");
+    //  mr = g_pointLight[i]->GetComponent("MeshRenderer");
+    //  mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
+    //    , FileSystem::DirectoryType::Models), true, false);
+    //  mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+    //  mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
 
-      g_pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f) - 6.0f, -1.0f, 0.25f));
-      g_pointLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-      g_pointLight[i]->GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, 0.0f));
+    //  g_pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f) - 6.0f, -1.0f, 0.25f));
+    //  g_pointLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+    //  g_pointLight[i]->GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, 0.0f));
 
-      g_pointLight[i]->AddComponent("Light");
-      mr = g_pointLight[i]->GetComponent("Light");
-      mr->Get<Light>()->Init(Light::LightType::POINT
-        , { glm::vec3(0.0f, 1.0f,0.0f)
-        ,{ Light::LightInfo::Value{ 8.0f } } }, i);
+    //  g_pointLight[i]->AddComponent("Light");
+    //  mr = g_pointLight[i]->GetComponent("Light");
+    //  mr->Get<Light>()->Init(Light::LightType::POINT
+    //    , { glm::vec3(0.0f, 1.0f,0.0f)
+    //    ,{ Light::LightInfo::Value{ 8.0f } } }, i);
 
-      //Spotlight
-      name = std::string{ "Spotlight" };
-      name += std::to_string(i);
-      g_spotLight[i] = GameObject::Create(name.c_str(), 2);
-      g_spotLight[i]->AddComponent("MeshRenderer");
-      mr = g_spotLight[i]->GetComponent("MeshRenderer");
-      mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-        , FileSystem::DirectoryType::Models), true);
-      mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-      mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+    //  //Spotlight
+    //  name = std::string{ "Spotlight" };
+    //  name += std::to_string(i);
+    //  g_spotLight[i] = GameObject::Create(name.c_str(), 2);
+    //  g_spotLight[i]->AddComponent("MeshRenderer");
+    //  mr = g_spotLight[i]->GetComponent("MeshRenderer");
+    //  mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
+    //    , FileSystem::DirectoryType::Models), true);
+    //  mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
+    //  mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
 
-      g_spotLight[i]->GetTransform()->SetPosition(glm::vec3((float)i* 4.0f - 6.0f, 5.0f, 2.0f));
-      g_spotLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-      g_spotLight[i]->GetTransform()->SetEulerAngle(glm::vec3(4.5f, 0.0f, 0.0f));
+    //  g_spotLight[i]->GetTransform()->SetPosition(glm::vec3((float)i* 4.0f - 6.0f, 5.0f, 2.0f));
+    //  g_spotLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+    //  g_spotLight[i]->GetTransform()->SetEulerAngle(glm::vec3(4.5f, 0.0f, 0.0f));
 
-      g_spotLight[i]->AddComponent("Light");
-      mr = g_spotLight[i]->GetComponent("Light");
-      mr->Get<Light>()->Init(Light::LightType::SPOTLIGHT
-        ,
-        { glm::vec3(0.0f,0.0f, 0.7f)
-          , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
-    }
+    //  g_spotLight[i]->AddComponent("Light");
+    //  mr = g_spotLight[i]->GetComponent("Light");
+    //  mr->Get<Light>()->Init(Light::LightType::SPOTLIGHT
+    //    ,
+    //    { glm::vec3(0.0f,0.0f, 0.7f)
+    //      , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
+    //}
 
     //************************************************
     // Uniform Buffer Object
@@ -761,7 +764,7 @@ namespace Rendering
     //************************************************
     //Set Projection Matrix once
     //g_camera.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
-    g_camera.ApplyProjectionMatrix(g_billboardMaterial.GetShader());
+    g_camera.ApplyProjectionMatrix(g_billboardMaterial->GetShader());
     g_camera.ApplyProjectionMatrix(g_normalDebug.GetShader());
   }
 
@@ -791,6 +794,8 @@ namespace Rendering
   void RenderLoopOpengl::Terminate(void)
   {
     Debug::Log << "Rendering::Terminate\n";
+
+    g_sceneLights.Clear();
 
     //TODO: Remove later
     //Manuall Clean up of all GameObject

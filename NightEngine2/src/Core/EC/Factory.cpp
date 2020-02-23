@@ -9,34 +9,12 @@
 //Object Type
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/ComponentLogic.hpp"
+#include "Core/EC/Scene.hpp"
 
 #include "Graphics/Opengl/Light.hpp"
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"
-
-#define FACTORY_CREATOR_REGISTER(TYPE) \
-	g_factory.Register<TYPE>(&TYPE##Creator);																
-
-#define FACTORY_CREATOR_REGISTER_WITHPARAM(TYPE, RESERVE_INT, EXPAND_RATE) \
-	g_factory.Register<TYPE>(&TYPE##Creator); \
-	GetTypeContainer<TYPE>().Reserve(RESERVE_INT, EXPAND_RATE); 	
-
-#define FACTORY_CREATOR_DEFINITION(TYPE) \
-	void* Lookup##TYPE(const SlotmapID& id) \
-	{	\
-		return GetTypeContainer<TYPE>().Get(id); \
-	}	\
-	void Destroy##TYPE(const SlotmapID& id)	\
-	{	\
-		GetTypeContainer<TYPE>().Destroy(id);	\
-	}	\
-	HandleObject Create##TYPE()	\
-	{	\
-		return HandleObject(GetTypeContainer<TYPE>().CreateSlot()	\
-					, Lookup##TYPE, Destroy##TYPE);	 \
-	}	\
-	Creator<HandleObject> TYPE##Creator(Create##TYPE, #TYPE);																			 
 
 namespace NightEngine
 {
@@ -52,16 +30,16 @@ namespace NightEngine
     ObjectFactory<HandleObject> g_factory;
 
 		//Creator Definition
-		FACTORY_CREATOR_DEFINITION(GameObject);
+		FACTORY_FUNC_IMPLEMENTATION(GameObject);
 
     //Components
-    FACTORY_CREATOR_DEFINITION(Light);
-    FACTORY_CREATOR_DEFINITION(Transform);
-    FACTORY_CREATOR_DEFINITION(Rigidbody);
-    FACTORY_CREATOR_DEFINITION(MeshRenderer);
-		FACTORY_CREATOR_DEFINITION(Controller);
-		FACTORY_CREATOR_DEFINITION(CharacterInfo);
-		FACTORY_CREATOR_DEFINITION(CTimer);
+    FACTORY_FUNC_IMPLEMENTATION(Light);
+    FACTORY_FUNC_IMPLEMENTATION(Transform);
+    FACTORY_FUNC_IMPLEMENTATION(Rigidbody);
+    FACTORY_FUNC_IMPLEMENTATION(MeshRenderer);
+		FACTORY_FUNC_IMPLEMENTATION(Controller);
+		FACTORY_FUNC_IMPLEMENTATION(CharacterInfo);
+		FACTORY_FUNC_IMPLEMENTATION(CTimer);
 
 		//**********************************************************
     // Definition
@@ -72,16 +50,16 @@ namespace NightEngine
 			Debug::Log << "Factory::Initialize\n";
 
 			//Creator Registration
-      FACTORY_CREATOR_REGISTER_WITHPARAM(GameObject, 5000, 5000);
+      FACTORY_REGISTER_TYPE_WITHPARAM(GameObject, 5000, 5000);
 
       //Components
-      FACTORY_CREATOR_REGISTER_WITHPARAM(Transform, 5000, 5000);
-      FACTORY_CREATOR_REGISTER_WITHPARAM(MeshRenderer, 5000, 5000);
-      FACTORY_CREATOR_REGISTER(Light);
-      FACTORY_CREATOR_REGISTER_WITHPARAM(Rigidbody,200, 200);
-			FACTORY_CREATOR_REGISTER(Controller);
-			FACTORY_CREATOR_REGISTER(CharacterInfo);
-			FACTORY_CREATOR_REGISTER(CTimer);
+      FACTORY_REGISTER_TYPE_WITHPARAM(Transform, 5000, 5000);
+      FACTORY_REGISTER_TYPE_WITHPARAM(MeshRenderer, 5000, 5000);
+      FACTORY_REGISTER_TYPE(Light);
+      FACTORY_REGISTER_TYPE_WITHPARAM(Rigidbody,200, 200);
+			FACTORY_REGISTER_TYPE(Controller);
+			FACTORY_REGISTER_TYPE(CharacterInfo);
+			FACTORY_REGISTER_TYPE(CTimer);
 
       //TODO: Get the reflection registerer to init this creator
 		}

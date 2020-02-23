@@ -20,6 +20,7 @@
 #include "Core/GameTime.hpp"
 #include "Input/Input.hpp"
 
+#include "Core/EC/SceneManager.hpp"
 #include "Core/EC/ArchetypeManager.hpp"
 
 #include "Physics/PhysicsScene.hpp"
@@ -68,6 +69,7 @@ namespace NightEngine
       //NightEngine
       Reflection::Initialize();
       Factory::Initialize();
+      SceneManager::Initialize();
       ArchetypeManager::Initialize();
 
       //Runtime
@@ -114,6 +116,7 @@ namespace NightEngine
       RenderDocManager::Terminate();
 
       ArchetypeManager::Terminate();
+      SceneManager::Terminate();
       Factory::Terminate();
       Reflection::Terminate();
 
@@ -202,6 +205,7 @@ namespace NightEngine
 
       //++Update here with c_TARGET_DT
       g_physicScene->Update(c_TARGET_DT);
+      SceneManager::FixedUpdate();
 
       accumulator -= c_TARGET_DT;
     }
@@ -214,6 +218,7 @@ namespace NightEngine
 
     //Update Systems
     Input::OnUpdate();
+    SceneManager::Update();
 
     //TODO: Update all the Components
   }

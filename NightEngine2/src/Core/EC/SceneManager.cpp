@@ -11,9 +11,7 @@
 #include "Core/EC/ComponentLogic.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
-
-#include "Core/Serialization/FileSystem.hpp"
-#include "Core/Serialization/ResourceManager.hpp"
+#include "Graphics/Opengl/Light.hpp"
 
 #include "Graphics/Opengl/Material.hpp"
 #include "Graphics/Opengl/InstanceDrawer.hpp"
@@ -21,6 +19,11 @@
 #include <btBulletCollisionCommon.h>
 #include "Physics/PhysicsScene.hpp"
 #include "Physics/Collider.hpp"
+
+//Serialization
+#include "Core/Serialization/FileSystem.hpp"
+#include "Core/Serialization/ResourceManager.hpp"
+#include "Core/Serialization/Serialization.hpp"
 
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
@@ -49,7 +52,9 @@ namespace NightEngine
 
         FACTORY_REGISTER_TYPE_WITHPARAM(Scene, 1, 5);
 
-        g_openedScenes.emplace_back(CreateScene());
+        auto scene = LoadScene("Default Scene");
+        g_openedScenes.emplace_back(scene);
+        //SaveScene(g_openedScenes[0]);
       }
 
       void Update(void)
@@ -73,10 +78,12 @@ namespace NightEngine
 
       /////////////////////////////////////////
 
-      Handle<Scene> CreateScene(void)
+      Handle<Scene> CreateDefaultScene(Container::String sceneName)
       {
         auto sceneHandle = Factory::Create<Scene>("Scene");
         Scene& scene = *(sceneHandle.Get());
+        scene.SetSceneName(sceneName);
+
         ComponentHandle* ch;
 
         std::vector<Handle<GameObject>>   boxInstances;
@@ -90,6 +97,7 @@ namespace NightEngine
         Handle<GameObject>   spotLight[SPOTLIGHT_AMOUNT];
         //************************************************
         // Preloading Models
+        //  TODO: Serialize a list of mesh object into scene file for preloading
         //************************************************
         {
           std::vector<std::string> filePaths{
@@ -165,47 +173,54 @@ namespace NightEngine
             , floorGO->GetTransform()->GetPosition()
             , Physics::BoxCollider(glm::vec3(10.0f, 1.0f, 10.0f)));
 
-          //Box instances
+          //Add to Scene
+          scene.AddGameObject(sphereGO);
+          scene.AddGameObject(floorGO);
+          scene.AddGameObject(modelGO1);
+          scene.AddGameObject(modelGO2);
+        }
+
+        //Box instances
+        {
+          const int k_size = 1000;
+          boxInstances.reserve(k_size);
+          int y = 0, x = 0;
+          for (int i = 0; i < k_size; ++i)
           {
-            const int k_size = 1000;
-            boxInstances.reserve(k_size);
-            int y = 0, x = 0;
-            for (int i = 0; i < k_size; ++i)
+            std::string name = "BoxInstances" + std::to_string(i);
+            boxInstances.emplace_back(GameObject::Create(name.c_str(), 2));
+            GameObject& g = *boxInstances.back().Get();
+            g.AddComponent("MeshRenderer");
+            ch = g.GetComponent("MeshRenderer");
+            ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
+              , FileSystem::DirectoryType::Models), false);
+
+            if (i % 2 == 0)
             {
-              std::string name = "BoxInstances" + std::to_string(i);
-              boxInstances.emplace_back(GameObject::Create(name.c_str(), 2));
-              GameObject& g = *boxInstances.back().Get();
-              g.AddComponent("MeshRenderer");
-              ch = g.GetComponent("MeshRenderer");
-              ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
-                , FileSystem::DirectoryType::Models), false);
-
-              if (i % 2 == 0)
-              {
-                ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
-              }
-              else
-              {
-                ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
-              }
-              ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::STATIC);
-
-              g.GetTransform()->SetPosition(glm::vec3(x, y, -10.0f));
-              g.GetTransform()->SetScale(glm::vec3(1.0f));
-              g.GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, -0.5f));
-
-              //Arrange position collumn/row
-              ++x;
-              if (x >= 50)
-              {
-                x = 0;
-                ++y;
-              }
-
-              //Add to Scene
-              scene.AddGameObject(boxInstances[i]);
+              ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
             }
+            else
+            {
+              ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
+            }
+            ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::STATIC);
+
+            g.GetTransform()->SetPosition(glm::vec3(x, y, -10.0f));
+            g.GetTransform()->SetScale(glm::vec3(1.0f));
+            g.GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, -0.5f));
+
+            //Arrange position collumn/row
+            ++x;
+            if (x >= 50)
+            {
+              x = 0;
+              ++y;
+            }
+
+            //Add to Scene
+            scene.AddGameObject(boxInstances[i]);
           }
+
           //************************************************
           // Build InstanceDrawer
           //************************************************
@@ -288,19 +303,97 @@ namespace NightEngine
 
         //Add to Scene
         scene.AddGameObject(dirLight);
-        scene.AddGameObject(sphereGO);
-        scene.AddGameObject(floorGO);
-        scene.AddGameObject(modelGO1);
-        scene.AddGameObject(modelGO2);
 
         return sceneHandle;
       }
 
-      Handle<Scene> LoadScene(Container::String sceneFile)
+      Handle<Scene> LoadScene(Container::String sceneName)
       {
+        std::string fileName{ sceneName };
+        fileName += ".nscene";
+
+        Scene scene;
+        Serialization::DeserializeFromFile(scene
+          , fileName
+          , FileSystem::DirectoryType::Scenes
+          , SceneManager::DeserializeScene);
+
+        Debug::Log << Logger::MessageType::INFO
+          << "Load Scene:" << fileName << '\n';
+
+        //Create and copy from the deserialized scene
         auto handle = Factory::Create<Scene>("Scene");
+        *(handle.Get()) = scene;
+        InitLoadedScene(scene);
+
         return handle;
       }
+
+      void InitLoadedScene(Scene & scene)
+      {
+        auto& gameObjects = scene.GetAllGameObjects();
+        for (auto go : gameObjects)
+        {
+          auto gameObject = go.Get();
+
+          //Init MeshRenderer
+          auto handle = gameObject->GetComponent<MeshRenderer>();
+          if (handle != nullptr)
+          {
+            auto meshRenderer = handle->Get<MeshRenderer>();
+
+            //Set Default Material if null
+            auto& defaultMaterial = SceneManager::GetDefaultMaterial();
+            if (meshRenderer->GetMaterial() == nullptr)
+            {
+              meshRenderer->SetMaterial(&defaultMaterial);
+            }
+
+            //Init Mesh
+            auto drawMode = meshRenderer->GetDrawMode();
+            meshRenderer->LoadModel(meshRenderer->GetMeshLoadPath()
+              , drawMode == MeshRenderer::DrawMode::STATIC ? false : true);
+            meshRenderer->RegisterDrawMode(drawMode);
+          }
+
+          //Init Light
+          handle = gameObject->GetComponent("Light");
+          if (handle != nullptr)
+          {
+            auto light = handle->Get<Light>();
+            light->Init(light->GetLightType(), light->GetLightInfo()
+              , light->GetLightIndex());
+          }
+          //TODO: Init Rigidbody
+        }
+
+        //************************************************
+        // Build InstanceDrawer
+        //************************************************
+        Rendering::InstanceDrawer::BuildAllDrawer();
+      }
+
+      void SaveScene(Handle<Scene> scene)
+      {
+        std::string fileName{ scene->GetSceneName() };
+        fileName += ".nscene";
+
+        Scene& sceneObj = *(scene.Get());
+        Serialization::SerializeToFile(sceneObj
+          , fileName
+          , FileSystem::DirectoryType::Scenes
+          , SceneManager::SerializeScene);
+
+        Debug::Log << Logger::MessageType::INFO
+          << "Saved Scene:" << fileName << '\n';
+      }
+
+      Container::Vector<Handle<Scene>>* GetAllScenes(void)
+      {
+        return &g_openedScenes;
+      }
+
+      /////////////////////////////////////////
 
       bool GetLights(SceneLights& sceneLights)
       {

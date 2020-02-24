@@ -187,7 +187,6 @@ namespace NightEngine
       auto& obj = valueObject.get_object();
 
       //Find ValueObject Corresponding to member name
-      /*
       auto it = obj.find("m_name");
       if (it != obj.end())
       {
@@ -198,10 +197,10 @@ namespace NightEngine
         Debug::Log << Logger::MessageType::ERROR_MSG
           << "Not Found Deserialize MemberName: m_name\n";
         ASSERT_TRUE(false);
-      }*/
+      }
 
       //Components
-      auto it = obj.find("m_components");
+      it = obj.find("m_components");
       if (it != obj.end())
       {
         auto componentMap = it->second.get_object();

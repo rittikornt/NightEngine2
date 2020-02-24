@@ -10,8 +10,6 @@
 #include "Core/EC/Handle.hpp"
 #include "Core/EC/ComponentLogic.hpp"
 
-#include "Graphics/Opengl/Light.hpp"
-
 namespace Rendering
 {
   class Material;
@@ -52,14 +50,20 @@ namespace NightEngine
 
       /////////////////////////////////////////
 
-      //!breif GetActiveScenes
-      //Scene& GetActiveScenes(void);
-      
       //!breif Create Scene
-      Handle<Scene> CreateScene(void);
+      Handle<Scene> CreateDefaultScene(Container::String sceneName);
 
       //!@brief Load scene through ResourceManager
       Handle<Scene> LoadScene(Container::String sceneFile);
+
+      //!@brief Initialize Scene Components
+      void InitLoadedScene(Scene& scene);
+
+      //!@brief Load scene through ResourceManager
+      void SaveScene(Handle<Scene> scene);
+
+      //!@brief Get all currently openned scenes
+      Container::Vector<Handle<Scene>>* GetAllScenes(void);
 
       /////////////////////////////////////////
 

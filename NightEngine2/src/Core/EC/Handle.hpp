@@ -146,6 +146,11 @@ namespace NightEngine
 			{
 				return *Get();
 			}
+
+      inline int GetSlotMapID() const
+      {
+        return m_handle.m_slotmapID.m_index;
+      }
 		};
 
     //!brief Struct for converting HandleObject to Hash

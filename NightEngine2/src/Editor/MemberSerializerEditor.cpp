@@ -64,6 +64,13 @@ namespace Editor
     });
 
     //TODO: turn these into Macros?
+    m_typeEditorMap.insert({ "std::string",
+      [](Reflection::Variable& variable, const char* memberName)
+    {
+      auto data = variable.GetValue<std::string>();
+      ImGui::Text(data.c_str());
+    }
+    });
     m_typeEditorMap.insert({ "Color3",
       [](Reflection::Variable& variable, const char* memberName)
     {
@@ -112,7 +119,7 @@ namespace Editor
       auto data = variable.GetValue<Handle<GameObject>>();
       ImGui::Text(data->GetName().c_str());
     }
-      });
+    });
     m_typeEditorMap.insert({ "int",
       [](Reflection::Variable& variable, const char* memberName)
     {

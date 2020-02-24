@@ -52,10 +52,18 @@ namespace NightEngine
 		//! @brief Serialize Object to file
 		template<typename T>
 		void SerializeToFile(const T& objectToSerialize
-			, const std::string& fileName, FileSystem::DirectoryType dirType)
+			, const std::string& fileName, FileSystem::DirectoryType dirType
+      , typename NightEngine::Reflection::MetaType::SerializeFn function = nullptr)
 		{
 			auto file = FileSystem::CreateFileTo(fileName, dirType, false);
-			Serialize(objectToSerialize, *file);
+      if (function == nullptr)
+      {
+			  Serialize(objectToSerialize, *file);
+      }
+      else
+      {
+        Serialize(objectToSerialize, *file, function);
+      }
 			file->close();
 		}
 
@@ -112,5 +120,25 @@ namespace NightEngine
 				function(it->second, var);
 			}
 		}
+
+    //TODO: Test Serialize/Deserialize with custom Function
+    //! @brief Deserialize file into outObject with custom Deserialize function
+    template<typename T>
+    void DeserializeFromFile(T& outObject, const std::string& fileName
+      , FileSystem::DirectoryType dirType
+      , typename NightEngine::Reflection::MetaType::DeserializeFn function)
+    {
+      using namespace NightEngine::Reflection;
+      using namespace tao::json;
+
+      //Variable for type T
+      MetaType* metaType = METATYPE(T);
+      //std::unique_ptr<T> tempObject{ new T };
+      Variable var{ metaType, &outObject };
+
+      std::string jsonFile = FileSystem::OpenFileAsString(fileName, dirType);
+      JsonValue value = tao::json::from_string(jsonFile);
+      function(value, var);
+    }
 	}
 }

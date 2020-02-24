@@ -74,6 +74,9 @@ namespace Rendering
       //! @brief Get Light information
       inline LightType GetLightType(void) { return m_lightType; }
 
+      //! @brief Get Light information
+      inline int GetLightIndex(void) { return m_lightIndex; }
+
       //! @brief Calculate Light Space Matrix for Shadow calculation
       glm::mat4& CalculateLightSpaceMatrix(CameraObject camera, float size
         ,float near_ = 0.01f, float far_ = 100.0f);

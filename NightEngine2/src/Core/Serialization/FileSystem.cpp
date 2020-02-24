@@ -13,7 +13,7 @@ namespace NightEngine
 	namespace FileSystem
 	{
 		static Container::String g_dirSubPath[] = {"","Models","Textures"
-      ,"Shaders", "Script", "Cubemaps", "Archetypes", "Materials"};
+      ,"Shaders", "Script", "Cubemaps", "Archetypes", "Materials", "Scenes"};
 
 		std::unique_ptr<std::ofstream> CreateFileTo(const Container::String& fileName, DirectoryType dir, bool append)
 		{

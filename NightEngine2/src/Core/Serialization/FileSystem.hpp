@@ -24,6 +24,7 @@ namespace NightEngine
       Cubemaps,
       Archetypes,
       Materials,
+      Scenes,
 			Count
 		};
 

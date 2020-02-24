@@ -31,9 +31,10 @@ namespace NightEngine
           META_REGISTERER_WITHBASE(MeshRenderer, ComponentLogic
             , InheritType::PUBLIC, true
             , nullptr, nullptr)
-            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_material, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_material, false)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_drawMode, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_meshCount, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_meshLoadPath, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_castShadow, true);
         }
         public:
@@ -72,8 +73,14 @@ namespace NightEngine
           //! @brief Get Material
           Rendering::Material* GetMaterial(void) { return m_material; }
 
+          //! @brief Get DrawMode
+          DrawMode GetDrawMode(void) const { return m_drawMode; }
+
           //! @brief Get Material
           glm::mat4 GetModelMatrix(void);
+
+          //! @brief Get Load Path
+          const std::string& GetMeshLoadPath(void) const { return m_meshLoadPath; }
 
           //! @brief Get Meshes
           const std::vector<Rendering::Mesh>& GetMeshes(void) { return m_meshes; }
@@ -112,6 +119,7 @@ namespace NightEngine
           //TODO: Vector<Handle<Mesh>> instead
           std::vector<Rendering::Mesh>   m_meshes;
           unsigned                     m_meshCount = 0;
+          std::string                  m_meshLoadPath;
 
           bool                         m_castShadow = true;
           DrawMode                     m_drawMode = DrawMode::UNINITIALIZED;

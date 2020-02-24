@@ -274,6 +274,7 @@ namespace NightEngine
       void MeshRenderer::LoadModel(const std::string & path
         , bool buildNow, bool castShadow)
       {
+        m_meshLoadPath = path;
         m_castShadow = castShadow;
 
         //Load the model through ResourceManager

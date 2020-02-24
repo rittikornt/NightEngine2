@@ -9,6 +9,9 @@
 #include "imgui/imgui.h"
 #include "Graphics/Opengl/Window.hpp"
 
+#include "Core/EC/SceneManager.hpp"
+#include "Core/EC/Scene.hpp"
+
 #include "Core/EC/GameObject.hpp"
 
 using namespace NightEngine;
@@ -50,92 +53,96 @@ namespace Editor
 
   void Hierarchy::DrawHierarchyTree(ImGuiTextFilter& filter)
   {
-    //TODO: Loop for each openning scene
-    if (ImGui::CollapsingHeader("Scene", ImGuiTreeNodeFlags_DefaultOpen))
+    //Loop for all openning scene
+    auto scenes = SceneManager::GetAllScenes();
+    for (int i = 0; i < scenes->size(); ++i)
     {
-      //TODO: Some container to hold all selected index maybe set
-      int node_clicked = -1;                // Temporary storage of what node we have clicked to process selection at the end of the loop. May be a pointer to your own node type, etc.
-      ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 2); // Increase spacing to differentiate leaves from expanded contents.
-
-      //Traverse all gameobject
-      int gameObjectIndex = -1;
-      auto& gameObjectContainer = Factory::GetTypeContainer<GameObject>();
-      auto it = gameObjectContainer.GetIterator();
-      while (!it.IsEnd())
+      Scene* scenePtr = (*scenes)[i].Get();
+      if (ImGui::CollapsingHeader(scenePtr->GetSceneName().c_str()
+        , ImGuiTreeNodeFlags_DefaultOpen))
       {
-        gameObjectIndex = it.m_index;
+        //TODO: Some container to hold all selected index maybe set
+        int node_clicked = -1;                // Temporary storage of what node we have clicked to process selection at the end of the loop. May be a pointer to your own node type, etc.
+        ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 2); // Increase spacing to differentiate leaves from expanded contents.
 
-        //Draw the Column, if name pass the filter
-        auto name = it.Get()->GetName().c_str();
-        if (filter.PassFilter(name))
+        //Traverse all gameobject
+        int gameObjectIndex = -1;
+        auto& gameObjects = scenePtr->GetAllGameObjects();
+
+        for(int gID = 0; gID < gameObjects.size(); ++gID)
         {
-          //Node Selection
-          auto mapIt = m_selectedIndexSet.find(gameObjectIndex);
-          ImGuiTreeNodeFlags node_flags = mapIt != m_selectedIndexSet.end()?//selection_mask & (1 << gameObjectIndex) ? 
-            ImGuiTreeNodeFlags_Selected : 0;
+          gameObjectIndex = gameObjects[gID].GetSlotMapID();
 
-          //Node openable flag
-          bool hasChild = false;
-
-          //TODO: Traverse child
-          if (hasChild)
+          //Draw the Column, if name pass the filter
+          auto name = gameObjects[gID]->GetName().c_str();
+          if (filter.PassFilter(name))
           {
-            node_flags |= ImGuiTreeNodeFlags_OpenOnArrow
-              | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+            //Node Selection
+            auto setIt = m_selectedIndexSet.find(gameObjectIndex);
+            ImGuiTreeNodeFlags node_flags = setIt != m_selectedIndexSet.end() ?//selection_mask & (1 << gameObjectIndex) ? 
+              ImGuiTreeNodeFlags_Selected : 0;
 
-            bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)gameObjectIndex
-              , node_flags, name);
-            if (node_open)
+            //Node openable flag
+            bool hasChild = false;
+
+            //TODO: Traverse child
+            if (hasChild)
             {
-              //TODO: Recursively draw Child Node
-              ImGui::Text("Blah blah\nBlah Blah");
-              ImGui::Text("Blah blah\nBlah Blah");
-              ImGui::Text("Blah blah\nBlah Blah");
+              node_flags |= ImGuiTreeNodeFlags_OpenOnArrow
+                | ImGuiTreeNodeFlags_OpenOnDoubleClick
+                | ImGuiTreeNodeFlags_SpanAvailWidth;
 
+              bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)gameObjectIndex
+                , node_flags, name);
+              if (node_open)
+              {
+                //TODO: Recursively draw Child Node
+                ImGui::Text("Blah blah\nBlah Blah");
+                ImGui::Text("Blah blah\nBlah Blah");
+                ImGui::Text("Blah blah\nBlah Blah");
+
+                node_flags |= ImGuiTreeNodeFlags_Leaf
+                  | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+                ImGui::TreeNodeEx((void*)(intptr_t)gameObjectIndex
+                  , node_flags, "Selectable Leaf %d", gameObjectIndex);
+
+                ImGui::TreePop();
+              }
+            }
+            //No child
+            else
+            {
               node_flags |= ImGuiTreeNodeFlags_Leaf
-                | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-              ImGui::TreeNodeEx((void*)(intptr_t)gameObjectIndex
-                , node_flags, "Selectable Leaf %d", gameObjectIndex);
+                | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
 
-              ImGui::TreePop();
+              ImGui::TreeNodeEx((void*)(intptr_t)gameObjectIndex
+                , node_flags, name);
+            }
+
+            //Select Node
+            if (ImGui::IsItemClicked())
+            {
+              node_clicked = gameObjectIndex;
+              m_curSelected = gameObjects[gID].Get();
             }
           }
-          //No child
-          else
-          {
-            node_flags |= ImGuiTreeNodeFlags_Leaf
-              | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+        }
 
-            ImGui::TreeNodeEx((void*)(intptr_t)gameObjectIndex
-              , node_flags, name);
+        //Click on some Node
+        if (node_clicked != -1)
+        {
+          if (ImGui::GetIO().KeyCtrl)
+          {
+            m_selectedIndexSet.insert({ node_clicked });
           }
-
-          //Select Node
-          if (ImGui::IsItemClicked())
+          else //if (!(selection_mask & (1 << node_clicked))) // Depending on selection behavior you want, this commented bit preserve selection when clicking on item that is part of the selection
           {
-            node_clicked = gameObjectIndex;
-            m_curSelected = it.Get();
+            m_selectedIndexSet.clear();
+            m_selectedIndexSet.insert({ node_clicked });
           }
         }
-
-        //Next iterator
-        it.Next();
+        ImGui::PopStyleVar();
       }
-
-      //Click on some Node
-      if (node_clicked != -1)
-      {
-        if (ImGui::GetIO().KeyCtrl)
-        {
-          m_selectedIndexSet.insert({ node_clicked });
-        }
-        else //if (!(selection_mask & (1 << node_clicked))) // Depending on selection behavior you want, this commented bit preserve selection when clicking on item that is part of the selection
-        {
-          m_selectedIndexSet.clear();
-          m_selectedIndexSet.insert({ node_clicked });
-        }
-      }
-      ImGui::PopStyleVar();
     }
   }
 }

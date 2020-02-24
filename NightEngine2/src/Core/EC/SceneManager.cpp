@@ -25,6 +25,8 @@
 #include "Core/Serialization/ResourceManager.hpp"
 #include "Core/Serialization/Serialization.hpp"
 
+#include "Core/Utility/Utility.hpp"
+
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
 
@@ -53,8 +55,6 @@ namespace NightEngine
         FACTORY_REGISTER_TYPE_WITHPARAM(Scene, 1, 5);
 
         auto scene = LoadScene("Default Scene");
-        g_openedScenes.emplace_back(scene);
-        //SaveScene(g_openedScenes[0]);
       }
 
       void Update(void)
@@ -77,6 +77,50 @@ namespace NightEngine
       }
 
       /////////////////////////////////////////
+
+      void InitLoadedScene(Scene & scene)
+      {
+        auto& gameObjects = scene.GetAllGameObjects();
+        for (auto go : gameObjects)
+        {
+          auto gameObject = go.Get();
+
+          //Init MeshRenderer
+          auto handle = gameObject->GetComponent<MeshRenderer>();
+          if (handle != nullptr)
+          {
+            auto meshRenderer = handle->Get<MeshRenderer>();
+
+            //Set Default Material if null
+            auto& defaultMaterial = SceneManager::GetDefaultMaterial();
+            if (meshRenderer->GetMaterial() == nullptr)
+            {
+              meshRenderer->SetMaterial(&defaultMaterial);
+            }
+
+            //Init Mesh
+            auto drawMode = meshRenderer->GetDrawMode();
+            meshRenderer->LoadModel(meshRenderer->GetMeshLoadPath()
+              , drawMode == MeshRenderer::DrawMode::STATIC ? false : true);
+            meshRenderer->RegisterDrawMode(drawMode);
+          }
+
+          //Init Light
+          handle = gameObject->GetComponent("Light");
+          if (handle != nullptr)
+          {
+            auto light = handle->Get<Light>();
+            light->Init(light->GetLightType(), light->GetLightInfo()
+              , light->GetLightIndex());
+          }
+          //TODO: Init Rigidbody
+        }
+
+        //************************************************
+        // Build InstanceDrawer
+        //************************************************
+        Rendering::InstanceDrawer::BuildAllDrawer();
+      }
 
       Handle<Scene> CreateDefaultScene(Container::String sceneName)
       {
@@ -307,6 +351,8 @@ namespace NightEngine
         return sceneHandle;
       }
 
+      /////////////////////////////////////////
+
       Handle<Scene> LoadScene(Container::String sceneName)
       {
         std::string fileName{ sceneName };
@@ -326,66 +372,65 @@ namespace NightEngine
         *(handle.Get()) = scene;
         InitLoadedScene(scene);
 
+        g_openedScenes.emplace_back(handle);
         return handle;
       }
 
-      void InitLoadedScene(Scene & scene)
+      void CloseScene(Handle<Scene> scene)
       {
-        auto& gameObjects = scene.GetAllGameObjects();
-        for (auto go : gameObjects)
+        //Remove from openning list
+        for (auto it = g_openedScenes.begin();
+          it != g_openedScenes.end(); ++it)
         {
-          auto gameObject = go.Get();
-
-          //Init MeshRenderer
-          auto handle = gameObject->GetComponent<MeshRenderer>();
-          if (handle != nullptr)
+          if (scene.m_handle == it->m_handle)
           {
-            auto meshRenderer = handle->Get<MeshRenderer>();
-
-            //Set Default Material if null
-            auto& defaultMaterial = SceneManager::GetDefaultMaterial();
-            if (meshRenderer->GetMaterial() == nullptr)
-            {
-              meshRenderer->SetMaterial(&defaultMaterial);
-            }
-
-            //Init Mesh
-            auto drawMode = meshRenderer->GetDrawMode();
-            meshRenderer->LoadModel(meshRenderer->GetMeshLoadPath()
-              , drawMode == MeshRenderer::DrawMode::STATIC ? false : true);
-            meshRenderer->RegisterDrawMode(drawMode);
+            g_openedScenes.erase(it);
+            break;
           }
-
-          //Init Light
-          handle = gameObject->GetComponent("Light");
-          if (handle != nullptr)
-          {
-            auto light = handle->Get<Light>();
-            light->Init(light->GetLightType(), light->GetLightInfo()
-              , light->GetLightIndex());
-          }
-          //TODO: Init Rigidbody
         }
 
-        //************************************************
-        // Build InstanceDrawer
-        //************************************************
-        Rendering::InstanceDrawer::BuildAllDrawer();
+        //Remove all gameObject in the scene
+        auto gameObjects = scene->GetAllGameObjects();
+        for (int i = 0; i < gameObjects.size(); ++i)
+        {
+          gameObjects[i]->Destroy();
+        }
+        scene.Destroy();
       }
 
       void SaveScene(Handle<Scene> scene)
       {
         std::string fileName{ scene->GetSceneName() };
-        fileName += ".nscene";
+        SaveSceneAs(scene, fileName);
+      }
 
-        Scene& sceneObj = *(scene.Get());
-        Serialization::SerializeToFile(sceneObj
-          , fileName
-          , FileSystem::DirectoryType::Scenes
-          , SceneManager::SerializeScene);
+      void SaveSceneAs(Handle<Scene> scene, std::string fileName)
+      {
+        NightEngine::Utility::StopWatch stopWatch{ true };
+        {
+          Scene& sceneObj = *(scene.Get());
+          sceneObj.SetSceneName(fileName);
+
+          fileName += ".nscene";
+
+          Serialization::SerializeToFile(sceneObj
+            , fileName
+            , FileSystem::DirectoryType::Scenes
+            , SceneManager::SerializeScene);
+        }
+        stopWatch.Stop();
 
         Debug::Log << Logger::MessageType::INFO
-          << "Saved Scene:" << fileName << '\n';
+          << "Saved Scene:" << fileName << " [" << stopWatch.GetElapsedTimeMilli() << " ms]\n";
+      }
+
+      void SaveAllScenes(void)
+      {
+        Debug::Log << "SceneManager::SaveAllScenes\n";
+        for (int i = 0; i < g_openedScenes.size(); ++i)
+        {
+          SaveScene(g_openedScenes[i]);
+        }
       }
 
       Container::Vector<Handle<Scene>>* GetAllScenes(void)

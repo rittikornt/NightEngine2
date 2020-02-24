@@ -188,12 +188,11 @@ namespace Rendering
     //*************************************************
     glViewport(0, 0, g_shadowWidth, g_shadowHeight);
     glEnable(GL_DEPTH_TEST);
-    //Shader and Matrices
-    if (g_sceneLights.dirLights.size() == 0)
-    {
-      SceneManager::GetLights(g_sceneLights);
-    }
 
+    //TODO: don't refresh lights component every frame
+    SceneManager::GetLights(g_sceneLights);
+
+    //Shader and Matrices
     glm::mat4 lightSpaceMatrix;
     if (g_sceneLights.dirLights.size() > 0)
     {
@@ -226,35 +225,38 @@ namespace Rendering
     //*************************************************
     glViewport(0, 0, g_shadowWidth, g_shadowWidth);
     const float farPlane = g_camera.m_far;
-    for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
+    if (g_sceneLights.pointLights.size() > 0)
     {
-      //Shader and Matrices
-      auto pointLightComponent = g_sceneLights.pointLights[i]->GetComponent("Light");
-      auto& lightSpaceMatrices = pointLightComponent->Get<Light>()
-        ->CalculateLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
-
-      //Draw to FBO
-      g_depth2fbo[i].Bind();
+      for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
       {
-        glClear(GL_DEPTH_BUFFER_BIT);
-        //Depth Material
-        g_depth2Material.Bind(false);
+        //Shader and Matrices
+        auto pointLightComponent = g_sceneLights.pointLights[i]->GetComponent("Light");
+        auto& lightSpaceMatrices = pointLightComponent->Get<Light>()
+          ->CalculateLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
+
+        //Draw to FBO
+        g_depth2fbo[i].Bind();
         {
-          for (int i = 0; i < 6; ++i)
+          glClear(GL_DEPTH_BUFFER_BIT);
+          //Depth Material
+          g_depth2Material.Bind(false);
           {
-            g_depth2Material.GetShader().SetUniform(g_lightSpaceMatrices[i]
-              , lightSpaceMatrices[i]);
+            for (int i = 0; i < 6; ++i)
+            {
+              g_depth2Material.GetShader().SetUniform(g_lightSpaceMatrices[i]
+                , lightSpaceMatrices[i]);
+            }
+            g_depth2Material.GetShader().SetUniform("u_lightPos"
+              , g_sceneLights.pointLights[i]->GetTransform()->GetPosition());
+            g_depth2Material.GetShader().SetUniform("u_farPlane"
+              , farPlane);
+            //Draw all Mesh with depthMaterial
+            Drawer::DrawShadowWithoutBind(g_depth2Material.GetShader());
           }
-          g_depth2Material.GetShader().SetUniform("u_lightPos"
-            , g_sceneLights.pointLights[i]->GetTransform()->GetPosition());
-          g_depth2Material.GetShader().SetUniform("u_farPlane"
-            , farPlane);
-          //Draw all Mesh with depthMaterial
-          Drawer::DrawShadowWithoutBind(g_depth2Material.GetShader());
+          g_depth2Material.Unbind();
         }
-        g_depth2Material.Unbind();
+        g_depth2fbo[i].Unbind();
       }
-      g_depth2fbo[i].Unbind();
     }
 
     //*************************************************

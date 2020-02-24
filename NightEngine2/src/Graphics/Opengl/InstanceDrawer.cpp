@@ -188,6 +188,38 @@ namespace Rendering
       map[key].AddMeshRenderer(meshRenderer.GetHandle());
     }
 
+    void UnregisterInstance(NightEngine::EC::Components::MeshRenderer& meshRenderer)
+    {
+      auto& map = GetInternalDrawBatchMap();
+
+      //TODO: Signature that make more sense
+      //(Material + MeshName?) as Signature
+      auto& meshes = meshRenderer.GetMeshes();
+      auto  mat = meshRenderer.GetMaterial();
+      InstanceSignature signature{ mat->GetShader().GetProgramID()
+      , meshRenderer.GetPolygonCount() };
+
+      const char* ptr = reinterpret_cast<const char*>(&signature);
+      U64 key = NightEngine::Container::ConvertToHash(ptr, sizeof(InstanceSignature));
+
+      //Initialize
+      auto it = map.find(key);
+      if (it != map.end())
+      {
+        auto mrHandle = meshRenderer.GetHandle();
+        auto& meshHandles = it->second.m_meshrenderers;
+        for (auto it = meshHandles.begin();
+          it != meshHandles.end(); ++it)
+        {
+          if (*it == mrHandle)
+          {
+            meshHandles.erase(it);
+            break;
+          }
+        }
+      }
+    }
+
     void UnregisterAllInstances(void)
     {
       auto& map = GetInternalDrawBatchMap();

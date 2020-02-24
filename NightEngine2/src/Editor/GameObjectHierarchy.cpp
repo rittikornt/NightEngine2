@@ -53,13 +53,23 @@ namespace Editor
 
   void Hierarchy::DrawHierarchyTree(ImGuiTextFilter& filter)
   {
+    static std::vector<bool> closable_groups;
+    static bool closable_group = true;
+
     //Loop for all openning scene
     auto scenes = SceneManager::GetAllScenes();
     for (int i = 0; i < scenes->size(); ++i)
     {
+      //Make sure there's enough size
+      if (closable_groups.size() < i + 1)
+      {
+        closable_groups.emplace_back(true);
+      }
+      closable_group = (closable_groups[i]);
+
       Scene* scenePtr = (*scenes)[i].Get();
-      if (ImGui::CollapsingHeader(scenePtr->GetSceneName().c_str()
-        , ImGuiTreeNodeFlags_DefaultOpen))
+      if ( ImGui::CollapsingHeader(scenePtr->GetSceneName().c_str()
+        , &closable_group, ImGuiTreeNodeFlags_DefaultOpen) )
       {
         //TODO: Some container to hold all selected index maybe set
         int node_clicked = -1;                // Temporary storage of what node we have clicked to process selection at the end of the loop. May be a pointer to your own node type, etc.
@@ -113,7 +123,8 @@ namespace Editor
             else
             {
               node_flags |= ImGuiTreeNodeFlags_Leaf
-                | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+                | ImGuiTreeNodeFlags_NoTreePushOnOpen
+                | ImGuiTreeNodeFlags_SpanAvailWidth; // ImGuiTreeNodeFlags_Bullet
 
               ImGui::TreeNodeEx((void*)(intptr_t)gameObjectIndex
                 , node_flags, name);
@@ -142,6 +153,21 @@ namespace Editor
           }
         }
         ImGui::PopStyleVar();
+      }
+
+      //Check if the close button is clicked
+      closable_groups[i] = closable_group;
+      if (closable_groups[i] == false)
+      {
+        SceneManager::CloseScene((*scenes)[i]);
+
+        //Reopen all the closed headers
+        for (int i = 0; i < closable_groups.size(); ++i)
+        {
+          closable_groups[i] = true;
+        }
+
+        break;
       }
     }
   }

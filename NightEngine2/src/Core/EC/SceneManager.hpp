@@ -50,17 +50,28 @@ namespace NightEngine
 
       /////////////////////////////////////////
 
+      //!@brief Initialize Scene Components
+      void InitLoadedScene(Scene& scene);
+
       //!breif Create Scene
       Handle<Scene> CreateDefaultScene(Container::String sceneName);
+
+      /////////////////////////////////////////
 
       //!@brief Load scene through ResourceManager
       Handle<Scene> LoadScene(Container::String sceneFile);
 
-      //!@brief Initialize Scene Components
-      void InitLoadedScene(Scene& scene);
+      //!@brief Close scene
+      void CloseScene(Handle<Scene> scene);
 
-      //!@brief Load scene through ResourceManager
+      //!@brief Save scene
       void SaveScene(Handle<Scene> scene);
+
+      //!@brief Save scene
+      void SaveSceneAs(Handle<Scene> scene, std::string fileName);
+
+      //!@brief Save all the currently openning scenes
+      void SaveAllScenes(void);
 
       //!@brief Get all currently openned scenes
       Container::Vector<Handle<Scene>>* GetAllScenes(void);

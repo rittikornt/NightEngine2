@@ -110,6 +110,11 @@ namespace NightEngine
         //Unregister from Drawer
         switch (mode)
         {
+          case DrawMode::STATIC:
+          {
+            InstanceDrawer::UnregisterInstance(*this);
+            break;
+          }
           case DrawMode::NORMAL:
           {
             Drawer::UnregisterMeshRenderer(*this

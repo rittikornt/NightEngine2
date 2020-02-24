@@ -29,6 +29,7 @@
 
 //NightEngine
 #include "Core/Logger.hpp"
+#include "Core/EC/SceneManager.hpp"
 #include "Core/EC/Factory.hpp"
 #include "Core/EC/GameObject.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
@@ -143,27 +144,42 @@ namespace Editor
     {
       Debug::Log << Logger::MessageType::INFO << "New\n";
     }
-    if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-    if (ImGui::BeginMenu("Open Recent"))
+    if (ImGui::MenuItem("Open", "Ctrl+O")) 
+    {
+      g_confirmBox.ShowConfirmationBoxWithInput("Open Scene: ",
+        [](void* inputChars)
+      {
+        char* inputName = reinterpret_cast<char*>(inputChars);
+
+        auto scenes = SceneManager::LoadScene(inputName);
+      });
+    }
+    /*if (ImGui::BeginMenu("Open Recent"))
     {
       ImGui::MenuItem("fish_hat.c");
       ImGui::MenuItem("fish_hat.inl");
       ImGui::MenuItem("fish_hat.h");
       if (ImGui::BeginMenu("More.."))
       {
-        ImGui::MenuItem("Hello");
-        ImGui::MenuItem("Sailor");
-        if (ImGui::BeginMenu("Recurse.."))
-        {
-          DrawTopMenuFile();
-          ImGui::EndMenu();
-        }
         ImGui::EndMenu();
       }
       ImGui::EndMenu();
+    }*/
+    if (ImGui::MenuItem("Save All", "Ctrl+S")) 
+    {
+      SceneManager::SaveAllScenes();
     }
-    if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-    if (ImGui::MenuItem("Save As..")) {}
+    if (ImGui::MenuItem("Save As..")) 
+    {
+      g_confirmBox.ShowConfirmationBoxWithInput("Save As: ",
+        [](void* inputChars)
+      {
+        char* inputName = reinterpret_cast<char*>(inputChars);
+
+        auto scenes = SceneManager::GetAllScenes();
+        SceneManager::SaveSceneAs((*scenes)[0], inputName);
+      });
+    }
     ImGui::Separator();
 
     //Option

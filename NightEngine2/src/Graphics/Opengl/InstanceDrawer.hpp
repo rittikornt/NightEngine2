@@ -104,6 +104,9 @@ namespace Rendering
     //! @brief Register the MeshRenderer to the Drawer
     void RegisterInstance(NightEngine::EC::Components::MeshRenderer& meshRenderer);
 
+    //! @brief Unregister the MeshRenderer from the Drawer
+    void UnregisterInstance(NightEngine::EC::Components::MeshRenderer& meshRenderer);
+
     //! @brief Unregister all the MeshRenderer from the Drawer
     void UnregisterAllInstances(void);
 

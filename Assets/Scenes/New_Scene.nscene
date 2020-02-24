@@ -1,0 +1,616 @@
+{
+  "m_name": "New_Scene",
+  "m_sceneGameObjects": [
+    {
+      "m_components": {
+        "MeshRenderer": {
+          "m_castShadow": true,
+          "m_drawMode": 0,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Sphere.obj"
+        },
+        "Rigidbody": {
+          "m_mass": 1.0,
+          "m_static": false
+        }
+      },
+      "m_name": "Sphere",
+      "m_transform": {
+        "m_angle": {
+          "x": 0.0,
+          "y": -0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": 0.0,
+          "y": -3.000000476837158,
+          "z": 0.0
+        },
+        "m_rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "m_components": {
+        "MeshRenderer": {
+          "m_castShadow": true,
+          "m_drawMode": 0,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Cube.obj"
+        },
+        "Rigidbody": {
+          "m_mass": 0.0,
+          "m_static": true
+        }
+      },
+      "m_name": "Floor",
+      "m_transform": {
+        "m_angle": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": 0.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "m_rotation": {
+          "w": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_scale": {
+          "x": 20.0,
+          "y": 1.0,
+          "z": 20.0
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 0,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              }
+            },
+            "m_value": {
+              "m_intensity": 8.0,
+              "m_spotLight": {
+                "m_inner": 8.0,
+                "m_outer": -107374176.0,
+                "m_spotLightIntensity": -107374176.0
+              }
+            }
+          },
+          "m_lightType": 1
+        },
+        "MeshRenderer": {
+          "m_castShadow": false,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Pointlight0",
+      "m_transform": {
+        "m_angle": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": -6.0,
+          "y": -1.0,
+          "z": 0.25
+        },
+        "m_rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 0,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.699999988079071
+              }
+            },
+            "m_value": {
+              "m_intensity": 1.0,
+              "m_spotLight": {
+                "m_inner": 1.0,
+                "m_outer": 0.949999988079071,
+                "m_spotLightIntensity": 5.0
+              }
+            }
+          },
+          "m_lightType": 2
+        },
+        "MeshRenderer": {
+          "m_castShadow": true,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Spotlight0",
+      "m_transform": {
+        "m_angle": {
+          "x": 4.5,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": -6.0,
+          "y": 5.0,
+          "z": 2.0
+        },
+        "m_rotation": {
+          "w": -0.6281735897064209,
+          "x": 0.7780731916427612,
+          "y": -0.0,
+          "z": -0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 1,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              }
+            },
+            "m_value": {
+              "m_intensity": 8.0,
+              "m_spotLight": {
+                "m_inner": 8.0,
+                "m_outer": -107374176.0,
+                "m_spotLightIntensity": -107374176.0
+              }
+            }
+          },
+          "m_lightType": 1
+        },
+        "MeshRenderer": {
+          "m_castShadow": false,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Pointlight1",
+      "m_transform": {
+        "m_angle": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": -2.0,
+          "y": -1.0,
+          "z": 0.25
+        },
+        "m_rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 1,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.699999988079071
+              }
+            },
+            "m_value": {
+              "m_intensity": 1.0,
+              "m_spotLight": {
+                "m_inner": 1.0,
+                "m_outer": 0.949999988079071,
+                "m_spotLightIntensity": 5.0
+              }
+            }
+          },
+          "m_lightType": 2
+        },
+        "MeshRenderer": {
+          "m_castShadow": true,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Spotlight1",
+      "m_transform": {
+        "m_angle": {
+          "x": 4.5,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": -2.0,
+          "y": 5.0,
+          "z": 2.0
+        },
+        "m_rotation": {
+          "w": -0.6281735897064209,
+          "x": 0.7780731916427612,
+          "y": -0.0,
+          "z": -0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 2,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              }
+            },
+            "m_value": {
+              "m_intensity": 8.0,
+              "m_spotLight": {
+                "m_inner": 8.0,
+                "m_outer": -107374176.0,
+                "m_spotLightIntensity": -107374176.0
+              }
+            }
+          },
+          "m_lightType": 1
+        },
+        "MeshRenderer": {
+          "m_castShadow": false,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Pointlight2",
+      "m_transform": {
+        "m_angle": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": 2.0,
+          "y": -1.0,
+          "z": 0.25
+        },
+        "m_rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 2,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.699999988079071
+              }
+            },
+            "m_value": {
+              "m_intensity": 1.0,
+              "m_spotLight": {
+                "m_inner": 1.0,
+                "m_outer": 0.949999988079071,
+                "m_spotLightIntensity": 5.0
+              }
+            }
+          },
+          "m_lightType": 2
+        },
+        "MeshRenderer": {
+          "m_castShadow": true,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Spotlight2",
+      "m_transform": {
+        "m_angle": {
+          "x": 4.5,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": 2.0,
+          "y": 5.0,
+          "z": 2.0
+        },
+        "m_rotation": {
+          "w": -0.6281735897064209,
+          "x": 0.7780731916427612,
+          "y": -0.0,
+          "z": -0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 3,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              }
+            },
+            "m_value": {
+              "m_intensity": 8.0,
+              "m_spotLight": {
+                "m_inner": 8.0,
+                "m_outer": -107374176.0,
+                "m_spotLightIntensity": -107374176.0
+              }
+            }
+          },
+          "m_lightType": 1
+        },
+        "MeshRenderer": {
+          "m_castShadow": false,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Pointlight3",
+      "m_transform": {
+        "m_angle": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": 6.0,
+          "y": -1.0,
+          "z": 0.25
+        },
+        "m_rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "Light": {
+          "m_lightIndex": 3,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.699999988079071
+              }
+            },
+            "m_value": {
+              "m_intensity": 1.0,
+              "m_spotLight": {
+                "m_inner": 1.0,
+                "m_outer": 0.949999988079071,
+                "m_spotLightIntensity": 5.0
+              }
+            }
+          },
+          "m_lightType": 2
+        },
+        "MeshRenderer": {
+          "m_castShadow": true,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Spotlight3",
+      "m_transform": {
+        "m_angle": {
+          "x": 4.5,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": 6.0,
+          "y": 5.0,
+          "z": 2.0
+        },
+        "m_rotation": {
+          "w": -0.6281735897064209,
+          "x": 0.7780731916427612,
+          "y": -0.0,
+          "z": -0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    },
+    {
+      "m_components": {
+        "CharacterInfo": {
+          "m_health": 100.0,
+          "m_maxHealth": 100.0,
+          "m_moveSpeed": 10.0
+        },
+        "Light": {
+          "m_lightIndex": 0,
+          "m_lightInfo": {
+            "m_color": {
+              "m_value": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            },
+            "m_value": {
+              "m_intensity": 0.5,
+              "m_spotLight": {
+                "m_inner": 0.5,
+                "m_outer": -107374176.0,
+                "m_spotLightIntensity": -107374176.0
+              }
+            }
+          },
+          "m_lightType": 0
+        },
+        "MeshRenderer": {
+          "m_castShadow": true,
+          "m_drawMode": 3,
+          "m_meshCount": 1,
+          "m_meshLoadPath": "./../Assets/Models/Quad.obj"
+        }
+      },
+      "m_name": "Dirlight",
+      "m_transform": {
+        "m_angle": {
+          "x": 2.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_position": {
+          "x": 0.0,
+          "y": 15.0,
+          "z": 2.0
+        },
+        "m_rotation": {
+          "w": 0.5403022766113281,
+          "x": 0.8414710164070129,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "m_scale": {
+          "x": 0.20000000298023224,
+          "y": 0.20000000298023224,
+          "z": 0.20000000298023224
+        }
+      }
+    }
+  ],
+  "m_sceneNodes": [
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    },
+    {
+      "m_parentIndex": -1
+    }
+  ]
+}

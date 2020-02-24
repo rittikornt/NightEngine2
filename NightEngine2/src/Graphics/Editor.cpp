@@ -142,7 +142,8 @@ namespace Editor
     ImGui::MenuItem("File menu", NULL, false, false);
     if (ImGui::MenuItem("New")) 
     {
-      Debug::Log << Logger::MessageType::INFO << "New\n";
+      SceneManager::CreateEmptyScene("New_Scene");
+      Debug::Log << Logger::MessageType::INFO << "New Scene\n";
     }
     if (ImGui::MenuItem("Open", "Ctrl+O")) 
     {

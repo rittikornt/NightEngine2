@@ -53,6 +53,9 @@ namespace NightEngine
       //!@brief Initialize Scene Components
       void InitLoadedScene(Scene& scene);
 
+      //!breif Create Empty Scene
+      Handle<Scene> CreateEmptyScene(Container::String sceneName);
+
       //!breif Create Scene
       Handle<Scene> CreateDefaultScene(Container::String sceneName);
 

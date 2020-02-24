@@ -54,7 +54,7 @@ namespace NightEngine
 
         FACTORY_REGISTER_TYPE_WITHPARAM(Scene, 1, 5);
 
-        auto scene = LoadScene("Default Scene");
+        auto scene = LoadScene("Default_Scene");
       }
 
       void Update(void)
@@ -120,6 +120,153 @@ namespace NightEngine
         // Build InstanceDrawer
         //************************************************
         Rendering::InstanceDrawer::BuildAllDrawer();
+      }
+
+      Handle<Scene> CreateEmptyScene(Container::String sceneName)
+      {
+        auto sceneHandle = Factory::Create<Scene>("Scene");
+        Scene& scene = *(sceneHandle.Get());
+        scene.SetSceneName(sceneName);
+
+        ComponentHandle* ch;
+
+        Handle<GameObject>   sphereGO;
+        Handle<GameObject>   floorGO;
+
+        Handle<GameObject>   dirLight;
+        Handle<GameObject>   pointLight[POINTLIGHT_AMOUNT];
+        Handle<GameObject>   spotLight[SPOTLIGHT_AMOUNT];
+        //************************************************
+        // Preloading Models
+        //  TODO: Serialize a list of mesh object into scene file for preloading
+        //************************************************
+        {
+          std::vector<std::string> filePaths{
+            FileSystem::GetFilePath("Cube.obj", FileSystem::DirectoryType::Models),
+            FileSystem::GetFilePath("Torus.obj", FileSystem::DirectoryType::Models),
+            FileSystem::GetFilePath("guts-berserker/guts.fbx", FileSystem::DirectoryType::Models),
+            FileSystem::GetFilePath("Quad.obj", FileSystem::DirectoryType::Models),
+            FileSystem::GetFilePath("Sphere.obj", FileSystem::DirectoryType::Models) };
+          ResourceManager::PreloadModelsResourceAsync(filePaths);
+        }
+
+        //Models
+        {
+          //Sphere
+          sphereGO = GameObject::Create("Sphere", 1);
+          sphereGO->AddComponent("MeshRenderer");
+          ch = sphereGO->GetComponent("MeshRenderer");
+          ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Sphere.obj"
+            , FileSystem::DirectoryType::Models), true);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
+          sphereGO->GetTransform()->SetPosition(glm::vec3(2.0f, -2.6f, 0.0f));
+          sphereGO->AddComponent("Rigidbody");
+          ch = sphereGO->GetComponent("Rigidbody");
+          ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
+            , glm::vec3(0.0f, 50.0f, 0.0f)//sphereGO->GetTransform()->GetPosition()
+            , Physics::SphereCollider(1.0f), 1.0f);
+
+          //Floor
+          floorGO = GameObject::Create("Floor", 1);
+          floorGO->AddComponent("MeshRenderer");
+          ch = floorGO->GetComponent("MeshRenderer");
+          ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
+            , FileSystem::DirectoryType::Models), true);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
+          g_defaultMaterial.SetParams(0.2f, 0.1f);
+          ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
+          floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
+          floorGO->GetTransform()->SetScale(glm::vec3(20.0f, 1.0f, 20.0f));
+          floorGO->AddComponent("Rigidbody");
+          ch = floorGO->GetComponent("Rigidbody");
+          ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
+            , floorGO->GetTransform()->GetPosition()
+            , Physics::BoxCollider(glm::vec3(10.0f, 1.0f, 10.0f)));
+
+          //Add to Scene
+          scene.AddGameObject(sphereGO);
+          scene.AddGameObject(floorGO);
+        }
+
+        //Lights
+        {
+          //Dirlight
+          dirLight = GameObject::Create("Dirlight", 2);
+          dirLight->AddComponent("CharacterInfo");
+          dirLight->AddComponent("MeshRenderer");
+          ch = dirLight->GetComponent("MeshRenderer");
+          ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
+            , FileSystem::DirectoryType::Models), true);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
+          ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+
+          dirLight->GetTransform()->SetPosition(glm::vec3(0.0f, 15.0f, 2.0f));
+          dirLight->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+          dirLight->GetTransform()->SetEulerAngle(glm::vec3(2.0f, 0.0f, 0.0f));
+
+          dirLight->AddComponent("Light");
+          ch = dirLight->GetComponent("Light");
+          ch->Get<Light>()->Init(Light::LightType::DIRECTIONAL
+            , { glm::vec3(1.0f)
+            ,{ Light::LightInfo::Value{ 0.5f } } }, 0);
+
+          //Spotlight
+          for (size_t i = 0; i < SPOTLIGHT_AMOUNT; ++i)
+          {
+            //Point light
+            std::string name{ "Pointlight" };
+            name += std::to_string(i);
+            pointLight[i] = GameObject::Create(name.c_str(), 2);
+            pointLight[i]->AddComponent("MeshRenderer");
+            ch = pointLight[i]->GetComponent("MeshRenderer");
+            ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
+              , FileSystem::DirectoryType::Models), true, false);
+            ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+            ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
+
+            pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f) - 6.0f, -1.0f, 0.25f));
+            pointLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+            pointLight[i]->GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, 0.0f));
+
+            pointLight[i]->AddComponent("Light");
+            ch = pointLight[i]->GetComponent("Light");
+            ch->Get<Light>()->Init(Light::LightType::POINT
+              , { glm::vec3(0.0f, 1.0f,0.0f)
+              ,{ Light::LightInfo::Value{ 8.0f } } }, i);
+
+            //Spotlight
+            name = std::string{ "Spotlight" };
+            name += std::to_string(i);
+            spotLight[i] = GameObject::Create(name.c_str(), 2);
+            spotLight[i]->AddComponent("MeshRenderer");
+            ch = spotLight[i]->GetComponent("MeshRenderer");
+            ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
+              , FileSystem::DirectoryType::Models), true);
+            ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
+            ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+
+            spotLight[i]->GetTransform()->SetPosition(glm::vec3((float)i* 4.0f - 6.0f, 5.0f, 2.0f));
+            spotLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+            spotLight[i]->GetTransform()->SetEulerAngle(glm::vec3(4.5f, 0.0f, 0.0f));
+
+            spotLight[i]->AddComponent("Light");
+            ch = spotLight[i]->GetComponent("Light");
+            ch->Get<Light>()->Init(Light::LightType::SPOTLIGHT
+              ,
+              { glm::vec3(0.0f,0.0f, 0.7f)
+                , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
+
+            //Add to Scene
+            scene.AddGameObject(pointLight[i]);
+            scene.AddGameObject(spotLight[i]);
+          }
+        }
+
+        //Add to Scene
+        scene.AddGameObject(dirLight);
+
+        g_openedScenes.emplace_back(sceneHandle);
+        return sceneHandle;
       }
 
       Handle<Scene> CreateDefaultScene(Container::String sceneName)
@@ -348,6 +495,7 @@ namespace NightEngine
         //Add to Scene
         scene.AddGameObject(dirLight);
 
+        g_openedScenes.emplace_back(sceneHandle);
         return sceneHandle;
       }
 
@@ -410,7 +558,6 @@ namespace NightEngine
         {
           Scene& sceneObj = *(scene.Get());
           sceneObj.SetSceneName(fileName);
-
           fileName += ".nscene";
 
           Serialization::SerializeToFile(sceneObj

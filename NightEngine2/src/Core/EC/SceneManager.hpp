@@ -81,6 +81,8 @@ namespace NightEngine
 
       /////////////////////////////////////////
 
+      void GetUniqueName(Container::String& sceneName);
+
       bool GetLights(SceneLights& sceneLights);
 
       Rendering::Material& GetDefaultMaterial(void);

@@ -113,6 +113,7 @@ namespace NightEngine
             light->Init(light->GetLightType(), light->GetLightInfo()
               , light->GetLightIndex());
           }
+
           //TODO: Init Rigidbody
         }
 
@@ -126,46 +127,26 @@ namespace NightEngine
       {
         auto sceneHandle = Factory::Create<Scene>("Scene");
         Scene& scene = *(sceneHandle.Get());
+
+        GetUniqueName(sceneName);
         scene.SetSceneName(sceneName);
 
         ComponentHandle* ch;
-
-        Handle<GameObject>   sphereGO;
         Handle<GameObject>   floorGO;
 
         Handle<GameObject>   dirLight;
-        Handle<GameObject>   pointLight[POINTLIGHT_AMOUNT];
-        Handle<GameObject>   spotLight[SPOTLIGHT_AMOUNT];
         //************************************************
         // Preloading Models
         //  TODO: Serialize a list of mesh object into scene file for preloading
         //************************************************
         {
           std::vector<std::string> filePaths{
-            FileSystem::GetFilePath("Cube.obj", FileSystem::DirectoryType::Models),
-            FileSystem::GetFilePath("Torus.obj", FileSystem::DirectoryType::Models),
-            FileSystem::GetFilePath("guts-berserker/guts.fbx", FileSystem::DirectoryType::Models),
-            FileSystem::GetFilePath("Quad.obj", FileSystem::DirectoryType::Models),
-            FileSystem::GetFilePath("Sphere.obj", FileSystem::DirectoryType::Models) };
+            FileSystem::GetFilePath("Quad.obj", FileSystem::DirectoryType::Models) };
           ResourceManager::PreloadModelsResourceAsync(filePaths);
         }
 
         //Models
         {
-          //Sphere
-          sphereGO = GameObject::Create("Sphere", 1);
-          sphereGO->AddComponent("MeshRenderer");
-          ch = sphereGO->GetComponent("MeshRenderer");
-          ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Sphere.obj"
-            , FileSystem::DirectoryType::Models), true);
-          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
-          sphereGO->GetTransform()->SetPosition(glm::vec3(2.0f, -2.6f, 0.0f));
-          sphereGO->AddComponent("Rigidbody");
-          ch = sphereGO->GetComponent("Rigidbody");
-          ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
-            , glm::vec3(0.0f, 50.0f, 0.0f)//sphereGO->GetTransform()->GetPosition()
-            , Physics::SphereCollider(1.0f), 1.0f);
-
           //Floor
           floorGO = GameObject::Create("Floor", 1);
           floorGO->AddComponent("MeshRenderer");
@@ -183,8 +164,6 @@ namespace NightEngine
             , floorGO->GetTransform()->GetPosition()
             , Physics::BoxCollider(glm::vec3(10.0f, 1.0f, 10.0f)));
 
-          //Add to Scene
-          scene.AddGameObject(sphereGO);
           scene.AddGameObject(floorGO);
         }
 
@@ -209,57 +188,6 @@ namespace NightEngine
           ch->Get<Light>()->Init(Light::LightType::DIRECTIONAL
             , { glm::vec3(1.0f)
             ,{ Light::LightInfo::Value{ 0.5f } } }, 0);
-
-          //Spotlight
-          for (size_t i = 0; i < SPOTLIGHT_AMOUNT; ++i)
-          {
-            //Point light
-            std::string name{ "Pointlight" };
-            name += std::to_string(i);
-            pointLight[i] = GameObject::Create(name.c_str(), 2);
-            pointLight[i]->AddComponent("MeshRenderer");
-            ch = pointLight[i]->GetComponent("MeshRenderer");
-            ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-              , FileSystem::DirectoryType::Models), true, false);
-            ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-            ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-
-            pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f) - 6.0f, -1.0f, 0.25f));
-            pointLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-            pointLight[i]->GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, 0.0f));
-
-            pointLight[i]->AddComponent("Light");
-            ch = pointLight[i]->GetComponent("Light");
-            ch->Get<Light>()->Init(Light::LightType::POINT
-              , { glm::vec3(0.0f, 1.0f,0.0f)
-              ,{ Light::LightInfo::Value{ 8.0f } } }, i);
-
-            //Spotlight
-            name = std::string{ "Spotlight" };
-            name += std::to_string(i);
-            spotLight[i] = GameObject::Create(name.c_str(), 2);
-            spotLight[i]->AddComponent("MeshRenderer");
-            ch = spotLight[i]->GetComponent("MeshRenderer");
-            ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-              , FileSystem::DirectoryType::Models), true);
-            ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-            ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-
-            spotLight[i]->GetTransform()->SetPosition(glm::vec3((float)i* 4.0f - 6.0f, 5.0f, 2.0f));
-            spotLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-            spotLight[i]->GetTransform()->SetEulerAngle(glm::vec3(4.5f, 0.0f, 0.0f));
-
-            spotLight[i]->AddComponent("Light");
-            ch = spotLight[i]->GetComponent("Light");
-            ch->Get<Light>()->Init(Light::LightType::SPOTLIGHT
-              ,
-              { glm::vec3(0.0f,0.0f, 0.7f)
-                , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
-
-            //Add to Scene
-            scene.AddGameObject(pointLight[i]);
-            scene.AddGameObject(spotLight[i]);
-          }
         }
 
         //Add to Scene
@@ -537,12 +465,13 @@ namespace NightEngine
           }
         }
 
-        //Remove all gameObject in the scene
+        //Remove all gameObject in the scene then destroy the scene object itself
         auto gameObjects = scene->GetAllGameObjects();
         for (int i = 0; i < gameObjects.size(); ++i)
         {
           gameObjects[i]->Destroy();
         }
+        scene->Clear();
         scene.Destroy();
       }
 
@@ -586,6 +515,17 @@ namespace NightEngine
       }
 
       /////////////////////////////////////////
+
+      void GetUniqueName(Container::String& sceneName)
+      {
+        for (int i = 0; i < g_openedScenes.size(); ++i)
+        {
+          if (g_openedScenes[i]->GetSceneName() == sceneName)
+          {
+            sceneName += "_";
+          }
+        }
+      }
 
       bool GetLights(SceneLights& sceneLights)
       {

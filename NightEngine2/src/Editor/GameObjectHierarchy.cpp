@@ -54,7 +54,7 @@ namespace Editor
   void Hierarchy::DrawHierarchyTree(ImGuiTextFilter& filter)
   {
     static std::vector<bool> closable_groups;
-    static bool closable_group = true;
+    static bool cur_closable_group = true;
 
     //Loop for all openning scene
     auto scenes = SceneManager::GetAllScenes();
@@ -65,11 +65,11 @@ namespace Editor
       {
         closable_groups.emplace_back(true);
       }
-      closable_group = (closable_groups[i]);
+      cur_closable_group = (closable_groups[i]);
 
       Scene* scenePtr = (*scenes)[i].Get();
       if ( ImGui::CollapsingHeader(scenePtr->GetSceneName().c_str()
-        , &closable_group, ImGuiTreeNodeFlags_DefaultOpen) )
+        , &cur_closable_group, ImGuiTreeNodeFlags_DefaultOpen) )
       {
         //TODO: Some container to hold all selected index maybe set
         int node_clicked = -1;                // Temporary storage of what node we have clicked to process selection at the end of the loop. May be a pointer to your own node type, etc.
@@ -155,10 +155,17 @@ namespace Editor
         ImGui::PopStyleVar();
       }
 
-      //Check if the close button is clicked
-      closable_groups[i] = closable_group;
+      //Save flags if the close button is clicked
+      closable_groups[i] = cur_closable_group;
+    }
+
+    //Check for close button click flag
+    for (int i = 0; i < closable_groups.size(); ++i)
+    {
       if (closable_groups[i] == false)
       {
+        Debug::Log << "Close Scene: " << (*scenes)[i].Get()->GetSceneName() << '\n';
+        m_curSelected = nullptr;
         SceneManager::CloseScene((*scenes)[i]);
 
         //Reopen all the closed headers

@@ -53,7 +53,7 @@ namespace Physics
   void PhysicsScene::Initialize(void)
   {
     //Debug drawer
-    m_debugDrawer = new PhysicsDebugDrawer();
+    m_debugDrawer = PhysicsDebugDrawer::GetInstance();
     m_world->setDebugDrawer(m_debugDrawer);
 
     const int reserveSize = 50;
@@ -74,7 +74,6 @@ namespace Physics
       //Rigidbody* ball = new Rigidbody();
       //ball->Initialize(*this, glm::vec3(0, 1000, 0), sphereShape, 1.0f);
     }
-
   }
 
   void PhysicsScene::AddCollisionShape(btCollisionShape& shape)

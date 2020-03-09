@@ -51,8 +51,25 @@ namespace Physics
 	
      //!brief Debug Draw Loop
      void           Draw(Rendering::CameraObject& cam);
-	private: 
+
+     /////////////////////////////////////////
+
+     void SetDebugDrawActive(bool enable) { m_enable = enable; }
+
+     bool GetDebugDrawActive(void) { return m_enable; }
+
+     static PhysicsDebugDrawer* GetInstance()
+     {
+       if (s_instance == nullptr)
+       {
+         s_instance = new PhysicsDebugDrawer();
+       }
+       return s_instance;
+     }
+	private:
+     static PhysicsDebugDrawer* s_instance;
 	   int                        m_debugMode;
+     bool                       m_enable;
 	
      Rendering::Shader            m_shader;
      Rendering::VertexArrayObject m_vao;

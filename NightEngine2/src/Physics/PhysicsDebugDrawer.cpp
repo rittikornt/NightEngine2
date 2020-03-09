@@ -20,6 +20,7 @@ using namespace Rendering::PrimitiveShape;
 
 namespace Physics
 {
+  PhysicsDebugDrawer* PhysicsDebugDrawer::s_instance = nullptr;
 
   PhysicsDebugDrawer::PhysicsDebugDrawer()
   {
@@ -85,6 +86,11 @@ namespace Physics
 
   void PhysicsDebugDrawer::Draw(Rendering::CameraObject& cam)
   {
+    if (!m_enable)
+    {
+      return;
+    }
+
     if (m_lines.size() > 0)
     {
       //Build new Lines data

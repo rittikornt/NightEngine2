@@ -18,6 +18,7 @@
 #include "Core/Serialization/FileSystem.hpp"
 
 #include "NightEngine2.hpp"
+#include "Physics/PhysicsDebugDrawer.hpp"
 
 #include <ctype.h>          // toupper, isprint
 #include <limits.h>         // INT_MIN, INT_MAX
@@ -60,6 +61,8 @@ namespace Editor
     AddCommand("RENDERDOC_CAPTURE", &DevConsole::RenderDocCapture);
     AddCommand("RESTART_WINDOW", &DevConsole::RestartWindow);
     AddCommand("COMPILE_SHADERS", &DevConsole::RecompileShaders);
+
+    AddCommand("TOGGLE_PHYSICS_DEBUG", &DevConsole::TogglePhysicsDebug);
 
     //Init Log
     AddLog("//******************************");
@@ -428,6 +431,8 @@ namespace Editor
     return 0;
   }
 
+  ///////////////////////////////////////////////////////////////////////
+
   //***************************************
   // CommandFunc
   //***************************************
@@ -471,6 +476,15 @@ namespace Editor
     using namespace Rendering;
 
     NightEngine::Engine::GetInstance()->SendPostRenderEvent(NightEngine::PostRenderEngineEvent::RecompileShader);
+  }
+
+  void DevConsole::TogglePhysicsDebug(void)
+  {
+    auto debugDrawer = Physics::PhysicsDebugDrawer::GetInstance();
+    if (debugDrawer != nullptr)
+    {
+      debugDrawer->SetDebugDrawActive(!(debugDrawer->GetDebugDrawActive()));
+    }
   }
 
   void DevConsole::ShowHelp(void)

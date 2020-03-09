@@ -35,10 +35,7 @@ namespace NightEngine
 
     void SendPostRenderEvent(PostRenderEngineEvent event);
 
-    static Engine* GetInstance()
-    {
-      return s_instance;
-    }
+    static Engine* GetInstance(){ return s_instance; }
 
   private:
     void FixedUpdate(float dt);

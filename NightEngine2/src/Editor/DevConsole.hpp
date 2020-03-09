@@ -84,9 +84,12 @@ namespace Editor
     //*****************************************
     void StartProfilingSession(void);
     void EndProfilingSession(void);
+
     void RenderDocCapture(void);
     void RestartWindow(void);
     void RecompileShaders(void);
+
+    void TogglePhysicsDebug(void);
 
     void ShowHelp(void);
     void ShowHistory(void);

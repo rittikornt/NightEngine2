@@ -16,6 +16,8 @@
 #include "Graphics/Opengl/Window.hpp"
 
 #include "Core/EC/ArchetypeManager.hpp"
+#include "Core/EC/SceneManager.hpp"
+#include "Core/EC/Scene.hpp"
 
 using namespace NightEngine;
 using namespace NightEngine::EC;
@@ -420,6 +422,10 @@ namespace Editor
 
           g_curSelectedArchetype = nullptr;
           g_selectedIndex = 0;
+
+          //Add the gameobject to the active scene
+          auto scene = NightEngine::EC::SceneManager::GetActiveScene();
+          scene->AddGameObject(handle);
         });
       }
       ImGui::SameLine();

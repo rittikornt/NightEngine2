@@ -76,8 +76,19 @@ namespace NightEngine
       //!@brief Save all the currently openning scenes
       void SaveAllScenes(void);
 
+      //!@brief Remove gameobject from a scene
+      void RemoveGameObjectFromScene(Handle<GameObject> gameObject);
+
+      /////////////////////////////////////////
+
       //!@brief Get all currently openned scenes
       Container::Vector<Handle<Scene>>* GetAllScenes(void);
+
+      //!@brief Get current active scenes
+      Handle<Scene> GetActiveScene(void);
+
+      //!@brief Set the current active scenes
+      void SetActiveScene(Handle<Scene> scene);
 
       /////////////////////////////////////////
 

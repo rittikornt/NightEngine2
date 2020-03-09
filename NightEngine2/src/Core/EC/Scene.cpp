@@ -33,6 +33,23 @@ namespace NightEngine
       m_sceneNodes.emplace_back(SceneNode());
     }
 
+    void Scene::RemoveGameObject(Handle<GameObject> gameObject)
+    {
+      auto it2 = m_sceneNodes.begin();
+      for (auto it = m_sceneGameObjects.begin();
+        it != m_sceneGameObjects.end() && it2 != m_sceneNodes.end(); 
+        ++it, ++it2)
+      {
+        if ((*it).m_handle == gameObject.m_handle)
+        {
+          Debug::Log << "RemoveGameObject: " << gameObject->GetName() << '\n';
+          m_sceneGameObjects.erase(it);
+          m_sceneNodes.erase(it2);
+          break;
+        }
+      }
+    }
+
     namespace SceneManager
     {
       JsonValue SerializeScene(Reflection::Variable& variable)

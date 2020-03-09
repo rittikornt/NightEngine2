@@ -40,6 +40,7 @@ namespace NightEngine
     namespace SceneManager
     {
       static Container::Vector<Handle<Scene>> g_openedScenes;
+      static Handle<Scene> g_activeScene;
 
       //TODO: care about this material's life time
       // right now its destructor is being called after deleted the whole engine
@@ -54,8 +55,9 @@ namespace NightEngine
 
         FACTORY_REGISTER_TYPE_WITHPARAM(Scene, 1, 5);
 
-        auto scene = LoadScene("Default_Scene");
+        //auto scene = LoadScene("Default_Scene");
         //auto scene = CreateDefaultScene("Default_Scene");
+        auto scene = CreateEmptyScene("Empty_Scene");
       }
 
       void Update(void)
@@ -78,6 +80,17 @@ namespace NightEngine
       }
 
       /////////////////////////////////////////
+
+      void AddScene(Handle<Scene> scene)
+      {
+        g_openedScenes.emplace_back(scene);
+
+        // The only avaliable scene will be the active scene
+        if (g_openedScenes.size() == 1)
+        {
+          g_activeScene = g_openedScenes[0];
+        }
+      }
 
       void InitLoadedScene(Scene & scene)
       {
@@ -204,7 +217,7 @@ namespace NightEngine
         //Add to Scene
         scene.AddGameObject(dirLight);
 
-        g_openedScenes.emplace_back(sceneHandle);
+        AddScene(sceneHandle);
         return sceneHandle;
       }
 
@@ -438,7 +451,7 @@ namespace NightEngine
         //Add to Scene
         scene.AddGameObject(dirLight);
 
-        g_openedScenes.emplace_back(sceneHandle);
+        AddScene(sceneHandle);
         return sceneHandle;
       }
 
@@ -463,7 +476,7 @@ namespace NightEngine
         *(handle.Get()) = scene;
         InitLoadedScene(scene);
 
-        g_openedScenes.emplace_back(handle);
+        AddScene(handle);
         return handle;
       }
 
@@ -524,9 +537,29 @@ namespace NightEngine
         }
       }
 
+      void RemoveGameObjectFromScene(Handle<GameObject> gameObject)
+      {
+        for (int i = 0; i < g_openedScenes.size(); ++i)
+        {
+          g_openedScenes[i]->RemoveGameObject(gameObject);
+        }
+      }
+
+      /////////////////////////////////////////
+
       Container::Vector<Handle<Scene>>* GetAllScenes(void)
       {
         return &g_openedScenes;
+      }
+
+      Handle<Scene> GetActiveScene(void)
+      {
+        return g_activeScene;
+      }
+
+      void SetActiveScene(Handle<Scene> scene)
+      {
+        g_activeScene = scene;
       }
 
       /////////////////////////////////////////

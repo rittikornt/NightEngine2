@@ -14,6 +14,9 @@
 #include "Core/EC/ArchetypeManager.hpp"
 #include "Graphics/Opengl/Window.hpp"
 
+#include "Core/EC/SceneManager.hpp"
+#include "Core/EC/Scene.hpp"
+
 using namespace NightEngine;
 using namespace NightEngine::EC;
 using namespace Rendering;
@@ -439,9 +442,13 @@ namespace Editor
         char* inputName = reinterpret_cast<char*>(ptr);
         std::string name{ inputName };
 
-        GameObject::Create(name.c_str(), 1);
+        auto handle = GameObject::Create(name.c_str(), 1);
         g_curSelectedGameObject = nullptr;
         g_selectedIndex = 0;
+
+        //Add the gameobject to the active scene
+        auto scene = NightEngine::EC::SceneManager::GetActiveScene();
+        scene->AddGameObject(handle);
       });
     }
     if (g_curSelectedGameObject != nullptr)
@@ -471,6 +478,9 @@ namespace Editor
         g_confirmBox.ShowConfirmationBox(const_cast<char*>(desc.c_str())
           , []()
         {
+          //Remove GameObject from Scene
+          NightEngine::EC::SceneManager::RemoveGameObjectFromScene(g_curSelectedGameObject->GetHandle());
+
           g_curSelectedGameObject->Destroy();
           g_curSelectedGameObject = nullptr;
           g_selectedIndex = 0;

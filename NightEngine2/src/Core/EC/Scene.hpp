@@ -41,6 +41,9 @@ namespace NightEngine
           : m_active(active) {}
 
         void AddGameObject(Handle<GameObject> gameObject);
+        
+        void RemoveGameObject(Handle<GameObject> gameObject);
+        
         void Clear(void) { m_sceneNodes.clear(); m_sceneGameObjects.clear(); }
 
         inline void SetSceneName(Container::String name) { m_name = name; }

@@ -16,6 +16,8 @@
 #include "Graphics/Opengl/Postprocess/Bloom.hpp"
 #include "Graphics/Opengl/Postprocess/FXAA.hpp"
 
+#include "Core/Reflection/ReflectionMacros.hpp"
+
 namespace Rendering
 {
   class VertexArrayObject;
@@ -34,6 +36,16 @@ namespace Rendering
     //! @brief PostProcessSetting struct
     struct PostProcessSetting
     {
+      REFLECTABLE_TYPE_BLOCK()
+      {
+        META_REGISTERER(PostProcessSetting, true
+          , nullptr, nullptr)
+          .MR_ADD_MEMBER_PROTECTED(PostProcessSetting, m_resolution, true)
+          .MR_ADD_MEMBER_PROTECTED(PostProcessSetting, m_bloomPP, true)
+          .MR_ADD_MEMBER_PROTECTED(PostProcessSetting, m_ssaoPP, true)
+          .MR_ADD_MEMBER_PROTECTED(PostProcessSetting, m_fxaaPP, true);
+      }
+
       glm::ivec2        m_resolution;
 
       //PostProcess

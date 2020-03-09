@@ -12,6 +12,8 @@
 #include <vector>
 #include <glm/vec3.hpp>
 
+#include "Core/Reflection/ReflectionMacros.hpp"
+
 namespace Rendering
 {
   class VertexArrayObject;
@@ -23,6 +25,17 @@ namespace Rendering
     //! @brief SSAO struct
     struct SSAO
     {
+      REFLECTABLE_TYPE_BLOCK()
+      {
+        META_REGISTERER(SSAO, true
+          , nullptr, nullptr)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_intensity, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_color, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_sampleRadius, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_bias, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_sampleAmount, true);
+      }
+
       FrameBufferObject m_fbo;
       Texture           m_ssaoTexture;
       Shader            m_ssaoShader;

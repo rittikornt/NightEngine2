@@ -13,6 +13,8 @@ namespace Rendering
 {
   namespace Postprocess
   {
+    INIT_REFLECTION_FOR(FXAA)
+
     void FXAA::Init(int width, int height)
     {
       m_fxaaShader.Create();

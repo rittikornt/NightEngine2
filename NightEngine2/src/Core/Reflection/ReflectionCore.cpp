@@ -79,6 +79,11 @@ namespace NightEngine
           ADD_MEMBER_PUBLIC(vec2, x);
           ADD_MEMBER_PUBLIC(vec2, y);
         }
+        REGISTER_METATYPE(ivec2);
+        {
+          ADD_MEMBER_PUBLIC(ivec2, x);
+          ADD_MEMBER_PUBLIC(ivec2, y);
+        }
         REGISTER_METATYPE(vec3);
         {
           ADD_MEMBER_PUBLIC(vec3, x);

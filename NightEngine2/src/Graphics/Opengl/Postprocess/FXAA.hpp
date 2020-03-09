@@ -9,6 +9,8 @@
 
 #include <glm/vec2.hpp>
 
+#include "Core/Reflection/ReflectionMacros.hpp"
+
 namespace Rendering
 {
   class FrameBufferObject;
@@ -20,6 +22,14 @@ namespace Rendering
     //! @brief FXAA struct
     struct FXAA
     {
+      REFLECTABLE_TYPE_BLOCK()
+      {
+        META_REGISTERER(FXAA, true
+          , nullptr, nullptr)
+          .MR_ADD_MEMBER_PROTECTED(FXAA, m_resolution, true)
+          .MR_ADD_MEMBER_PROTECTED(FXAA, m_fxaaShader, true);
+      }
+
       Shader    m_fxaaShader;
       glm::vec2 m_resolution;
 

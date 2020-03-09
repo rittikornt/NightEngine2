@@ -11,6 +11,8 @@
 
 #include <glm/vec2.hpp>
 
+#include "Core/Reflection/ReflectionMacros.hpp"
+
 namespace Rendering
 {
   class VertexArrayObject;
@@ -20,6 +22,16 @@ namespace Rendering
     //! @brief Bloom struct
     struct Bloom
     {
+      REFLECTABLE_TYPE_BLOCK()
+      {
+        META_REGISTERER(Bloom, true
+          , nullptr, nullptr)
+          .MR_ADD_MEMBER_PROTECTED(Bloom, m_resolution, true)
+          .MR_ADD_MEMBER_PROTECTED(Bloom, m_bloomThreshold, true)
+          .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurIteration, true)
+          .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurDir, true);
+      }
+
       FrameBufferObject m_bloomFbo;
       Texture           m_targetTexture;
       Texture           m_bloomTexture[5];

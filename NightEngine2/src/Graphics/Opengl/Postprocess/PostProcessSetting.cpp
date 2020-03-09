@@ -15,6 +15,8 @@ namespace Rendering
 {
   namespace Postprocess
   {
+    INIT_REFLECTION_FOR(PostProcessSetting)
+
     void PostProcessSetting::Init(int width, int height)
     {
       //Bloom

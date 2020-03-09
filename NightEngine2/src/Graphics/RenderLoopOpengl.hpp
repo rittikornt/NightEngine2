@@ -86,7 +86,7 @@ namespace Rendering
     Material            g_normalDebug;
 
     //Light
-    Material*             g_billboardMaterial;
+    Material*            g_billboardMaterial;
     Texture              g_lightTexture;
   };
 } // Rendering

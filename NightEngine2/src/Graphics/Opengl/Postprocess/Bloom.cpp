@@ -10,6 +10,8 @@ namespace Rendering
 {
   namespace Postprocess
   {
+    INIT_REFLECTION_FOR(Bloom)
+
     //TODO: Better Bloom Falloff
     void Bloom::Init(int width, int height)
     {

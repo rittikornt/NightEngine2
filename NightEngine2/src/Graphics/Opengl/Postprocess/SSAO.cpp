@@ -16,6 +16,8 @@ namespace Rendering
 {
   namespace Postprocess
   {
+    INIT_REFLECTION_FOR(SSAO)
+
     void SSAO::Init(int width, int height)
     {
       m_ssaoTexture = Texture::GenerateNullTexture(

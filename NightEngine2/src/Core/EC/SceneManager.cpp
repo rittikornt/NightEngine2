@@ -55,6 +55,7 @@ namespace NightEngine
         FACTORY_REGISTER_TYPE_WITHPARAM(Scene, 1, 5);
 
         auto scene = LoadScene("Default_Scene");
+        //auto scene = CreateDefaultScene("Default_Scene");
       }
 
       void Update(void)
@@ -114,7 +115,15 @@ namespace NightEngine
               , light->GetLightIndex());
           }
 
-          //TODO: Init Rigidbody
+          //Init Rigidbody
+          handle = gameObject->GetComponent("Rigidbody");
+          if (handle != nullptr)
+          {
+            auto rigid = handle->Get<Rigidbody>();
+            rigid->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
+              , gameObject->GetTransform()->GetPosition()
+              , rigid->GetColliderInitializer());
+          }
         }
 
         //************************************************
@@ -162,7 +171,9 @@ namespace NightEngine
           ch = floorGO->GetComponent("Rigidbody");
           ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
             , floorGO->GetTransform()->GetPosition()
-            , Physics::BoxCollider(glm::vec3(10.0f, 1.0f, 10.0f)));
+            , Physics::ColliderInitializer{ 
+              Physics::ColliderType::BOX_COLLIDER
+              , glm::vec3(10.0f, 1.0f, 10.0f) } );
 
           scene.AddGameObject(floorGO);
         }
@@ -242,7 +253,8 @@ namespace NightEngine
           ch = modelGO1->GetComponent("Rigidbody");
           ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
             , modelGO1->GetTransform()->GetPosition()
-            , Physics::BoxCollider(glm::vec3(1.0f, 0.6f, 1.0f)), 1.0f);
+            , Physics::ColliderInitializer{ Physics::ColliderType::BOX_COLLIDER, glm::vec3(1.0f, 0.6f, 1.0f) }
+            , 1.0f);
 
           //Model2
           modelGO2 = GameObject::Create("Model2", 1);
@@ -258,7 +270,7 @@ namespace NightEngine
           ch = modelGO2->GetComponent("Rigidbody");
           ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
             , modelGO2->GetTransform()->GetPosition()
-            , Physics::CylinderCollider(glm::vec3(1.0f))//Physics::CapsuleCollider(1.0f, 2.0f)
+            , Physics::ColliderInitializer{ Physics::ColliderType::CYLINDER_COLLIDER, glm::vec3(1.0f) }
             , 1.0f);
 
           //Sphere
@@ -273,7 +285,8 @@ namespace NightEngine
           ch = sphereGO->GetComponent("Rigidbody");
           ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
             , glm::vec3(0.0f, 50.0f, 0.0f)//sphereGO->GetTransform()->GetPosition()
-            , Physics::SphereCollider(1.0f), 1.0f);
+            , Physics::ColliderInitializer{ Physics::ColliderType::SPHERE_COLLIDER, glm::vec3(1.0f) }
+            , 1.0f);
 
           //Floor
           floorGO = GameObject::Create("Floor", 1);
@@ -290,7 +303,9 @@ namespace NightEngine
           ch = floorGO->GetComponent("Rigidbody");
           ch->Get<Rigidbody>()->Initialize(*(Physics::PhysicsScene::GetPhysicsScene(0))
             , floorGO->GetTransform()->GetPosition()
-            , Physics::BoxCollider(glm::vec3(10.0f, 1.0f, 10.0f)));
+            , Physics::ColliderInitializer{ 
+              Physics::ColliderType::BOX_COLLIDER
+              , glm::vec3(10.0f, 1.0f, 10.0f) });
 
           //Add to Scene
           scene.AddGameObject(sphereGO);

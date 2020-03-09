@@ -38,6 +38,7 @@
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"
+#include "Physics/Collider.hpp"
 
 #include "Graphics/Opengl/Light.hpp"
 #include "Graphics/Opengl/Material.hpp"
@@ -170,6 +171,10 @@ namespace NightEngine
         ADD_MEMBER_PROTECED(ComponentLogic, m_uniqueID, false);
         ADD_MEMBER_PROTECED(ComponentLogic, m_gameObject, false);
       }
+
+      //Physics Enum
+      REGISTER_METATYPE_WITH_SERIALIZER(Physics::ColliderType
+        , true, DefaultSerializer<int>, DefaultDeserializer<int>);
 
       //Basic Components
       //Light

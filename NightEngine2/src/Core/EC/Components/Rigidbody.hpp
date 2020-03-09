@@ -10,6 +10,7 @@
 
 #include "LinearMath/btVector3.h"
 #include <glm/vec3.hpp>
+#include "Physics/Collider.hpp"
 
 //Forward Declaration
 class btRigidBody;
@@ -19,6 +20,7 @@ namespace Physics
   class PhysicsScene;
   class CollisionResult;
   class Collider;
+  struct ColliderInitializer;
 }
 
 namespace NightEngine
@@ -36,6 +38,7 @@ namespace NightEngine
           META_REGISTERER_WITHBASE(Rigidbody, ComponentLogic
             , InheritType::PUBLIC, true
             , nullptr, nullptr)
+            .MR_ADD_MEMBER_PROTECTED(Rigidbody, m_colliderParams, true)
             .MR_ADD_MEMBER_PROTECTED(Rigidbody, m_mass, true)
             .MR_ADD_MEMBER_PROTECTED(Rigidbody, m_static, true);
         }
@@ -46,7 +49,7 @@ namespace NightEngine
 
         //! brief Initialize Rigidbody
         void Initialize(Physics::PhysicsScene& scene, glm::vec3 initPosition
-          , Physics::Collider& collider, float mass = 0.0f);
+          , const Physics::ColliderInitializer& colliderParams, float mass = 0.0f);
 
         //! brief set BT RigidBody
         void SetBTRigidBody(btRigidBody* rigidbody) { m_rigidBody = rigidbody; }
@@ -59,6 +62,9 @@ namespace NightEngine
 
         //! brief Get Collision Result
         Physics::CollisionResult* GetCollisionResult(void) const;
+
+        //! brief Get ColliderInitializer
+        Physics::ColliderInitializer GetColliderInitializer(void) const { return m_colliderParams; }
 
         //! brief Set Kinematic mode
         void SetKinematic(bool kinematic);
@@ -73,6 +79,7 @@ namespace NightEngine
         Physics::PhysicsScene*     m_scene = nullptr;
         Physics::Collider*         m_collider = nullptr; //Reference to Collider Information (for serialization)
 
+        Physics::ColliderInitializer m_colliderParams;
         btScalar                   m_mass = 0.0f;
         bool                       m_static = true;
         bool                       m_isKinematic = false;

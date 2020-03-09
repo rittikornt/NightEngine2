@@ -4,6 +4,7 @@
   @brief Contain the Interface of Collider
 */
 #pragma once
+#include "Core/Reflection/ReflectionMacros.hpp"
 #include <glm/vec3.hpp>
 
 //Forward Declaration
@@ -30,11 +31,6 @@ namespace Physics
     //!brief Get Bullet CollisionShape
     virtual ~Collider(void);
 
-    //!brief Create Bullet CollisionShape
-    virtual btCollisionShape* CreateCollisionShape(void) = 0;
-
-    //!brief Create New Collider
-    Collider* CreateCollider(void);
   protected:
     ColliderType      m_colliderType = ColliderType::NONE;
     btCollisionShape* m_collisionShape = nullptr;
@@ -49,9 +45,6 @@ namespace Physics
     //!brief BoxCollider Constructor
     BoxCollider(glm::vec3 size);
 
-    //!brief Create Bullet CollisionShape
-    virtual btCollisionShape* CreateCollisionShape(void) override;
-
   protected:
     glm::vec3 m_size;
   };
@@ -64,9 +57,6 @@ namespace Physics
 
     //!brief SphereCollider Constructor
     SphereCollider(float radius);
-
-    //!brief Create Bullet CollisionShape
-    virtual btCollisionShape* CreateCollisionShape(void) override;
   protected:
     float m_radius;
   };
@@ -79,9 +69,6 @@ namespace Physics
 
     //!brief CapsuleCollider Constructor
     CapsuleCollider(float radius, float height);
-
-    //!brief Create Bullet CollisionShape
-    virtual btCollisionShape* CreateCollisionShape(void) override;
   protected:
     float m_radius;
     float m_height;
@@ -95,10 +82,26 @@ namespace Physics
 
     //!brief CylinderCollider Constructor
     CylinderCollider(glm::vec3 size);
-
-    //!brief Create Bullet CollisionShape
-    virtual btCollisionShape* CreateCollisionShape(void) override;
   protected:
     glm::vec3 m_size;
+  };
+
+  ///////////////////////////////////////////
+
+  struct ColliderInitializer
+  {
+    REFLECTABLE_TYPE_BLOCK()
+    {
+      META_REGISTERER(ColliderInitializer, true, nullptr, nullptr)
+        .MR_ADD_MEMBER_PROTECTED(ColliderInitializer, m_colliderType, true)
+        .MR_ADD_MEMBER_PROTECTED(ColliderInitializer, m_size, true);
+    }
+
+    ColliderType m_colliderType = ColliderType::NONE;
+    glm::vec3 m_size; //xy(radius, height)
+
+    static Physics::Collider* CreateCollider(const ColliderInitializer& params);
+
+    static btCollisionShape* CreateCollisionShape(const ColliderInitializer& params);
   };
 }

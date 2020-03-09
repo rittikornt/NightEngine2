@@ -17,7 +17,6 @@
 
 #include "Physics/PhysicsScene.hpp"
 #include "Physics/PhysicUtilities.hpp"
-#include "Physics/Collider.hpp"
 
 namespace NightEngine
 {
@@ -34,15 +33,16 @@ namespace NightEngine
       }
 
       void Rigidbody::Initialize(Physics::PhysicsScene& scene, glm::vec3 initPosition
-        , Physics::Collider& collider, float mass)
+        , const Physics::ColliderInitializer& colliderParams, float mass)
       {
         ASSERT_TRUE(m_rigidBody == nullptr && m_scene == nullptr);
 
         m_scene = &scene;
 
         //Store ColliderShape
-        auto collisionShape = collider.CreateCollisionShape();
-        m_collider = collider.CreateCollider();
+        m_colliderParams = colliderParams;
+        auto collisionShape = Physics::ColliderInitializer::CreateCollisionShape(m_colliderParams);
+        m_collider = Physics::ColliderInitializer::CreateCollider(m_colliderParams);
         scene.AddCollisionShape(*collisionShape);
 
         //Transform

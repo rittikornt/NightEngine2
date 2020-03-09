@@ -1,5 +1,5 @@
 {
-  "m_name": "Default Scene",
+  "m_name": "Default_Scene",
   "m_sceneGameObjects": [
     {
       "m_components": {
@@ -10,6 +10,14 @@
           "m_meshLoadPath": "./../Assets/Models/Sphere.obj"
         },
         "Rigidbody": {
+          "m_colliderParams": {
+            "m_colliderType": 1,
+            "m_size": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            }
+          },
           "m_mass": 1.0,
           "m_static": false
         }
@@ -17,20 +25,20 @@
       "m_name": "Sphere",
       "m_transform": {
         "m_angle": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "x": -0.00020295879221521318,
+          "y": -0.00008465567225357518,
+          "z": -0.000022225560314836912
         },
         "m_position": {
-          "x": 2.0,
-          "y": 1.7999999523162842,
-          "z": 0.0
+          "x": -0.000007687309334869497,
+          "y": -3.0,
+          "z": 0.000047779914893908426
         },
         "m_rotation": {
-          "w": 0.0,
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "w": 1.0,
+          "x": -0.00010147986904485151,
+          "y": -0.00004232670835335739,
+          "z": -0.00001111707570089493
         },
         "m_scale": {
           "x": 1.0,
@@ -48,6 +56,14 @@
           "m_meshLoadPath": "./../Assets/Models/Cube.obj"
         },
         "Rigidbody": {
+          "m_colliderParams": {
+            "m_colliderType": 0,
+            "m_size": {
+              "x": 10.0,
+              "y": 1.0,
+              "z": 10.0
+            }
+          },
           "m_mass": 0.0,
           "m_static": true
         }
@@ -86,6 +102,14 @@
           "m_meshLoadPath": "./../Assets/Models/Torus.obj"
         },
         "Rigidbody": {
+          "m_colliderParams": {
+            "m_colliderType": 0,
+            "m_size": {
+              "x": 1.0,
+              "y": 0.6000000238418579,
+              "z": 1.0
+            }
+          },
           "m_mass": 1.0,
           "m_static": false
         }
@@ -93,20 +117,20 @@
       "m_name": "Model1",
       "m_transform": {
         "m_angle": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "x": -1.9255065808465588e-7,
+          "y": 0.000015235550563375,
+          "z": -0.0000014731425608260906
         },
         "m_position": {
-          "x": -2.0,
-          "y": 0.0,
-          "z": 0.0
+          "x": -2.000016450881958,
+          "y": -3.4000000953674316,
+          "z": -0.00019172065367456526
         },
         "m_rotation": {
-          "w": 0.0,
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "w": 1.0,
+          "x": -9.626971575471543e-8,
+          "y": 0.0000076177752816875,
+          "z": -7.365705414486001e-7
         },
         "m_scale": {
           "x": 1.0,
@@ -124,6 +148,14 @@
           "m_meshLoadPath": "./../Assets/Models/guts-berserker/guts.fbx"
         },
         "Rigidbody": {
+          "m_colliderParams": {
+            "m_colliderType": 3,
+            "m_size": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            }
+          },
           "m_mass": 1.0,
           "m_static": false
         }
@@ -131,20 +163,20 @@
       "m_name": "Model2",
       "m_transform": {
         "m_angle": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "x": 0.000004624029315891676,
+          "y": 1.212166428565979,
+          "z": -0.00000456710995422327
         },
         "m_position": {
-          "x": 2.0,
-          "y": 10.0,
-          "z": 0.0
+          "x": 4.539266586303711,
+          "y": -3.00000262260437,
+          "z": 0.7118545174598694
         },
         "m_rotation": {
-          "w": 0.0,
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+          "w": 0.8218854665756226,
+          "x": 0.000003201044592060498,
+          "y": 0.5696527361869812,
+          "z": -0.0000031938661777530797
         },
         "m_scale": {
           "x": 4.5,
@@ -34177,7 +34209,7 @@
           "m_lightType": 1
         },
         "MeshRenderer": {
-          "m_castShadow": true,
+          "m_castShadow": false,
           "m_drawMode": 3,
           "m_meshCount": 1,
           "m_meshLoadPath": "./../Assets/Models/Quad.obj"
@@ -34287,7 +34319,7 @@
           "m_lightType": 1
         },
         "MeshRenderer": {
-          "m_castShadow": true,
+          "m_castShadow": false,
           "m_drawMode": 3,
           "m_meshCount": 1,
           "m_meshLoadPath": "./../Assets/Models/Quad.obj"
@@ -34397,7 +34429,7 @@
           "m_lightType": 1
         },
         "MeshRenderer": {
-          "m_castShadow": true,
+          "m_castShadow": false,
           "m_drawMode": 3,
           "m_meshCount": 1,
           "m_meshLoadPath": "./../Assets/Models/Quad.obj"
@@ -34507,7 +34539,7 @@
           "m_lightType": 1
         },
         "MeshRenderer": {
-          "m_castShadow": true,
+          "m_castShadow": false,
           "m_drawMode": 3,
           "m_meshCount": 1,
           "m_meshLoadPath": "./../Assets/Models/Quad.obj"

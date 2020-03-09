@@ -13,50 +13,15 @@ namespace Physics
 {
   Collider::~Collider(void)
   {
-  }
-
-  Physics::Collider* Collider::CreateCollider(void)
-  {
-    switch (m_colliderType)
+    if (m_collisionShape != nullptr)
     {
-    case Physics::ColliderType::BOX_COLLIDER:
-    {
-      return new BoxCollider( *(static_cast<BoxCollider*>(this)) );
-      break;
+      delete m_collisionShape;
     }
-    case Physics::ColliderType::SPHERE_COLLIDER:
-    {
-      return new SphereCollider(*(static_cast<SphereCollider*>(this)));
-      break;
-    }
-    case Physics::ColliderType::CAPSULE_COLLIDER:
-    {
-      return new CapsuleCollider(*(static_cast<CapsuleCollider*>(this)));
-      break;
-    }
-    case Physics::ColliderType::CYLINDER_COLLIDER:
-    {
-      return new CylinderCollider(*(static_cast<CylinderCollider*>(this)));
-      break;
-    }
-    default:
-    {
-      break;
-    }
-    }
-
-    return nullptr;
   }
 
   BoxCollider::BoxCollider(glm::vec3 size)
     : Collider(ColliderType::BOX_COLLIDER), m_size(size)
   {
-  }
-
-  btCollisionShape* BoxCollider::CreateCollisionShape(void)
-  {
-    m_collisionShape = new btBoxShape(ToBulletVec3(m_size));
-    return m_collisionShape;
   }
 
   SphereCollider::SphereCollider(float radius)
@@ -65,22 +30,10 @@ namespace Physics
   {
   }
 
-  btCollisionShape* SphereCollider::CreateCollisionShape(void)
-  {
-    m_collisionShape = new btSphereShape(m_radius);
-    return m_collisionShape;
-  }
-
   CapsuleCollider::CapsuleCollider(float radius, float height)
     : Collider(ColliderType::CAPSULE_COLLIDER)
     , m_radius(radius), m_height(m_height)
   {
-  }
-
-  btCollisionShape* CapsuleCollider::CreateCollisionShape(void)
-  {
-    m_collisionShape = new btCapsuleShape(m_radius, m_height);
-    return m_collisionShape;
   }
 
   CylinderCollider::CylinderCollider(glm::vec3 size)
@@ -88,10 +41,50 @@ namespace Physics
   {
   }
 
-  btCollisionShape* CylinderCollider::CreateCollisionShape(void)
+  ///////////////////////////////////////////////////////////////////
+
+  INIT_REFLECTION_FOR(ColliderInitializer)
+
+  Physics::Collider* ColliderInitializer::CreateCollider(const ColliderInitializer& params)
   {
-    m_collisionShape = new btCylinderShape(ToBulletVec3(m_size));
-    return m_collisionShape;
+    switch (params.m_colliderType)
+    {
+      case Physics::ColliderType::BOX_COLLIDER:
+      {
+        return new BoxCollider(params.m_size);
+      }
+      case Physics::ColliderType::SPHERE_COLLIDER:
+      {
+        return new SphereCollider(params.m_size.x);
+      }
+      case Physics::ColliderType::CAPSULE_COLLIDER:
+      {
+        return new CapsuleCollider(params.m_size.x, params.m_size.y);
+      }
+      case Physics::ColliderType::CYLINDER_COLLIDER:
+      {
+        return new CylinderCollider(params.m_size);
+      }
+    }
+
+    return nullptr;
+  }
+
+  btCollisionShape* ColliderInitializer::CreateCollisionShape(const ColliderInitializer& params)
+  {
+    switch (params.m_colliderType)
+    {
+    case Physics::ColliderType::BOX_COLLIDER:
+      return new btBoxShape(ToBulletVec3(params.m_size));
+    case Physics::ColliderType::SPHERE_COLLIDER:
+      return new btSphereShape(params.m_size.x);
+    case Physics::ColliderType::CAPSULE_COLLIDER:
+      return new btCapsuleShape(params.m_size.x , params.m_size.y); //(radius, height)
+    case Physics::ColliderType::CYLINDER_COLLIDER:
+      return new btCylinderShape(ToBulletVec3(params.m_size));
+    }
+
+    return nullptr;
   }
 
 }

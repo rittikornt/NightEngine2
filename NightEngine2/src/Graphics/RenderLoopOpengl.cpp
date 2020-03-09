@@ -342,20 +342,13 @@ namespace Rendering
       enablePostprocess = !enablePostprocess;
       if (!enablePostprocess)
       {
-        g_ssaoPP.Clear();
-        g_bloomPP.Clear();
+        m_postProcessSetting.Clear();
       }
     }
     if (enablePostprocess)
     {
-      //g_fxaaPP.Apply(g_screenVAO
-        //, g_sceneTexture, g_sceneFbo);
-
-      //SSAO
-      g_ssaoPP.Apply(g_screenVAO, g_camera, m_gbuffer);
-
-      //Bloom
-      g_bloomPP.Apply(g_screenVAO, m_sceneTexture);
+      m_postProcessSetting.Apply(PostProcessContext{&g_camera, &m_gbuffer
+        , &g_screenVAO, &m_sceneTexture });
     }
 
     //*************************************************
@@ -407,8 +400,8 @@ namespace Rendering
         else
         {
           m_sceneTexture.BindToTextureUnit(0);
-          g_bloomPP.m_targetTexture.BindToTextureUnit(1);
-          g_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
+          m_postProcessSetting.m_bloomPP.m_targetTexture.BindToTextureUnit(1);
+          m_postProcessSetting.m_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
         }
 
         //g_shadowMapTexture.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
@@ -455,7 +448,7 @@ namespace Rendering
     //*************************************************
     if (enablePostprocess)
     {
-      g_fxaaPP.ApplyToScreen(g_screenVAO
+      m_postProcessSetting.m_fxaaPP.ApplyToScreen(g_screenVAO
         , m_sceneTexture);
     }
     else
@@ -580,13 +573,7 @@ namespace Rendering
     //************************************************
     // Postprocess
     //************************************************
-    g_bloomPP.Init(width, height);
-
-    //SSAO
-    g_ssaoPP.Init(width, height);
-
-    //FXAA
-    g_fxaaPP.Init(width, height);
+    m_postProcessSetting.Init(width, height);
 
     //Screen Quad
     g_screenVAO.Init();
@@ -685,73 +672,6 @@ namespace Rendering
             , glm::quat(), glm::vec3(1.0f)));
       }
     }
-
-    ////Dirlight
-    //g_dirLight = GameObject::Create("Dirlight", 2);
-    //g_dirLight->AddComponent("CharacterInfo");
-    //g_dirLight->AddComponent("MeshRenderer");
-    //auto mr = g_dirLight->GetComponent("MeshRenderer");
-    //mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-    //  , FileSystem::DirectoryType::Models), true);
-    //mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-    //mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-
-    //g_dirLight->GetTransform()->SetPosition(glm::vec3(0.0f, 15.0f, 2.0f));
-    //g_dirLight->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-    //g_dirLight->GetTransform()->SetEulerAngle(glm::vec3(2.0f, 0.0f, 0.0f));
-
-    //g_dirLight->AddComponent("Light");
-    //mr = g_dirLight->GetComponent("Light");
-    //mr->Get<Light>()->Init(Light::LightType::DIRECTIONAL
-    //  , { glm::vec3(1.0f)
-    //  ,{ Light::LightInfo::Value{ 0.5f } } }, 0);
-
-    ////Spotlight
-    //for (size_t i = 0; i < SPOTLIGHT_AMOUNT; ++i)
-    //{
-    //  //Point light
-    //  std::string name{ "Pointlight" };
-    //  name += std::to_string(i);
-    //  g_pointLight[i] = GameObject::Create(name.c_str(), 2);
-    //  g_pointLight[i]->AddComponent("MeshRenderer");
-    //  mr = g_pointLight[i]->GetComponent("MeshRenderer");
-    //  mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-    //    , FileSystem::DirectoryType::Models), true, false);
-    //  mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-    //  mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-
-    //  g_pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f) - 6.0f, -1.0f, 0.25f));
-    //  g_pointLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-    //  g_pointLight[i]->GetTransform()->SetEulerAngle(glm::vec3(0.0f, 0.0f, 0.0f));
-
-    //  g_pointLight[i]->AddComponent("Light");
-    //  mr = g_pointLight[i]->GetComponent("Light");
-    //  mr->Get<Light>()->Init(Light::LightType::POINT
-    //    , { glm::vec3(0.0f, 1.0f,0.0f)
-    //    ,{ Light::LightInfo::Value{ 8.0f } } }, i);
-
-    //  //Spotlight
-    //  name = std::string{ "Spotlight" };
-    //  name += std::to_string(i);
-    //  g_spotLight[i] = GameObject::Create(name.c_str(), 2);
-    //  g_spotLight[i]->AddComponent("MeshRenderer");
-    //  mr = g_spotLight[i]->GetComponent("MeshRenderer");
-    //  mr->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
-    //    , FileSystem::DirectoryType::Models), true);
-    //  mr->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-    //  mr->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
-
-    //  g_spotLight[i]->GetTransform()->SetPosition(glm::vec3((float)i* 4.0f - 6.0f, 5.0f, 2.0f));
-    //  g_spotLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-    //  g_spotLight[i]->GetTransform()->SetEulerAngle(glm::vec3(4.5f, 0.0f, 0.0f));
-
-    //  g_spotLight[i]->AddComponent("Light");
-    //  mr = g_spotLight[i]->GetComponent("Light");
-    //  mr->Get<Light>()->Init(Light::LightType::SPOTLIGHT
-    //    ,
-    //    { glm::vec3(0.0f,0.0f, 0.7f)
-    //      , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
-    //}
 
     //************************************************
     // Uniform Buffer Object
@@ -878,8 +798,6 @@ namespace Rendering
     g_ibl.RefreshTextureUniforms(g_camera);
 
     //Postprocessing
-    g_ssaoPP.RefreshTextureUniforms();
-    g_bloomPP.RefreshTextureUniforms();
-    g_fxaaPP.RefreshTextureUniforms();
+    m_postProcessSetting.RefreshTextureUniforms();
   }
 } // Rendering

@@ -144,6 +144,14 @@ namespace Editor
       ImGui::InputScalar(memberName, ImGuiDataType_U32, &data,&step);
     }
     });
+    m_typeEditorMap.insert({ "Physics::ColliderType",
+      [](Reflection::Variable& variable, const char* memberName)
+    {
+      auto& data = variable.GetValue<int>();
+      unsigned step = 1u;
+      ImGui::InputScalar(memberName, ImGuiDataType_S32, &data,&step);
+    }
+      });
     m_typeEditorMap.insert({ "float",
       [](Reflection::Variable& variable, const char* memberName)
     {

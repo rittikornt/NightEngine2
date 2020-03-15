@@ -114,6 +114,7 @@ namespace Rendering
         glClear(GL_COLOR_BUFFER_BIT);
         m_bloomShader.Bind();
         {
+          m_bloomShader.SetUniform("u_intensity", m_intensity);
           //Bind all texture
           for (int i = 0; i < 5; ++i)
           {

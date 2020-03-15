@@ -10,6 +10,7 @@
 #include "Graphics/Opengl/FrameBufferObject.hpp"
 
 #include <glm/vec2.hpp>
+#include <vector>
 
 //Postprocess
 #include "Graphics/Opengl/Postprocess/SSAO.hpp"
@@ -53,6 +54,9 @@ namespace Rendering
       Postprocess::SSAO   m_ssaoPP;
       Postprocess::FXAA   m_fxaaPP;
 
+      //Meta datas
+      std::vector<NightEngine::Reflection::Variable> m_postProcessEffects;
+
       //! @brief Initialization
       void Init(int width, int height);
 
@@ -64,6 +68,9 @@ namespace Rendering
 
       //! @brief Refresh Texture Uniforms binding unit
       void RefreshTextureUniforms(void);
+
+      //! @brief Get Effects Meta data for editor
+      inline std::vector<NightEngine::Reflection::Variable>& GetEffectsMetas(void) { return m_postProcessEffects;  }
     };
   }
 }

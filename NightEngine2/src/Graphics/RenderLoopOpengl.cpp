@@ -17,6 +17,8 @@
 #include "Graphics/Opengl/OpenglAllocationTracker.hpp"
 #include "Graphics/ShaderTracker.hpp"
 
+#include "Graphics/Opengl/Postprocess/PostProcessSetting.hpp"
+
 //GameObject
 #include "Core/EC/Components/MeshRenderer.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
@@ -342,12 +344,12 @@ namespace Rendering
       enablePostprocess = !enablePostprocess;
       if (!enablePostprocess)
       {
-        m_postProcessSetting.Clear();
+        m_postProcessSetting->Clear();
       }
     }
     if (enablePostprocess)
     {
-      m_postProcessSetting.Apply(PostProcessContext{&g_camera, &m_gbuffer
+      m_postProcessSetting->Apply(PostProcessContext{&g_camera, &m_gbuffer
         , &g_screenVAO, &m_sceneTexture });
     }
 
@@ -400,8 +402,8 @@ namespace Rendering
         else
         {
           m_sceneTexture.BindToTextureUnit(0);
-          m_postProcessSetting.m_bloomPP.m_targetTexture.BindToTextureUnit(1);
-          m_postProcessSetting.m_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
+          m_postProcessSetting->m_bloomPP.m_targetTexture.BindToTextureUnit(1);
+          m_postProcessSetting->m_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
         }
 
         //g_shadowMapTexture.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
@@ -448,7 +450,7 @@ namespace Rendering
     //*************************************************
     if (enablePostprocess)
     {
-      m_postProcessSetting.m_fxaaPP.ApplyToScreen(g_screenVAO
+      m_postProcessSetting->m_fxaaPP.ApplyToScreen(g_screenVAO
         , m_sceneTexture);
     }
     else
@@ -573,7 +575,8 @@ namespace Rendering
     //************************************************
     // Postprocess
     //************************************************
-    m_postProcessSetting.Init(width, height);
+    m_postProcessSetting = &(SceneManager::GetPostProcessSetting());
+    m_postProcessSetting->Init(width, height);
 
     //Screen Quad
     g_screenVAO.Init();
@@ -747,6 +750,8 @@ namespace Rendering
     OpenglAllocationTracker::DeallocateAllLoadedObjects();
     NightEngine::ResourceManager::ClearAllData();
 
+    SceneManager::DeletePostProcessSetting();
+
     Window::Terminate();
     OpenglAllocationTracker::PrintAllocationState();
     ShaderTracker::Clear();
@@ -798,6 +803,6 @@ namespace Rendering
     g_ibl.RefreshTextureUniforms(g_camera);
 
     //Postprocessing
-    m_postProcessSetting.RefreshTextureUniforms();
+    m_postProcessSetting->RefreshTextureUniforms();
   }
 } // Rendering

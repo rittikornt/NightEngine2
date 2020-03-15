@@ -15,6 +15,7 @@
 
 #include "Graphics/Opengl/Material.hpp"
 #include "Graphics/Opengl/InstanceDrawer.hpp"
+#include "Graphics/Opengl/Postprocess/PostProcessSetting.hpp"
 
 #include <btBulletCollisionCommon.h>
 #include "Physics/PhysicsScene.hpp"
@@ -41,6 +42,9 @@ namespace NightEngine
     {
       static Container::Vector<Handle<Scene>> g_openedScenes;
       static Handle<Scene> g_activeScene;
+
+      //PostProcess
+      Postprocess::PostProcessSetting* g_postProcessSetting;
 
       //TODO: care about this material's life time
       // right now its destructor is being called after deleted the whole engine
@@ -621,6 +625,27 @@ namespace NightEngine
       Rendering::Material& GetBillBoardMaterial(void)
       {
         return g_billboardMaterial;
+      }
+
+      /////////////////////////////////////////
+
+      Rendering::Postprocess::PostProcessSetting& GetPostProcessSetting(void)
+      {
+        if (g_postProcessSetting == nullptr)
+        {
+          g_postProcessSetting = new Rendering::Postprocess::PostProcessSetting();
+        }
+
+        return *g_postProcessSetting;
+      }
+
+      void DeletePostProcessSetting(void)
+      {
+        if (g_postProcessSetting != nullptr)
+        {
+          delete g_postProcessSetting;
+          g_postProcessSetting = nullptr;
+        }
       }
     }
   }

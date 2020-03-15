@@ -27,6 +27,7 @@ namespace Rendering
         META_REGISTERER(Bloom, true
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_resolution, true)
+          .MR_ADD_MEMBER_PROTECTED(Bloom, m_intensity, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_bloomThreshold, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurIteration, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurDir, true);
@@ -43,6 +44,7 @@ namespace Rendering
       Shader            m_bloomShader;
 
       //Settings
+      float             m_intensity = 0.2f;
       float             m_bloomThreshold = 4.0f;
       unsigned          m_blurIteration = 10;
       glm::vec2         m_blurDir;

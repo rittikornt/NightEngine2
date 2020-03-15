@@ -13,6 +13,11 @@
 namespace Rendering
 {
   class Material;
+
+  namespace Postprocess
+  {
+    class PostProcessSetting;
+  }
 }
 
 namespace NightEngine
@@ -99,6 +104,12 @@ namespace NightEngine
       Rendering::Material& GetDefaultMaterial(void);
 
       Rendering::Material& GetBillBoardMaterial(void);
+
+      /////////////////////////////////////////
+
+      Rendering::Postprocess::PostProcessSetting& GetPostProcessSetting(void);
+
+      void DeletePostProcessSetting(void);
     }
   }
 }

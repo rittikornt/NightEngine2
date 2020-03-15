@@ -24,13 +24,17 @@
 #include "Graphics/Opengl/Postprocess/SSAO.hpp"
 #include "Graphics/Opengl/Postprocess/Bloom.hpp"
 #include "Graphics/Opengl/Postprocess/FXAA.hpp"
-#include "Graphics/Opengl/Postprocess/PostProcessSetting.hpp"
 
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
 
 namespace Rendering
 {
+  namespace Postprocess
+  {
+    class PostProcessSetting;
+  }
+
   class RenderLoopOpengl: public IRenderLoop
   {
   public:
@@ -70,7 +74,7 @@ namespace Rendering
     RenderBufferObject  m_sceneRbo;
 
     //PostProcess
-    Postprocess::PostProcessSetting m_postProcessSetting;
+    Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
 
     //Screen Quad
     VertexArrayObject   g_screenVAO;

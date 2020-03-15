@@ -16,7 +16,9 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 //Editor
+#include "Editor/PostProcessSettingEditor.hpp"
 #include "Editor/DevConsole.hpp"
+
 #include "Editor/MemberSerializerEditor.hpp"
 #include "Editor/ConfirmationBox.hpp"
 #include "Editor/GameObjectBrowser.hpp"
@@ -56,6 +58,8 @@ namespace Editor
 
   //Custom editor
   static DevConsole g_devConsole;
+  static PostProcessSettingEditor g_postprocessSetting;
+
   static MemberSerializerEditor g_memberSerializer;
   static GameObjectBrowser      g_gameObjectBrowser;
   static ArchetypeBrowser       g_archetypeBrowser;
@@ -273,6 +277,12 @@ namespace Editor
           Debug::Log << Logger::MessageType::INFO 
             << "DevConsole Window: " << g_devConsole.GetBool() << '\n';
         }
+        if (ImGui::MenuItem("PostProcessSettings", "`", &g_postprocessSetting.GetBool()))
+        {
+          Debug::Log << Logger::MessageType::INFO
+            << "PostProcessSettings Window: " << g_postprocessSetting.GetBool() << '\n';
+        }
+
         if (ImGui::MenuItem("Hierachy", "", &g_hierarchy.GetBool()))
         {
           Debug::Log << Logger::MessageType::INFO 
@@ -345,6 +355,8 @@ namespace Editor
         ImGui::Separator();
         ImGui::Checkbox("Top Mainmenu", &show_top_menu);
         ImGui::Checkbox("DevConsole", &g_devConsole.GetBool());
+        ImGui::Checkbox("Postprocess Settings", &g_postprocessSetting.GetBool());
+        ImGui::Separator();
         ImGui::Checkbox("Hierarchy", &g_hierarchy.GetBool());
         ImGui::Checkbox("Inspector", &g_inspector.GetBool());
         ImGui::Checkbox("GameObject Browser", &g_gameObjectBrowser.GetBool() );
@@ -374,6 +386,7 @@ namespace Editor
 
     g_confirmBox.Update();
     g_devConsole.Update();
+    g_postprocessSetting.Update(g_memberSerializer);
 
     //Top Menu
     if (show_top_menu)

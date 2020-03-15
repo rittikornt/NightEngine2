@@ -27,6 +27,10 @@ namespace Rendering
 
       //FXAA
       m_fxaaPP.Init(width, height);
+
+      m_postProcessEffects.emplace_back(METATYPE_FROM_OBJECT(m_bloomPP), &m_bloomPP);
+      m_postProcessEffects.emplace_back(METATYPE_FROM_OBJECT(m_ssaoPP), &m_ssaoPP);
+      m_postProcessEffects.emplace_back(METATYPE_FROM_OBJECT(m_fxaaPP), &m_fxaaPP);
     }
 
     void PostProcessSetting::Apply(const PostProcessContext& context)

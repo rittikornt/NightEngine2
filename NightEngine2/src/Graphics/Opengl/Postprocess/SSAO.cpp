@@ -81,10 +81,6 @@ namespace Rendering
       m_noiseTexture = Texture::GenerateTextureData(&ssaoNoise[0]
         , 4, 4, Texture::Channel::RGB16F, Texture::Channel::RGB
         , Texture::FilterMode::NEAREST, Texture::WrapMode::REPEAT);
-
-      //Setting
-      m_intensity = 5;
-      m_sampleRadius = 3.0f;
     }
 
     void SSAO::Apply(VertexArrayObject& screenQuad

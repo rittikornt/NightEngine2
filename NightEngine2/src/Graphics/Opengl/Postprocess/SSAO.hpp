@@ -42,9 +42,9 @@ namespace Rendering
       Shader            m_simpleBlur;
 
       //Settings
-      int               m_intensity = 1;
+      int               m_intensity = 5;
       glm::vec3         m_color{1.0f};
-      float             m_sampleRadius = 0.5f;
+      float             m_sampleRadius = 3.0f;
       float             m_bias = 0.025f;
 
       //Sample Kernel 

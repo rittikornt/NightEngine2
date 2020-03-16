@@ -26,11 +26,9 @@ namespace Rendering
       {
         META_REGISTERER(Bloom, true
           , nullptr, nullptr)
-          .MR_ADD_MEMBER_PROTECTED(Bloom, m_resolution, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_intensity, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_bloomThreshold, true)
-          .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurIteration, true)
-          .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurDir, true);
+          .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurIteration, true);
       }
 
       FrameBufferObject m_bloomFbo;

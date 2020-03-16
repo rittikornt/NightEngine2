@@ -39,7 +39,6 @@ namespace Editor
 
   //Component/GameObject Editor Shared States
   static PostProcessSetting* g_postprocessSetting;
-  static std::string     g_componentToRemove{ "" };
 
   void PostProcessSettingEditor::Update(MemberSerializerEditor& memberSerializer)
   {
@@ -91,8 +90,7 @@ namespace Editor
               auto& typeName = metatype->GetName();
 
               ImGui::Columns(1, "Effect Header");
-              bool showEffectHeader = true;
-              if (ImGui::CollapsingHeader(typeName.c_str(), &showEffectHeader))
+              if (ImGui::CollapsingHeader(typeName.c_str()))
               {
                 //Column header
                 ImGui::Columns(3, "Effect Property");
@@ -121,12 +119,6 @@ namespace Editor
                 }
               }
               ImGui::Separator();
-
-              //If press the 'x' button
-              if (!showEffectHeader)
-              {
-                g_componentToRemove = typeName;
-              }
             }
 
             //Clear Column

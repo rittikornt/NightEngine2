@@ -34,6 +34,12 @@ namespace Rendering
       Texture*           screenTexture;
     };
 
+    struct PostProcessEffect
+    {
+        NightEngine::Reflection::Variable m_variable;
+        bool m_enable = true;
+    };
+
     //! @brief PostProcessSetting struct
     struct PostProcessSetting
     {
@@ -55,7 +61,7 @@ namespace Rendering
       Postprocess::FXAA   m_fxaaPP;
 
       //Meta datas
-      std::vector<NightEngine::Reflection::Variable> m_postProcessEffects;
+      std::vector<PostProcessEffect> m_postProcessEffects;
 
       //! @brief Initialization
       void Init(int width, int height);
@@ -70,7 +76,7 @@ namespace Rendering
       void RefreshTextureUniforms(void);
 
       //! @brief Get Effects Meta data for editor
-      inline std::vector<NightEngine::Reflection::Variable>& GetEffectsMetas(void) { return m_postProcessEffects;  }
+      inline std::vector<PostProcessEffect>& GetEffectsMetas(void) { return m_postProcessEffects;  }
     };
   }
 }

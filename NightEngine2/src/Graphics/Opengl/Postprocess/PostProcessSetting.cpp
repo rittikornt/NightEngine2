@@ -28,18 +28,32 @@ namespace Rendering
       //FXAA
       m_fxaaPP.Init(width, height);
 
-      m_postProcessEffects.emplace_back(METATYPE_FROM_OBJECT(m_bloomPP), &m_bloomPP);
-      m_postProcessEffects.emplace_back(METATYPE_FROM_OBJECT(m_ssaoPP), &m_ssaoPP);
-      m_postProcessEffects.emplace_back(METATYPE_FROM_OBJECT(m_fxaaPP), &m_fxaaPP);
+      m_postProcessEffects.emplace_back(PostProcessEffect{ NightEngine::Reflection::Variable{METATYPE_FROM_OBJECT(m_bloomPP), &m_bloomPP }, true});
+      m_postProcessEffects.emplace_back(PostProcessEffect{ NightEngine::Reflection::Variable{METATYPE_FROM_OBJECT(m_ssaoPP), &m_ssaoPP }, true});
+      m_postProcessEffects.emplace_back(PostProcessEffect{ NightEngine::Reflection::Variable{METATYPE_FROM_OBJECT(m_fxaaPP), &m_fxaaPP }, true});
     }
 
     void PostProcessSetting::Apply(const PostProcessContext& context)
     {
       //SSAO
-      m_ssaoPP.Apply(*(context.screenVAO), *(context.camera), *(context.gbuffer));
+      if (m_postProcessEffects[1].m_enable)
+      {
+        m_ssaoPP.Apply(*(context.screenVAO), *(context.camera), *(context.gbuffer));
+      }
+      else
+      {
+        m_ssaoPP.Clear();
+      }
 
       //Bloom
-      m_bloomPP.Apply(*(context.screenVAO), *(context.screenTexture));
+      if (m_postProcessEffects[0].m_enable)
+      {
+        m_bloomPP.Apply(*(context.screenVAO), *(context.screenTexture));
+      }
+      else
+      {
+        m_bloomPP.Clear();
+      }
     }
 
     void PostProcessSetting::Clear(void)

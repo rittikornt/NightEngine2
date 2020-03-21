@@ -195,7 +195,8 @@ namespace Editor
     });
   }
 
-  bool MemberSerializerEditor::DrawMemberEditor(Reflection::Member& member, void* dataObject)
+  bool MemberSerializerEditor::DrawMemberEditor(Reflection::Member& member, void* dataObject
+    , const std::string& nameMingle)
   {
     using namespace Reflection;
     using namespace Components;
@@ -206,7 +207,7 @@ namespace Editor
     if (it != m_typeEditorMap.end())
     {
       Variable var{ member.GetMetaType(), memberPtr };
-      it->second(var, member.GetName().c_str());
+      it->second(var, (member.GetName() + nameMingle).c_str());
       return true;
     }
 

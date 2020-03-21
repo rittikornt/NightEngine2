@@ -83,15 +83,18 @@ namespace Editor
             }
 
             //All PostProcessEffects
+            int nameMingle = 0;
             for (auto& effect : postProcessEffects)
             {
               //Traverse MetaType's Member
-              auto metatype = effect.GetMetaType();
+              auto metatype = effect.m_variable.GetMetaType();
               auto& typeName = metatype->GetName();
 
               ImGui::Columns(1, "Effect Header");
               if (ImGui::CollapsingHeader(typeName.c_str()))
               {
+                ImGui::Checkbox((typeName + " enable").c_str(), &(effect.m_enable));
+
                 //Column header
                 ImGui::Columns(3, "Effect Property");
                 ImGui::TextColored(g_color_green, "TYPE"); ImGui::NextColumn();
@@ -113,12 +116,14 @@ namespace Editor
                   ImGui::NextColumn();
 
                   //Value Editor
-                  memberSerializer.DrawMemberEditor(member, effect.GetValue());
+                  memberSerializer.DrawMemberEditor(member
+                    , effect.m_variable.GetValue(), std::to_string(nameMingle));
                   ImGui::NextColumn();
                   ImGui::Separator();
                 }
               }
               ImGui::Separator();
+              ++nameMingle;
             }
 
             //Clear Column

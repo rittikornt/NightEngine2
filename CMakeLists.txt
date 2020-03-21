@@ -103,7 +103,7 @@ file(GLOB PROJECT_SOURCES_INPUT NightEngine2/src/Input/*.cpp
 file(GLOB PROJECT_SOURCES_PHYSIC NightEngine2/src/Physics/*.cpp
                                NightEngine2/src/Physics/*.hpp)
 
-file(GLOB PROJECT_SHADERS Assets/Shaders/*.comp
+file(GLOB_RECURSE PROJECT_SHADERS Assets/Shaders/*.comp
                             Assets/Shaders/*.frag
                             Assets/Shaders/*.geom
                             Assets/Shaders/*.vert)

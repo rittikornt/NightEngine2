@@ -361,7 +361,7 @@ namespace Rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Copy gbuffer depth to the sceneFBO
-    m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
+    //m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
     glDisable(GL_DEPTH_TEST);
 
     //Debugging View

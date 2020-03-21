@@ -213,7 +213,7 @@ namespace Physics
 
   void PhysicsScene::DebugDraw(Rendering::CameraObject& cam)
   {
-    m_debugDrawer->Draw(cam);
+    PhysicsDebugDrawer::GetInstance()->Draw(cam);
   }
 
   PhysicsScene::~PhysicsScene(void)

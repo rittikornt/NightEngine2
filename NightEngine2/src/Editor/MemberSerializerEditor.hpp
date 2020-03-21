@@ -28,7 +28,7 @@ namespace Editor
 
     //! @brief Draw the editor for member
     bool DrawMemberEditor(NightEngine::Reflection::Member& member
-      , void* dataObject);
+      , void* dataObject, const std::string& nameMingle = "");
   private:
     struct StringHash 
 		{

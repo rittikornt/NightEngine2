@@ -17,8 +17,8 @@
 
 namespace NightEngine
 {
-	using JsonValue = tao::json::value;
-	using ValueObject = tao::json::basic_value<tao::json::traits>;
+  using JsonValue = tao::json::value;
+  using ValueObject = tao::json::basic_value<tao::json::traits>;
   namespace Reflection
   {
     //Forward declaration
@@ -27,9 +27,9 @@ namespace NightEngine
     //! @brief Class for referencing any variable, useful for serialization
     class Variable
     {
-      public:
+    public:
       //! @brief Variable Constructor
-			Variable(MetaType* metaType,void* data);
+      Variable(MetaType* metaType, void* data);
 
       //! @brief Get the Internal Dereferenced Data 
       template<typename T>
@@ -37,28 +37,28 @@ namespace NightEngine
       {
         return *(reinterpret_cast<T*>(m_data));
       }
-			//! @brief Get raw pointer to data 
-			void* GetValue(void) { return m_data; }
+      //! @brief Get raw pointer to data 
+      void* GetValue(void) { return m_data; }
 
-			//! @brief Get Pointer to MetaType
-			MetaType* GetMetaType(void) { return m_metaType; }
+      //! @brief Get Pointer to MetaType
+      MetaType* GetMetaType(void) { return m_metaType; }
 
-			//! @brief Set value to internal Data 
-			template<typename T>
-			void SetValue(T& value)
-			{
-				*(reinterpret_cast<T*>(m_data))= value;
-			}
+      //! @brief Set value to internal Data 
+      template<typename T>
+      void SetValue(T& value)
+      {
+        *(reinterpret_cast<T*>(m_data)) = value;
+      }
 
       //! @brief Set Variable
-			void SetVariable(MetaType* metaType, void* data);
+      void SetVariable(MetaType* metaType, void* data);
 
-			//! @brief Serialize this variable into JsonValue
-			JsonValue Serialize(void);
+      //! @brief Serialize this variable into JsonValue
+      JsonValue Serialize(void);
 
-			//! @brief Deserialize valueObject into this Variable
-			void Deserialize(ValueObject& valueObject);
-      private:
+      //! @brief Deserialize valueObject into this Variable
+      void Deserialize(ValueObject& valueObject);
+    private:
       MetaType* m_metaType;
       void* m_data;
     };

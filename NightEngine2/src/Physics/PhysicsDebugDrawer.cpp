@@ -54,7 +54,6 @@ namespace Physics
 
   PhysicsDebugDrawer::~PhysicsDebugDrawer()
   {
-
   }
 
   void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)

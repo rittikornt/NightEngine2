@@ -66,6 +66,15 @@ namespace Physics
        }
        return s_instance;
      }
+
+     static void DeleteInstance()
+     {
+       if (s_instance != nullptr)
+       {
+         delete s_instance;
+       }
+       s_instance = nullptr;
+     }
 	private:
      static PhysicsDebugDrawer* s_instance;
 	   int                        m_debugMode;

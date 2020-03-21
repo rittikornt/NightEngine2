@@ -213,7 +213,11 @@ namespace Physics
 
   void PhysicsScene::DebugDraw(Rendering::CameraObject& cam)
   {
-    PhysicsDebugDrawer::GetInstance()->Draw(cam);
+    if (m_debugDrawer == nullptr)
+    {
+      m_debugDrawer = PhysicsDebugDrawer::GetInstance();
+    }
+    m_debugDrawer->Draw(cam);
   }
 
   PhysicsScene::~PhysicsScene(void)
@@ -244,12 +248,19 @@ namespace Physics
     }
 
     //Delete Physics Scene
-    delete m_debugDrawer;
     delete m_world;
     delete m_constraintSolver;
     delete m_broadPhase;
     delete m_collisionDispatcher;
     delete m_collisionConfig;
+
+    PhysicsDebugDrawer::DeleteInstance();
+    m_debugDrawer = nullptr;
+    m_world = nullptr;
+    m_constraintSolver = nullptr;
+    m_broadPhase = nullptr;
+    m_collisionDispatcher = nullptr;
+    m_collisionConfig = nullptr;
 
     //Remove this PhysicsScene from the global scenes list
     for (auto it = s_physicScenes.begin(); 

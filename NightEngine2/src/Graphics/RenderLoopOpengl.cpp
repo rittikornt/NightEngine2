@@ -359,9 +359,6 @@ namespace Rendering
     glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //Copy gbuffer depth to the sceneFBO
-    //m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
     glDisable(GL_DEPTH_TEST);
 
     //Debugging View

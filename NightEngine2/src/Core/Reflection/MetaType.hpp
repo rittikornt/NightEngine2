@@ -28,7 +28,7 @@ namespace NightEngine
 		//! @brief Light wrapper of MetaType* and InheritType
 		struct BaseClass
 		{
-			enum InheritType : unsigned
+			enum class InheritType : unsigned
 			{
 				PUBLIC = 0, PROTECTED, PRIVATE
 			};

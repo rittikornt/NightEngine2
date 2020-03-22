@@ -15,6 +15,7 @@ namespace Rendering
     //TODO: Better Bloom Falloff
     void Bloom::Init(int width, int height)
     {
+      INIT_POSTPROCESSEFFECT();
       m_resolution.x = width , m_resolution.y = height;
 
       //Buffers for 5 down scaled version

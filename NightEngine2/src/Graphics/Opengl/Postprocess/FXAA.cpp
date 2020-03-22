@@ -17,6 +17,7 @@ namespace Rendering
 
     void FXAA::Init(int width, int height)
     {
+      INIT_POSTPROCESSEFFECT();
       m_fxaaShader.Create();
       m_fxaaShader.AttachShaderFile("Postprocess/fxaa.vert");
       m_fxaaShader.AttachShaderFile("Postprocess/fxaa.frag");

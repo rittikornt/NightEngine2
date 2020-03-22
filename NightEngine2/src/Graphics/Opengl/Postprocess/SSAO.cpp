@@ -20,6 +20,7 @@ namespace Rendering
 
     void SSAO::Init(int width, int height)
     {
+      INIT_POSTPROCESSEFFECT();
       m_ssaoTexture = Texture::GenerateNullTexture(
         width, height, Texture::Channel::RGB
         , Texture::Channel::RGB, Texture::FilterMode::NEAREST

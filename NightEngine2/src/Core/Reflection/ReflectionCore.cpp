@@ -42,6 +42,7 @@
 
 #include "Graphics/Opengl/Light.hpp"
 #include "Graphics/Opengl/Material.hpp"
+#include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 
 namespace NightEngine
 {
@@ -67,6 +68,9 @@ namespace NightEngine
       REGISTER_METATYPE(std::string);
 
 			REGISTER_METATYPE_WITHNAME(std::vector<int>, "Vector<int>");
+
+      REGISTER_METATYPE_WITH_SERIALIZER(MetaType*, true
+        , DefaultSerializer<int>, DefaultDeserializer<int>);
 
       //***********************************************
       //	glm
@@ -164,6 +168,14 @@ namespace NightEngine
       //	Rendering
       //***********************************************
       using namespace Rendering;
+      {
+        using namespace Rendering::Postprocess;
+        REGISTER_METATYPE(PostProcessEffect);
+        {
+          ADD_MEMBER_PUBLIC(PostProcessEffect, m_metaType, false);
+          ADD_MEMBER_PUBLIC(PostProcessEffect, m_enable, true);
+        }
+      }
 
       //***********************************************
       //	ComponentLogic

@@ -12,6 +12,7 @@
 #include <glm/vec2.hpp>
 
 #include "Core/Reflection/ReflectionMacros.hpp"
+#include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 
 namespace Rendering
 {
@@ -20,11 +21,12 @@ namespace Rendering
   namespace Postprocess
   {
     //! @brief Bloom struct
-    struct Bloom
+    struct Bloom: public PostProcessEffect
     {
       REFLECTABLE_TYPE_BLOCK()
       {
-        META_REGISTERER(Bloom, true
+        META_REGISTERER_WITHBASE(Bloom, PostProcessEffect
+          , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_intensity, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_bloomThreshold, true)

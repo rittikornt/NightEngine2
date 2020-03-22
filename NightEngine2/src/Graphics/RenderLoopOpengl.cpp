@@ -445,7 +445,7 @@ namespace Rendering
     //*************************************************
     // FXAA at the end, Directly onto the screen
     //*************************************************
-    if (enablePostprocess)
+    if (enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
     {
       m_postProcessSetting->m_fxaaPP.ApplyToScreen(g_screenVAO
         , m_sceneTexture);

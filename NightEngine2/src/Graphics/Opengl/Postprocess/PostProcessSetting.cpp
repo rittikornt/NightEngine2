@@ -11,6 +11,8 @@
 #include "Graphics/Opengl/CameraObject.hpp"
 #include "Graphics/Opengl/GBuffer.hpp"
 
+#include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
+
 namespace Rendering
 {
   namespace Postprocess
@@ -28,15 +30,15 @@ namespace Rendering
       //FXAA
       m_fxaaPP.Init(width, height);
 
-      m_postProcessEffects.emplace_back(PostProcessEffect{ NightEngine::Reflection::Variable{METATYPE_FROM_OBJECT(m_bloomPP), &m_bloomPP }, true});
-      m_postProcessEffects.emplace_back(PostProcessEffect{ NightEngine::Reflection::Variable{METATYPE_FROM_OBJECT(m_ssaoPP), &m_ssaoPP }, true});
-      m_postProcessEffects.emplace_back(PostProcessEffect{ NightEngine::Reflection::Variable{METATYPE_FROM_OBJECT(m_fxaaPP), &m_fxaaPP }, true});
+      m_postProcessEffects.emplace_back(&m_bloomPP);
+      m_postProcessEffects.emplace_back(&m_ssaoPP);
+      m_postProcessEffects.emplace_back(&m_fxaaPP);
     }
 
     void PostProcessSetting::Apply(const PostProcessContext& context)
     {
       //SSAO
-      if (m_postProcessEffects[1].m_enable)
+      if (m_ssaoPP.m_enable)
       {
         m_ssaoPP.Apply(*(context.screenVAO), *(context.camera), *(context.gbuffer));
       }
@@ -46,7 +48,7 @@ namespace Rendering
       }
 
       //Bloom
-      if (m_postProcessEffects[0].m_enable)
+      if (m_bloomPP.m_enable)
       {
         m_bloomPP.Apply(*(context.screenVAO), *(context.screenTexture));
       }

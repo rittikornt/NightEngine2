@@ -10,6 +10,7 @@
 #include <glm/vec2.hpp>
 
 #include "Core/Reflection/ReflectionMacros.hpp"
+#include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 
 namespace Rendering
 {
@@ -20,11 +21,12 @@ namespace Rendering
   namespace Postprocess
   {
     //! @brief FXAA struct
-    struct FXAA
+    struct FXAA : public PostProcessEffect
     {
       REFLECTABLE_TYPE_BLOCK()
       {
-        META_REGISTERER(FXAA, true
+        META_REGISTERER_WITHBASE(FXAA, PostProcessEffect
+          , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(FXAA, m_resolution, true)
           .MR_ADD_MEMBER_PROTECTED(FXAA, m_fxaaShader, true);

@@ -84,16 +84,17 @@ namespace Editor
 
             //All PostProcessEffects
             int nameMingle = 0;
+            Variable tempVar{METATYPE_FROM_STRING("int"),nullptr};
             for (auto& effect : postProcessEffects)
             {
               //Traverse MetaType's Member
-              auto metatype = effect.m_variable.GetMetaType();
+              auto metatype = effect->m_metaType;// m_variable.GetMetaType();
               auto& typeName = metatype->GetName();
 
               ImGui::Columns(1, "Effect Header");
               if (ImGui::CollapsingHeader(typeName.c_str()))
               {
-                ImGui::Checkbox((typeName + " enable").c_str(), &(effect.m_enable));
+                ImGui::Checkbox((typeName + " enable").c_str(), &(effect->m_enable));
 
                 //Column header
                 ImGui::Columns(3, "Effect Property");
@@ -116,8 +117,9 @@ namespace Editor
                   ImGui::NextColumn();
 
                   //Value Editor
+                  effect->GetVariable(tempVar);
                   memberSerializer.DrawMemberEditor(member
-                    , effect.m_variable.GetValue(), std::to_string(nameMingle));
+                    , tempVar.GetValue(), std::to_string(nameMingle));
                   ImGui::NextColumn();
                   ImGui::Separator();
                 }

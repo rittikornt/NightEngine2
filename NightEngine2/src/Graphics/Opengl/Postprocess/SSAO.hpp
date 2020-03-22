@@ -13,6 +13,7 @@
 #include <glm/vec3.hpp>
 
 #include "Core/Reflection/ReflectionMacros.hpp"
+#include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 
 namespace Rendering
 {
@@ -23,11 +24,12 @@ namespace Rendering
   namespace Postprocess
   {
     //! @brief SSAO struct
-    struct SSAO
+    struct SSAO: public PostProcessEffect
     {
       REFLECTABLE_TYPE_BLOCK()
       {
-        META_REGISTERER(SSAO, true
+        META_REGISTERER_WITHBASE(SSAO, PostProcessEffect
+          , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_intensity, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_color, true)

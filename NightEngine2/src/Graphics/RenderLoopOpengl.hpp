@@ -52,20 +52,20 @@ namespace Rendering
     void DrawScene(bool debugNormal);
 
     //Uniform Buffer Object
-    UniformBufferObject g_uniformBufferObject;
+    UniformBufferObject m_uniformBufferObject;
 
     //Depth FrameBuffer for Directional Shadow
-    FrameBufferObject   g_depthfbo;
-    Texture             g_shadowMapTexture;
-    Material            g_depthMaterial;
+    FrameBufferObject   m_depthfbo;
+    Texture             m_shadowMapTexture;
+    Material            m_depthMaterial;
 
     //Depth FrameBuffer for Point Shadow
-    FrameBufferObject   g_depth2fbo[POINTLIGHT_AMOUNT];
-    Cubemap             g_shadowMapCubemap[POINTLIGHT_AMOUNT];
-    Material            g_depth2Material;
+    FrameBufferObject   m_depth2fbo[POINTLIGHT_AMOUNT];
+    Cubemap             m_shadowMapCubemap[POINTLIGHT_AMOUNT];
+    Material            m_depth2Material;
 
-    glm::vec2           g_initResolution;
-    float               g_shadowWidth, g_shadowHeight;
+    glm::vec2           m_initResolution;
+    float               m_shadowWidth, m_shadowHeight;
 
     //Scene FrameBuffer
     GBuffer             m_gbuffer;
@@ -77,21 +77,21 @@ namespace Rendering
     Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
 
     //Screen Quad
-    VertexArrayObject   g_screenVAO;
-    Material            g_screenMaterial;
-    Material            g_screenQuadMaterial;
+    VertexArrayObject   m_screenVAO;
+    Material            m_screenMaterial;
+    Material            m_screenQuadMaterial;
 
     //Cubemap IBL
-    IBL                 g_ibl;
+    IBL                 m_ibl;
 
     //Material
-    Material*           g_defaultMaterial;
-    Material            g_lightingMaterial;
-    Material            g_normalDebug;
+    Material*           m_defaultMaterial;
+    Material            m_lightingMaterial;
+    Material            m_normalDebug;
 
     //Light
-    Material*            g_billboardMaterial;
-    Texture              g_lightTexture;
+    Material*            m_billboardMaterial;
+    Texture              m_lightTexture;
   };
 } // Rendering
 

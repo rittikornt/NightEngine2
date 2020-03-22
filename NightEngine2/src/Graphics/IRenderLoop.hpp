@@ -14,10 +14,10 @@ namespace Rendering
 
     virtual void Initialize(void);
 
+    virtual void Terminate(void);
+
     //TODO: remove float dt later, only here for debuging camera
     virtual void Render(float dt) = 0;
-
-    virtual void Terminate(void);
 
     virtual void OnRecompiledShader(void);
   };

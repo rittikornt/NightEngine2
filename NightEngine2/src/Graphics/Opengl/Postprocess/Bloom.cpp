@@ -6,6 +6,8 @@
 #include "Graphics/Opengl/Postprocess/Bloom.hpp"
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 
+#include "Graphics/Opengl/Postprocess/PostProcessUtility.hpp"
+
 namespace Rendering
 {
   namespace Postprocess
@@ -50,16 +52,6 @@ namespace Rendering
       m_blitCopyShader.AttachShaderFile("Utility/blitCopy.frag");
       m_blitCopyShader.Link();
       
-      m_blurShader.Create();
-      m_blurShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_blurShader.AttachShaderFile("Postprocess/gaussian_blur.frag");
-      m_blurShader.Link();
-
-      m_kawaseBlurShader.Create();
-      m_kawaseBlurShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_kawaseBlurShader.AttachShaderFile("Postprocess/kawase_blur.frag");
-      m_kawaseBlurShader.Link();
-
       m_bloomShader.Create();
       m_bloomShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_bloomShader.AttachShaderFile("Postprocess/bloom.frag");
@@ -73,7 +65,7 @@ namespace Rendering
     }
 
     void Bloom::Apply(VertexArrayObject& screenVAO
-      , Texture& screenTexture)
+      , Texture& screenTexture, PostProcessUtility& ppUtility)
     {
       //Render 5 versions of downsample threshold color
       glDisable(GL_DEPTH_TEST);
@@ -137,13 +129,13 @@ namespace Rendering
       //BlurTarget(m_bloomTexture[0], screenVAO
       //  , m_resolution, m_blurIteration, m_useKawaseBlur);
 
-      BlurTarget(m_bloomTexture[1], screenVAO
+      ppUtility.BlurTarget(m_bloomTexture[1], screenVAO
         , m_resolution / 2, m_blurIteration, m_useKawaseBlur);
-      BlurTarget(m_bloomTexture[2], screenVAO
+      ppUtility.BlurTarget(m_bloomTexture[2], screenVAO
         , m_resolution / 4, m_blurIteration, m_useKawaseBlur);
-      BlurTarget(m_bloomTexture[3], screenVAO
+      ppUtility.BlurTarget(m_bloomTexture[3], screenVAO
         , m_resolution / 8, m_blurIteration, m_useKawaseBlur);
-      BlurTarget(m_bloomTexture[4], screenVAO
+      ppUtility.BlurTarget(m_bloomTexture[4], screenVAO
         , m_resolution / 16, m_blurIteration, m_useKawaseBlur);
 
       //Combine all blurred texture
@@ -166,72 +158,6 @@ namespace Rendering
         m_bloomShader.Unbind();
       }
       m_bloomFbo.Unbind();
-    }
-
-    void Bloom::BlurTarget(Texture& target
-      , VertexArrayObject& screenVAO
-      , glm::ivec2 resolution, int iteration, bool useKawase)
-    {
-      //Render Resolution and clear color
-      m_bloomFbo.Bind();
-      {
-        glViewport(0, 0, resolution.x, resolution.y);
-        glClear(GL_COLOR_BUFFER_BIT);
-      }
-      m_bloomFbo.Unbind();
-
-      //Blur the texture
-      if (useKawase)
-      {
-        const int k_maxBlurIteration = 4;
-        iteration = std::min(iteration, k_maxBlurIteration);
-        for (int i = 0; i < iteration; ++i)
-        {
-          m_bloomFbo.Bind();
-          {
-            m_kawaseBlurShader.Bind();
-            {
-              m_kawaseBlurShader.SetUniform("u_iteration", i);
-
-              target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-
-              //Render
-              screenVAO.Draw();
-            }
-            m_kawaseBlurShader.Unbind();
-          }
-          m_bloomFbo.Unbind();
-
-          //Copy back to target
-          m_bloomFbo.CopyToTexture(target
-            , resolution.x, resolution.y);
-        }
-      }
-      else
-      {
-        for (int i = 0; i < m_blurIteration; ++i)
-        {
-          m_bloomFbo.Bind();
-          {
-            m_blurShader.Bind();
-            {
-              m_blurDir = glm::vec2((i + 1) % 2, i % 2);
-              m_blurShader.SetUniform("u_dir", m_blurDir);
-
-              target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-
-              //Render
-              screenVAO.Draw();
-            }
-            m_blurShader.Unbind();
-          }
-          m_bloomFbo.Unbind();
-
-          //Copy back to target
-          m_bloomFbo.CopyToTexture(target
-            , resolution.x, resolution.y);
-        }
-      }
     }
 
     void Bloom::Clear(void)
@@ -258,12 +184,6 @@ namespace Rendering
         m_blitCopyShader.SetUniform("u_screenTexture", 0);
       }
       m_blitCopyShader.Unbind();
-
-      m_blurShader.Bind();
-      {
-        m_blurShader.SetUniform("u_screenTexture", 0);
-      }
-      m_blurShader.Unbind();
 
       m_bloomShader.Bind();
       {

@@ -21,6 +21,8 @@ namespace Rendering
 
     void PostProcessSetting::Init(int width, int height)
     {
+      m_ppUtility.Init(width, height);
+
       //Bloom
       m_bloomPP.Init(width, height);
 
@@ -50,7 +52,7 @@ namespace Rendering
       //Bloom
       if (m_bloomPP.m_enable)
       {
-        m_bloomPP.Apply(*(context.screenVAO), *(context.screenTexture));
+        m_bloomPP.Apply(*(context.screenVAO), *(context.screenTexture), m_ppUtility);
       }
       else
       {
@@ -60,12 +62,16 @@ namespace Rendering
 
     void PostProcessSetting::Clear(void)
     {
+      m_ppUtility.Clear();
+
       m_ssaoPP.Clear();
       m_bloomPP.Clear();
     }
 
     void PostProcessSetting::RefreshTextureUniforms(void)
     {
+      m_ppUtility.RefreshTextureUniforms();
+
       //Postprocessing
       m_bloomPP.RefreshTextureUniforms();
       m_ssaoPP.RefreshTextureUniforms();

@@ -13,6 +13,7 @@
 #include <vector>
 
 //Postprocess
+#include "Graphics/Opengl/Postprocess/PostProcessUtility.hpp"
 #include "Graphics/Opengl/Postprocess/SSAO.hpp"
 #include "Graphics/Opengl/Postprocess/Bloom.hpp"
 #include "Graphics/Opengl/Postprocess/FXAA.hpp"
@@ -50,6 +51,7 @@ namespace Rendering
       glm::ivec2        m_resolution;
 
       //PostProcess
+      Postprocess::PostProcessUtility   m_ppUtility;
       Postprocess::Bloom  m_bloomPP;
       Postprocess::SSAO   m_ssaoPP;
       Postprocess::FXAA   m_fxaaPP;

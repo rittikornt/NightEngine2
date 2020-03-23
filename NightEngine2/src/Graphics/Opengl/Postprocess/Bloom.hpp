@@ -20,6 +20,8 @@ namespace Rendering
 
   namespace Postprocess
   {
+    struct PostProcessUtility;
+
     //Const
     const int k_bloomPyramidCount = 5;
 
@@ -45,9 +47,6 @@ namespace Rendering
       //Shader
       Shader            m_thresholdShader;
       Shader            m_blitCopyShader;
-
-      Shader            m_blurShader;
-      Shader            m_kawaseBlurShader;
       Shader            m_bloomShader;
 
       //Settings
@@ -62,12 +61,7 @@ namespace Rendering
 
       //! @brief Apply Bloom to the screen texture
       void Apply(VertexArrayObject& screenVAO
-        , Texture& screenTexture);
-
-      //! @brief Blur the target Texture
-      void BlurTarget(Texture& target
-        , VertexArrayObject& screenVAO
-        , glm::ivec2 resolution, int iteration, bool useKawase = false);
+        , Texture& screenTexture, PostProcessUtility& ppUtility);
 
       //! @brief Clear Color on fbo texture
       void Clear(void);

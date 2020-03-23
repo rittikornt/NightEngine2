@@ -41,17 +41,17 @@ namespace Rendering
 
       //Shaders
       m_thresholdShader.Create();
-      m_thresholdShader.AttachShaderFile("Postprocess/brightness_threshold.vert");
+      m_thresholdShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_thresholdShader.AttachShaderFile("Postprocess/brightness_threshold.frag");
       m_thresholdShader.Link();
 
       m_blurShader.Create();
-      m_blurShader.AttachShaderFile("Postprocess/gaussian_blur.vert");
+      m_blurShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_blurShader.AttachShaderFile("Postprocess/gaussian_blur.frag");
       m_blurShader.Link();
 
       m_bloomShader.Create();
-      m_bloomShader.AttachShaderFile("Postprocess/bloom.vert");
+      m_bloomShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_bloomShader.AttachShaderFile("Postprocess/bloom.frag");
       m_bloomShader.Link();
       

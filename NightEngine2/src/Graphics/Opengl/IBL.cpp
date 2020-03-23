@@ -68,7 +68,7 @@ namespace Rendering
     m_prefilterShader.Link();
 
     m_brdfShader.Create();
-    m_brdfShader.AttachShaderFile("IBL/precompute_brdflut.vert");
+    m_brdfShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
     m_brdfShader.AttachShaderFile("IBL/precompute_brdflut.frag");
     m_brdfShader.Link();
     

@@ -254,10 +254,6 @@ namespace Rendering
     m_postProcessSetting->Init(width, height);
 
     //Screen Quad
-    m_screenQuadVAO.Init();
-    m_screenQuadVAO.Build(BufferMode::Static, Quad::texturedVertices
-      , Quad::indices, Quad::texturedInfo);
-
     m_screenTriangleVAO.Init();
     m_screenTriangleVAO.Build(BufferMode::Static, Triangle::vertices
       , Triangle::indices, Triangle::info);
@@ -271,7 +267,7 @@ namespace Rendering
     // Cubemap
     //************************************************
     //IBL
-    m_ibl.Init(g_camera, m_screenQuadVAO);
+    m_ibl.Init(g_camera, m_screenTriangleVAO);
 
     //************************************************
     // Material
@@ -633,8 +629,7 @@ namespace Rendering
         //Apply Light information to the Shader
         ApplyLight(shader);
 
-        //Draw Quad
-        //m_screenQuadVAO.Draw();
+        //Draw Fullscreen Mesh
         m_screenTriangleVAO.Draw();
       }
       m_lightingMaterial.Unbind();
@@ -661,7 +656,7 @@ namespace Rendering
     if (enablePostprocess)
     {
       m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
-        , &m_screenQuadVAO, &m_sceneTexture });
+        , & m_screenTriangleVAO, &m_sceneTexture });
     }
 
     //*************************************************

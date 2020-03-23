@@ -76,8 +76,7 @@ namespace Rendering
     //PostProcess
     Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
 
-    //Screen Quad
-    VertexArrayObject   m_screenQuadVAO;
+    //FullScreen Postfx
     VertexArrayObject   m_screenTriangleVAO;
     Material            m_postfxFinalMaterial;
     Material            m_blitCopyMaterial;

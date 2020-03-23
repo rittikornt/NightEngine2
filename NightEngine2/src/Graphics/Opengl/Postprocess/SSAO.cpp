@@ -34,12 +34,12 @@ namespace Rendering
 
       //Shader
       m_ssaoShader.Create();
-      m_ssaoShader.AttachShaderFile("Postprocess/ssao.vert");
+      m_ssaoShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_ssaoShader.AttachShaderFile("Postprocess/ssao.frag");
       m_ssaoShader.Link();
 
       m_simpleBlur.Create();
-      m_simpleBlur.AttachShaderFile("Postprocess/simple_blur.vert");
+      m_simpleBlur.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_simpleBlur.AttachShaderFile("Postprocess/simple_blur.frag");
       m_simpleBlur.Link();
 

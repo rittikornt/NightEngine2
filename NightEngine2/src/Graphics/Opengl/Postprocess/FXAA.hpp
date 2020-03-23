@@ -38,12 +38,12 @@ namespace Rendering
       void Init(int width, int height);
 
       //! @brief Apply FXAA to the screen texture
-      void Apply(VertexArrayObject& screenQuad
+      void Apply(VertexArrayObject& screenVAO
         , Texture& screenTexture
         , FrameBufferObject& sceneFbo);
 
       //! @brief Apply FXAA to the screen directly
-      void ApplyToScreen(VertexArrayObject& screenQuad
+      void ApplyToScreen(VertexArrayObject& screenVAO
         , Texture& screenTexture);
 
       //! @brief Refresh Texture Uniforms binding unit

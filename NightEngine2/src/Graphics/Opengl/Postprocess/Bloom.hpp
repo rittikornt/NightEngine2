@@ -53,12 +53,12 @@ namespace Rendering
       void Init(int width, int height);
 
       //! @brief Apply Bloom to the screen texture
-      void Apply(VertexArrayObject& screenQuad
+      void Apply(VertexArrayObject& screenVAO
         , Texture& screenTexture);
 
       //! @brief Blur the target Texture
       void BlurTarget(Texture& target
-        , VertexArrayObject& screenQuad
+        , VertexArrayObject& screenVAO
         , glm::ivec2 resolution);
 
       //! @brief Clear Color on fbo texture

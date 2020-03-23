@@ -2,7 +2,7 @@
 
 out vec4 o_fragColor;	//Final output Color
 
-in vec2 ourTexCoord;
+in vec2 OurTexCoords;
 
 //***************************************
 // Uniforms
@@ -100,7 +100,7 @@ float GetFilteredRoughness(float roughness, vec3 worldNormal);
 void main()
 {
 	//Discard if normal is black
-	vec3 normal = texture(u_gbufferResult.m_normalTex, ourTexCoord).rgb;
+	vec3 normal = texture(u_gbufferResult.m_normalTex, OurTexCoords).rgb;
 	if(normal == vec3(0.0,0.0,0.0))
 	{
 		discard;
@@ -108,11 +108,11 @@ void main()
 	normal = normalize(normal);
 
   //Sample Values from G-buffer
-	vec3 fragPos = texture(u_gbufferResult.m_positionTex, ourTexCoord).rgb;
-	vec4 diffuse = texture(u_gbufferResult.m_albedoTex, ourTexCoord);
-	vec3 specularTex = texture(u_gbufferResult.m_specularTex, ourTexCoord).rgb;
-	vec4 emissive = texture(u_gbufferResult.m_emissiveTex, ourTexCoord);
-	vec4 fragPosLightSpace = texture(u_gbufferResult.m_lightSpacePos, ourTexCoord);
+	vec3 fragPos = texture(u_gbufferResult.m_positionTex, OurTexCoords).rgb;
+	vec4 diffuse = texture(u_gbufferResult.m_albedoTex, OurTexCoords);
+	vec3 specularTex = texture(u_gbufferResult.m_specularTex, OurTexCoords).rgb;
+	vec4 emissive = texture(u_gbufferResult.m_emissiveTex, OurTexCoords);
+	vec4 fragPosLightSpace = texture(u_gbufferResult.m_lightSpacePos, OurTexCoords);
 
 	//Dir to Camera
 	vec3 ViewDir = normalize(u_cameraInfo.m_position - fragPos);

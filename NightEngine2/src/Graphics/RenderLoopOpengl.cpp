@@ -286,7 +286,7 @@ namespace Rendering
       , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures));
 
-    m_lightingMaterial.InitShader("Rendering/deferred_lighting_pbr_pass.vert"
+    m_lightingMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Rendering/deferred_lighting_pbr_pass.frag");
 
     m_lightingMaterial.Bind(false);
@@ -634,7 +634,8 @@ namespace Rendering
         ApplyLight(shader);
 
         //Draw Quad
-        m_screenQuadVAO.Draw();
+        //m_screenQuadVAO.Draw();
+        m_screenTriangleVAO.Draw();
       }
       m_lightingMaterial.Unbind();
 
@@ -713,7 +714,6 @@ namespace Rendering
           m_postProcessSetting->m_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
         }
 
-        //g_shadowMapTexture.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
         m_screenTriangleVAO.Draw();
       }
       m_postfxFinalMaterial.Unbind();
@@ -757,7 +757,7 @@ namespace Rendering
     //*************************************************
     if (enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
     {
-      m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenQuadVAO
+      m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO
         , m_sceneTexture);
     }
     else

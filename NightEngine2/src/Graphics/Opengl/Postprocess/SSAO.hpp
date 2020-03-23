@@ -60,7 +60,7 @@ namespace Rendering
       void Init(int width, int height);
 
       //! @brief Apply SSAO to the screen texture
-      void Apply(VertexArrayObject& screenQuad
+      void Apply(VertexArrayObject& screenVAO
         ,CameraObject& camera, GBuffer& gbuffer);
 
       //! @brief Clear Color on fbo texture

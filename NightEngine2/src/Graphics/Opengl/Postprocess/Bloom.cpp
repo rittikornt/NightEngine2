@@ -62,7 +62,7 @@ namespace Rendering
       m_bloomThreshold = 6.0f;
     }
 
-    void Bloom::Apply(VertexArrayObject& screenQuad
+    void Bloom::Apply(VertexArrayObject& screenVAO
       , Texture& screenTexture)
     {
       //Render 5 versions of downsample threshold color
@@ -84,7 +84,7 @@ namespace Rendering
             m_thresholdShader.SetUniform("u_threshold", m_bloomThreshold);
             screenTexture.BindToTextureUnit(0);
 
-            screenQuad.Draw();
+            screenVAO.Draw();
           }
           m_thresholdShader.Unbind();
         }
@@ -97,15 +97,15 @@ namespace Rendering
       }
 
       //Blur all texture
-      BlurTarget(m_bloomTexture[0], screenQuad
+      BlurTarget(m_bloomTexture[0], screenVAO
         , m_resolution);
-      BlurTarget(m_bloomTexture[1], screenQuad
+      BlurTarget(m_bloomTexture[1], screenVAO
         , m_resolution / 2);
-      BlurTarget(m_bloomTexture[2], screenQuad
+      BlurTarget(m_bloomTexture[2], screenVAO
         , m_resolution / 4);
-      BlurTarget(m_bloomTexture[3], screenQuad
+      BlurTarget(m_bloomTexture[3], screenVAO
         , m_resolution / 8);
-      BlurTarget(m_bloomTexture[4], screenQuad
+      BlurTarget(m_bloomTexture[4], screenVAO
         , m_resolution/16);
 
       //Combine all blurred texture
@@ -123,7 +123,7 @@ namespace Rendering
           }
 
           //Render
-          screenQuad.Draw();
+          screenVAO.Draw();
         }
         m_bloomShader.Unbind();
       }
@@ -131,7 +131,7 @@ namespace Rendering
     }
 
     void Bloom::BlurTarget(Texture& target
-      , VertexArrayObject& screenQuad
+      , VertexArrayObject& screenVAO
       , glm::ivec2 resolution)
     {
       //Render Resolution and clear color
@@ -155,7 +155,7 @@ namespace Rendering
             target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
 
             //Render
-            screenQuad.Draw();
+            screenVAO.Draw();
           }
           m_blurShader.Unbind();
         }

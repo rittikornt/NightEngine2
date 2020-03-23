@@ -84,7 +84,7 @@ namespace Rendering
         , Texture::FilterMode::NEAREST, Texture::WrapMode::REPEAT);
     }
 
-    void SSAO::Apply(VertexArrayObject& screenQuad
+    void SSAO::Apply(VertexArrayObject& screenVAO
       , CameraObject& camera, GBuffer& gbuffer)
     {
       //Generate AO
@@ -111,7 +111,7 @@ namespace Rendering
           m_ssaoShader.SetUniform("u_sampleRadius", m_sampleRadius);
           m_ssaoShader.SetUniform("u_bias", m_bias);
 
-          screenQuad.Draw();
+          screenVAO.Draw();
         }
         m_ssaoShader.Unbind();
       }
@@ -124,7 +124,7 @@ namespace Rendering
         {
           m_ssaoTexture.BindToTextureUnit(0);
 
-          screenQuad.Draw();
+          screenVAO.Draw();
         }
         m_simpleBlur.Unbind();
       }

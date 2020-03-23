@@ -19,7 +19,8 @@ namespace Rendering
     {
       INIT_POSTPROCESSEFFECT();
       m_fxaaShader.Create();
-      m_fxaaShader.AttachShaderFile("Postprocess/fxaa.vert");
+      //m_fxaaShader.AttachShaderFile("Postprocess/fxaa.vert");
+      m_fxaaShader.AttachShaderFile("Postprocess/fxaa_triangle.vert");
       m_fxaaShader.AttachShaderFile("Postprocess/fxaa.frag");
       m_fxaaShader.Link();
 
@@ -27,7 +28,7 @@ namespace Rendering
       m_resolution = glm::vec2(width, height);
     }
 
-    void FXAA::Apply(VertexArrayObject& screenQuad
+    void FXAA::Apply(VertexArrayObject& screenVAO
       , Texture& screenTexture, FrameBufferObject& sceneFbo)
     {
       sceneFbo.Bind();
@@ -38,14 +39,14 @@ namespace Rendering
           screenTexture.BindToTextureUnit(0);
 
           //Draw Quad
-          screenQuad.Draw();
+          screenVAO.Draw();
         }
         m_fxaaShader.Unbind();
       }
       sceneFbo.Unbind();
     }
 
-    void FXAA::ApplyToScreen(VertexArrayObject & screenQuad, Texture & screenTexture)
+    void FXAA::ApplyToScreen(VertexArrayObject & screenVAO, Texture & screenTexture)
     {
       m_fxaaShader.Bind();
       {
@@ -53,7 +54,7 @@ namespace Rendering
         screenTexture.BindToTextureUnit(0);
 
         //Draw Quad
-        screenQuad.Draw();
+        screenVAO.Draw();
       }
       m_fxaaShader.Unbind();
     }

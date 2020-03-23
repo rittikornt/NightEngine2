@@ -42,7 +42,7 @@ namespace Rendering
       //SSAO
       if (m_ssaoPP.m_enable)
       {
-        m_ssaoPP.Apply(*(context.screenVAO), *(context.camera), *(context.gbuffer));
+        m_ssaoPP.Apply(*(context.screenVAO), *(context.camera), *(context.gbuffer), m_ppUtility);
       }
       else
       {

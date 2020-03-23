@@ -12,6 +12,8 @@
 
 #include <random>
 
+#include "Graphics/Opengl/Postprocess/PostProcessUtility.hpp"
+
 namespace Rendering
 {
   namespace Postprocess
@@ -21,6 +23,8 @@ namespace Rendering
     void SSAO::Init(int width, int height)
     {
       INIT_POSTPROCESSEFFECT();
+      m_resolution = glm::ivec2(width, height);
+
       m_ssaoTexture = Texture::GenerateNullTexture(
         width, height, Texture::Channel::RGB
         , Texture::Channel::RGB, Texture::FilterMode::NEAREST
@@ -85,7 +89,7 @@ namespace Rendering
     }
 
     void SSAO::Apply(VertexArrayObject& screenVAO
-      , CameraObject& camera, GBuffer& gbuffer)
+      , CameraObject& camera, GBuffer& gbuffer, PostProcessUtility& ppUtility)
     {
       //Generate AO
       m_fbo.Bind();
@@ -106,7 +110,7 @@ namespace Rendering
           }
 
           //Uniforms
-          m_ssaoShader.SetUniform("u_intensity", m_intensity);
+          m_ssaoShader.SetUniform("u_power", m_power);
           m_ssaoShader.SetUniform("u_ssaoColor", m_color);
           m_ssaoShader.SetUniform("u_sampleRadius", m_sampleRadius);
           m_ssaoShader.SetUniform("u_bias", m_bias);
@@ -118,7 +122,7 @@ namespace Rendering
       m_fbo.Unbind();
 
       //Blur the AO
-      m_fbo.Bind();
+      /*m_fbo.Bind();
       {
         m_simpleBlur.Bind();
         {
@@ -128,8 +132,11 @@ namespace Rendering
         }
         m_simpleBlur.Unbind();
       }
-      m_fbo.Unbind();
+      m_fbo.Unbind();*/
 
+      glm::vec4 clearColor = glm::vec4{ 1.0f,1.0f,1.0f,1.0f };
+      ppUtility.BlurTarget(clearColor, m_ssaoTexture, screenVAO
+        , m_resolution, 4, true);
     }
 
     void SSAO::Clear(void)

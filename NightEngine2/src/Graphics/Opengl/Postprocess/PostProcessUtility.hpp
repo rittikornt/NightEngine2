@@ -10,6 +10,7 @@
 #include "Graphics/Opengl/FrameBufferObject.hpp"
 
 #include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace Rendering
 {
@@ -21,6 +22,7 @@ namespace Rendering
     struct PostProcessUtility
     {
       glm::ivec2        m_resolution;
+      glm::vec4        m_clearColor;
 
       FrameBufferObject m_temp1Fbo;
       FrameBufferObject m_temp2Fbo;
@@ -38,8 +40,7 @@ namespace Rendering
       void Clear(void);
       
       //! @brief Blur the target Texture
-      void BlurTarget(Texture& target
-        , VertexArrayObject& screenVAO
+      void BlurTarget(glm::vec4 clearColor,Texture& target, VertexArrayObject& screenVAO
         , glm::ivec2 resolution, int iteration, bool useKawase = false);
 
       //! @brief Refresh Texture Uniforms

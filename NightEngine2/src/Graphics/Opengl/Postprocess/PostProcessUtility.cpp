@@ -54,12 +54,12 @@ namespace Rendering
       RefreshTextureUniforms();
     }
 
-    void PostProcessUtility::BlurTarget(Texture& target
-      , VertexArrayObject& screenVAO
-      , glm::ivec2 resolution, int iteration, bool useKawase)
+    void PostProcessUtility::BlurTarget(glm::vec4 clearColor, Texture& target
+      , VertexArrayObject& screenVAO, glm::ivec2 resolution, int iteration, bool useKawase)
     {
       //Render Resolution and clear color
       glViewport(0, 0, m_resolution.x, m_resolution.y);
+      m_clearColor = clearColor;
       Clear();
 
       //Blur the texture
@@ -140,16 +140,14 @@ namespace Rendering
     {
       m_temp1Fbo.Bind();
       {
-        //Clear with black color
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
       }
       m_temp1Fbo.Unbind();
 
       m_temp2Fbo.Bind();
       {
-        //Clear with black color
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
       }
       m_temp2Fbo.Unbind();

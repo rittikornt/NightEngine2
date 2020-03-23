@@ -23,6 +23,8 @@ namespace Rendering
 
   namespace Postprocess
   {
+    struct PostProcessUtility;
+
     //! @brief SSAO struct
     struct SSAO: public PostProcessEffect
     {
@@ -31,7 +33,10 @@ namespace Rendering
         META_REGISTERER_WITHBASE(SSAO, PostProcessEffect
           , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
-          .MR_ADD_MEMBER_PROTECTED(SSAO, m_intensity, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_resolution, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_power, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_blurIteration, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_useKawaseBlur, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_color, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_sampleRadius, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_bias, true)
@@ -44,7 +49,10 @@ namespace Rendering
       Shader            m_simpleBlur;
 
       //Settings
-      int               m_intensity = 5;
+      glm::ivec2        m_resolution;
+      int               m_power = 5;
+      int               m_blurIteration = 4;
+      bool              m_useKawaseBlur = false;
       glm::vec3         m_color{1.0f};
       float             m_sampleRadius = 3.0f;
       float             m_bias = 0.025f;
@@ -61,7 +69,7 @@ namespace Rendering
 
       //! @brief Apply SSAO to the screen texture
       void Apply(VertexArrayObject& screenVAO
-        ,CameraObject& camera, GBuffer& gbuffer);
+        ,CameraObject& camera, GBuffer& gbuffer, PostProcessUtility& ppUtility);
 
       //! @brief Clear Color on fbo texture
       void Clear(void);

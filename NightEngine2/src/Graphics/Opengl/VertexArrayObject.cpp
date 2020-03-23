@@ -278,7 +278,7 @@ namespace Rendering
   void VertexArrayObject::SetupAttributePointer(AttributePointerInfo& attributeInfo)
   {
     GLsizei strideSize = attributeInfo.GetStrideSize();
-    size_t  float4Size = sizeof(float) * 4;
+    const size_t  k_float4Size = sizeof(float) * 4;
 
     //Setup the Attribute Pointer
     GLuint offset = 0;
@@ -298,11 +298,11 @@ namespace Rendering
 
         glBindBuffer(GL_ARRAY_BUFFER, m_instanceBufferID);
 
-        //If bigger than float 4, it need to be separate into N float 4 size
-        if (attributeInfo.m_size[i] > float4Size)
+        //If bigger than float 4, it need to be separate into N float4 size
+        if (attributeInfo.m_size[i] > k_float4Size)
         {
           GLuint instanceOffset = 0;
-          unsigned count = i + (attributeInfo.m_size[i] / float4Size);
+          unsigned count = i + (attributeInfo.m_size[i] / k_float4Size);
           unsigned dimension = attributeInfo.m_dimension[i];
 
           for (unsigned j = i; j < count; ++j)
@@ -319,7 +319,7 @@ namespace Rendering
             glVertexAttribDivisor(j, 1);
 
             dimension -= 4;
-            instanceOffset += float4Size;
+            instanceOffset += k_float4Size;
           }
         }
         else
@@ -341,7 +341,7 @@ namespace Rendering
       else
       {
         //Normal attribute should not be bigger than 4 float
-        ASSERT_TRUE(attributeInfo.m_size[i] <= float4Size);
+        ASSERT_TRUE(attributeInfo.m_size[i] <= k_float4Size);
 
         //Enable and Set Attribute Pointer
         glEnableVertexAttribArray(i);

@@ -158,5 +158,33 @@ namespace Rendering
       static AttributePointerInfo info{ 1, std::vector<unsigned>{3}
       ,  std::vector<size_t>{sizeof(float) * 3}, std::vector<bool>{false} };
     }
+
+    //! @brief Quad Primitive
+    namespace Triangle
+    {
+      static AttributePointerInfo texturedInfo{ 1
+        , std::vector<unsigned>{2}
+      , std::vector<size_t>{sizeof(glm::vec2)}
+      , std::vector<bool>{ false}
+      , std::vector<int>{ 0, 0, 0} };
+
+      //////////////////////////////////////////////////////
+
+      static const std::vector<float> vertices{
+        //Position
+        -1.0f,  -1.0f,   // bottom left
+        1.0f, -1.0f,   // bottom right
+        -1.0f, 1.0f  // top left
+      };
+      static const std::vector<unsigned> indices{
+        0, 1, 2
+      };
+
+      static AttributePointerInfo info{ 1
+        , std::vector<unsigned>{2}
+      , std::vector<size_t>{sizeof(glm::vec2)}
+      , std::vector<bool>{ false}
+      , std::vector<int>{ 0 } };
+    }
   }
 }

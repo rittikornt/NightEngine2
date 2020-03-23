@@ -254,19 +254,24 @@ namespace Rendering
     m_postProcessSetting->Init(width, height);
 
     //Screen Quad
-    m_screenVAO.Init();
-    m_screenVAO.Build(BufferMode::Static, Quad::texturedVertices
+    m_screenQuadVAO.Init();
+    m_screenQuadVAO.Build(BufferMode::Static, Quad::texturedVertices
       , Quad::indices, Quad::texturedInfo);
-    m_screenMaterial.InitShader("Postprocess/finaldraw.vert"
+
+    m_screenTriangleVAO.Init();
+    m_screenTriangleVAO.Build(BufferMode::Static, Triangle::vertices
+      , Triangle::indices, Triangle::info);
+    
+    m_postfxFinalMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Postprocess/finaldraw.frag");
-    m_screenQuadMaterial.InitShader("Debugger/debug_textured.vert"
-      , "Debugger/debug_textured.frag");
+    m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
+      , "Utility/blitCopy.frag");
 
     //************************************************
     // Cubemap
     //************************************************
     //IBL
-    m_ibl.Init(g_camera, m_screenVAO);
+    m_ibl.Init(g_camera, m_screenQuadVAO);
 
     //************************************************
     // Material
@@ -483,8 +488,6 @@ namespace Rendering
 
   /////////////////////////////////////////////////////////////
 
-
-
   void RenderLoopOpengl::Render(void)
   {
     //Clear BG first
@@ -631,7 +634,7 @@ namespace Rendering
         ApplyLight(shader);
 
         //Draw Quad
-        m_screenVAO.Draw();
+        m_screenQuadVAO.Draw();
       }
       m_lightingMaterial.Unbind();
 
@@ -657,7 +660,7 @@ namespace Rendering
     if (enablePostprocess)
     {
       m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
-        , &m_screenVAO, &m_sceneTexture });
+        , &m_screenQuadVAO, &m_sceneTexture });
     }
 
     //*************************************************
@@ -689,9 +692,9 @@ namespace Rendering
     //Draw Screen
     m_sceneFbo.Bind();
     {
-      m_screenMaterial.Bind(false);
+      m_postfxFinalMaterial.Bind(false);
       {
-        Shader& shader = m_screenMaterial.GetShader();
+        Shader& shader = m_postfxFinalMaterial.GetShader();
         shader.SetUniform("u_screenTexture", 0);
         shader.SetUniform("u_bloomTexture", 1);
         shader.SetUniform("u_ssaoTexture", 2);
@@ -711,9 +714,9 @@ namespace Rendering
         }
 
         //g_shadowMapTexture.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-        m_screenVAO.Draw();
+        m_screenTriangleVAO.Draw();
       }
-      m_screenMaterial.Unbind();
+      m_postfxFinalMaterial.Unbind();
 
       //*************************************************
       // Forward Rendering afterward
@@ -754,20 +757,20 @@ namespace Rendering
     //*************************************************
     if (enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
     {
-      m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenVAO
+      m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenQuadVAO
         , m_sceneTexture);
     }
     else
     {
-      m_screenQuadMaterial.Bind(false);
+      m_blitCopyMaterial.Bind(false);
       {
-        m_screenQuadMaterial.GetShader().SetUniform("u_screenTexture", 0);
+        m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
         m_sceneTexture.BindToTextureUnit(0);
 
         //Draw Quad
-        m_screenVAO.Draw();
+        m_screenTriangleVAO.Draw();
       }
-      m_screenQuadMaterial.Unbind();
+      m_blitCopyMaterial.Unbind();
     }
   }
 

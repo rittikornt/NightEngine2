@@ -6,7 +6,6 @@
 
 #pragma once
 #include "Graphics/Opengl/Shader.hpp"
-
 #include <glm/vec2.hpp>
 
 #include "Core/Reflection/ReflectionMacros.hpp"

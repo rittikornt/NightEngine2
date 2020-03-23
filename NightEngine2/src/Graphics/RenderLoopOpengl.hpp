@@ -77,9 +77,10 @@ namespace Rendering
     Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
 
     //Screen Quad
-    VertexArrayObject   m_screenVAO;
-    Material            m_screenMaterial;
-    Material            m_screenQuadMaterial;
+    VertexArrayObject   m_screenQuadVAO;
+    VertexArrayObject   m_screenTriangleVAO;
+    Material            m_postfxFinalMaterial;
+    Material            m_blitCopyMaterial;
 
     //Cubemap IBL
     IBL                 m_ibl;

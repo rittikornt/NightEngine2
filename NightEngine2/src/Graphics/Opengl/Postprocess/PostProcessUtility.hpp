@@ -43,6 +43,10 @@ namespace Rendering
       void BlurTarget(glm::vec4 clearColor,Texture& target, VertexArrayObject& screenVAO
         , glm::ivec2 resolution, int iteration, bool useKawase = false);
 
+      //! @brief Blur the target Texture
+      void BlurTarget(glm::vec4 clearColor, FrameBufferObject& targetFbo, Texture& target, VertexArrayObject& screenVAO
+        , glm::ivec2 resolution, int iteration, bool useKawase = false);
+
       //! @brief Refresh Texture Uniforms
       void RefreshTextureUniforms(void);
     };

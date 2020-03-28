@@ -134,13 +134,13 @@ namespace Rendering
       //  , m_resolution, m_blurIteration, m_useKawaseBlur);
 
       glm::vec4 clearColor = glm::vec4{ 0.0f,0.0f,0.0f,1.0f };
-      ppUtility.BlurTarget(clearColor, m_bloomTexture[1], screenVAO
+      ppUtility.BlurTarget(clearColor, m_bloomFbo[1],m_bloomTexture[1], screenVAO
         , m_resolution / 2, m_blurIteration, m_useKawaseBlur);
-      ppUtility.BlurTarget(clearColor, m_bloomTexture[2], screenVAO
+      ppUtility.BlurTarget(clearColor, m_bloomFbo[2], m_bloomTexture[2], screenVAO
         , m_resolution / 4, m_blurIteration, m_useKawaseBlur);
-      ppUtility.BlurTarget(clearColor, m_bloomTexture[3], screenVAO
+      ppUtility.BlurTarget(clearColor, m_bloomFbo[3], m_bloomTexture[3], screenVAO
         , m_resolution / 8, m_blurIteration, m_useKawaseBlur);
-      ppUtility.BlurTarget(clearColor, m_bloomTexture[4], screenVAO
+      ppUtility.BlurTarget(clearColor, m_bloomFbo[4], m_bloomTexture[4], screenVAO
         , m_resolution / 16, m_blurIteration, m_useKawaseBlur);
 
       //Combine all blurred texture

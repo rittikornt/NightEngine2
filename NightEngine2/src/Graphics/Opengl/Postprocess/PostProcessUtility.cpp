@@ -71,6 +71,10 @@ namespace Rendering
       }
 
       glm::vec2 blurDir = glm::vec2(0, 0);
+      glm::vec2 uvScale = glm::vec2((float)resolution.x/ (float)m_resolution.x
+        , (float)resolution.y/ (float)m_resolution.y);
+
+      glViewport(0, 0, resolution.x, resolution.y);
       for (int i = 0; i < iteration; ++i)
       {
         FrameBufferObject& fbo = i % 2 == 0 ? m_temp1Fbo : m_temp2Fbo;
@@ -90,16 +94,19 @@ namespace Rendering
               blurShader.SetUniform("u_dir", blurDir);
             }
 
-            //In first pass, fits the smaller size texture into screen resolution
             if (i == 0)
             {
+              //In first pass, fits the variable sized texture into screen resolution texture
               target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-              glViewport(0, 0, resolution.x, resolution.y);
+              blurShader.SetUniform("u_uvScale", glm::vec2(1.0f, 1.0f));
+
             }
             else
             {
+              //Blurring the whole texture at the target resolution
+              //Must modify sampling UV to match the portion of the screen resolution texture you want to sample
               tex.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-              glViewport(0, 0, m_resolution.x, m_resolution.y);
+              blurShader.SetUniform("u_uvScale", uvScale);
             }
 
             //Render
@@ -114,6 +121,70 @@ namespace Rendering
       FrameBufferObject& fbo = (iteration - 1) % 2 == 0 ? m_temp1Fbo : m_temp2Fbo;
       fbo.CopyToTexture(target
         , resolution.x, resolution.y);
+    }
+
+    void PostProcessUtility::BlurTarget(glm::vec4 clearColor, FrameBufferObject& targetFbo, Texture& target, VertexArrayObject& screenVAO, glm::ivec2 resolution, int iteration, bool useKawase)
+    {
+      //Render Resolution and clear color
+      glViewport(0, 0, m_resolution.x, m_resolution.y);
+      m_clearColor = clearColor;
+      Clear();
+
+      //Blur the texture
+      Shader& blurShader = useKawase ? m_kawaseBlurShader : m_blurShader;
+      if (useKawase)
+      {
+        const int k_maxBlurIteration = 4;
+        iteration = std::min(iteration, k_maxBlurIteration);
+      }
+
+      glm::vec2 blurDir = glm::vec2(0, 0);
+      glm::vec2 uvScale = glm::vec2((float)resolution.x / (float)m_resolution.x
+        , (float)resolution.y / (float)m_resolution.y);
+
+      glViewport(0, 0, resolution.x, resolution.y);
+      for (int i = 0; i < iteration; ++i)
+      {
+        //Draw to the target FBO for last iteration, or else just pingponging
+        FrameBufferObject& fbo = (i == iteration-1) ? targetFbo :
+          (i % 2 == 0 ? m_temp1Fbo : m_temp2Fbo);
+        Texture& tex = i % 2 == 0 ? m_target2Texture : m_target1Texture;
+        fbo.Bind();
+        {
+          blurShader.Bind();
+          {
+            //Set Uniforms for different blur shader
+            if (useKawase)
+            {
+              blurShader.SetUniform("u_iteration", i);
+            }
+            else
+            {
+              blurDir = glm::vec2((i + 1) % 2, i % 2);
+              blurShader.SetUniform("u_dir", blurDir);
+            }
+
+            if (i == 0)
+            {
+              //In first pass, fits the variable sized texture into screen resolution texture
+              target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
+              blurShader.SetUniform("u_uvScale", glm::vec2(1.0f, 1.0f));
+            }
+            else
+            {
+              //Blurring the whole texture at the target resolution
+              //Must modify sampling UV to match the portion of the screen resolution texture you want to sample
+              tex.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
+              blurShader.SetUniform("u_uvScale", uvScale);
+            }
+
+            //Render
+            screenVAO.Draw();
+          }
+          blurShader.Unbind();
+        }
+        fbo.Unbind();
+      }
     }
 
     void PostProcessUtility::Clear(void)

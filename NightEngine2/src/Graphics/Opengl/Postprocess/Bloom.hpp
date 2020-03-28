@@ -39,7 +39,8 @@ namespace Rendering
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurIteration, true);
       }
       //Members
-      FrameBufferObject m_bloomFbo;
+      FrameBufferObject m_targetFbo;
+      FrameBufferObject m_bloomFbo[k_bloomPyramidCount];
       Texture           m_targetTexture;
       Texture           m_bloomTexture[k_bloomPyramidCount];
       glm::ivec2        m_resolution;

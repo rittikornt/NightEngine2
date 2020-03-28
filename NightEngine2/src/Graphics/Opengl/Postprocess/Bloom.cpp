@@ -20,7 +20,7 @@ namespace Rendering
       INIT_POSTPROCESSEFFECT();
       m_resolution.x = width, m_resolution.y = height;
 
-      //Buffers for 5 down scaled version
+      //FBO for 5 down scaled version
       glm::ivec2 renderSize{ m_resolution };
       for (int i = 0; i < k_bloomPyramidCount; ++i)
       {
@@ -28,18 +28,26 @@ namespace Rendering
           , Texture::Channel::RGBA16F, Texture::Channel::RGBA
           , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
+        m_bloomFbo[i].Init();
+        m_bloomFbo[i].AttachTexture(m_bloomTexture[i]);
+        m_bloomFbo[i].Bind();
+        m_bloomFbo[i].Unbind();
+
         renderSize /= 2;
       }
 
-      //FBO Target
-      m_targetTexture = Texture::GenerateNullTexture(m_resolution.x, m_resolution.y
-        , Texture::Channel::RGBA16F, Texture::Channel::RGBA
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
-      m_bloomFbo.Init();
-      m_bloomFbo.AttachTexture(m_targetTexture);
-      m_bloomFbo.Bind();
-      m_bloomFbo.Unbind();
+      //FBO Target
+      {
+        m_targetTexture = Texture::GenerateNullTexture(m_resolution.x, m_resolution.y
+          , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+          , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+
+        m_targetFbo.Init();
+        m_targetFbo.AttachTexture(m_targetTexture);
+        m_targetFbo.Bind();
+        m_targetFbo.Unbind();
+      }
 
       //Shaders
       m_thresholdShader.Create();
@@ -69,13 +77,15 @@ namespace Rendering
     {
       //Render 5 versions of downsample threshold color
       glDisable(GL_DEPTH_TEST);
+
+      //Render the Threshold screen texture
       glm::ivec2 renderSize{ m_resolution };
       {
         //Adjust resolution scale
         glViewport(0, 0, renderSize.x, renderSize.y);
 
-        //Threshold Shader
-        m_bloomFbo.Bind();
+        //Threshold Shader for Mip0
+        m_bloomFbo[0].Bind();
         {
           glClear(GL_COLOR_BUFFER_BIT);
 
@@ -89,11 +99,8 @@ namespace Rendering
           }
           m_thresholdShader.Unbind();
         }
-        m_bloomFbo.Unbind();
+        m_bloomFbo[0].Unbind();
 
-        //Copy and scale down the size
-        m_bloomFbo.CopyToTexture(m_bloomTexture[0]
-          , renderSize.x, renderSize.y);
         renderSize /= 2;
       }
 
@@ -104,7 +111,7 @@ namespace Rendering
         glViewport(0, 0, renderSize.x, renderSize.y);
 
         //Threshold Shader
-        m_bloomFbo.Bind();
+        m_bloomFbo[i].Bind();
         {
           glClear(GL_COLOR_BUFFER_BIT);
 
@@ -116,11 +123,8 @@ namespace Rendering
           }
           m_blitCopyShader.Unbind();
         }
-        m_bloomFbo.Unbind();
+        m_bloomFbo[i].Unbind();
 
-        //Copy and scale down the size
-        m_bloomFbo.CopyToTexture(m_bloomTexture[i]
-          , renderSize.x, renderSize.y);
         renderSize /= 2;
       }
 
@@ -141,7 +145,7 @@ namespace Rendering
 
       //Combine all blurred texture
       glViewport(0, 0, m_resolution.x, m_resolution.y);
-      m_bloomFbo.Bind();
+      m_targetFbo.Bind();
       {
         glClear(GL_COLOR_BUFFER_BIT);
         m_bloomShader.Bind();
@@ -158,18 +162,18 @@ namespace Rendering
         }
         m_bloomShader.Unbind();
       }
-      m_bloomFbo.Unbind();
+      m_targetFbo.Unbind();
     }
 
     void Bloom::Clear(void)
     {
-      m_bloomFbo.Bind();
+      m_targetFbo.Bind();
       {
         //Clear with black color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
       }
-      m_bloomFbo.Unbind();
+      m_targetFbo.Unbind();
     }
 
     void Bloom::RefreshTextureUniforms(void)

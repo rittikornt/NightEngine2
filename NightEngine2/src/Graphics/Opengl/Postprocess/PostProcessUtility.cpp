@@ -63,71 +63,51 @@ namespace Rendering
       Clear();
 
       //Blur the texture
+      Shader& blurShader = useKawase? m_kawaseBlurShader: m_blurShader;
       if (useKawase)
       {
         const int k_maxBlurIteration = 4;
         iteration = std::min(iteration, k_maxBlurIteration);
-        for (int i = 0; i < iteration; ++i)
-        {
-          FrameBufferObject& fbo = i % 2 == 0 ? m_temp1Fbo : m_temp2Fbo;
-          Texture& tex = i % 2 == 0 ? m_target2Texture : m_target1Texture;
-          fbo.Bind();
-          {
-            m_kawaseBlurShader.Bind();
-            {
-              m_kawaseBlurShader.SetUniform("u_iteration", i);
-
-              if (i == 0)
-              {
-                target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-                glViewport(0, 0, resolution.x, resolution.y);
-              }
-              else
-              {
-                tex.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-                glViewport(0, 0, m_resolution.x, m_resolution.y);
-              }
-
-              //Render
-              screenVAO.Draw();
-            }
-            m_kawaseBlurShader.Unbind();
-          }
-          fbo.Unbind();
-        }
       }
-      else
+
+      glm::vec2 blurDir = glm::vec2(0, 0);
+      for (int i = 0; i < iteration; ++i)
       {
-        glm::vec2 blurDir = glm::vec2(0, 0);
-        for (int i = 0; i < iteration; ++i)
+        FrameBufferObject& fbo = i % 2 == 0 ? m_temp1Fbo : m_temp2Fbo;
+        Texture& tex = i % 2 == 0 ? m_target2Texture : m_target1Texture;
+        fbo.Bind();
         {
-          FrameBufferObject& fbo = i % 2 == 0 ? m_temp1Fbo : m_temp2Fbo;
-          Texture& tex = i % 2 == 0 ? m_target2Texture : m_target1Texture;
-          fbo.Bind();
+          blurShader.Bind();
           {
-            m_blurShader.Bind();
+            //Set Uniforms for different blur shader
+            if (useKawase)
+            {
+              blurShader.SetUniform("u_iteration", i);
+            }
+            else
             {
               blurDir = glm::vec2((i + 1) % 2, i % 2);
-              m_blurShader.SetUniform("u_dir", blurDir);
-
-              if (i == 0)
-              {
-                target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-                glViewport(0, 0, resolution.x, resolution.y);
-              }
-              else
-              {
-                tex.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
-                glViewport(0, 0, m_resolution.x, m_resolution.y);
-              }
-
-              //Render
-              screenVAO.Draw();
+              blurShader.SetUniform("u_dir", blurDir);
             }
-            m_blurShader.Unbind();
+
+            //In first pass, fits the smaller size texture into screen resolution
+            if (i == 0)
+            {
+              target.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
+              glViewport(0, 0, resolution.x, resolution.y);
+            }
+            else
+            {
+              tex.BindToTextureUnit(Texture::TextureUnit::TEXTURE_0);
+              glViewport(0, 0, m_resolution.x, m_resolution.y);
+            }
+
+            //Render
+            screenVAO.Draw();
           }
-          fbo.Unbind();
+          blurShader.Unbind();
         }
+        fbo.Unbind();
       }
 
       //Copy back to target

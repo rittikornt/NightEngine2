@@ -36,6 +36,7 @@
 #include "Core/EC/GameObject.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Core/GameTime.hpp"
+#include "Core/Serialization/FileSystem.hpp"
 
 //Math
 #include <glm/vec3.hpp>
@@ -68,7 +69,8 @@ namespace Editor
   static Hierarchy g_hierarchy;
 
   //Confirmation box
-  static ConfirmationBox g_confirmBox{ ConfirmationBox::BoxType::Popup};
+  static ConfirmationBox g_confirmBox{ ConfirmationBox::WindowType::Popup};
+  static ConfirmationBox g_comboBox{ ConfirmationBox::WindowType::Popup};
 
   /////////////////////////////////////////////////////////////////////////
   
@@ -149,15 +151,21 @@ namespace Editor
       SceneManager::CreateEmptyScene("New_Scene");
       Debug::Log << Logger::MessageType::INFO << "New Scene\n";
     }
+
+
     if (ImGui::MenuItem("Open", "Ctrl+O")) 
     {
-      g_confirmBox.ShowConfirmationBoxWithInput("Open Scene: ",
+      static std::vector<std::string> s_paths;
+      FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Scenes, s_paths
+      , FileSystem::FileFilter::FileName, ".nscene", true);
+
+      g_comboBox.SetWindowName("Open Scene");
+      g_comboBox.ShowConfirmationBoxWithComboBox("Open Scene: ",
         [](void* inputChars)
       {
-        char* inputName = reinterpret_cast<char*>(inputChars);
-
-        auto scenes = SceneManager::LoadScene(inputName);
-      });
+        std::string sceneName = g_comboBox.GetSelectedComboBox();
+        auto scenes = SceneManager::LoadScene(sceneName);
+      }, s_paths);
     }
     /*if (ImGui::BeginMenu("Open Recent"))
     {
@@ -176,6 +184,7 @@ namespace Editor
     }
     if (ImGui::MenuItem("Save As..")) 
     {
+      g_confirmBox.SetWindowName("Save Scene As..");
       g_confirmBox.ShowConfirmationBoxWithInput("Save As: ",
         [](void* inputChars)
       {
@@ -228,7 +237,7 @@ namespace Editor
     //Quit with confirm box
     if (ImGui::MenuItem("Quit", "EC")) 
     {
-      g_confirmBox.ShowConfirmationBox("Test", 
+      g_confirmBox.ShowConfirmationBox("Are you sure you want to Quit", 
       [](void)
       {
         Window::SetWindowShouldClose(true);
@@ -385,6 +394,7 @@ namespace Editor
     g_inspector.Update(g_memberSerializer, g_hierarchy);
 
     g_confirmBox.Update();
+    g_comboBox.Update();
     g_devConsole.Update();
     g_postprocessSetting.Update(g_memberSerializer);
 
@@ -411,7 +421,7 @@ namespace Editor
     //Quit
     if (Input::GetKeyDown(Input::KeyCode::KEY_ESCAPE))
     {
-      g_confirmBox.ShowConfirmationBox("Quit", [](void)
+      g_confirmBox.ShowConfirmationBox("Are you sure you want to Quit", [](void)
       {
         Window::SetWindowShouldClose(true);
       });

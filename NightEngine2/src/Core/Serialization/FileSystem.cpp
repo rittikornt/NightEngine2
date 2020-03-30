@@ -8,6 +8,8 @@
 #include "Core/Macros.hpp"
 #include <sys/stat.h>
 
+#include <filesystem>	//Required C++17
+
 namespace NightEngine
 {
 	namespace FileSystem
@@ -49,6 +51,58 @@ namespace NightEngine
 				(std::istreambuf_iterator<char>()));
 		}
 
+		void GetAllFilesInDirectory(DirectoryType dir, std::vector<std::string>& output
+			, FileFilter filter, std::string extension, bool removeExtension)
+		{
+			output.clear();
+			std::string path = GetFilePath("", dir);
+			for (const auto& entry : std::filesystem::directory_iterator(path))
+			{
+				auto filePath = entry.path().string();
+				if (filePath.find(extension) != std::string::npos)
+				{
+					output.emplace_back(filePath);
+				}
+			}
+
+			//Filtering
+			switch (filter)
+			{
+			case NightEngine::FileSystem::FileFilter::FileName:
+			{
+				for (int i = 0; i < output.size(); ++i)
+				{
+					auto pos = output[i].find_last_of('/') + 1;
+					if (pos < output[i].size())
+					{
+						auto fileNameWithExtension = output[i].substr(pos);
+						output[i] = fileNameWithExtension;
+					}
+				}
+				break;
+			}
+			case NightEngine::FileSystem::FileFilter::FullPath:
+			{
+				//Do nothing
+				break;
+			}
+			}
+
+			//Extension Parsing
+			if (removeExtension)
+			{
+				for (int i = 0; i < output.size(); ++i)
+				{
+					auto pos = output[i].find_last_of('.');
+					if (pos > 0)
+					{
+						auto fileName = output[i].substr(0, pos);
+						output[i] = fileName;
+					}
+				}
+			}
+		}
+
 		/////////////////////////////////////////////////////////////////////
 
 		bool IsFileExist(Container::String fileName, DirectoryType dir)
@@ -58,7 +112,7 @@ namespace NightEngine
 			return (stat(path.c_str(), &buffer) == 0);
 		}
 
-		Container::String GetFilePath(const Container::String & fileName, DirectoryType dir)
+		Container::String GetFilePath(const Container::String& fileName, DirectoryType dir)
 		{
       Container::String path{ dir == DirectoryType::Script ? PROJECT_DIR_SOURCE : PROJECT_DIR_SOURCE_ASSETS };
       path += g_dirSubPath[static_cast<unsigned>(dir)];

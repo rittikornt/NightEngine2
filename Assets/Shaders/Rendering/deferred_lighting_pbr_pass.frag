@@ -28,11 +28,11 @@ uniform GBufferResult u_gbufferResult;
 struct LightInfo
 {
   vec3 	m_position;
-	vec3	m_direction;
+  vec3	m_direction;
   vec3 	m_color;
   float m_intensity;		//For directional/pointlight
-	float m_innerCutOff;	//For spotlight
-	float m_outerCutOff;
+  float m_innerCutOff;	//For spotlight
+  float m_outerCutOff;
 };
 
 #define POINTLIGHT_NUM 4
@@ -46,11 +46,11 @@ uniform samplerCube u_shadowMap[POINTLIGHT_NUM];
 uniform float       u_farPlane;
 
 //IBL
-uniform float				u_ambientStrength = 0.6f;
-uniform samplerCube u_irradianceMap;
+uniform float			u_ambientStrength = 0.6f;
+uniform samplerCube 	u_irradianceMap;
 
 //Specular IBL
-uniform samplerCube u_prefilterMap;
+uniform samplerCube 	u_prefilterMap;
 uniform sampler2D		u_brdfLUT;
 
 //***************************************
@@ -107,7 +107,7 @@ void main()
 	}
 	normal = normalize(normal);
 
-  //Sample Values from G-buffer
+    //Sample Values from G-buffer
 	vec3 fragPos = texture(u_gbufferResult.m_positionTex, OurTexCoords).rgb;
 	vec4 diffuse = texture(u_gbufferResult.m_albedoTex, OurTexCoords);
 	vec3 specularTex = texture(u_gbufferResult.m_specularTex, OurTexCoords).rgb;

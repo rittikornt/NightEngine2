@@ -18,9 +18,9 @@ namespace Editor
   {
     if (m_show)
     {
-      switch (m_boxtype)
+      switch (m_windowtype)
       {
-        case Editor::ConfirmationBox::BoxType::Normal:
+        case Editor::ConfirmationBox::WindowType::Static:
         {
           auto size = ImVec2(300, 100);
           auto pos = ImVec2((Window::GetWidth()* 0.5f) - (size.x * 0.5f)
@@ -34,12 +34,13 @@ namespace Editor
             ImGui::TextWrapped(m_text.c_str());
             ImGui::Separator();
 
-            DrawBoxField();
+            DrawBoxContent();
+            DrawConfirmOption();
           }
           ImGui::End();
           break;
         }
-        case Editor::ConfirmationBox::BoxType::Popup:
+        case Editor::ConfirmationBox::WindowType::Popup:
         {
           auto size = ImVec2(300, 100);
           auto pos = ImVec2((Window::GetWidth()* 0.5f) - (size.x * 0.5f)
@@ -54,7 +55,8 @@ namespace Editor
             ImGui::TextWrapped(m_text.c_str());
             ImGui::Separator();
 
-            DrawBoxField();
+            DrawBoxContent();
+            DrawConfirmOption();
 
             ImGui::EndPopup();
           }
@@ -64,110 +66,21 @@ namespace Editor
     }
   }
 
-  void ConfirmationBox::DrawBoxField(void)
-  {
-    switch (m_boxfield)
-    {
-      case BoxField::Single:
-      {
-        ASSERT_TRUE(m_callback != nullptr);
-        if (ImGui::Button("Ok", ImVec2(120, 0)))
-        {
-          m_show = false;
-          if (m_boxtype == ConfirmationBox::BoxType::Popup)
-          {
-            ImGui::CloseCurrentPopup();
-          }
-
-          //Callback
-          if (m_callback != nullptr)
-          {
-            m_callback();
-          }
-        }
-        break;
-      }
-      case BoxField::Double:
-      {
-        ASSERT_TRUE(m_callback != nullptr);
-        if (ImGui::Button("Yes", ImVec2(120, 0)))
-        {
-          m_show = false;
-          if (m_boxtype == ConfirmationBox::BoxType::Popup)
-          {
-            ImGui::CloseCurrentPopup();
-          }
-
-          //Callback
-          if (m_callback != nullptr)
-          {
-            m_callback();
-          }
-        }
-        ImGui::SetItemDefaultFocus();
-        ImGui::SameLine();
-        if (ImGui::Button("No", ImVec2(120, 0)))
-        {
-          m_show = false;
-
-          if (m_boxtype == ConfirmationBox::BoxType::Popup)
-          {
-            ImGui::CloseCurrentPopup();
-          }
-        }
-        break;
-      }
-      case BoxField::DoubleWithInput:
-      {
-        ASSERT_TRUE(m_callback1Param != nullptr);
-
-        ImGui::InputText("", m_inputBuffer, 64, ImGuiInputTextFlags_CharsNoBlank);
-
-        //TODO: Can't click yes if buf is empty
-        if (ImGui::Button("Yes", ImVec2(120, 0))
-          && strlen(m_inputBuffer) != 0)
-        {
-          m_show = false;
-          if (m_boxtype == ConfirmationBox::BoxType::Popup)
-          {
-            ImGui::CloseCurrentPopup();
-          }
-
-          //Callback
-          if (m_callback1Param != nullptr)
-          {
-            m_callback1Param(m_inputBuffer);
-            memset(m_inputBuffer, 0, sizeof(m_inputBuffer));
-          }
-        }
-        ImGui::SetItemDefaultFocus();
-        ImGui::SameLine();
-        if (ImGui::Button("No", ImVec2(120, 0)))
-        {
-          m_show = false;
-
-          if (m_boxtype == ConfirmationBox::BoxType::Popup)
-          {
-            ImGui::CloseCurrentPopup();
-          }
-        }
-        break;
-      }
-    }
-
-  }
+  ////////////////////////////////////////////////////////
 
   void ConfirmationBox::ShowConfirmationBox(char * desc
-    , CallBack callback, BoxField field)
+    , CallBack callback, BoxConfirmOption confirmOption)
   {
     m_show = true;
 
     m_confirmationText = desc;
-    m_text = "Are you sure you want to ";
+    m_text = "";
     m_text += desc;
 
     m_callback = callback;
-    m_boxfield = field;
+    m_boxConfirmOption = confirmOption;
+    m_boxContent = BoxContent::None;
+    m_boxConfirmOption = BoxConfirmOption::Double;
   }
 
   void ConfirmationBox::ShowConfirmationBoxWithInput(char * desc
@@ -176,10 +89,163 @@ namespace Editor
     m_show = true;
 
     m_confirmationText = desc;
-    m_text = "Are you sure you want to ";
+    m_text = "";
     m_text += desc;
 
     m_callback1Param = callback;
-    m_boxfield = BoxField::DoubleWithInput;
+    m_boxContent = BoxContent::TextInput;
+    m_boxConfirmOption = BoxConfirmOption::DoubleWithCallback;
+  }
+
+  void ConfirmationBox::ShowConfirmationBoxWithComboBox(char* desc
+    , CallBack1Param callback, std::vector<std::string>& items)
+  {
+    m_show = true;
+
+    m_confirmationText = desc;
+    m_text = "";
+    m_text += desc;
+
+    m_callback1Param = callback;
+    m_boxContent = BoxContent::ComboBox;
+    m_boxConfirmOption = BoxConfirmOption::DoubleWithCallback;
+
+    m_items = items;
+    m_itemsPtr.clear();
+    for (int i=0; i < m_items.size(); ++i)
+    {
+      m_itemsPtr.emplace_back(m_items[i].c_str());
+    }
+  }
+
+  bool ConfirmationBox::IsValidInput(void) const
+  {
+    switch (m_boxContent)
+    {
+      case BoxContent::TextInput:
+      {
+        return strlen(m_inputBuffer) != 0;
+      }
+      case BoxContent::ComboBox:
+      {
+        return m_currentItem < m_itemsPtr.size();
+      }
+    }
+
+    return false;
+  }
+
+  ////////////////////////////////////////////////////////
+
+  void ConfirmationBox::DrawConfirmOption(void)
+  {
+    switch (m_boxConfirmOption)
+    {
+    case BoxConfirmOption::Single:
+    {
+      ASSERT_TRUE(m_callback != nullptr);
+      if (ImGui::Button("Ok", ImVec2(120, 0)))
+      {
+        m_show = false;
+        if (m_windowtype == ConfirmationBox::WindowType::Popup)
+        {
+          ImGui::CloseCurrentPopup();
+        }
+
+        //Callback
+        if (m_callback != nullptr)
+        {
+          m_callback();
+        }
+      }
+      break;
+    }
+    case BoxConfirmOption::Double:
+    {
+      ASSERT_TRUE(m_callback != nullptr);
+      if (ImGui::Button("Yes", ImVec2(120, 0)))
+      {
+        m_show = false;
+        if (m_windowtype == ConfirmationBox::WindowType::Popup)
+        {
+          ImGui::CloseCurrentPopup();
+        }
+
+        //Callback
+        if (m_callback != nullptr)
+        {
+          m_callback();
+        }
+      }
+      ImGui::SetItemDefaultFocus();
+      ImGui::SameLine();
+      if (ImGui::Button("No", ImVec2(120, 0)))
+      {
+        m_show = false;
+
+        if (m_windowtype == ConfirmationBox::WindowType::Popup)
+        {
+          ImGui::CloseCurrentPopup();
+        }
+      }
+      break;
+    }
+    case BoxConfirmOption::DoubleWithCallback:
+    {
+      ASSERT_TRUE(m_callback1Param != nullptr);
+
+      //TODO: Can't click yes if buf is empty
+      if (ImGui::Button("Yes", ImVec2(120, 0))
+        && IsValidInput())
+      {
+        m_show = false;
+        if (m_windowtype == ConfirmationBox::WindowType::Popup)
+        {
+          ImGui::CloseCurrentPopup();
+        }
+
+        //Callback
+        if (m_callback1Param != nullptr)
+        {
+          m_callback1Param(m_inputBuffer);
+          memset(m_inputBuffer, 0, sizeof(m_inputBuffer));
+        }
+      }
+      ImGui::SetItemDefaultFocus();
+      ImGui::SameLine();
+      if (ImGui::Button("No", ImVec2(120, 0)))
+      {
+        m_show = false;
+
+        if (m_windowtype == ConfirmationBox::WindowType::Popup)
+        {
+          ImGui::CloseCurrentPopup();
+        }
+      }
+      break;
+    }
+    }
+  }
+
+  void ConfirmationBox::DrawBoxContent(void)
+  {
+    switch (m_boxContent)
+    {
+    case BoxContent::None:
+    {
+      break;
+    }
+    case BoxContent::TextInput:
+    {
+      ImGui::InputText("", m_inputBuffer, 64, ImGuiInputTextFlags_CharsNoBlank);
+      break;
+    }
+    case BoxContent::ComboBox:
+    {
+      ImGui::Combo("select", &m_currentItem, m_itemsPtr.data(), m_itemsPtr.size());
+      break;
+    }
+    }
+
   }
 }

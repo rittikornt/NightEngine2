@@ -34,7 +34,7 @@ namespace Editor
   static ImVec4 g_color_green = ImVec4(0.165f, 0.86f, 0.33f, 1.0f);
 
   //Confirmation Box
-  static ConfirmationBox g_confirmBox{ConfirmationBox::BoxType::Popup };
+  static ConfirmationBox g_confirmBox{ConfirmationBox::WindowType::Popup };
   static std::string     g_confirmBoxDesc{ "" };
 
   //Component/GameObject Editor Shared States

@@ -22,16 +22,16 @@ struct Material
   sampler2D 	m_diffuseMap;
   
   sampler2D 	m_normalMap;
-  float       m_normalMultiplier;
+  float         m_normalMultiplier;
 
   sampler2D 	m_roughnessMap;
-	float 			m_roughnessValue;
+  float 		m_roughnessValue;
 
-	sampler2D		m_metallicMap;
-	float 			m_metallicValue;
+  sampler2D		m_metallicMap;
+  float 		m_metallicValue;
 	
   sampler2D 	m_emissiveMap;
-	float				m_emissiveStrength;
+  float			m_emissiveStrength;
 };
 uniform Material u_material;
 uniform vec3		 u_diffuseColor = vec3(1.0f);
@@ -46,19 +46,19 @@ void main()
 	//Position
 	o_position = fs_in.ourFragPos;
 
-  //Sample Normal map
-  vec3 normal = fs_in.ourFragNormal;
-  if(u_useNormalmap)
-  {
-    normal = (texture(u_material.m_normalMap, fs_in.ourTexCoord).rgb);
+	//Sample Normal map
+	vec3 normal = fs_in.ourFragNormal;
+	if(u_useNormalmap)
+	{
+		normal = (texture(u_material.m_normalMap, fs_in.ourTexCoord).rgb);
 
-    //Remap to range [-1,1]
-    normal = normalize(normal * 2.0 - 1.0);
-    normal.xz *= u_material.m_normalMultiplier;
+		//Remap to range [-1,1]
+		normal = normalize(normal * 2.0 - 1.0);
+		normal.xz *= u_material.m_normalMultiplier;
 
-    //Transform to world space
-    normal = normalize(fs_in.ourTBNMatrix * normal);
-  }
+		//Transform to world space
+		normal = normalize(fs_in.ourTBNMatrix * normal);
+	}
 	o_normal = normal;
 
 	//Albedo

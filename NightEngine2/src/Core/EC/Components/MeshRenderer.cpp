@@ -68,7 +68,7 @@ namespace NightEngine
         {
           case DrawMode::STATIC:
           {
-            ASSERT_MSG(m_material != nullptr
+            ASSERT_MSG(m_material.IsValid()
             , "m_material is required to register instanceDrawer");
 
             InstanceDrawer::RegisterInstance(*this);
@@ -157,7 +157,7 @@ namespace NightEngine
 
       void MeshRenderer::DrawWithMaterial(void)
       {
-        ASSERT_TRUE(m_material != nullptr);
+        ASSERT_TRUE(m_material.IsValid());
 
         m_material->Bind(true);
         {

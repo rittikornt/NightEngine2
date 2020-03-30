@@ -14,6 +14,7 @@ namespace NightEngine
   {
     class Variable;
     class Member;
+    class MetaType;
   }
 }
 
@@ -29,6 +30,10 @@ namespace Editor
     //! @brief Draw the editor for member
     bool DrawMemberEditor(NightEngine::Reflection::Member& member
       , void* dataObject, const std::string& nameMingle = "");
+
+    //! @brief Draw the editor for member
+    bool DrawMetaTypeEditor(NightEngine::Reflection::MetaType* metaType, void* dataObject
+      , const std::string& nameMingle);
   private:
     struct StringHash 
 		{

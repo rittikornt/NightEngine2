@@ -48,7 +48,6 @@ namespace NightEngine
 {
   namespace Reflection
   {
-
     void Initialize()
     {
 			Debug::Log << "ReflectionCore::Initialize\n";
@@ -117,6 +116,16 @@ namespace NightEngine
         {
           ADD_MEMBER_PUBLIC(Color4, m_value);
         }
+      }
+
+      //***********************************************
+      //	Material
+      //***********************************************
+      {
+        using namespace Rendering;
+        using namespace NightEngine::EC;
+        REGISTER_METATYPE_WITH_SERIALIZER(Handle<Material>, true
+          , nullptr, nullptr);
       }
 
       //***********************************************

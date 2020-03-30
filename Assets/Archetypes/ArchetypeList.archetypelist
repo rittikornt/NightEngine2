@@ -2,9 +2,6 @@
   "ArchetypeList": {
     "m_archetypes": {
       "Box": {
-        "m_componentTypes": [
-          "MeshRenderer"
-        ],
         "m_name": "Box"
       },
       "Dirlight": {

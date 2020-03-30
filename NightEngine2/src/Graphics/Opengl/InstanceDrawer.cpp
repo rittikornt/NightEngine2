@@ -196,25 +196,28 @@ namespace Rendering
       //(Material + MeshName?) as Signature
       auto& meshes = meshRenderer.GetMeshes();
       auto  mat = meshRenderer.GetMaterial();
-      InstanceSignature signature{ mat->GetShader().GetProgramID()
-      , meshRenderer.GetPolygonCount() };
-
-      const char* ptr = reinterpret_cast<const char*>(&signature);
-      U64 key = NightEngine::Container::ConvertToHash(ptr, sizeof(InstanceSignature));
-
-      //Initialize
-      auto it = map.find(key);
-      if (it != map.end())
+      if (mat != nullptr)
       {
-        auto mrHandle = meshRenderer.GetHandle();
-        auto& meshHandles = it->second.m_meshrenderers;
-        for (auto it = meshHandles.begin();
-          it != meshHandles.end(); ++it)
+        InstanceSignature signature{ mat->GetShader().GetProgramID()
+        , meshRenderer.GetPolygonCount() };
+
+        const char* ptr = reinterpret_cast<const char*>(&signature);
+        U64 key = NightEngine::Container::ConvertToHash(ptr, sizeof(InstanceSignature));
+
+        //Initialize
+        auto it = map.find(key);
+        if (it != map.end())
         {
-          if (*it == mrHandle)
+          auto mrHandle = meshRenderer.GetHandle();
+          auto& meshHandles = it->second.m_meshrenderers;
+          for (auto it = meshHandles.begin();
+            it != meshHandles.end(); ++it)
           {
-            meshHandles.erase(it);
-            break;
+            if (*it == mrHandle)
+            {
+              meshHandles.erase(it);
+              break;
+            }
           }
         }
       }

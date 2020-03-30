@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Graphics/IRenderLoop.hpp"
+#include "Core/EC/Handle.hpp"
 
 //FrameBuffer Test
 #include "Graphics/Opengl/FrameBufferObject.hpp"
@@ -77,21 +78,21 @@ namespace Rendering
     Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
 
     //FullScreen Postfx
-    VertexArrayObject   m_screenTriangleVAO;
-    Material            m_postfxFinalMaterial;
-    Material            m_blitCopyMaterial;
-
-    //Cubemap IBL
-    IBL                 m_ibl;
+    VertexArrayObject                  m_screenTriangleVAO;
+    Material                           m_postfxFinalMaterial;
+    Material                           m_blitCopyMaterial;
+                                       
+    //Cubemap IBL                      
+    IBL                                m_ibl;
 
     //Material
-    Material*           m_defaultMaterial;
-    Material            m_lightingMaterial;
-    Material            m_normalDebug;
+    NightEngine::EC::Handle<Material>  m_defaultMaterial;
+    Material                           m_lightingMaterial;
+    Material                           m_normalDebug;
 
     //Light
-    Material*            m_billboardMaterial;
-    Texture              m_lightTexture;
+    NightEngine::EC::Handle<Material>  m_billboardMaterial;
+    Texture                            m_lightTexture;
   };
 } // Rendering
 

@@ -272,9 +272,10 @@ namespace Rendering
     //************************************************
     // Material
     //************************************************
-    m_defaultMaterial = &(SceneManager::GetDefaultMaterial());
+    m_defaultMaterial = (SceneManager::GetDefaultMaterial());
     m_defaultMaterial->InitShader("Rendering/deferred_geometry_pass.vert"
       , "Rendering/deferred_geometry_pass.frag");
+    m_defaultMaterial->SetName("DefaultMaterial");
 
     m_defaultMaterial->InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
@@ -329,9 +330,11 @@ namespace Rendering
     m_normalDebug.Unbind();
 
     //Debug material
-    m_billboardMaterial = &(SceneManager::GetBillBoardMaterial());
+    m_billboardMaterial = (SceneManager::GetBillBoardMaterial());
     m_billboardMaterial->InitShader("Debugger/debug_billboard.vert"
       , "Debugger/debug_fragment.frag");
+    m_billboardMaterial->SetName("BillboardMaterial");
+
     m_billboardMaterial->Bind(false);
     m_billboardMaterial->GetShader().SetUniform("u_color", glm::vec3(1.0f));
     m_billboardMaterial->Unbind();

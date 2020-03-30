@@ -15,6 +15,8 @@
 #include "Graphics/Opengl/Model.hpp"
 #include "Graphics/Opengl/Material.hpp"
 
+#include "Core/EC/Factory.hpp"
+
 #include <mutex>
 #include <future>
 
@@ -36,17 +38,21 @@ namespace NightEngine
       << " ResourceManager:ClearAllData()\n";
 
     //TODO: CLear things
-    auto& hashmap = GetHashMap<Material>();
+    auto& hashmap = GetHashMap<EC::Handle<Rendering::Material>>();
     hashmap.clear();
+    auto& container1 = Factory::GetTypeContainer<Material>();
+    container1.Clear();
+
     auto& hashmap2 = GetHashMap<Texture>();
     hashmap2.clear();
+
     auto& hashmap3 = GetHashMap<Model>();
     hashmap3.clear();
   }
 
-  Rendering::Material* ResourceManager::LoadMaterialResource(const Container::String& fileName)
+  EC::Handle<Rendering::Material> ResourceManager::LoadMaterialResource(const Container::String& fileName)
   {
-    Container::Hashmap<U64, Material>& hashmap = GetHashMap<Material>();
+    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetHashMap< EC::Handle<Rendering::Material>>();
 
     //Generate unique key for each Material File
     Container::String newKeyStr{ fileName };
@@ -58,29 +64,36 @@ namespace NightEngine
     auto it = hashmap.find(key);
     if (it != hashmap.end())
     {
-      return &(it->second);
+      return (it->second);
     }
 
     //Generate new Material
-    hashmap.insert({ key, Material() });
-    auto& newMat = hashmap[key];
+    EC::Handle<Rendering::Material> newHandle = Factory::Create<Material>("Material");
+    hashmap.insert({ key, newHandle });
 
-    Serialization::Deserialize(newMat
+    //Deserialize the material file
+    Serialization::Deserialize( *(newHandle.Get())
       , fileName
       , FileSystem::DirectoryType::Materials);
 
-    return &newMat;
+    std::string nameNoExt = fileName;
+    FileSystem::RemoveExtension(nameNoExt);
+    newHandle->SetName(nameNoExt);
+    
+    return newHandle;
   }
 
   void ResourceManager::RefreshMaterialTextureUniforms()
   {
-    Container::Hashmap<U64, Material>& hashmap = GetHashMap<Material>();
+    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetHashMap< EC::Handle<Rendering::Material>>();
 
     for (auto& pair : hashmap)
     {
-      pair.second.RefreshTextureUniforms();
+      pair.second.Get()->RefreshTextureUniforms();
     }
   }
+
+  /////////////////////////////////////////////////////////////////////////////
 
   Texture* ResourceManager::LoadTextureResource(const Container::String& filePath
     , Texture::Channel channel, Texture::FilterMode filterMode

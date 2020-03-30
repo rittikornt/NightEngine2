@@ -1,9 +1,10 @@
-#include "MemberSerializerEditor.hpp"
 /*!
   @file MemberSerializerEditor.cpp
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of MemberSerializerEditor
 */
+
+#include "Editor/MemberSerializerEditor.hpp"
 #include "imgui/imgui.h"
 
 #include "Core/Reflection/ReflectionMacros.hpp"
@@ -23,6 +24,49 @@ namespace Editor
 
   MemberSerializerEditor::MemberSerializerEditor(void)
   {
+
+    m_typeEditorMap.insert({ "Handle<Material>",
+      [](Reflection::Variable& variable, const char* memberName)
+    {
+      auto dataPtr = variable.GetValue<Handle<Material>>();
+      auto mat = dataPtr.Get();
+
+    }
+    });
+
+    m_typeEditorMap.insert({ "Material",
+      [](Reflection::Variable& variable, const char* memberName)
+    {
+      auto& dataPtr = variable.GetValue<Material>();
+      float min = 0.0f, max = 1.0f, nmax = 50.0f;
+
+      Reflection::Variable var{ METATYPE(Material), &dataPtr };
+      auto memberPtr = var.GetMetaType()->FindMember("m_diffuseColor");
+      void* ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      ImGui::ColorEdit3(memberName, (float*)ptr, ImGuiColorEditFlags_HDR);
+
+      memberPtr = var.GetMetaType()->FindMember("m_normalMultiplier");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      ImGui::DragScalar("Normal Multiplier", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &nmax);
+
+      memberPtr = var.GetMetaType()->FindMember("m_useNormal");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      bool& bptr = *((bool*)ptr);
+      ImGui::Checkbox("Use Normal", &bptr);
+
+      memberPtr = var.GetMetaType()->FindMember("m_roughnessValue");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      ImGui::DragScalar("Roughness Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
+
+      memberPtr = var.GetMetaType()->FindMember("m_metallicValue");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      ImGui::DragScalar("Metallic Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
+
+      memberPtr = var.GetMetaType()->FindMember("m_emissiveStrength");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      ImGui::DragScalar("Emissive Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min);
+    }
+    });
 
     m_typeEditorMap.insert({ "Material*",
       [](Reflection::Variable& variable, const char* memberName)
@@ -228,6 +272,43 @@ namespace Editor
       //Value Editor
       DrawMemberEditor(mmember, memberPtr);
     }
+
+    return false;
+  }
+
+  bool MemberSerializerEditor::DrawMetaTypeEditor(Reflection::MetaType* metaType, void* dataObject
+    , const std::string& nameMingle)
+  {
+    using namespace Reflection;
+    using namespace Components;
+
+    //lookup typename, do nothing if not found
+    auto it = m_typeEditorMap.find(metaType->GetName());
+    auto memberPtr = dataObject;
+    if (it != m_typeEditorMap.end())
+    {
+      Variable var{ metaType, memberPtr };
+      it->second(var, (metaType->GetName() + nameMingle).c_str());
+      return true;
+    }
+
+    ////Try to serialize more Members of member
+    //auto& mmembers = metaType->GetMembers();
+    //for (auto& mmember : mmembers)
+    //{
+    //  ImGui::NextColumn();
+    //  //TYPE
+    //  ImGui::TextColored(g_color_blue
+    //    , mmember.GetMetaType()->GetName().c_str());
+    //  ImGui::NextColumn();
+
+    //  //Name
+    //  ImGui::Text(mmember.GetName().c_str());
+    //  ImGui::NextColumn();
+
+    //  //Value Editor
+    //  DrawMemberEditor(mmember, memberPtr);
+    //} 
 
     return false;
   }

@@ -154,7 +154,7 @@ namespace Rendering
     m_emissiveTexture.Clear();
   }
 
-  Material* Material::LoadMaterial(const std::string& fileName)
+  EC::Handle<Material> Material::LoadMaterial(const std::string& fileName)
   {
     Debug::Log << Logger::MessageType::INFO
       << "***********************************\n";
@@ -163,7 +163,7 @@ namespace Rendering
 
     //Load the Material through ResourceManager
     auto newMat = ResourceManager::LoadMaterialResource(fileName);
-    ASSERT_TRUE(newMat != nullptr);
+    ASSERT_TRUE(newMat.IsValid());
 
     Debug::Log << Logger::MessageType::INFO
       << "Loaded Material: " << fileName << '\n';

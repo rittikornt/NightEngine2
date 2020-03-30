@@ -48,8 +48,8 @@ namespace NightEngine
 
       //TODO: care about this material's life time
       // right now its destructor is being called after deleted the whole engine
-      static Material                g_defaultMaterial;
-      static Material                g_billboardMaterial;
+      static Handle<Material>          g_defaultMaterial;
+      static Handle<Material>          g_billboardMaterial;
 
       FACTORY_FUNC_IMPLEMENTATION(Scene);
 
@@ -58,6 +58,15 @@ namespace NightEngine
         Debug::Log << "SceneManager::Initialize\n";
 
         FACTORY_REGISTER_TYPE_WITHPARAM(Scene, 1, 5);
+
+        if (!g_defaultMaterial.IsValid())
+        {
+          g_defaultMaterial = Factory::Create<Material>("Material");
+        }
+        if (!g_billboardMaterial.IsValid())
+        {
+          g_billboardMaterial = Factory::Create<Material>("Material");
+        }
 
         //auto scene = LoadScene("Default_Scene");
         //auto scene = CreateDefaultScene("Default_Scene");
@@ -79,8 +88,8 @@ namespace NightEngine
         Debug::Log << "SceneManager::Terminate\n";
         g_openedScenes.clear();
 
-        g_defaultMaterial.Clear();
-        g_billboardMaterial.Clear();
+        g_defaultMaterial.Destroy();
+        g_billboardMaterial.Destroy();
       }
 
       /////////////////////////////////////////
@@ -113,7 +122,7 @@ namespace NightEngine
             auto& defaultMaterial = SceneManager::GetDefaultMaterial();
             if (meshRenderer->GetMaterial() == nullptr)
             {
-              meshRenderer->SetMaterial(&defaultMaterial);
+              meshRenderer->SetMaterial(defaultMaterial);
             }
 
             //Init Mesh
@@ -180,8 +189,8 @@ namespace NightEngine
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
             , FileSystem::DirectoryType::Models), true);
           ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
-          g_defaultMaterial.SetParams(0.2f, 0.1f);
-          ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
+          g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
+          ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
           floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
           floorGO->GetTransform()->SetScale(glm::vec3(20.0f, 1.0f, 20.0f));
           floorGO->AddComponent("Rigidbody");
@@ -205,7 +214,7 @@ namespace NightEngine
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
             , FileSystem::DirectoryType::Models), true);
           ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-          ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+          ch->Get<MeshRenderer>()->SetMaterial(g_billboardMaterial);
 
           dirLight->GetTransform()->SetPosition(glm::vec3(0.0f, 15.0f, 2.0f));
           dirLight->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
@@ -312,8 +321,8 @@ namespace NightEngine
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
             , FileSystem::DirectoryType::Models), true);
           ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
-          g_defaultMaterial.SetParams(0.2f, 0.1f);
-          ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
+          g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
+          ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
           floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
           floorGO->GetTransform()->SetScale(glm::vec3(20.0f, 1.0f, 20.0f));
           floorGO->AddComponent("Rigidbody");
@@ -348,11 +357,11 @@ namespace NightEngine
 
             if (i % 2 == 0)
             {
-              ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
+              ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
             }
             else
             {
-              ch->Get<MeshRenderer>()->SetMaterial(&g_defaultMaterial);
+              ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
             }
             ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::STATIC);
 
@@ -388,7 +397,7 @@ namespace NightEngine
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
             , FileSystem::DirectoryType::Models), true);
           ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-          ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+          ch->Get<MeshRenderer>()->SetMaterial(g_billboardMaterial);
 
           dirLight->GetTransform()->SetPosition(glm::vec3(0.0f, 15.0f, 2.0f));
           dirLight->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
@@ -411,7 +420,7 @@ namespace NightEngine
             ch = pointLight[i]->GetComponent("MeshRenderer");
             ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
               , FileSystem::DirectoryType::Models), true, false);
-            ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+            ch->Get<MeshRenderer>()->SetMaterial(g_billboardMaterial);
             ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
 
             pointLight[i]->GetTransform()->SetPosition(glm::vec3((float)(i * 4.0f) - 6.0f, -1.0f, 0.25f));
@@ -433,7 +442,7 @@ namespace NightEngine
             ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Quad.obj"
               , FileSystem::DirectoryType::Models), true);
             ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::DEBUG);
-            ch->Get<MeshRenderer>()->SetMaterial(&g_billboardMaterial);
+            ch->Get<MeshRenderer>()->SetMaterial(g_billboardMaterial);
 
             spotLight[i]->GetTransform()->SetPosition(glm::vec3((float)i* 4.0f - 6.0f, 5.0f, 2.0f));
             spotLight[i]->GetTransform()->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
@@ -617,13 +626,21 @@ namespace NightEngine
         return found;
       }
 
-      Rendering::Material& GetDefaultMaterial(void)
+      Handle<Rendering::Material> GetDefaultMaterial(void)
       {
+        if (!g_defaultMaterial.IsValid())
+        {
+          g_defaultMaterial = Factory::Create<Material>("Material");
+        }
         return g_defaultMaterial;
       }
 
-      Rendering::Material& GetBillBoardMaterial(void)
+      Handle<Rendering::Material> GetBillBoardMaterial(void)
       {
+        if (!g_billboardMaterial.IsValid())
+        {
+          g_billboardMaterial = Factory::Create<Material>("Material");
+        }
         return g_billboardMaterial;
       }
 

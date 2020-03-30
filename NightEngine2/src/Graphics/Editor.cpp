@@ -22,8 +22,9 @@
 #include "Editor/MemberSerializerEditor.hpp"
 #include "Editor/ConfirmationBox.hpp"
 #include "Editor/GameObjectBrowser.hpp"
-#include "Editor/ArchetypeBrowser.hpp"
 #include "Editor/GameObjectHierarchy.hpp"
+#include "Editor/ArchetypeBrowser.hpp"
+#include "Editor/MaterialEditor.hpp"
 #include "Editor/Inspector.hpp"
 
 //Input
@@ -64,6 +65,7 @@ namespace Editor
   static MemberSerializerEditor g_memberSerializer;
   static GameObjectBrowser      g_gameObjectBrowser;
   static ArchetypeBrowser       g_archetypeBrowser;
+  static MaterialEditor         g_materialEditor;
 
   static Inspector g_inspector;
   static Hierarchy g_hierarchy;
@@ -84,18 +86,6 @@ namespace Editor
   //********************************************
   // Utility
   //********************************************
-  bool Equal(ImVec4 v1, ImVec4 v2)
-  {
-    return v1.x == v2.x && v1.y == v2.y
-      && v1.z == v2.z && v1.w == v2.w;
-  }
-
-  bool Equal(ImVec4 v1, glm::vec3 v2)
-  {
-    return v1.x == v2.x && v1.y == v2.y
-      && v1.z == v2.z;
-  }
-
   void DrawOverlay(bool* p_open, char* header)
   {
     const float DISTANCE = 10.0f;
@@ -146,14 +136,14 @@ namespace Editor
   void DrawTopMenuFile()
   {
     ImGui::MenuItem("File menu", NULL, false, false);
-    if (ImGui::MenuItem("New")) 
+    if (ImGui::MenuItem("New"))
     {
       SceneManager::CreateEmptyScene("New_Scene");
       Debug::Log << Logger::MessageType::INFO << "New Scene\n";
     }
 
 
-    if (ImGui::MenuItem("Open", "Ctrl+O")) 
+    if (ImGui::MenuItem("Open", "Ctrl+O"))
     {
       static std::vector<std::string> s_paths;
       FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Scenes, s_paths
@@ -312,6 +302,11 @@ namespace Editor
           Debug::Log << Logger::MessageType::INFO
             << "Archetype Browser Window: " << g_archetypeBrowser.GetBool() << '\n';
         }
+        if (ImGui::MenuItem("Material Editor", "", &g_materialEditor.GetBool()))
+        {
+          Debug::Log << Logger::MessageType::INFO
+            << "Material Editor Window: " << g_materialEditor.GetBool() << '\n';
+        }
         ImGui::EndMenu();
       }
       ImGui::Separator();
@@ -370,6 +365,7 @@ namespace Editor
         ImGui::Checkbox("Inspector", &g_inspector.GetBool());
         ImGui::Checkbox("GameObject Browser", &g_gameObjectBrowser.GetBool() );
         ImGui::Checkbox("Archetype Browser", &g_archetypeBrowser.GetBool());
+        ImGui::Checkbox("Material Editor", &g_materialEditor.GetBool());
         ImGui::Separator();
 
         ImGui::Checkbox("Demo Window", &show_demo_window);
@@ -390,6 +386,7 @@ namespace Editor
     //Update
     g_gameObjectBrowser.Update(g_memberSerializer);
     g_archetypeBrowser.Update(g_memberSerializer);
+    g_materialEditor.Update(g_memberSerializer);
     g_hierarchy.Update();
     g_inspector.Update(g_memberSerializer, g_hierarchy);
 
@@ -444,6 +441,11 @@ namespace Editor
 
     // Setup style
     ImGui::StyleColorsDark();
+
+    //TODO: Load all Material/Texture in the Folder
+    /*static std::vector<std::string> s_matPaths;
+    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Materials , s_matPaths
+      , FileSystem::FileFilter::FileName, ".mat", true);*/
   }
 
   void PreRender(void)

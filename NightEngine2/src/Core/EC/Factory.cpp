@@ -17,6 +17,8 @@
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/MeshRenderer.hpp"
 
+#include "Graphics/Opengl/Material.hpp"
+
 namespace NightEngine
 {
 	using namespace Container;
@@ -42,6 +44,8 @@ namespace NightEngine
 		FACTORY_FUNC_IMPLEMENTATION(CharacterInfo);
 		FACTORY_FUNC_IMPLEMENTATION(CTimer);
 
+		FACTORY_FUNC_IMPLEMENTATION(Material);
+
 		//**********************************************************
     // Definition
 		//**********************************************************
@@ -61,6 +65,8 @@ namespace NightEngine
 			FACTORY_REGISTER_TYPE(Controller);
 			FACTORY_REGISTER_TYPE(CharacterInfo);
 			FACTORY_REGISTER_TYPE(CTimer);
+
+			FACTORY_REGISTER_TYPE(Material);
 
       //TODO: Get the reflection registerer to init this creator
 		}

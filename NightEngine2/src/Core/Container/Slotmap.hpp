@@ -60,8 +60,19 @@ namespace NightEngine
         U32 m_index;  //Current reference index in the slotmap
 
         //! @brief Constructor
+        Iterator(void)
+          : m_slotmap(nullptr), m_index(Slotmap<T>::NullIndex) {}
+
+        //! @brief Constructor
         Iterator(Slotmap<T>* slotmapPtr)
           : m_slotmap(slotmapPtr), m_index(slotmapPtr->m_head) {}
+
+        //! @brief Casting
+        SlotmapID ToSlotmapID()
+        {
+          auto entry = m_slotmap->m_array[m_index].first;
+          return SlotmapID{ m_index, entry.m_generation};
+        }
 
         //! @brief Get referenced object
         T* Get(void)
@@ -143,6 +154,8 @@ namespace NightEngine
       //! @brief Get Iterator for Slotmap traversal
       Iterator GetIterator(void) { return Slotmap<T>::Iterator(this); }
 
+      //! @brief Clear the Slotmap
+      void Clear(void) { m_array.clear(); m_freelist.clear(); m_head = NullIndex; m_tail = NullIndex; m_lastCreated = NullIndex; }
 		private:
 			U32 m_expandRate;
 

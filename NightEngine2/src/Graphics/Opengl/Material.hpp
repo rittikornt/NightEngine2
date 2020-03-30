@@ -9,6 +9,8 @@
 #include "Graphics/Opengl/Shader.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
 
+#include "Core/EC/Handle.hpp"
+
 namespace Rendering
 {
   class Material
@@ -18,6 +20,7 @@ namespace Rendering
       META_REGISTERER(Material, true
         , NightEngine::Serialization::DefaultSerializer<Material&>
         , NightEngine::Serialization::DefaultDeserializer<Material&>)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_name, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_diffuseColor, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_normalMultiplier, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_useNormal, true)
@@ -58,6 +61,9 @@ namespace Rendering
       //! @brief Get Shader
       Shader& GetShader(void) { return m_shader; }
 
+      //! @brief Get Name
+      inline const std::string& GetName(void) const { return m_name; }
+
       //! @brief Apply material to the shader
       void Bind(bool useTexture = true);
 
@@ -70,28 +76,32 @@ namespace Rendering
       //! @brief Set the material params
       inline void SetParams(float roughness, float metallic) { m_roughnessValue = roughness; m_metallicValue = metallic; }
 
+      //! @brief Set the material name
+      inline void SetName(std::string name) { m_name = name; }
+
       //! @brief Load Material from File
-      static Material* LoadMaterial(const std::string& fileName);
+      static NightEngine::EC::Handle<Material> LoadMaterial(const std::string& fileName);
 
       //! @brief Save Material from File
       static void SaveMaterial(const std::string& fileName, Material& material);
     private:
-      Shader    m_shader;
+      std::string m_name = "unnamed";
+      Shader      m_shader;
 
-      Texture   m_diffuseTexture;
-      glm::vec3 m_diffuseColor = glm::vec3(1.0f);
+      Texture     m_diffuseTexture;
+      glm::vec3   m_diffuseColor = glm::vec3(1.0f);
 
-      Texture   m_normalTexture;
-      float     m_normalMultiplier  = 1.0f;
-      bool      m_useNormal = false;
+      Texture     m_normalTexture;
+      float       m_normalMultiplier  = 1.0f;
+      bool        m_useNormal = false;
 
-      Texture   m_roughnessTexture;
-      float 	  m_roughnessValue    = 0.01f;
+      Texture     m_roughnessTexture;
+      float 	    m_roughnessValue    = 0.01f;
 
-      Texture   m_metallicTexture;
-      float 	  m_metallicValue     = 0.1f;
+      Texture     m_metallicTexture;
+      float 	    m_metallicValue     = 0.1f;
 
-      Texture   m_emissiveTexture;
-      float 	  m_emissiveStrength = 15.0f;
+      Texture     m_emissiveTexture;
+      float 	    m_emissiveStrength = 15.0f;
   };
 }

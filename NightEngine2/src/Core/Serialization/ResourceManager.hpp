@@ -7,6 +7,8 @@
 #include "Core/Container/String.hpp"
 #include "Graphics/Opengl/Texture.hpp"
 
+#include "Core/EC/Handle.hpp"
+
 //Forward Declaration
 namespace Rendering
 {
@@ -24,11 +26,13 @@ namespace NightEngine
     static void ClearAllData(void);
 
     //! @brief Static Function for Load and Cache Material File
-    static Rendering::Material* LoadMaterialResource(const Container::String& fileName);
+    static EC::Handle<Rendering::Material> LoadMaterialResource(const Container::String& fileName);
 
     //! @brief Static Function refreshing material texture binding unit
     static void RefreshMaterialTextureUniforms();
 
+    ////////////////////////////////////////////////////////////////
+    
     //! @brief Static Function for Load and Cache Texture
     static Rendering::Texture* LoadTextureResource(const Container::String& filePath
       , Rendering::Texture::Channel channel = Rendering::Texture::Channel::RGB

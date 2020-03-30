@@ -127,5 +127,19 @@ namespace NightEngine
       static Slotmap<T> slotmap(10, 5);
       return slotmap;
     }
+
+    template<class T>
+    EC::Handle<T> Cast(SlotmapID slotmapID)
+    {
+      return EC::Handle<T>{HandleObject{ slotmapID
+        , [] (SlotmapID& id)
+          {
+            return NightEngine::Factory::GetTypeContainer<TYPE>().Get(id);
+          }
+        , [](SlotmapID& id) 
+          {
+            NightEngine::Factory::GetTypeContainer<TYPE>().Destroy(id);
+          } }};
+    }
   }
 }

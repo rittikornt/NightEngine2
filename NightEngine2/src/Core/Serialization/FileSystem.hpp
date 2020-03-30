@@ -49,6 +49,9 @@ namespace NightEngine
 
 		/////////////////////////////////////////////////////////////////////
 
+		//! @brief Remove the trailing extension "."
+		void RemoveExtension(std::string& str);
+
 		//! @brief Check if file exist
 		bool IsFileExist(Container::String fileName, DirectoryType dir);
 

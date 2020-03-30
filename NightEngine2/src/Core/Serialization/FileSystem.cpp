@@ -104,6 +104,15 @@ namespace NightEngine
 		}
 
 		/////////////////////////////////////////////////////////////////////
+		void RemoveExtension(std::string& str)
+		{
+			auto pos = str.find_last_of('.');
+			if (pos > 0)
+			{
+				auto prefix = str.substr(0, pos);
+				str = prefix;
+			}
+		}
 
 		bool IsFileExist(Container::String fileName, DirectoryType dir)
 		{

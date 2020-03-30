@@ -68,10 +68,10 @@ namespace NightEngine
           void UnregisterDrawMode(DrawMode mode);
 
           //! @brief Set Material
-          void SetMaterial(Rendering::Material* material) { m_material = material; }
+          void SetMaterial(EC::Handle<Rendering::Material> material) { m_material = material; }
 
           //! @brief Get Material
-          Rendering::Material* GetMaterial(void) { return m_material; }
+          Rendering::Material* GetMaterial(void) { return m_material.IsValid()?m_material.Get(): nullptr; }
 
           //! @brief Get DrawMode
           DrawMode GetDrawMode(void) const { return m_drawMode; }
@@ -114,15 +114,15 @@ namespace NightEngine
           void LoadMaterial(std::string fileName);
         private:
           //TODO: use handle instead of pointer
-          Rendering::Material*           m_material;
+          EC::Handle<Rendering::Material> m_material;
 
           //TODO: Vector<Handle<Mesh>> instead
-          std::vector<Rendering::Mesh>   m_meshes;
-          unsigned                     m_meshCount = 0;
-          std::string                  m_meshLoadPath;
+          std::vector<Rendering::Mesh>    m_meshes;
+          unsigned                        m_meshCount = 0;
+          std::string                     m_meshLoadPath;
 
-          bool                         m_castShadow = true;
-          DrawMode                     m_drawMode = DrawMode::UNINITIALIZED;
+          bool                            m_castShadow = true;
+          DrawMode                        m_drawMode = DrawMode::UNINITIALIZED;
       };
     }
   }

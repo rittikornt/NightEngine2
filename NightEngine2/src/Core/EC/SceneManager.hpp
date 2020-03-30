@@ -101,9 +101,9 @@ namespace NightEngine
 
       bool GetLights(SceneLights& sceneLights);
 
-      Rendering::Material& GetDefaultMaterial(void);
+      Handle<Rendering::Material> GetDefaultMaterial(void);
 
-      Rendering::Material& GetBillBoardMaterial(void);
+      Handle<Rendering::Material> GetBillBoardMaterial(void);
 
       /////////////////////////////////////////
 

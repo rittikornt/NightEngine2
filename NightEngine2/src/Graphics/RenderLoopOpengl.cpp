@@ -74,6 +74,7 @@ namespace Rendering
     ,103.0f };
 
   static SceneLights g_sceneLights;
+  static float g_time = 0.0f;
 
   //*********************************************
   // Helper Functions
@@ -415,6 +416,8 @@ namespace Rendering
 
   void RenderLoopOpengl::Render(float dt)
   {
+    g_time += dt;
+    g_time = fmodf(g_time, FLT_MAX);
     ProcessInput(dt);
 
     //*************************************************
@@ -698,6 +701,7 @@ namespace Rendering
         shader.SetUniform("u_bloomTexture", 1);
         shader.SetUniform("u_ssaoTexture", 2);
         shader.SetUniform("u_exposure", 1.0f);
+        shader.SetUniform("u_time", g_time);
 
         //Scene Texture
         if (g_debugDeferred)

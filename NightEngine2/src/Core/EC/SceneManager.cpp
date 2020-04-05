@@ -88,8 +88,10 @@ namespace NightEngine
         Debug::Log << "SceneManager::Terminate\n";
         g_openedScenes.clear();
 
-        g_defaultMaterial.Destroy();
-        g_billboardMaterial.Destroy();
+        g_defaultMaterial.m_handle.Nullify();
+        g_billboardMaterial.m_handle.Nullify();
+        //g_defaultMaterial.Destroy();
+        //g_billboardMaterial.Destroy();
       }
 
       /////////////////////////////////////////

@@ -29,6 +29,13 @@ namespace NightEngine
 			HandleObject(SlotmapID slotmapID, LookupFN lookupFN, DestroyFN destroyFN)
 				: m_slotmapID(slotmapID), m_lookupFN(lookupFN), m_destroyFN(destroyFN){}
 
+      //! @brief Null the handle
+      void Nullify(void)
+      {
+        m_lookupFN = nullptr;
+        m_destroyFN = nullptr;
+      }
+
       //! @brief Check Validity
       bool IsValid(void) const
       {
@@ -120,7 +127,10 @@ namespace NightEngine
       //! @brief Destroy the data
 			inline void Destroy()
 			{
-				m_handle.Destroy();
+        if (m_handle.IsValid())
+        {
+				  m_handle.Destroy();
+        }
 			}
 
       //! @brief Get the dereferenced data

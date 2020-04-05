@@ -11,6 +11,7 @@ uniform sampler2D u_bloomTexture;
 uniform sampler2D u_ssaoTexture;
 
 uniform float     u_exposure;
+uniform float     u_time;
 
 vec4 GammaCorrection(vec3 color, float gammaValue)
 {
@@ -33,6 +34,12 @@ vec3 TonemapWithExposure(vec3 color, float exposure)
     return vec3(1.0) - exp(-color * exposure);
 }
 
+float InterleavedGradientNoise( vec2 uv )
+{
+    const vec3 magic = vec3( 0.06711056, 0.00583715, 52.9829189 );
+    return fract( magic.z * fract( dot( uv, magic.xy ) ) );
+}
+
 void main()
 { 
     vec3 screenColor = texture(u_screenTexture, OurTexCoords).rgb;
@@ -44,9 +51,17 @@ void main()
 
     //Addictive Blend
     screenColor += bloomColor;
-
+    
+    //Tonemapping + GammaCorrection
     screenColor = TonemapWithExposure(screenColor, u_exposure);
     FragColor = GammaCorrection(screenColor);
+
+    //Dithering
+    //https://www.shadertoy.com/view/MslGR8
+    vec2 seed = gl_FragCoord.xy;
+    seed += 1337.0*fract(u_time);
+    float rnd = InterleavedGradientNoise( seed );
+    FragColor += vec4(vec3(rnd, 1.0-rnd, rnd)/255.0, 0.0);
 
     //FragColor = vec4(1.0,0.0,0.0,1.0);
     //float depthValue = texture(u_screenTexture, OurTexCoords).r;

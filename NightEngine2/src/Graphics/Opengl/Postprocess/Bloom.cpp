@@ -14,6 +14,8 @@ namespace Rendering
   {
     INIT_REFLECTION_FOR(Bloom)
 
+    static glm::ivec2 g_bloomResolutions[k_bloomPyramidCount + 1];
+
     //TODO: Better Bloom Falloff
     void Bloom::Init(int width, int height)
     {
@@ -21,9 +23,10 @@ namespace Rendering
       m_resolution.x = width, m_resolution.y = height;
 
       //FBO for 5 down scaled version
-      glm::ivec2 renderSize{ m_resolution };
-      for (int i = 0; i < k_bloomPyramidCount; ++i)
+      glm::ivec2 renderSize{ m_resolution};
+      for (int i = 0; i < k_bloomPyramidCount +1; ++i)
       {
+        g_bloomResolutions[i] = renderSize;
         m_bloomTexture[i] = Texture::GenerateNullTexture(renderSize.x, renderSize.y
           , Texture::Channel::RGBA16F, Texture::Channel::RGBA
           , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
@@ -35,7 +38,6 @@ namespace Rendering
 
         renderSize /= 2;
       }
-
 
       //FBO Target
       {
@@ -67,9 +69,6 @@ namespace Rendering
 
       //Set Uniform
       RefreshTextureUniforms();
-
-      m_blurIteration = 4;
-      m_bloomThreshold = 6.0f;
     }
 
     void Bloom::Apply(VertexArrayObject& screenVAO
@@ -79,13 +78,14 @@ namespace Rendering
       glDisable(GL_DEPTH_TEST);
 
       //Render the Threshold screen texture
-      glm::ivec2 renderSize{ m_resolution };
+      int offset = m_halfResolution ? 1 : 0;
       {
+        int i = 0 + offset;
         //Adjust resolution scale
-        glViewport(0, 0, renderSize.x, renderSize.y);
+        glViewport(0, 0, g_bloomResolutions[i].x, g_bloomResolutions[i].y);
 
         //Threshold Shader for Mip0
-        m_bloomFbo[0].Bind();
+        m_bloomFbo[i].Bind();
         {
           glClear(GL_COLOR_BUFFER_BIT);
 
@@ -99,16 +99,14 @@ namespace Rendering
           }
           m_thresholdShader.Unbind();
         }
-        m_bloomFbo[0].Unbind();
-
-        renderSize /= 2;
+        m_bloomFbo[i].Unbind();
       }
 
       //BlitCopy Down Scaling
-      for (int i = 1; i < k_bloomPyramidCount; ++i)
+      for (int i = 1 + offset; i < k_bloomPyramidCount + offset; ++i)
       {
         //Adjust resolution scale
-        glViewport(0, 0, renderSize.x, renderSize.y);
+        glViewport(0, 0, g_bloomResolutions[i].x, g_bloomResolutions[i].y);
 
         //Threshold Shader
         m_bloomFbo[i].Bind();
@@ -124,24 +122,16 @@ namespace Rendering
           m_blitCopyShader.Unbind();
         }
         m_bloomFbo[i].Unbind();
-
-        renderSize /= 2;
       }
 
       //Blur all texture
-      //Not blurring the Mip0 since its too expensive
-      //BlurTarget(m_bloomTexture[0], screenVAO
-      //  , m_resolution, m_blurIteration, m_useKawaseBlur);
-
+      //Starting from the Smallest size
       glm::vec4 clearColor = glm::vec4{ 0.0f,0.0f,0.0f,1.0f };
-      ppUtility.BlurTarget(clearColor, m_bloomFbo[1],m_bloomTexture[1], screenVAO
-        , m_resolution / 2, m_blurIteration, m_useKawaseBlur);
-      ppUtility.BlurTarget(clearColor, m_bloomFbo[2], m_bloomTexture[2], screenVAO
-        , m_resolution / 4, m_blurIteration, m_useKawaseBlur);
-      ppUtility.BlurTarget(clearColor, m_bloomFbo[3], m_bloomTexture[3], screenVAO
-        , m_resolution / 8, m_blurIteration, m_useKawaseBlur);
-      ppUtility.BlurTarget(clearColor, m_bloomFbo[4], m_bloomTexture[4], screenVAO
-        , m_resolution / 16, m_blurIteration, m_useKawaseBlur);
+      for (int i = k_bloomPyramidCount - 1 + offset; i >= 0 + offset; --i)
+      {
+        ppUtility.BlurTarget(clearColor, m_bloomFbo[i], m_bloomTexture[i], screenVAO
+          , g_bloomResolutions[i], m_blurIteration, m_useKawaseBlur);
+      }
 
       //Combine all blurred texture
       glViewport(0, 0, m_resolution.x, m_resolution.y);
@@ -151,10 +141,12 @@ namespace Rendering
         m_bloomShader.Bind();
         {
           m_bloomShader.SetUniform("u_intensity", m_intensity);
+          m_bloomShader.SetUniform("u_scattering"
+            , std::clamp(m_scattering, 0.0f, 1.0f));
           //Bind all texture
           for (int i = 0; i < k_bloomPyramidCount; ++i)
           {
-            m_bloomTexture[i].BindToTextureUnit(i);
+            m_bloomTexture[i + offset].BindToTextureUnit(i);
           }
 
           //Render

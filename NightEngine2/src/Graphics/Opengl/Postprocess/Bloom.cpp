@@ -27,14 +27,28 @@ namespace Rendering
       for (int i = 0; i < k_bloomPyramidCount +1; ++i)
       {
         g_bloomResolutions[i] = renderSize;
-        m_bloomTexture[i] = Texture::GenerateNullTexture(renderSize.x, renderSize.y
-          , Texture::Channel::RGBA16F, Texture::Channel::RGBA
-          , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
-        m_bloomFbo[i].Init();
-        m_bloomFbo[i].AttachTexture(m_bloomTexture[i]);
-        m_bloomFbo[i].Bind();
-        m_bloomFbo[i].Unbind();
+        {
+          m_bloomDownscaleTexture[i] = Texture::GenerateNullTexture(renderSize.x, renderSize.y
+            , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+            , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+
+          m_bloomDownscaleFbo[i].Init();
+          m_bloomDownscaleFbo[i].AttachTexture(m_bloomDownscaleTexture[i]);
+          m_bloomDownscaleFbo[i].Bind();
+          m_bloomDownscaleFbo[i].Unbind();
+        }
+
+        {
+          m_bloomUpscaleTexture[i] = Texture::GenerateNullTexture(renderSize.x, renderSize.y
+            , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+            , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+
+          m_bloomUpscaleFbo[i].Init();
+          m_bloomUpscaleFbo[i].AttachTexture(m_bloomUpscaleTexture[i]);
+          m_bloomUpscaleFbo[i].Bind();
+          m_bloomUpscaleFbo[i].Unbind();
+        }
 
         renderSize /= 2;
       }
@@ -56,6 +70,11 @@ namespace Rendering
       m_thresholdShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_thresholdShader.AttachShaderFile("Postprocess/brightness_threshold.frag");
       m_thresholdShader.Link();
+      
+      m_upscalingShader.Create();
+      m_upscalingShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+      m_upscalingShader.AttachShaderFile("Postprocess/bloom_upscale.frag");
+      m_upscalingShader.Link();
 
       m_blitCopyShader.Create();
       m_blitCopyShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
@@ -77,15 +96,18 @@ namespace Rendering
       //Render 5 versions of downsample threshold color
       glDisable(GL_DEPTH_TEST);
 
-      //Render the Threshold screen texture
       int offset = m_halfResolution ? 1 : 0;
+      int firstIndex = 0 + offset;
+      int lastIndex = k_bloomPyramidCount - 1 + offset;
+
+      //Render the Threshold screen texture
       {
-        int i = 0 + offset;
+        int i = firstIndex;
         //Adjust resolution scale
         glViewport(0, 0, g_bloomResolutions[i].x, g_bloomResolutions[i].y);
 
         //Threshold Shader for Mip0
-        m_bloomFbo[i].Bind();
+        m_bloomDownscaleFbo[i].Bind();
         {
           glClear(GL_COLOR_BUFFER_BIT);
 
@@ -99,38 +121,80 @@ namespace Rendering
           }
           m_thresholdShader.Unbind();
         }
-        m_bloomFbo[i].Unbind();
+        m_bloomDownscaleFbo[i].Unbind();
       }
 
       //BlitCopy Down Scaling
-      for (int i = 1 + offset; i < k_bloomPyramidCount + offset; ++i)
+      for (int i = firstIndex + 1; i < lastIndex + 1; ++i)
       {
         //Adjust resolution scale
         glViewport(0, 0, g_bloomResolutions[i].x, g_bloomResolutions[i].y);
 
-        //Threshold Shader
-        m_bloomFbo[i].Bind();
+        //DownScaling Shader
+        m_bloomDownscaleFbo[i].Bind();
         {
           glClear(GL_COLOR_BUFFER_BIT);
 
-          //DownScaling Shader
           m_blitCopyShader.Bind();
           {
-            m_bloomTexture[i - 1].BindToTextureUnit(0);
+            m_bloomDownscaleTexture[i - 1].BindToTextureUnit(0);
             screenVAO.Draw();
           }
           m_blitCopyShader.Unbind();
         }
-        m_bloomFbo[i].Unbind();
+        m_bloomDownscaleFbo[i].Unbind();
       }
 
       //Blur all texture
-      //Starting from the Smallest size
       glm::vec4 clearColor = glm::vec4{ 0.0f,0.0f,0.0f,1.0f };
-      for (int i = k_bloomPyramidCount - 1 + offset; i >= 0 + offset; --i)
+      for (int i = lastIndex; i >= firstIndex; --i)
       {
-        ppUtility.BlurTarget(clearColor, m_bloomFbo[i], m_bloomTexture[i], screenVAO
+        ppUtility.BlurTarget(clearColor, m_bloomDownscaleFbo[i], m_bloomDownscaleTexture[i], screenVAO
           , g_bloomResolutions[i], m_blurIteration, m_useKawaseBlur);
+      }
+
+      //Up Scaling Passes
+      if (m_upscalingPass)
+      {
+        //Clear all the upscale texture
+        for (int i = 0; i < k_bloomPyramidCount; ++i)
+        {
+          m_bloomUpscaleFbo[i].Bind();
+          {
+            glClear(GL_COLOR_BUFFER_BIT);
+          }
+          m_bloomUpscaleFbo[i].Unbind();
+        }
+
+        for (int i = lastIndex - 1; i >= firstIndex; --i)
+        {
+          //Adjust resolution scale
+          glViewport(0, 0, g_bloomResolutions[i].x, g_bloomResolutions[i].y);
+
+          m_bloomUpscaleFbo[i].Bind();
+          {
+            m_upscalingShader.Bind();
+            {
+              //Low mip
+              if (i == lastIndex - 1)
+              {
+                m_bloomDownscaleTexture[i + 1].BindToTextureUnit(0);
+              }
+              else
+              {
+                m_bloomUpscaleTexture[i + 1].BindToTextureUnit(0);
+              }
+              //High mip
+              m_bloomDownscaleTexture[i].BindToTextureUnit(1);
+
+              m_upscalingShader.SetUniform("u_scattering"
+                , std::clamp(m_scattering, 0.0f, 1.0f));
+              screenVAO.Draw();
+            }
+            m_upscalingShader.Unbind();
+          }
+          m_bloomUpscaleFbo[i].Unbind();
+        }
       }
 
       //Combine all blurred texture
@@ -146,9 +210,16 @@ namespace Rendering
           //Bind all texture
           for (int i = 0; i < k_bloomPyramidCount; ++i)
           {
-            m_bloomTexture[i + offset].BindToTextureUnit(i);
+            if (m_upscalingPass)
+            {
+              m_bloomUpscaleTexture[i].BindToTextureUnit(i);
+            }
+            else
+            {
+              m_bloomDownscaleTexture[i + offset].BindToTextureUnit(i);
+            }
           }
-
+      
           //Render
           screenVAO.Draw();
         }
@@ -175,6 +246,13 @@ namespace Rendering
         m_thresholdShader.SetUniform("u_screenTexture", 0);
       }
       m_thresholdShader.Unbind();
+
+      m_upscalingShader.Bind();
+      {
+        m_upscalingShader.SetUniform("u_lowMipTexture", 0);
+        m_upscalingShader.SetUniform("u_highMipTexture", 1);
+      }
+      m_upscalingShader.Unbind();
 
       m_blitCopyShader.Bind();
       {

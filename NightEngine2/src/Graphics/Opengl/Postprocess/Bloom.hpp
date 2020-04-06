@@ -36,26 +36,34 @@ namespace Rendering
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_useKawaseBlur, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_intensity, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_halfResolution, true)
+          .MR_ADD_MEMBER_PROTECTED(Bloom, m_upscalingPass, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_scattering, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_bloomThreshold, true)
           .MR_ADD_MEMBER_PROTECTED(Bloom, m_blurIteration, true);
       }
       //Members
       FrameBufferObject m_targetFbo;
-      FrameBufferObject m_bloomFbo[k_bloomPyramidCount + 1];
       Texture           m_targetTexture;
-      Texture           m_bloomTexture[k_bloomPyramidCount + 1];
+
+      FrameBufferObject m_bloomDownscaleFbo[k_bloomPyramidCount + 1];
+      Texture           m_bloomDownscaleTexture[k_bloomPyramidCount + 1];
+
+      FrameBufferObject m_bloomUpscaleFbo[k_bloomPyramidCount + 1];
+      Texture           m_bloomUpscaleTexture[k_bloomPyramidCount + 1];
+
       glm::ivec2        m_resolution;
 
       //Shader
       Shader            m_thresholdShader;
       Shader            m_blitCopyShader;
       Shader            m_bloomShader;
+      Shader            m_upscalingShader;
 
       //Settings
       bool              m_useKawaseBlur = false;
       float             m_intensity = 1.0f;
       bool              m_halfResolution = false;
+      bool              m_upscalingPass = true;
       float             m_scattering = 0.5f;
       float             m_bloomThreshold = 6.0f;
       int               m_blurIteration = 4;

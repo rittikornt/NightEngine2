@@ -11,10 +11,13 @@
 #include "assimp/postprocess.h"
 #include <vector>
 
+#include "Core/Reflection/ReflectionMacros.hpp"
+
 namespace Rendering
 {
   class Model
   {
+    REFLECTABLE_TYPE();
     public:
       //! @brief Default Constructor
       Model(void) = default;

@@ -118,16 +118,18 @@ namespace NightEngine
       }
 
       //Diffuse Texture
-      if (material.m_diffuseTexture.m_filePath.size() > 0)
+      if (material.m_diffuseTexture.IsValid()
+        && material.m_diffuseTexture->m_filePath.size() > 0)
       {
-        JsonValue diffuseValue = material.m_diffuseTexture.m_filePath;
+        JsonValue diffuseValue = material.m_diffuseTexture->m_filePath;
         value.emplace("Diffuse", diffuseValue);
       }
 
       //Normal Texture
-      if (material.m_normalTexture.m_filePath.size() > 0)
+      if (material.m_normalTexture.IsValid()
+        && material.m_normalTexture->m_filePath.size() > 0)
       {
-        JsonValue normalValue = material.m_normalTexture.m_filePath;
+        JsonValue normalValue = material.m_normalTexture->m_filePath;
         value.emplace("Normal", normalValue);
 
         JsonValue normalMultiplierValue = material.m_normalMultiplier;
@@ -138,9 +140,10 @@ namespace NightEngine
       }
 
       //Roughness Texture
-      if (material.m_roughnessTexture.m_filePath.size() > 0)
+      if (material.m_roughnessTexture.IsValid()
+        && material.m_roughnessTexture->m_filePath.size() > 0)
       {
-        JsonValue roughnessFilePath = material.m_roughnessTexture.m_filePath;
+        JsonValue roughnessFilePath = material.m_roughnessTexture->m_filePath;
         value.emplace("Roughness", roughnessFilePath);
 
         JsonValue roughnessValue = material.m_roughnessValue;
@@ -148,9 +151,10 @@ namespace NightEngine
       }
 
       //Metallic Texture
-      if (material.m_metallicTexture.m_filePath.size() > 0)
+      if (material.m_metallicTexture.IsValid()
+        && material.m_metallicTexture->m_filePath.size() > 0)
       {
-        JsonValue metallicFilePath = material.m_metallicTexture.m_filePath;
+        JsonValue metallicFilePath = material.m_metallicTexture->m_filePath;
         value.emplace("Metallic", metallicFilePath);
 
         JsonValue metallicValue = material.m_metallicValue;
@@ -158,9 +162,10 @@ namespace NightEngine
       }
 
       //Emissive Texture
-      if (material.m_emissiveTexture.m_filePath.size() > 0)
+      if (material.m_emissiveTexture.IsValid() 
+        && material.m_emissiveTexture->m_filePath.size() > 0)
       {
-        JsonValue emissiveValue = material.m_emissiveTexture.m_filePath;
+        JsonValue emissiveValue = material.m_emissiveTexture->m_filePath;
         value.emplace("Emissive", emissiveValue);
 
         JsonValue emissiveStrValue = material.m_emissiveStrength;

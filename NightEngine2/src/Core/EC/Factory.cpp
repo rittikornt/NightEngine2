@@ -18,6 +18,8 @@
 #include "Core/EC/Components/MeshRenderer.hpp"
 
 #include "Graphics/Opengl/Material.hpp"
+#include "Graphics/Opengl/Texture.hpp"
+#include "Graphics/Opengl/Model.hpp"
 
 namespace NightEngine
 {
@@ -45,6 +47,8 @@ namespace NightEngine
 		FACTORY_FUNC_IMPLEMENTATION(CTimer);
 
 		FACTORY_FUNC_IMPLEMENTATION(Material);
+		FACTORY_FUNC_IMPLEMENTATION(Texture);
+		FACTORY_FUNC_IMPLEMENTATION(Model);
 
 		//**********************************************************
     // Definition
@@ -67,6 +71,8 @@ namespace NightEngine
 			FACTORY_REGISTER_TYPE(CTimer);
 
 			FACTORY_REGISTER_TYPE(Material);
+			FACTORY_REGISTER_TYPE(Texture);
+			FACTORY_REGISTER_TYPE(Model);
 
       //TODO: Get the reflection registerer to init this creator
 		}

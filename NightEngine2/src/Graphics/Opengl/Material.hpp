@@ -21,11 +21,16 @@ namespace Rendering
         , NightEngine::Serialization::DefaultSerializer<Material&>
         , NightEngine::Serialization::DefaultDeserializer<Material&>)
         .MR_ADD_MEMBER_PRIVATE(Material, m_name, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_diffuseTexture, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_diffuseColor, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_normalTexture, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_normalMultiplier, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_useNormal, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_roughnessTexture, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_roughnessValue, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_metallicTexture, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_metallicValue, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_emissiveTexture, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_emissiveStrength, true);
     }
 
@@ -88,20 +93,20 @@ namespace Rendering
       std::string m_name = "unnamed";
       Shader      m_shader;
 
-      Texture     m_diffuseTexture;
+      NightEngine::EC::Handle<Texture> m_diffuseTexture;
       glm::vec3   m_diffuseColor = glm::vec3(1.0f);
 
-      Texture     m_normalTexture;
+      NightEngine::EC::Handle<Texture>  m_normalTexture;
       float       m_normalMultiplier  = 1.0f;
       bool        m_useNormal = false;
 
-      Texture     m_roughnessTexture;
+      NightEngine::EC::Handle<Texture>  m_roughnessTexture;
       float 	    m_roughnessValue    = 0.01f;
 
-      Texture     m_metallicTexture;
+      NightEngine::EC::Handle<Texture>  m_metallicTexture;
       float 	    m_metallicValue     = 0.1f;
 
-      Texture     m_emissiveTexture;
+      NightEngine::EC::Handle<Texture> m_emissiveTexture;
       float 	    m_emissiveStrength = 15.0f;
   };
 }

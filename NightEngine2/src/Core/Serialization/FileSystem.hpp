@@ -45,7 +45,8 @@ namespace NightEngine
 
 		//! @brief Get all the files in path
 		void GetAllFilesInDirectory(DirectoryType dir, std::vector<std::string>& output
-			, FileFilter filter = FileFilter::FileName, std::string extension = "", bool removeExtension = false);
+			, FileFilter filter = FileFilter::FileName, std::string extension = "", bool removeExtension = false
+			, bool searchRecursively = false, bool clearContainer = true);
 
 		/////////////////////////////////////////////////////////////////////
 

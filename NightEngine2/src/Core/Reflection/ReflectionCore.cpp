@@ -40,8 +40,11 @@
 #include "Core/EC/Components/MeshRenderer.hpp"
 #include "Physics/Collider.hpp"
 
-#include "Graphics/Opengl/Light.hpp"
 #include "Graphics/Opengl/Material.hpp"
+#include "Graphics/Opengl/Texture.hpp"
+#include "Graphics/Opengl/Model.hpp"
+
+#include "Graphics/Opengl/Light.hpp"
 #include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 
 namespace NightEngine
@@ -119,13 +122,33 @@ namespace NightEngine
       }
 
       //***********************************************
-      //	Material
+      //	Resources
       //***********************************************
       {
         using namespace Rendering;
         using namespace NightEngine::EC;
+
+        REGISTER_METATYPE(Material*);
         REGISTER_METATYPE_WITH_SERIALIZER(Handle<Material>, true
           , nullptr, nullptr);
+        REGISTER_METATYPE_WITH_SERIALIZER(Handle<Texture>, true
+          , nullptr, nullptr);
+        REGISTER_METATYPE_WITH_SERIALIZER(Handle<Model>, true
+          , nullptr, nullptr);
+
+        REGISTER_METATYPE_WITH_SERIALIZER(Texture, true
+          , nullptr, nullptr);
+        {
+          ADD_MEMBER_PRIVATE(Texture, m_textureID, false);
+          ADD_MEMBER_PRIVATE(Texture, m_name, true);
+          ADD_MEMBER_PRIVATE(Texture, m_filePath, true);
+          ADD_MEMBER_PRIVATE(Texture, m_internalFormat, true);
+        }
+        REGISTER_METATYPE_WITH_SERIALIZER(Model, true
+          , nullptr, nullptr);
+        {
+          ADD_MEMBER_PRIVATE(Model, m_directory, false);
+        }
       }
 
       //***********************************************
@@ -222,8 +245,6 @@ namespace NightEngine
         ADD_MEMBER_PUBLIC(Light::LightInfo, m_color);
         ADD_MEMBER_PUBLIC(Light::LightInfo, m_value);
       }
-
-      REGISTER_METATYPE(Material*);
 
       //Test Components
       REGISTER_METATYPE_WITHBASE(Controller, ComponentLogic

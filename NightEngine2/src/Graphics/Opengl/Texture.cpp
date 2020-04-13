@@ -62,7 +62,7 @@ namespace Rendering
 	{
     auto t = ResourceManager::LoadTextureResource(filePath
       , channel, filterMode, wrapMode, hdrImage);
-    if (t != nullptr)
+    if (t.IsValid())
     {
       *this = (*t);
 
@@ -128,6 +128,21 @@ namespace Rendering
   //*****************************************************
   // Static Method
   //*****************************************************
+  NightEngine::EC::Handle<Rendering::Texture> Texture::LoadTextureHandle(const std::string& filePath
+    , Channel channel, FilterMode filterMode, WrapMode wrapMode, bool hdrImage)
+  {
+    auto handle = ResourceManager::LoadTextureResource(filePath
+      , channel, filterMode, wrapMode, hdrImage);
+    if (handle.IsValid())
+    {
+      //Assign Filename, path
+      auto dirIndex = filePath.find_last_of('/');
+      auto lastIndex = filePath.size() - dirIndex;
+      handle->m_name = filePath.substr(dirIndex + 1, lastIndex);
+      handle->m_filePath = filePath;
+    }
+    return handle;
+  }
 
   TextureIdentifier Texture::LoadTexture(const std::string& filePath
     , Channel internalFormat

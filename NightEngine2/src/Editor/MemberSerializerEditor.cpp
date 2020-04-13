@@ -8,11 +8,17 @@
 #include "imgui/imgui.h"
 
 #include "Core/Reflection/ReflectionMacros.hpp"
+#include "Core/Serialization/FileSystem.hpp"
+#include "Core/Serialization/ResourceManager.hpp"
 
 #include "Core/EC/GameObject.hpp"
 #include "Graphics/Opengl/Window.hpp"
 
+#include "Graphics/Opengl/Material.hpp"
+#include "Graphics/Opengl/Texture.hpp"
+
 #include "Graphics/Color.hpp"
+
 
 using namespace NightEngine::EC;
 using namespace NightEngine;
@@ -22,15 +28,82 @@ namespace Editor
 {
   static ImVec4 g_color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
 
+  template<int id>
+  static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Channel channel)
+  {
+    const char* k_none = "None";
+    static int m_currentItem = 0;
+    static std::vector <std::string> s_items;
+    static std::vector <const char*> s_itemsPtr;
+
+    //Options
+    s_items.clear();
+    s_items.emplace_back(k_none);
+
+    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Textures, s_items
+      , FileSystem::FileFilter::FullPath, ".png", false, true, false);
+    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Textures, s_items
+      , FileSystem::FileFilter::FullPath, ".jpg", false, true, false);
+
+    //Options input for ImGUI
+    s_itemsPtr.clear();
+    for (int i = 0; i < s_items.size(); ++i)
+    {
+      s_itemsPtr.emplace_back(s_items[i].c_str());
+    }
+
+    //Combo Box Imgui
+    bool changed = ImGui::Combo(text, &m_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
+    if (changed && s_items[m_currentItem] != k_none)
+    {
+      auto newHandle = Texture::LoadTextureHandle(s_items[m_currentItem]
+        , channel);
+      if (newHandle.IsValid())
+      {
+        *(handle) = newHandle;
+      }
+    }
+
+    return changed;
+  }
+
+  template<int id>
+  static bool DrawMaterialComboBox(const char* text, Handle<Rendering::Material>* handle)
+  {
+    static int m_currentItem = 0;
+    static std::vector <std::string> s_items;
+    static std::vector <const char*> s_itemsPtr;
+
+    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Materials, s_items
+      , FileSystem::FileFilter::FileName, ".mat", false, true, true);
+
+    s_itemsPtr.clear();
+    for (int i = 0; i < s_items.size(); ++i)
+    {
+      s_itemsPtr.emplace_back(s_items[i].c_str());
+    }
+
+    bool changed = ImGui::Combo(text, &m_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
+    if (changed)
+    {
+      auto newHandle = ResourceManager::LoadMaterialResource(s_items[m_currentItem]);
+      if (newHandle.IsValid())
+      {
+        *(handle) = newHandle;
+      }
+    }
+
+    return changed;
+  }
+
   MemberSerializerEditor::MemberSerializerEditor(void)
   {
-
     m_typeEditorMap.insert({ "Handle<Material>",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto dataPtr = variable.GetValue<Handle<Material>>();
       auto mat = dataPtr.Get();
-
+      DrawMaterialComboBox<0>("Material", &(dataPtr));
     }
     });
 
@@ -40,10 +113,22 @@ namespace Editor
       auto& dataPtr = variable.GetValue<Material>();
       float min = 0.0f, max = 1.0f, nmax = 50.0f;
 
+      //Diffuse
       Reflection::Variable var{ METATYPE(Material), &dataPtr };
       auto memberPtr = var.GetMetaType()->FindMember("m_diffuseColor");
       void* ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
       ImGui::ColorEdit3(memberName, (float*)ptr, ImGuiColorEditFlags_HDR);
+
+      memberPtr = var.GetMetaType()->FindMember("m_diffuseTexture");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      DrawTextureComboBox<0>("Diffuse Texture", static_cast<Handle<Texture>*>(ptr)
+        , Texture::Channel::SRGB);
+      
+      //Normal
+      memberPtr = var.GetMetaType()->FindMember("m_normalTexture");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      DrawTextureComboBox<1>("Normal Texture", static_cast<Handle<Texture>*>(ptr)
+        , Texture::Channel::RGB);
 
       memberPtr = var.GetMetaType()->FindMember("m_normalMultiplier");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
@@ -54,13 +139,31 @@ namespace Editor
       bool& bptr = *((bool*)ptr);
       ImGui::Checkbox("Use Normal", &bptr);
 
+      //Roughness
+      memberPtr = var.GetMetaType()->FindMember("m_roughnessTexture");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      DrawTextureComboBox<2>("Roughness Texture", static_cast<Handle<Texture>*>(ptr)
+        , Texture::Channel::RGB);
+
       memberPtr = var.GetMetaType()->FindMember("m_roughnessValue");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
       ImGui::DragScalar("Roughness Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
 
+      //Metallic
+      memberPtr = var.GetMetaType()->FindMember("m_metallicTexture");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      DrawTextureComboBox<3>("Metallic Texture", static_cast<Handle<Texture>*>(ptr)
+        , Texture::Channel::RGB);
+
       memberPtr = var.GetMetaType()->FindMember("m_metallicValue");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
       ImGui::DragScalar("Metallic Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
+
+      //Emissive
+      memberPtr = var.GetMetaType()->FindMember("m_emissiveTexture");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      DrawTextureComboBox<4>("Emissive Texture", static_cast<Handle<Texture>*>(ptr)
+        , Texture::Channel::RGB);
 
       memberPtr = var.GetMetaType()->FindMember("m_emissiveStrength");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
@@ -68,7 +171,7 @@ namespace Editor
     }
     });
 
-    m_typeEditorMap.insert({ "Material*",
+    /*m_typeEditorMap.insert({ "Material*",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto dataPtr = variable.GetValue<Material*>();
@@ -105,7 +208,7 @@ namespace Editor
       ptr = POINTER_OFFSET(&(*dataPtr), memberPtr->GetOffset());
       ImGui::DragScalar("Emissive Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min);
     }
-    });
+    });*/
 
     //TODO: turn these into Macros?
     m_typeEditorMap.insert({ "std::string",

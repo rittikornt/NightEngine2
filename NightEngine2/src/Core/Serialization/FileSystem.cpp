@@ -52,16 +52,35 @@ namespace NightEngine
 		}
 
 		void GetAllFilesInDirectory(DirectoryType dir, std::vector<std::string>& output
-			, FileFilter filter, std::string extension, bool removeExtension)
+			, FileFilter filter, std::string extension, bool removeExtension, bool searchRecursively, bool clearContainer)
 		{
-			output.clear();
-			std::string path = GetFilePath("", dir);
-			for (const auto& entry : std::filesystem::directory_iterator(path))
+			if (clearContainer)
 			{
-				auto filePath = entry.path().string();
-				if (filePath.find(extension) != std::string::npos)
+				output.clear();
+			}
+
+			std::string path = GetFilePath("", dir);
+
+			if (searchRecursively)
+			{
+				for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
 				{
-					output.emplace_back(filePath);
+					auto filePath = entry.path().string();
+					if (filePath.find(extension) != std::string::npos)
+					{
+						output.emplace_back(filePath);
+					}
+				}
+			}
+			else
+			{
+				for (const auto& entry : std::filesystem::directory_iterator(path))
+				{
+					auto filePath = entry.path().string();
+					if (filePath.find(extension) != std::string::npos)
+					{
+						output.emplace_back(filePath);
+					}
 				}
 			}
 

@@ -72,27 +72,27 @@ namespace Rendering
 
     if (diffuseTextureFile.size() > 0)
     {
-      m_diffuseTexture = Texture(diffuseTextureFile
+      m_diffuseTexture = Texture::LoadTextureHandle(diffuseTextureFile
       , Texture::Channel::SRGB);
     }
     if (normalTextureFile.size() > 0)
     {
-      m_normalTexture = Texture(normalTextureFile
+      m_normalTexture = Texture::LoadTextureHandle(normalTextureFile
         , Texture::Channel::RGB);
     }
     if (roughnessTextureFile.size() > 0)
     {
-      m_roughnessTexture = Texture(roughnessTextureFile
+      m_roughnessTexture = Texture::LoadTextureHandle(roughnessTextureFile
         , Texture::Channel::RGB);
     }
     if (metallicTexture.size() > 0)
     {
-      m_metallicTexture = Texture(metallicTexture
+      m_metallicTexture = Texture::LoadTextureHandle(metallicTexture
         , Texture::Channel::RGB);
     }
     if (emissiveTextureFile.size() > 0)
     {
-      m_emissiveTexture = Texture(emissiveTextureFile
+      m_emissiveTexture = Texture::LoadTextureHandle(emissiveTextureFile
         , Texture::Channel::RGB);
     }
   }
@@ -117,23 +117,23 @@ namespace Rendering
 
     if (useTexture)
     {
-      m_diffuseTexture.BindToTextureUnit(0);
+      m_diffuseTexture->BindToTextureUnit(0);
       m_shader.SetUniform("u_diffuseColor", m_diffuseColor);
       
       m_shader.SetUniform("u_useNormalmap", m_useNormal);
       if (m_useNormal)
       {
         m_shader.SetUniform("u_material.m_normalMultiplier", m_normalMultiplier);
-        m_normalTexture.BindToTextureUnit(1);
+        m_normalTexture->BindToTextureUnit(1);
       }
 
-      m_roughnessTexture.BindToTextureUnit(2);
+      m_roughnessTexture->BindToTextureUnit(2);
       m_shader.SetUniform("u_material.m_roughnessValue", m_roughnessValue);
 
-      m_metallicTexture.BindToTextureUnit(3);
+      m_metallicTexture->BindToTextureUnit(3);
       m_shader.SetUniform("u_material.m_metallicValue", m_metallicValue);
 
-      m_emissiveTexture.BindToTextureUnit(4);
+      m_emissiveTexture->BindToTextureUnit(4);
       m_shader.SetUniform("u_material.m_emissiveStrength", m_emissiveStrength);
     }
   }
@@ -147,11 +147,11 @@ namespace Rendering
   {
     m_shader.Clear();
 
-    m_diffuseTexture.Clear();
-    m_normalTexture.Clear();
-    m_roughnessTexture.Clear();
-    m_metallicTexture.Clear();
-    m_emissiveTexture.Clear();
+    m_diffuseTexture->Clear();
+    m_normalTexture->Clear();
+    m_roughnessTexture->Clear();
+    m_metallicTexture->Clear();
+    m_emissiveTexture->Clear();
   }
 
   EC::Handle<Material> Material::LoadMaterial(const std::string& fileName)

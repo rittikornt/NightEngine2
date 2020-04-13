@@ -147,7 +147,7 @@ namespace Editor
     {
       static std::vector<std::string> s_paths;
       FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Scenes, s_paths
-      , FileSystem::FileFilter::FileName, ".nscene", true);
+      , FileSystem::FileFilter::FileName, ".nscene", true, false, true);
 
       g_comboBox.SetWindowName("Open Scene");
       g_comboBox.ShowConfirmationBoxWithComboBox("Open Scene: ",

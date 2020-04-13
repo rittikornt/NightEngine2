@@ -26,7 +26,7 @@ namespace NightEngine
   using namespace Container;
 
   template<typename T>
-  static Container::Hashmap<U64, T>& GetHashMap()
+  static Container::Hashmap<U64, T>& GetContainer()
   {
     static Container::Hashmap<U64, T> hashmap;
     return hashmap;
@@ -38,21 +38,23 @@ namespace NightEngine
       << " ResourceManager:ClearAllData()\n";
 
     //TODO: CLear things
-    auto& hashmap = GetHashMap<EC::Handle<Rendering::Material>>();
+    auto& hashmap = GetContainer<EC::Handle<Rendering::Material>>();
     hashmap.clear();
     auto& container1 = Factory::GetTypeContainer<Material>();
     container1.Clear();
 
-    auto& hashmap2 = GetHashMap<Texture>();
+    auto& hashmap2 = GetContainer<EC::Handle<Rendering::Texture>>();
     hashmap2.clear();
+    auto& container2 = Factory::GetTypeContainer<Texture>();
+    container2.Clear();
 
-    auto& hashmap3 = GetHashMap<Model>();
+    auto& hashmap3 = GetContainer<Model>();
     hashmap3.clear();
   }
 
   EC::Handle<Rendering::Material> ResourceManager::LoadMaterialResource(const Container::String& fileName)
   {
-    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetHashMap< EC::Handle<Rendering::Material>>();
+    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetContainer< EC::Handle<Rendering::Material>>();
 
     //Generate unique key for each Material File
     Container::String newKeyStr{ fileName };
@@ -85,7 +87,7 @@ namespace NightEngine
 
   void ResourceManager::RefreshMaterialTextureUniforms()
   {
-    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetHashMap< EC::Handle<Rendering::Material>>();
+    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetContainer< EC::Handle<Rendering::Material>>();
 
     for (auto& pair : hashmap)
     {
@@ -95,11 +97,11 @@ namespace NightEngine
 
   /////////////////////////////////////////////////////////////////////////////
 
-  Texture* ResourceManager::LoadTextureResource(const Container::String& filePath
+  EC::Handle<Rendering::Texture> ResourceManager::LoadTextureResource(const Container::String& filePath
     , Texture::Channel channel, Texture::FilterMode filterMode
     , Texture::WrapMode wrapMode, bool hdrImage)
   {
-    Container::Hashmap<U64, Texture>& hashmap = GetHashMap<Texture>();
+    Container::Hashmap<U64, EC::Handle<Rendering::Texture>>& hashmap = GetContainer<EC::Handle<Rendering::Texture>>();
 
     //Generate unique key for each Texture Setting
     Container::String newKeyStr{ filePath };
@@ -113,31 +115,31 @@ namespace NightEngine
     auto it = hashmap.find(key);
     if (it != hashmap.end())
     {
-      return &(it->second);
+      return (it->second);
     }
 
     //Generate new Texture
+    EC::Handle<Rendering::Texture> newHandle = Factory::Create<Texture>("Texture");
     if (hdrImage)
     {
-      Texture newTexture = Texture::LoadHDRTexture(filePath
+      *(newHandle.Get()) = Texture::LoadHDRTexture(filePath
         , channel, filterMode, wrapMode);
-      hashmap.insert({ key, newTexture });
     }
     else
     {
-      Texture newTexture = Texture::LoadTexture(filePath
+      *(newHandle.Get()) = Texture::LoadTexture(filePath
         , channel, filterMode, wrapMode);
-      hashmap.insert({ key, newTexture });
     }
+    hashmap.insert({ key, newHandle });
 
-    return &(hashmap[key]);
+    return newHandle;
   }
 
   /////////////////////////////////////////////////////////////////
 
   Rendering::Model* ResourceManager::LoadModelResource(const Container::String& filePath)
   {
-    Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
+    Container::Hashmap<U64, Model>& hashmap = GetContainer<Model>();
 
     //Generate unique key for each Texture Setting
     Container::String newKeyStr{ filePath };
@@ -168,7 +170,7 @@ namespace NightEngine
   static std::mutex g_modelsMutex;
   static void LoadModels_Task(Container::String filePath, U64 key)
   {
-    Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
+    Container::Hashmap<U64, Model>& hashmap = GetContainer<Model>();
 
     //Load Mesh
     Model newModel{ filePath, false };
@@ -181,7 +183,7 @@ namespace NightEngine
 
   void ResourceManager::PreloadModelsResourceAsync(const Container::Vector<Container::String>& filePaths)
   {
-    Container::Hashmap<U64, Model>& hashmap = GetHashMap<Model>();
+    Container::Hashmap<U64, Model>& hashmap = GetContainer<Model>();
     Container::Vector<std::future<void>> futures;
 
     Debug::Log << Logger::MessageType::INFO

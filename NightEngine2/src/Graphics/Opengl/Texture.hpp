@@ -12,6 +12,7 @@
 #include <unordered_set>
 
 #include "Core/Reflection/ReflectionMacros.hpp"
+#include "Core/EC/Handle.hpp"
 
 namespace Rendering
 {
@@ -151,6 +152,12 @@ namespace Rendering
     //*****************************************************
     // Static Method
     //*****************************************************
+    //! @brief Constructor to load from path
+    static NightEngine::EC::Handle<Rendering::Texture> LoadTextureHandle(const std::string& filePath, Channel channel = Channel::RGB
+      , FilterMode filterMode = FilterMode::LINEAR
+      , WrapMode wrapMode = WrapMode::REPEAT
+      , bool hdrImage = false);
+
     //! @brief Load file and Generate Texture
     static TextureIdentifier LoadTexture(const std::string& filePath, Channel internalFormat = Channel::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);

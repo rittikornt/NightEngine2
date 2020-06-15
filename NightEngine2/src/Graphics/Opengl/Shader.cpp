@@ -316,7 +316,49 @@ namespace Rendering
     std::string sourceCode = std::string(std::istreambuf_iterator<char>(fd),
       (std::istreambuf_iterator<char>()));
 
+    if (sourceCode == "")
+    {
+      Debug::Log << Logger::MessageType::WARNING
+        << "Shader::LoadShaderSourceCode(), filePath's content is empty [" << filePath << "]\n";
+      return "";
+    }
+
     //TODO: some preprocessing shader code here before returning
+    bool done = false;
+    while (!done)
+    {
+      //Find token
+      const std::string includeStr = "#include \"";
+      auto includeTokenPos = sourceCode.find(includeStr);
+
+      bool found = includeTokenPos != std::string::npos;
+      if (found)
+      {
+        size_t posAtIncludePath = includeTokenPos + includeStr.length();
+        std::string afterIncludeToken = sourceCode.substr(posAtIncludePath, sourceCode.length() - posAtIncludePath);
+        auto closingIncludeTokenPos = afterIncludeToken.find("\"");
+
+        std::string includeSourceCode = "";
+        if (closingIncludeTokenPos != std::string::npos)
+        {
+          //Load source code from path
+          auto includePath = afterIncludeToken.substr(0, closingIncludeTokenPos);
+          includePath = PROJECT_DIR_SOURCE_SHADER + includePath;
+          includeSourceCode = LoadShaderSourceCode(includePath);
+        }
+        else
+        {
+          Debug::Log << Logger::MessageType::ERROR_MSG
+            << "Shader::LoadShaderSourceCode(), Error while attempting to replace \"#include\" token at pos[" << includeTokenPos << "]\n";
+        }
+
+        //Replace with source code
+        sourceCode.replace(includeTokenPos, includeStr.length() + closingIncludeTokenPos + 1, includeSourceCode);
+      }
+
+      done = !found;
+    }
+
     return sourceCode;
   }
 

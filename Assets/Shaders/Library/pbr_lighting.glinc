@@ -84,14 +84,14 @@ float LinearizeDepth(float depth, float near, float far)
 	return (2.0 * near * far)/ (far + near - z* (far - near));
 }
 
-//! brief Calculate falloff Attenuation
+//! brief Calculate pointlight falloff Attenuation
 float GetPointLightAttenuation(vec3 fragPos, vec3 lightPos, float intensity)
 {
   float dist = length(lightPos - fragPos);
 	return ((intensity *intensity) / (dist * dist));
 }
 
-//! brief Calculate falloff Attenuation
+//! brief Calculate spotlight falloff Attenuation
 float GetSpotLightAttenuation(vec3 fragPos, LightInfo lightInfo)
 {
 	vec3 lightDir = normalize(fragPos - lightInfo.m_position);
@@ -104,7 +104,7 @@ float GetSpotLightAttenuation(vec3 fragPos, LightInfo lightInfo)
 	return intensity * lightInfo.m_intensity* lightInfo.m_intensity;
 }
 
-//! @brief Calculate how much this fragment is in shadow
+//! @brief Calculate direction light attenutation by doing shadowmap PCF sampling [0,1]
 float CalculateDirLightAttenuation(vec4 fragLightSpacePos, vec3 lightDir, vec3 normal)
 {
 	//Perspective division
@@ -126,7 +126,6 @@ float CalculateDirLightAttenuation(vec4 fragLightSpacePos, vec3 lightDir, vec3 n
 
 	//Size of single texel
 	vec2 texelSize = 1.0/ textureSize(u_shadowMap2D, 0);
-	float shadowIntensity = u_dirLightInfo.m_intensity;
 
 	//PCF soft shadow
 	float shadow = 0.0;
@@ -135,17 +134,17 @@ float CalculateDirLightAttenuation(vec4 fragLightSpacePos, vec3 lightDir, vec3 n
 		for(int y= -1; y < 2; ++y)
 		{
 			float pcfDepth = texture(u_shadowMap2D, projCoords.xy + vec2(x,y) * texelSize).r;
-			shadow += currentDepth - bias > pcfDepth ? shadowIntensity : 0.0;
+			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
 		}
 	}
 	shadow /= 9.0;
 
 	//Check if in shadow or not
-	return u_dirLightInfo.m_intensity - shadow ;
+	return 1.0 - shadow;
 }
 
-//! @brief Calculate how much this fragment is in shadow
-float CalculatePointShadow(int lightIndex, vec3 fragPos, vec3 lightPos, vec3 camPos)
+//! @brief Calculate how much this fragment is in shadow [0,1]
+float SamplePointLightShadowPCF(int lightIndex, vec3 fragPos, vec3 lightPos, vec3 camPos)
 {
   //Dir for Sampling the cubemap 
   vec3  lightToFragDir = fragPos - lightPos;
@@ -175,11 +174,7 @@ float CalculatePointShadow(int lightIndex, vec3 fragPos, vec3 lightPos, vec3 cam
   shadow /= float(samples);  
 
   //Check if in shadow or not
-  return shadow;
-	
-	// float closestDepth = texture(u_shadowMap[lightIndex], lightToFragDir).r;
-  	//   closestDepth *= u_farPlane;
-	// return closestDepth/ u_farPlane;
+  return 1.0 - shadow;
 }
 
 //**********************************************************
@@ -279,7 +274,7 @@ vec3 CalculateMainLighting(SurfaceData surfaceData
 						, Albedo, Roughness, Metallic);
 }
 
-vec3 CalculateAdditionalLightingTotal(vec3 ViewDir, vec3 Normal, vec3 fragPos
+vec3 CalculateAdditionalLighting(vec3 ViewDir, vec3 Normal, vec3 fragPos
 , vec3 Albedo, float Roughness, float Metallic)
 {
 	vec3 Lo = vec3(0.0, 0.0, 0.0);
@@ -294,10 +289,10 @@ vec3 CalculateAdditionalLightingTotal(vec3 ViewDir, vec3 Normal, vec3 fragPos
 									, u_pointLightInfo[i].m_intensity);
 
 		//Shadow
-		float shadow = 1.0 - CalculatePointShadow(i, fragPos
+		float shadowAtten = SamplePointLightShadowPCF(i, fragPos
 		, u_pointLightInfo[i].m_position, u_cameraInfo.m_position);
 
-		Lo += shadow * CalculatePBRLighting(ViewDir, LightDir, Halfway, Normal
+		Lo += shadowAtten * CalculatePBRLighting(ViewDir, LightDir, Halfway, Normal
 						, attenuation, u_pointLightInfo[i].m_color
 						, Albedo, Roughness, Metallic);
 	}

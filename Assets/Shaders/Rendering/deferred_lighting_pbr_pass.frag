@@ -52,7 +52,7 @@ void main()
 					, diffuse.rgb, roughness, metallic);
 
 	//Additional Lighting (Point/Spot Lights)
-	Lo += CalculateAdditionalLightingTotal(viewDir, surfaceData.normal, fragPos
+	Lo += CalculateAdditionalLighting(viewDir, surfaceData.normal, fragPos
 					, diffuse.rgb, roughness, metallic);
 
 	//Ambient

@@ -20,8 +20,6 @@ namespace NightEngine
   class ResourceManager
   {
     public:
-    //TODO: Return by Handle instead of raw pointer
-
     //! @brief Static Function for Load and Cache Material File
     static void ClearAllData(void);
 

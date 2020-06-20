@@ -12,6 +12,8 @@
 #include "Core/Serialization/ResourceManager.hpp"
 
 #include "Core/EC/GameObject.hpp"
+#include "Core/EC/SceneManager.hpp"
+
 #include "Graphics/Opengl/Window.hpp"
 
 #include "Graphics/Opengl/Material.hpp"
@@ -70,26 +72,73 @@ namespace Editor
   template<int id>
   static bool DrawMaterialComboBox(const char* text, Handle<Rendering::Material>* handle)
   {
-    static int m_currentItem = 0;
     static std::vector <std::string> s_items;
     static std::vector <const char*> s_itemsPtr;
+    static std::vector <SlotmapID> s_itemsSlotMapID;
 
-    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Materials, s_items
-      , FileSystem::FileFilter::FileName, ".mat", false, true, true);
+    //FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Materials, s_items
+    //  , FileSystem::FileFilter::FileName, ".mat", false, true, true);
 
+    //Traverse all material
+    s_items.clear();
+    s_itemsSlotMapID.clear();
+
+    s_items.emplace_back("<None>");
+    s_itemsSlotMapID.emplace_back(SlotmapID{});
+
+    int matIndex = -1;  //actually index into slotmap's array
+    int traverseIndex = 0; //traversal index in the loop
+    int currentIndex = 0; //chosen traversal index
+
+    auto& materialContainer = Factory::GetTypeContainer<Material>();
+    auto it = materialContainer.GetIterator();
+    while (!it.IsEnd())
+    {
+      matIndex = it.m_index;
+      s_items.emplace_back(it.Get()->GetName());
+      s_itemsSlotMapID.emplace_back(it.ToSlotmapID());
+
+      if (handle->m_handle.m_slotmapID.m_index == matIndex)
+      {
+        currentIndex = traverseIndex + 1; //offset by one so that <None> is at 0 index
+        Debug::Log << "Current: " << it.Get()->GetName() <<"\n";
+      }
+
+      //Next iterator
+      ++traverseIndex;
+      it.Next();
+    }
+
+    //Duplicate string vector in const char*
     s_itemsPtr.clear();
     for (int i = 0; i < s_items.size(); ++i)
     {
       s_itemsPtr.emplace_back(s_items[i].c_str());
     }
 
-    bool changed = ImGui::Combo(text, &m_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
+    //Combo UI
+    bool changed = ImGui::Combo(text, &currentIndex, s_itemsPtr.data(), s_itemsPtr.size());
     if (changed)
     {
-      auto newHandle = ResourceManager::LoadMaterialResource(s_items[m_currentItem]);
-      if (newHandle.IsValid())
+      //<None>
+      if (currentIndex == 0)
       {
-        *(handle) = newHandle;
+        *(handle) = Handle<Rendering::Material>();
+        Debug::Log << "Choosed: <None>\n";
+      }
+      //Valid Material
+      else
+      {
+        auto newHandle = CAST_SLOTMAPID_TO_HANDLEOBJECT(Material, s_itemsSlotMapID[currentIndex]);
+        if (newHandle.IsValid())
+        {
+          *(handle) = newHandle;
+
+          auto mat = handle->Get();
+          Debug::Log << "Choosed: " << mat->GetName() << "\n";
+
+          SceneManager::ReregisterAllMeshRenderer();
+        }
       }
     }
 
@@ -101,8 +150,7 @@ namespace Editor
     m_typeEditorMap.insert({ "Handle<Material>",
       [](Reflection::Variable& variable, const char* memberName)
     {
-      auto dataPtr = variable.GetValue<Handle<Material>>();
-      auto mat = dataPtr.Get();
+      auto& dataPtr = variable.GetValue<Handle<Material>>();
       DrawMaterialComboBox<0>("Material", &(dataPtr));
     }
     });

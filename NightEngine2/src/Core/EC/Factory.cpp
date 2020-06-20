@@ -32,7 +32,7 @@ namespace NightEngine
     //**********************************************************
     // Global Variables
     //**********************************************************
-    ObjectFactory<HandleObject> g_factory;
+		HandleObjectFactory g_factory;
 
 		//Creator Definition
 		FACTORY_FUNC_IMPLEMENTATION(GameObject);
@@ -59,7 +59,10 @@ namespace NightEngine
 			Debug::Log << "Factory::Initialize\n";
 
 			//Creator Registration
-      FACTORY_REGISTER_TYPE_WITHPARAM(GameObject, 5000, 5000);
+			NightEngine::Factory::g_factory.Register("GameObject",
+			NightEngine::Factory::HandleObjectFactory::InfoFN{ FactoryCreateGameObject,FactoryLookupGameObject, FactoryDestroyGameObject });
+			NightEngine::Factory::GetTypeContainer<GameObject>().Reserve(5000, 5000);
+      //FACTORY_REGISTER_TYPE_WITHPARAM(GameObject, 5000, 5000);
 
       //Components
       FACTORY_REGISTER_TYPE_WITHPARAM(Transform, 5000, 5000);

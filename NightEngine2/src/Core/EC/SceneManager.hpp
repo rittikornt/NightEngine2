@@ -84,6 +84,9 @@ namespace NightEngine
       //!@brief Remove gameobject from a scene
       void RemoveGameObjectFromScene(Handle<GameObject> gameObject);
 
+      //!@brief Reregister all meshRenderer
+      void ReregisterAllMeshRenderer(void);
+
       /////////////////////////////////////////
 
       //!@brief Get all currently openned scenes

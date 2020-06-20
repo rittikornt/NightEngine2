@@ -89,6 +89,9 @@ namespace Rendering
 
       //! @brief Save Material from File
       static void SaveMaterial(const std::string& fileName, Material& material);
+
+      //! @brief Preload All Materials in the Path
+      static void PreLoadAllMaterials(void);
     private:
       std::string m_name = "unnamed";
       Shader      m_shader;

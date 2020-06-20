@@ -343,6 +343,8 @@ namespace Rendering
     m_lightTexture = Texture(FileSystem::GetFilePath("Icon_Light.png", FileSystem::DirectoryType::Textures)
       , Texture::Channel::RGBA);
 
+    Material::PreLoadAllMaterials();
+
     //************************************************
     // Setup Box, Model GameObjects
     //************************************************

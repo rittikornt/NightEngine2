@@ -117,23 +117,38 @@ namespace Rendering
 
     if (useTexture)
     {
-      m_diffuseTexture->BindToTextureUnit(0);
+      if (m_diffuseTexture.IsValid())
+      {
+        m_diffuseTexture->BindToTextureUnit(0);
+      }
       m_shader.SetUniform("u_diffuseColor", m_diffuseColor);
       
       m_shader.SetUniform("u_useNormalmap", m_useNormal);
       if (m_useNormal)
       {
         m_shader.SetUniform("u_material.m_normalMultiplier", m_normalMultiplier);
-        m_normalTexture->BindToTextureUnit(1);
+        if (m_normalTexture.IsValid())
+        {
+          m_normalTexture->BindToTextureUnit(1);
+        }
       }
 
-      m_roughnessTexture->BindToTextureUnit(2);
+      if (m_roughnessTexture.IsValid())
+      {
+        m_roughnessTexture->BindToTextureUnit(2);
+      }
       m_shader.SetUniform("u_material.m_roughnessValue", m_roughnessValue);
 
-      m_metallicTexture->BindToTextureUnit(3);
+      if (m_metallicTexture.IsValid())
+      {
+        m_metallicTexture->BindToTextureUnit(3);
+      }
       m_shader.SetUniform("u_material.m_metallicValue", m_metallicValue);
 
-      m_emissiveTexture->BindToTextureUnit(4);
+      if (m_emissiveTexture.IsValid())
+      {
+        m_emissiveTexture->BindToTextureUnit(4);
+      }
       m_shader.SetUniform("u_material.m_emissiveStrength", m_emissiveStrength);
     }
   }
@@ -184,5 +199,27 @@ namespace Rendering
 
     Debug::Log << Logger::MessageType::INFO 
       << "Saved Material: " << fileName << '\n';
+  }
+
+  void Material::PreLoadAllMaterials(void)
+  {
+    Debug::Log << Logger::MessageType::INFO
+      << "Material::PreLoadAllMaterials()\n";
+
+    static std::vector <std::string> s_items;
+
+    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Materials, s_items
+      , FileSystem::FileFilter::FileName, ".mat", false, true, true);
+
+    for (int i = 0; i < s_items.size(); ++i)
+    {
+      auto newHandle = ResourceManager::LoadMaterialResource(s_items[i]);
+      bool success = newHandle.IsValid();
+      {
+        Debug::Log << (success? Logger::MessageType::INFO: Logger::MessageType::WARNING)
+          << "Loading Material: " << s_items[i]
+          << (success ? " successfully\n": " unsuccessfully\n");
+      }
+    }
   }
 }

@@ -190,7 +190,7 @@ namespace NightEngine
           ch = floorGO->GetComponent("MeshRenderer");
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
             , FileSystem::DirectoryType::Models), true);
-          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
           g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
           ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
           floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
@@ -275,7 +275,7 @@ namespace NightEngine
           ch = modelGO1->GetComponent("MeshRenderer");
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Torus.obj"
             , FileSystem::DirectoryType::Models), true);
-          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
           modelGO1->GetTransform()->SetPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
           modelGO1->AddComponent("Rigidbody");
           ch = modelGO1->GetComponent("Rigidbody");
@@ -307,7 +307,7 @@ namespace NightEngine
           ch = sphereGO->GetComponent("MeshRenderer");
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Sphere.obj"
             , FileSystem::DirectoryType::Models), true);
-          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
           sphereGO->GetTransform()->SetPosition(glm::vec3(2.0f, -2.6f, 0.0f));
           sphereGO->AddComponent("Rigidbody");
           ch = sphereGO->GetComponent("Rigidbody");
@@ -322,7 +322,7 @@ namespace NightEngine
           ch = floorGO->GetComponent("MeshRenderer");
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
             , FileSystem::DirectoryType::Models), true);
-          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::NORMAL);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
           g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
           ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
           floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
@@ -557,6 +557,27 @@ namespace NightEngine
         for (int i = 0; i < g_openedScenes.size(); ++i)
         {
           g_openedScenes[i]->RemoveGameObject(gameObject);
+        }
+      }
+
+      void ReregisterAllMeshRenderer()
+      {
+        Debug::Log << "SceneManager::ReregisterAllMeshRenderer\n";
+        for (int i = 0; i < g_openedScenes.size(); ++i)
+        {
+          auto& gameObjects = g_openedScenes[i].Get()->GetAllGameObjects();
+          for (auto go : gameObjects)
+          {
+            auto gameObject = go.Get();
+
+            //Init MeshRenderer
+            auto handle = gameObject->GetComponent<MeshRenderer>();
+            if (handle != nullptr)
+            {
+              auto meshRenderer = handle->Get<MeshRenderer>();
+              meshRenderer->ReregisterDrawMode();
+            }
+          }
         }
       }
 

@@ -177,6 +177,29 @@ namespace Editor
         ImGui::EndChild();
       }
       ImGui::EndGroup();
+
+      //Bottom Right Buttons
+      ImGui::Separator();
+      if (!(g_curSelectedMaterial.IsEnd())
+        && g_curSelectedMaterial.Get() != nullptr)
+      {
+        const int buttonAmount = 1;
+        auto size = ImVec2((width - leftPanelWidth - 70) / buttonAmount, 0.0f);
+
+        //Save Material Button
+        if (ImGui::Button("Save Material", size))
+        {
+          std::string desc{ "save \"" };
+          desc += g_curSelectedMaterial.Get()->GetName();
+          desc += "\" to material";
+          g_confirmBox.ShowConfirmationBox(const_cast<char*>(desc.c_str())
+            , []()
+            {
+              Material::SaveMaterial(g_curSelectedMaterial.Get()->GetName() + ".mat"
+                , *g_curSelectedMaterial.Get());
+            });
+        }
+      }
     }
     ImGui::End();
   }
@@ -191,7 +214,7 @@ namespace Editor
     auto size = ImVec2((ImGui::GetWindowContentRegionWidth() - 15) / buttonAmount, 0.0f);
     
     //Add Material Button
-    if (ImGui::Button("Add"
+    if (ImGui::Button("(+) Add"
       , size))
     {
       std::string desc{ "Create new material file: " };
@@ -229,7 +252,7 @@ namespace Editor
 
       //Remove Material
       ImGui::SameLine();
-      if (ImGui::Button("Remove", size))
+      if (ImGui::Button("(-) Remove", size))
       {
         std::string desc{ "remove \"" };
         desc += g_curSelectedMaterial.Get()->GetName();

@@ -144,7 +144,7 @@ namespace Rendering
 		GLuint GetID(void) const { return m_textureID; }
 
     //! @brief Check if the texture is valid
-		GLuint IsValid(void) const { return m_textureID == ~(0);}
+		GLuint IsValid(void) const { return m_textureID != ~(0);}
 
     //! @brief Clear texture variables
     inline void Clear(void) { m_textureID = ~(0); m_name.clear(); m_filePath.clear(); }

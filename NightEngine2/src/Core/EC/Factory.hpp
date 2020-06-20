@@ -15,11 +15,13 @@
 //**********************************************
 //! @brief Factory Registering Call (must be called within function)
 #define FACTORY_REGISTER_TYPE(TYPE) \
-	NightEngine::Factory::g_factory.Register<TYPE>(#TYPE, FactoryCreate##TYPE);																
+	NightEngine::Factory::g_factory.Register(#TYPE, \
+  NightEngine::Factory::HandleObjectFactory::InfoFN{FactoryCreate##TYPE,FactoryLookup##TYPE, FactoryDestroy##TYPE});																
 
 //! @brief Factory Registering Call (must be called within function)
 #define FACTORY_REGISTER_TYPE_WITHPARAM(TYPE, RESERVE_INT, EXPAND_RATE) \
-	NightEngine::Factory::g_factory.Register<TYPE>(#TYPE, FactoryCreate##TYPE); \
+	NightEngine::Factory::g_factory.Register(#TYPE, \
+  NightEngine::Factory::HandleObjectFactory::InfoFN{FactoryCreate##TYPE,FactoryLookup##TYPE, FactoryDestroy##TYPE}); \
 	NightEngine::Factory::GetTypeContainer<TYPE>().Reserve(RESERVE_INT, EXPAND_RATE); 	
 
 //! @brief Factory Lookup/Destroy/Create Functions Implementation
@@ -37,6 +39,10 @@
 		return NightEngine::EC::HandleObject(NightEngine::Factory::GetTypeContainer<TYPE>().CreateSlot()	\
 					, FactoryLookup##TYPE, FactoryDestroy##TYPE);	 \
 	}																		 
+
+//! @brief Cast SlowMapID to HandleObject of specific TYPE
+#define CAST_SLOTMAPID_TO_HANDLEOBJECT(TYPE, SLOTMAPID) \
+  NightEngine::Factory::Cast<TYPE>(#TYPE, SLOTMAPID);
 
 namespace NightEngine
 {
@@ -64,26 +70,33 @@ namespace NightEngine
     //**********************************************
     // Factory Class
     //**********************************************
-		template<class T>
-    class ObjectFactory
+    class HandleObjectFactory
     {
 		public:
-      using CreateFN = T(*)(void);
+      using CreateFN = EC::HandleObject (*)(void);
+      struct InfoFN
+      {
+        CreateFN m_createFn;
+        EC::HandleObject::LookupFN m_lookupFn;
+        EC::HandleObject::DestroyFN m_destroyFn;
+      };
 
-			//! @brief Register Creator<T> into Factory
-			template<class Type>
-      void	 Register(const char* name, CreateFN createFn);//Creator<T>* creator);
+			//! @brief Register typename into Factory
+      void	            Register(const char* name, InfoFN infoFn);//Creator<T>* creator);
 
       //! @brief Create object from typename
-			T			 Create(const char* typeName);
+      EC::HandleObject	Create(const char* typeName);
+
+      //! @brief Get function info for specific type
+      InfoFN	          GetFunctionInfo(const char* typeName);
 		private:
 
-			using TypeCreateFnMap = Container::Hashmap<std::string, CreateFN>;
-			TypeCreateFnMap m_creatorMap;	//Map of name to Creator
+			using HandleInfoMap = Container::Hashmap<std::string, InfoFN>;
+      HandleInfoMap m_creatorMap;	//Map of name to Creator
 		};
 
 		//Global Variable
-		extern ObjectFactory<EC::HandleObject> g_factory;
+		extern HandleObjectFactory g_factory;
 	}
 }
 
@@ -97,19 +110,23 @@ namespace NightEngine
     //**********************************************
     // Class Definition
     //**********************************************
-    template<class T>
-    template<class Type>
-    inline void ObjectFactory<T>::Register(const char* name, CreateFN createFn)
+    inline void HandleObjectFactory::Register(const char* name, InfoFN infoFn)
     {
-      m_creatorMap.insert({ name, createFn });
+      m_creatorMap.insert( {name, infoFn} );
     }
 
-    template<class T>
-    inline T ObjectFactory<T>::Create(const char * typeName)
+    inline EC::HandleObject HandleObjectFactory::Create(const char* typeName)
     {
       ASSERT_MSG(m_creatorMap.find(typeName) != m_creatorMap.end()
-        , "Trying to Create an unregistered type T");
-      return m_creatorMap[typeName]();
+        , "Trying to Create an unregistered typeName");
+      return m_creatorMap[typeName].m_createFn();
+    }
+
+    inline HandleObjectFactory::HandleObjectFactory::InfoFN HandleObjectFactory::GetFunctionInfo(const char* typeName)
+    {
+      ASSERT_MSG(m_creatorMap.find(typeName) != m_creatorMap.end()
+        , "Trying to Lookup an unregistered typeName");
+      return m_creatorMap[typeName];
     }
 
     //**********************************************
@@ -129,17 +146,13 @@ namespace NightEngine
     }
 
     template<class T>
-    EC::Handle<T> Cast(SlotmapID slotmapID)
+    EC::Handle<T> Cast(const char* typeName, SlotmapID slotmapID)
     {
-      return EC::Handle<T>{HandleObject{ slotmapID
-        , [] (SlotmapID& id)
-          {
-            return NightEngine::Factory::GetTypeContainer<TYPE>().Get(id);
-          }
-        , [](SlotmapID& id) 
-          {
-            NightEngine::Factory::GetTypeContainer<TYPE>().Destroy(id);
-          } }};
+      auto funcInfo = g_factory.GetFunctionInfo(typeName);
+      return EC::Handle<T>
+      {
+        EC::HandleObject{ slotmapID, funcInfo.m_lookupFn, funcInfo.m_destroyFn }
+      };
     }
   }
 }

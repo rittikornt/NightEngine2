@@ -40,7 +40,7 @@ namespace NightEngine
         public:
           enum class DrawMode : unsigned
           {
-            NORMAL = 0,     //Draw with prebinded material
+            PREBIND = 0,     //Draw with prebinded material
             CUSTOM ,        //Draw with m_material
             OUTLINE,
             DEBUG,
@@ -60,6 +60,9 @@ namespace NightEngine
             , const unsigned* indices, size_t indexArraySize
             , bool castShadow = true
             , bool buildNow = true);
+
+          //! @brief Reregister Draw mode
+          void ReregisterDrawMode(void);
 
           //! @brief Register to Drawer mode
           void RegisterDrawMode(DrawMode mode);

@@ -5,6 +5,7 @@
 */
 #include "Core/EC/Components/MeshRenderer.hpp"
 #include "Core/EC/GameObject.hpp"
+#include "Core/EC/SceneManager.hpp"
 
 #include "Graphics/Opengl/Model.hpp"
 #include "Graphics/Opengl/Vertex.hpp"
@@ -50,6 +51,20 @@ namespace NightEngine
         m_meshCount = m_meshes.size();
       }
 
+      void MeshRenderer::ReregisterDrawMode(void) 
+      { 
+        auto defaultMat = SceneManager::GetDefaultMaterial();
+        if (defaultMat.m_handle == m_material.m_handle)
+        {
+          RegisterDrawMode(DrawMode::PREBIND);
+        }
+        else
+        {
+          UnregisterDrawMode(m_drawMode);
+          RegisterDrawMode(DrawMode::CUSTOM);
+        }
+      }
+
       void MeshRenderer::RegisterDrawMode(DrawMode mode)
       {
         //Unregister old drawmode
@@ -74,7 +89,7 @@ namespace NightEngine
             InstanceDrawer::RegisterInstance(*this);
             break;
           }
-          case DrawMode::NORMAL:
+          case DrawMode::PREBIND:
           {
             Drawer::RegisterMeshRenderer(*this
               , Drawer::DrawPass::BATCH);
@@ -115,7 +130,7 @@ namespace NightEngine
             InstanceDrawer::UnregisterInstance(*this);
             break;
           }
-          case DrawMode::NORMAL:
+          case DrawMode::PREBIND:
           {
             Drawer::UnregisterMeshRenderer(*this
               , Drawer::DrawPass::BATCH);
@@ -201,7 +216,7 @@ namespace NightEngine
 
         switch (m_drawMode)
         {
-          case DrawMode::NORMAL:
+          case DrawMode::PREBIND:
           {
             //SetUniform Modelmatrix
             auto t = m_gameObject->GetTransform();

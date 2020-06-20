@@ -117,6 +117,11 @@ namespace NightEngine
         value.emplace("Shaders", shaderNameValue);
       }
 
+      //Diffuse Color
+      Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
+        , &material.m_diffuseColor };
+      value.emplace("Diffuse Color", diffuseColorVar.Serialize());
+
       //Diffuse Texture
       if (material.m_diffuseTexture.IsValid()
         && material.m_diffuseTexture->m_filePath.size() > 0)
@@ -292,6 +297,15 @@ namespace NightEngine
         Debug::Log << Logger::MessageType::ERROR_MSG
         << "Not Found Deserialize MemberName: Shaders\n";
         ASSERT_TRUE(false);
+      }
+
+      //Diffuse Color
+      it = obj.find("Diffuse Color");
+      if (it != obj.end())
+      {
+        Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
+          , &material.m_diffuseColor };
+        diffuseColorVar.Deserialize(it->second);
       }
 
       //Normal Values

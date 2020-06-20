@@ -178,7 +178,12 @@ namespace NightEngine
 
       void MeshRenderer::DrawWithMaterial(void)
       {
-        ASSERT_TRUE(m_material.IsValid());
+        //If for some reason material become invalid (deleted), assign this mesh an error material
+        if (!m_material.IsValid())
+        {
+          m_material = SceneManager::GetErrorMaterial();
+          ASSERT_TRUE(m_material.IsValid());
+        }
 
         m_material->Bind(true);
         {

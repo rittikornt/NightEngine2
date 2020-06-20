@@ -108,6 +108,8 @@ namespace NightEngine
 
       Handle<Rendering::Material> GetBillBoardMaterial(void);
 
+      Handle<Rendering::Material> GetErrorMaterial(void);
+
       /////////////////////////////////////////
 
       Rendering::Postprocess::PostProcessSetting& GetPostProcessSetting(void);

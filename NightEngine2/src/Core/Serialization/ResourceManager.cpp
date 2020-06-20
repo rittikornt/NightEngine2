@@ -64,7 +64,7 @@ namespace NightEngine
 
     //Try lookup
     auto it = hashmap.find(key);
-    if (it != hashmap.end())
+    if (it != hashmap.end() && it->second.IsValid())
     {
       return (it->second);
     }

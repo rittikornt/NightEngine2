@@ -50,6 +50,7 @@ namespace NightEngine
       // right now its destructor is being called after deleted the whole engine
       static Handle<Material>          g_defaultMaterial;
       static Handle<Material>          g_billboardMaterial;
+      static Handle<Material>          g_errorMaterial;
 
       FACTORY_FUNC_IMPLEMENTATION(Scene);
 
@@ -90,8 +91,7 @@ namespace NightEngine
 
         g_defaultMaterial.m_handle.Nullify();
         g_billboardMaterial.m_handle.Nullify();
-        //g_defaultMaterial.Destroy();
-        //g_billboardMaterial.Destroy();
+        g_errorMaterial.m_handle.Nullify();
       }
 
       /////////////////////////////////////////
@@ -667,6 +667,14 @@ namespace NightEngine
         return g_billboardMaterial;
       }
 
+      Handle<Rendering::Material> GetErrorMaterial(void)
+      {
+        if (!g_errorMaterial.IsValid())
+        {
+          g_errorMaterial = Material::LoadMaterial("ErrorMaterial.mat");
+        }
+        return g_errorMaterial;
+      }
       /////////////////////////////////////////
 
       Rendering::Postprocess::PostProcessSetting& GetPostProcessSetting(void)

@@ -84,7 +84,7 @@ namespace Rendering
       //! @brief Set the material name
       inline void SetName(std::string name) { m_name = name; }
 
-      //! @brief Load Material from File
+      //! @brief Load Material from File (eg. "fileName.mat")
       static NightEngine::EC::Handle<Material> LoadMaterial(const std::string& fileName);
 
       //! @brief Save Material from File

@@ -269,6 +269,7 @@ namespace Editor
         {
             auto id = g_curSelectedMaterial.ToSlotmapID();
             g_curSelectedMaterial.m_slotmap->Destroy(id);
+            Debug::Log << "Removed: " << id.m_index << "\n";
 
             g_curSelectedMaterial = Slotmap<Material>::Iterator{};
             g_selectedIndex = 0;

@@ -1,0 +1,23 @@
+{
+  "Material": {
+    "Diffuse": "./../Assets/Textures/Blank\\100.png",
+    "Diffuse Color": {
+      "x": 0.9420081377029419,
+      "y": 0.014705896377563477,
+      "z": 1.0
+    },
+    "Emissive": "./../Assets/Textures/Blank\\000.png",
+    "Emissive Strength": 0.0,
+    "Metallic": "./../Assets/Textures/Blank/000.png",
+    "Metallic Value": 0.0,
+    "Normal": "./../Assets/Textures/Blank\\000.png",
+    "Normal Multiplier": 1.0,
+    "Roughness": "./../Assets/Textures/Blank/000.png",
+    "Roughness Value": 1.0,
+    "Shaders": [
+      "Rendering/deferred_geometry_pass.vert",
+      "Rendering/deferred_geometry_pass.frag"
+    ],
+    "UseNormal": false
+  }
+}

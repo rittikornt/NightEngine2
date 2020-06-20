@@ -39,8 +39,8 @@ namespace NightEngine
       //! @brief Check Validity
       bool IsValid(void) const
       {
-        //TODO: Should also check if lookup successfully or not (valid generation?)
         return m_lookupFN != nullptr
+          && m_lookupFN(m_slotmapID) != nullptr
           && m_destroyFN != nullptr;
       }
 

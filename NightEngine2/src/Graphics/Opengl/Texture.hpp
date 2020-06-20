@@ -143,6 +143,9 @@ namespace Rendering
     //! @brief Get Opengl Generated ID
 		GLuint GetID(void) const { return m_textureID; }
 
+    //! @brief Get File Path
+    std::string GetFilePath(void) const { return m_filePath; }
+
     //! @brief Check if the texture is valid
 		GLuint IsValid(void) const { return m_textureID != ~(0);}
 

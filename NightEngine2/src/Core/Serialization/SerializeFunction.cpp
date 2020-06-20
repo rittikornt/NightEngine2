@@ -131,13 +131,12 @@ namespace NightEngine
       {
         JsonValue normalValue = material.m_normalTexture->m_filePath;
         value.emplace("Normal", normalValue);
-
-        JsonValue normalMultiplierValue = material.m_normalMultiplier;
-        value.emplace("Normal Multiplier", normalMultiplierValue);
-
-        JsonValue useNormalValue = material.m_useNormal;
-        value.emplace("UseNormal", useNormalValue);
       }
+      JsonValue normalMultiplierValue = material.m_normalMultiplier;
+      value.emplace("Normal Multiplier", normalMultiplierValue);
+
+      JsonValue useNormalValue = material.m_useNormal;
+      value.emplace("UseNormal", useNormalValue);
 
       //Roughness Texture
       if (material.m_roughnessTexture.IsValid()
@@ -145,10 +144,9 @@ namespace NightEngine
       {
         JsonValue roughnessFilePath = material.m_roughnessTexture->m_filePath;
         value.emplace("Roughness", roughnessFilePath);
-
-        JsonValue roughnessValue = material.m_roughnessValue;
-        value.emplace("Roughness Value", roughnessValue);
       }
+      JsonValue roughnessValue = material.m_roughnessValue;
+      value.emplace("Roughness Value", roughnessValue);
 
       //Metallic Texture
       if (material.m_metallicTexture.IsValid()
@@ -156,10 +154,9 @@ namespace NightEngine
       {
         JsonValue metallicFilePath = material.m_metallicTexture->m_filePath;
         value.emplace("Metallic", metallicFilePath);
-
-        JsonValue metallicValue = material.m_metallicValue;
-        value.emplace("Metallic Value", metallicValue);
       }
+      JsonValue metallicValue = material.m_metallicValue;
+      value.emplace("Metallic Value", metallicValue);
 
       //Emissive Texture
       if (material.m_emissiveTexture.IsValid() 
@@ -167,10 +164,9 @@ namespace NightEngine
       {
         JsonValue emissiveValue = material.m_emissiveTexture->m_filePath;
         value.emplace("Emissive", emissiveValue);
-
-        JsonValue emissiveStrValue = material.m_emissiveStrength;
-        value.emplace("Emissive Strength", emissiveStrValue);
       }
+      JsonValue emissiveStrValue = material.m_emissiveStrength;
+      value.emplace("Emissive Strength", emissiveStrValue);
 
       return value;
     }

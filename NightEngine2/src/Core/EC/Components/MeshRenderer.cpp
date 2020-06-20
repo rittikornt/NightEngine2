@@ -54,14 +54,20 @@ namespace NightEngine
       void MeshRenderer::ReregisterDrawMode(void) 
       { 
         auto defaultMat = SceneManager::GetDefaultMaterial();
-        if (defaultMat.m_handle == m_material.m_handle)
+        bool validMat = m_material.IsValid();
+
+        //Don't register draw call with invalid material
+        if (validMat && m_drawMode != DrawMode::DEBUG)
         {
-          RegisterDrawMode(DrawMode::PREBIND);
-        }
-        else
-        {
-          UnregisterDrawMode(m_drawMode);
-          RegisterDrawMode(DrawMode::CUSTOM);
+          if (defaultMat.m_handle == m_material.m_handle)
+          {
+            RegisterDrawMode(DrawMode::PREBIND);
+          }
+          else
+          {
+            UnregisterDrawMode(m_drawMode);
+            RegisterDrawMode(DrawMode::CUSTOM);
+          }
         }
       }
 

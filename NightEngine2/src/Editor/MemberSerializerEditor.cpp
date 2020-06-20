@@ -30,29 +30,39 @@ namespace Editor
 {
   static ImVec4 g_color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
 
-  template<int id>
+
   static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Channel channel)
   {
     const char* k_none = "None";
     static int m_currentItem = 0;
     static std::vector <std::string> s_items;
     static std::vector <const char*> s_itemsPtr;
+    static std::string  s_texFilePath;
 
     //Options
     s_items.clear();
     s_items.emplace_back(k_none);
+    m_currentItem = 0;
 
     FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Textures, s_items
       , FileSystem::FileFilter::FullPath, ".png", false, true, false);
     FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Textures, s_items
       , FileSystem::FileFilter::FullPath, ".jpg", false, true, false);
 
+    bool validTex = handle->IsValid();
+    s_texFilePath = validTex ? handle->Get()->GetFilePath() : "";
+
     //Options input for ImGUI
     s_itemsPtr.clear();
     for (int i = 0; i < s_items.size(); ++i)
     {
       s_itemsPtr.emplace_back(s_items[i].c_str());
+      if (validTex && s_items[i] == s_texFilePath)
+      {
+        m_currentItem = i;
+      }
     }
+
 
     //Combo Box Imgui
     bool changed = ImGui::Combo(text, &m_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
@@ -69,7 +79,6 @@ namespace Editor
     return changed;
   }
 
-  template<int id>
   static bool DrawMaterialComboBox(const char* text, Handle<Rendering::Material>* handle)
   {
     static std::vector <std::string> s_items;
@@ -101,7 +110,6 @@ namespace Editor
       if (handle->m_handle.m_slotmapID.m_index == matIndex)
       {
         currentIndex = traverseIndex + 1; //offset by one so that <None> is at 0 index
-        Debug::Log << "Current: " << it.Get()->GetName() <<"\n";
       }
 
       //Next iterator
@@ -151,7 +159,7 @@ namespace Editor
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto& dataPtr = variable.GetValue<Handle<Material>>();
-      DrawMaterialComboBox<0>("Material", &(dataPtr));
+      DrawMaterialComboBox("Material", &(dataPtr));
     }
     });
 
@@ -169,13 +177,13 @@ namespace Editor
 
       memberPtr = var.GetMetaType()->FindMember("m_diffuseTexture");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox<0>("Diffuse Texture", static_cast<Handle<Texture>*>(ptr)
+      DrawTextureComboBox("Diffuse Texture", static_cast<Handle<Texture>*>(ptr)
         , Texture::Channel::SRGB);
       
       //Normal
       memberPtr = var.GetMetaType()->FindMember("m_normalTexture");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox<1>("Normal Texture", static_cast<Handle<Texture>*>(ptr)
+      DrawTextureComboBox("Normal Texture", static_cast<Handle<Texture>*>(ptr)
         , Texture::Channel::RGB);
 
       memberPtr = var.GetMetaType()->FindMember("m_normalMultiplier");
@@ -190,7 +198,7 @@ namespace Editor
       //Roughness
       memberPtr = var.GetMetaType()->FindMember("m_roughnessTexture");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox<2>("Roughness Texture", static_cast<Handle<Texture>*>(ptr)
+      DrawTextureComboBox("Roughness Texture", static_cast<Handle<Texture>*>(ptr)
         , Texture::Channel::RGB);
 
       memberPtr = var.GetMetaType()->FindMember("m_roughnessValue");
@@ -200,7 +208,7 @@ namespace Editor
       //Metallic
       memberPtr = var.GetMetaType()->FindMember("m_metallicTexture");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox<3>("Metallic Texture", static_cast<Handle<Texture>*>(ptr)
+      DrawTextureComboBox("Metallic Texture", static_cast<Handle<Texture>*>(ptr)
         , Texture::Channel::RGB);
 
       memberPtr = var.GetMetaType()->FindMember("m_metallicValue");
@@ -210,7 +218,7 @@ namespace Editor
       //Emissive
       memberPtr = var.GetMetaType()->FindMember("m_emissiveTexture");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox<4>("Emissive Texture", static_cast<Handle<Texture>*>(ptr)
+      DrawTextureComboBox("Emissive Texture", static_cast<Handle<Texture>*>(ptr)
         , Texture::Channel::RGB);
 
       memberPtr = var.GetMetaType()->FindMember("m_emissiveStrength");

@@ -64,15 +64,24 @@ namespace Editor
 
     //Combo Box Imgui
     bool changed = ImGui::Combo(text, &m_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
-    if (changed && s_items[m_currentItem] != k_none)
+    if (changed)
     {
-      auto newHandle = Texture::LoadTextureHandle(s_items[m_currentItem]
-        , channel);
-      if (newHandle.IsValid())
+      if (s_items[m_currentItem] != k_none)
       {
-        *(handle) = newHandle;
+        auto newHandle = Texture::LoadTextureHandle(s_items[m_currentItem]
+          , channel);
+        if (newHandle.IsValid())
+        {
+          *(handle) = newHandle;
+        }
+      }
+      else
+      {
+        //Selecting None
+        handle->m_handle.Nullify();
       }
     }
+    
 
     return changed;
   }

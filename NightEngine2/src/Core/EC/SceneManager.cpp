@@ -46,7 +46,7 @@ namespace NightEngine
       //PostProcess
       Postprocess::PostProcessSetting* g_postProcessSetting;
 
-      //TODO: care about this material's life time
+      // TODO: care about this material's life time
       // right now its destructor is being called after deleted the whole engine
       static Handle<Material>          g_defaultMaterial;
       static Handle<Material>          g_billboardMaterial;
@@ -675,6 +675,7 @@ namespace NightEngine
         }
         return g_errorMaterial;
       }
+
       /////////////////////////////////////////
 
       Rendering::Postprocess::PostProcessSetting& GetPostProcessSetting(void)

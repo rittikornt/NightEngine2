@@ -121,6 +121,10 @@ namespace Rendering
       {
         m_diffuseTexture->BindToTextureUnit(0);
       }
+      else
+      {
+        ResourceManager::GetWhiteTexture()->BindToTextureUnit(0);
+      }
       m_shader.SetUniform("u_diffuseColor", m_diffuseColor);
       
       m_shader.SetUniform("u_useNormalmap", m_useNormal);
@@ -137,17 +141,29 @@ namespace Rendering
       {
         m_roughnessTexture->BindToTextureUnit(2);
       }
+      else
+      {
+        ResourceManager::GetWhiteTexture()->BindToTextureUnit(2);
+      }
       m_shader.SetUniform("u_material.m_roughnessValue", m_roughnessValue);
 
       if (m_metallicTexture.IsValid())
       {
         m_metallicTexture->BindToTextureUnit(3);
       }
+      else
+      {
+        ResourceManager::GetBlackTexture()->BindToTextureUnit(3);
+      }
       m_shader.SetUniform("u_material.m_metallicValue", m_metallicValue);
 
       if (m_emissiveTexture.IsValid())
       {
         m_emissiveTexture->BindToTextureUnit(4);
+      }
+      else
+      {
+        ResourceManager::GetWhiteTexture()->BindToTextureUnit(4);
       }
       m_shader.SetUniform("u_material.m_emissiveStrength", m_emissiveStrength);
     }

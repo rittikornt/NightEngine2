@@ -38,6 +38,11 @@ namespace NightEngine
       , Rendering::Texture::WrapMode wrapMode = Rendering::Texture::WrapMode::REPEAT
       , bool hdrImage = false);
 
+    static EC::Handle<Rendering::Texture>  GetBlackTexture(void);
+
+    static EC::Handle<Rendering::Texture>  GetWhiteTexture(void);
+    ////////////////////////////////////////////////////////////////
+
     //! @brief Static Function for Load and Cache Model
     static Rendering::Model* LoadModelResource(const Container::String& filePath);
     

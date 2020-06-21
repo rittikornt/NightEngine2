@@ -68,6 +68,7 @@ namespace NightEngine
 					auto filePath = entry.path().string();
 					if (filePath.find(extension) != std::string::npos)
 					{
+						std::replace(filePath.begin(), filePath.end(), '\\', '/');
 						output.emplace_back(filePath);
 					}
 				}
@@ -79,6 +80,7 @@ namespace NightEngine
 					auto filePath = entry.path().string();
 					if (filePath.find(extension) != std::string::npos)
 					{
+						std::replace(filePath.begin(), filePath.end(), '\\', '/');
 						output.emplace_back(filePath);
 					}
 				}
@@ -157,9 +159,13 @@ namespace NightEngine
 		Container::String GetFilePath(const Container::String& fileName, DirectoryType dir)
 		{
       Container::String path{ dir == DirectoryType::Script ? PROJECT_DIR_SOURCE : PROJECT_DIR_SOURCE_ASSETS };
-      path += g_dirSubPath[static_cast<unsigned>(dir)];
-      path += "/";
-      path += fileName;
+      
+			if (dir != DirectoryType::Assets)
+			{
+				path += g_dirSubPath[static_cast<unsigned>(dir)];
+				path += "/";
+				path += fileName;
+			}
 			return path;
 		}
 	}

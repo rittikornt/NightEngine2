@@ -27,6 +27,9 @@ namespace Editor
     //! @brief Constructor
     MemberSerializerEditor(void);
 
+    //! @brief Mark as new frame, update texture list property
+    void NewFrame(void);
+
     //! @brief Draw the editor for member
     bool DrawMemberEditor(NightEngine::Reflection::Member& member
       , void* dataObject, const std::string& nameMingle = "");

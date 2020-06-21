@@ -88,9 +88,12 @@ namespace Rendering
       vertex.m_position.z = mesh->mVertices[i].z;
       
       //Normal
-      vertex.m_normal.x = mesh->mNormals[i].x;
-      vertex.m_normal.y = mesh->mNormals[i].y;
-      vertex.m_normal.z = mesh->mNormals[i].z;
+      if (mesh->mNormals != nullptr)
+      {
+        vertex.m_normal.x = mesh->mNormals[i].x;
+        vertex.m_normal.y = mesh->mNormals[i].y;
+        vertex.m_normal.z = mesh->mNormals[i].z;
+      }
       
       //Texture Coordinate
       if(mesh->mTextureCoords[0])
@@ -104,9 +107,12 @@ namespace Rendering
       }
 
       //Tangent
-      vertex.m_tangent.x = mesh->mTangents[i].x;
-      vertex.m_tangent.y = mesh->mTangents[i].y;
-      vertex.m_tangent.z = mesh->mTangents[i].z;
+      if (mesh->mTangents != nullptr)
+      {
+        vertex.m_tangent.x = mesh->mTangents[i].x;
+        vertex.m_tangent.y = mesh->mTangents[i].y;
+        vertex.m_tangent.z = mesh->mTangents[i].z;
+      }
 
       vertices.push_back(vertex);
     }

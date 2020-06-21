@@ -53,10 +53,10 @@ using namespace NightEngine::EC;
 namespace Editor
 {
   //Editor
-  bool show_global_window = true;
+  static bool show_global_window = true;
 
   //Top Menu
-  bool show_top_menu = true;
+  static bool show_top_menu = true;
 
   //Custom editor
   static DevConsole g_devConsole;
@@ -76,17 +76,17 @@ namespace Editor
 
   /////////////////////////////////////////////////////////////////////////
   
-  bool show_demo_window = false;
-  ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);//ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-  ImVec4 color_orange_dark = ImVec4(0.96, 0.68f, 0.05f, 1.0f);
-  ImVec4 color_orange_light = ImVec4(0.96, 0.86f, 0.05f, 1.0f);
-  ImVec4 color_green = ImVec4(0.165f, 0.86f, 0.33f, 1.0f);
-  ImVec4 color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
+  static bool show_demo_window = false;
+  static ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);//ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  static ImVec4 color_orange_dark = ImVec4(0.96, 0.68f, 0.05f, 1.0f);
+  static ImVec4 color_orange_light = ImVec4(0.96, 0.86f, 0.05f, 1.0f);
+  static ImVec4 color_green = ImVec4(0.165f, 0.86f, 0.33f, 1.0f);
+  static ImVec4 color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
 
   //********************************************
   // Utility
   //********************************************
-  void DrawOverlay(bool* p_open, char* header)
+  static void DrawOverlay(bool* p_open, char* header)
   {
     const float DISTANCE = 10.0f;
     static int corner = 0;
@@ -117,7 +117,7 @@ namespace Editor
     }
   }
 
-  void ShowHelpMarker(const char* desc)
+  static void ShowHelpMarker(const char* desc)
   {
     ImGui::TextDisabled("(?)");
     if (ImGui::IsItemHovered())
@@ -133,7 +133,7 @@ namespace Editor
   //********************************************
   // Top Mainmenu
   //********************************************
-  void DrawTopMenuFile()
+  static void DrawTopMenuFile()
   {
     ImGui::MenuItem("File menu", NULL, false, false);
     if (ImGui::MenuItem("New"))
@@ -235,7 +235,7 @@ namespace Editor
     }
   }
 
-  void DrawTopMainMenuBar()
+  static void DrawTopMainMenuBar()
   {
     if (ImGui::BeginMainMenuBar())
     {
@@ -345,7 +345,7 @@ namespace Editor
 
   /////////////////////////////////////////////////////////////////////////
 
-  void RenderUI(void)
+  static void RenderUI(void)
   {
     //Global window
     if (show_global_window)
@@ -402,7 +402,7 @@ namespace Editor
     }
   }
 
-  void ProcessInput()
+  static void ProcessInput()
   {
     //Toggle dev console input
     if (Input::GetKeyDown(Input::KeyCode::KEY_GRAVE_ACCENT))
@@ -457,6 +457,7 @@ namespace Editor
 
     //Receive input
     ProcessInput();
+    g_memberSerializer.NewFrame();
   }
 
   void PostRender(void)

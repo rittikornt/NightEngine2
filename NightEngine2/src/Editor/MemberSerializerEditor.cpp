@@ -20,7 +20,10 @@
 #include "Graphics/Opengl/Texture.hpp"
 
 #include "Graphics/Color.hpp"
+#include <unordered_map>
 
+#include "Core/Utility/Utility.hpp"
+#include "Core/Utility/Profiling.hpp"
 
 using namespace NightEngine::EC;
 using namespace NightEngine;
@@ -29,37 +32,57 @@ using namespace Rendering;
 namespace Editor
 {
   static ImVec4 g_color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
+  static bool g_dirty = false;
+
+  void MemberSerializerEditor::NewFrame(void)
+  {
+    g_dirty = true;
+  }
 
   static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Channel channel)
   {
     const char* k_none = "None";
     static int m_currentItem = 0;
     static std::vector <std::string> s_items;
+    static std::unordered_map <std::string, int> s_itemsMap;
     static std::vector <const char*> s_itemsPtr;
     static std::string  s_texFilePath;
 
-    //Options
-    s_items.clear();
-    s_items.emplace_back(k_none);
+    //Find all Texture name list only once per frame
+    if (g_dirty)
+    {
+      s_items.clear();
+      s_items.emplace_back(k_none);
+
+      FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Assets, s_items
+        , FileSystem::FileFilter::FullPath, ".png", false, true, false);
+      FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Assets, s_items
+        , FileSystem::FileFilter::FullPath, ".jpg", false, true, false);
+
+      s_itemsMap.clear();
+      for (int i = 0; i < s_items.size(); ++i)
+      {
+        s_itemsMap.insert({ s_items[i] , i });
+      }
+      g_dirty = true;
+    }
+
     m_currentItem = 0;
-
-    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Textures, s_items
-      , FileSystem::FileFilter::FullPath, ".png", false, true, false);
-    FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Textures, s_items
-      , FileSystem::FileFilter::FullPath, ".jpg", false, true, false);
-
     bool validTex = handle->IsValid();
     s_texFilePath = validTex ? handle->Get()->GetFilePath() : "";
 
+    //TODO: use unordered_set instead to avoid all these string comparison
     //Options input for ImGUI
     s_itemsPtr.clear();
     for (int i = 0; i < s_items.size(); ++i)
     {
       s_itemsPtr.emplace_back(s_items[i].c_str());
-      if (validTex && s_items[i] == s_texFilePath)
-      {
-        m_currentItem = i;
-      }
+    }
+
+    auto it = s_itemsMap.find(s_texFilePath);
+    if (validTex && it != s_itemsMap.end())
+    {
+      m_currentItem = it->second;
     }
 
     //Combo Box Imgui
@@ -81,8 +104,6 @@ namespace Editor
         handle->m_handle.Nullify();
       }
     }
-    
-
     return changed;
   }
 
@@ -169,7 +190,7 @@ namespace Editor
       auto& dataPtr = variable.GetValue<Handle<Material>>();
       DrawMaterialComboBox("Material", &(dataPtr));
     }
-    });
+      });
 
     m_typeEditorMap.insert({ "Material",
       [](Reflection::Variable& variable, const char* memberName)
@@ -187,7 +208,7 @@ namespace Editor
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
       DrawTextureComboBox("Diffuse Texture", static_cast<Handle<Texture>*>(ptr)
         , Texture::Channel::SRGB);
-      
+
       //Normal
       memberPtr = var.GetMetaType()->FindMember("m_normalTexture");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
@@ -233,7 +254,7 @@ namespace Editor
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
       ImGui::DragScalar("Emissive Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min);
     }
-    });
+      });
 
     /*m_typeEditorMap.insert({ "Material*",
       [](Reflection::Variable& variable, const char* memberName)
@@ -281,56 +302,56 @@ namespace Editor
       auto data = variable.GetValue<std::string>();
       ImGui::Text(data.c_str());
     }
-    });
+      });
     m_typeEditorMap.insert({ "Color3",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto& data = variable.GetValue<Color3>();
       ImGui::ColorEdit3(memberName, &data.m_value[0]);
     }
-    });
+      });
     m_typeEditorMap.insert({ "Color4",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto& data = variable.GetValue<Color4>();
       ImGui::ColorEdit3(memberName, &data.m_value[0]);
     }
-    });
+      });
     m_typeEditorMap.insert({ "unsigned long long",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto& data = variable.GetValue<unsigned long long>();
       ImGui::Text(std::to_string(data).c_str());
     }
-    });
+      });
     m_typeEditorMap.insert({ "unsigned",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto& data = variable.GetValue<unsigned>();
       ImGui::Text(std::to_string(data).c_str());
     }
-    });
+      });
     m_typeEditorMap.insert({ "bool",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto& data = variable.GetValue<bool>();
       ImGui::Checkbox(memberName, &data);
     }
-    });
+      });
     m_typeEditorMap.insert({ "GameObject*",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto data = variable.GetValue<GameObject*>();
       ImGui::Text("0x%x", &data);
     }
-    });
+      });
     m_typeEditorMap.insert({ "Handle<GameObject>",
       [](Reflection::Variable& variable, const char* memberName)
     {
       auto data = variable.GetValue<Handle<GameObject>>();
       ImGui::Text(data->GetName().c_str());
     }
-    });
+      });
     m_typeEditorMap.insert({ "int",
       [](Reflection::Variable& variable, const char* memberName)
     {
@@ -338,7 +359,7 @@ namespace Editor
       unsigned step = 1u;
       ImGui::InputScalar(memberName, ImGuiDataType_S32, &data,&step);
     }
-    });
+      });
     m_typeEditorMap.insert({ "MeshRenderer::DrawMode",
       [](Reflection::Variable& variable, const char* memberName)
     {
@@ -346,7 +367,7 @@ namespace Editor
       unsigned step = 1u;
       ImGui::InputScalar(memberName, ImGuiDataType_U32, &data,&step);
     }
-    });
+      });
     m_typeEditorMap.insert({ "Light::LightType",
       [](Reflection::Variable& variable, const char* memberName)
     {
@@ -354,7 +375,7 @@ namespace Editor
       unsigned step = 1u;
       ImGui::InputScalar(memberName, ImGuiDataType_U32, &data,&step);
     }
-    });
+      });
     m_typeEditorMap.insert({ "Physics::ColliderType",
       [](Reflection::Variable& variable, const char* memberName)
     {
@@ -369,7 +390,7 @@ namespace Editor
       auto& data = variable.GetValue<float>();
       ImGui::DragScalar(memberName, ImGuiDataType_Float, (float*)&data, 0.2f);
     }
-    });
+      });
     m_typeEditorMap.insert({ "vec2",
       [](Reflection::Variable& variable, const char* memberName)
     {
@@ -390,7 +411,7 @@ namespace Editor
       auto& data = variable.GetValue<glm::quat>();
       ImGui::DragFloat4(memberName, (float*)&data, 0.2f);
     }
-    });
+      });
 
     m_typeEditorMap.insert({ "mat4",
       [](Reflection::Variable& variable, const char* memberName)
@@ -403,7 +424,7 @@ namespace Editor
       ImGui::DragFloat4((name + num[2]).c_str(), (float*)&data[2], 0.2f);
       ImGui::DragFloat4((name + num[3]).c_str(), (float*)&data[3], 0.2f);
     }
-    });
+      });
   }
 
   bool MemberSerializerEditor::DrawMemberEditor(Reflection::Member& member, void* dataObject

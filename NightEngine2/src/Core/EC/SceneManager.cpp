@@ -157,7 +157,7 @@ namespace NightEngine
         //************************************************
         // Build InstanceDrawer
         //************************************************
-        Rendering::InstanceDrawer::BuildAllDrawer();
+        Rendering::GPUInstancedDrawer::BuildAllDrawer();
       }
 
       Handle<Scene> CreateEmptyScene(Container::String sceneName)
@@ -386,7 +386,7 @@ namespace NightEngine
           //************************************************
           // Build InstanceDrawer
           //************************************************
-          InstanceDrawer::BuildAllDrawer();
+          GPUInstancedDrawer::BuildAllDrawer();
         }
 
         //Lights

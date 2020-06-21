@@ -38,6 +38,9 @@ namespace Rendering
     //! @brief Initialize
 		void Init();
 
+    //! @brief Deallocate EBO
+    void Release();
+
     //! @brief Fill index to array
     void FillIndex(const std::vector<unsigned>& indexArray);
 

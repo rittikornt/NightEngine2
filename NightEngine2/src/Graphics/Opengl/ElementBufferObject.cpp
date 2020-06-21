@@ -33,11 +33,6 @@ namespace Rendering
 	ElementBufferObject::~ElementBufferObject()
 	{
     CHECK_LEAK(ElementBufferObject, m_objectID);
-		//if (!(m_objectID & (~0)))
-		//{
-		//	glDeleteBuffers(1, &m_objectID);
-    //  DECREMENT_ALLOCATION(ElementBufferObject, m_objectID);
-		//}
 	}
 
   void ElementBufferObject::ReleaseAllLoadedEBO(void)
@@ -49,6 +44,15 @@ namespace Rendering
 	{
 		glGenBuffers(1, &m_objectID);
     INCREMENT_ALLOCATION(ElementBufferObject, m_objectID);
+	}
+
+	void ElementBufferObject::Release()
+	{
+		if (m_objectID != (~0)
+			&& IS_ALLOCATED(ElementBufferObject, m_objectID))
+		{
+			ReleaseEBOID(m_objectID);
+		}
 	}
 
   void ElementBufferObject::FillIndex(const std::vector<unsigned>& indexArray)

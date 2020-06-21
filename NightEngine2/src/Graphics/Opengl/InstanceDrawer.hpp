@@ -67,7 +67,7 @@ namespace Rendering
       , DrawPass drawPass = DrawPass::BATCH);
   }
 
-  namespace InstanceDrawer
+  namespace GPUInstancedDrawer
   {
     //! @brief Contain data to be drawn along with its MeshRenderer
     struct BatchInfo

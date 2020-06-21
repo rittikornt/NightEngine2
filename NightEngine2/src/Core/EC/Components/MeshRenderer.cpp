@@ -92,7 +92,7 @@ namespace NightEngine
             ASSERT_MSG(m_material.IsValid()
             , "m_material is required to register instanceDrawer");
 
-            InstanceDrawer::RegisterInstance(*this);
+            GPUInstancedDrawer::RegisterInstance(*this);
             break;
           }
           case DrawMode::PREBIND:
@@ -133,7 +133,7 @@ namespace NightEngine
         {
           case DrawMode::STATIC:
           {
-            InstanceDrawer::UnregisterInstance(*this);
+            GPUInstancedDrawer::UnregisterInstance(*this);
             break;
           }
           case DrawMode::PREBIND:
@@ -338,6 +338,12 @@ namespace NightEngine
       void MeshRenderer::OnDestroy(void)
       {
         UnregisterDrawMode(m_drawMode);
+
+        //Release all meshes
+        for (size_t i = 0; i < m_meshes.size(); ++i)
+        {
+          m_meshes[i].Release();
+        }
       }
 
       void MeshRenderer::LoadMaterial(std::string fileName)

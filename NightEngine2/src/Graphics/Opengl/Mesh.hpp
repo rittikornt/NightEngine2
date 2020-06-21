@@ -43,6 +43,9 @@ namespace Rendering
 
       //! @brief Get Mesh Polygon count
       unsigned GetPolygonCount(void) const { return m_polygonCount; }
+
+      //! @brief Deallocate all the VAO
+      void Release(void);
     private:
       VertexArrayObject    m_vao;
       unsigned             m_verticesCount;

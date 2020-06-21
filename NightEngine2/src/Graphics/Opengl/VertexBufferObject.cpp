@@ -26,11 +26,6 @@ namespace Rendering
   VertexBufferObject::~VertexBufferObject()
   {
     CHECK_LEAK(VertexBufferObject, m_objectID);
-		//if (!(m_objectID & (~0)))
-		//{
-		//	glDeleteBuffers(1, &m_objectID);
-    //  DECREMENT_ALLOCATION(VertexBufferObject, m_objectID);
-		//}
   }
 
   void VertexBufferObject::ReleaseAllLoadedVBO(void)
@@ -43,6 +38,15 @@ namespace Rendering
 		glGenBuffers(1, &m_objectID);
     INCREMENT_ALLOCATION(VertexBufferObject, m_objectID);
 	}
+
+  void VertexBufferObject::Release()
+  {
+    if (m_objectID != (~0)
+      && IS_ALLOCATED(VertexBufferObject, m_objectID))
+    {
+      ReleaseVBOID(m_objectID);
+    }
+  }
 
   void VertexBufferObject::FillVertex(const std::vector<float>& floatArray)
   {

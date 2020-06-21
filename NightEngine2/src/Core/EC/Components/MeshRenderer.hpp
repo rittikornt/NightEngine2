@@ -120,7 +120,7 @@ namespace NightEngine
           EC::Handle<Rendering::Material> m_material;
 
           //TODO: Vector<Handle<Mesh>> instead
-          std::vector<Rendering::Mesh>    m_meshes;
+          std::vector<Rendering::Mesh>    m_meshes; //All the submeshes
           unsigned                        m_meshCount = 0;
           std::string                     m_meshLoadPath;
 

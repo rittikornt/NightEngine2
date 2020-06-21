@@ -63,6 +63,7 @@ namespace Editor
     AddCommand("COMPILE_SHADERS", &DevConsole::RecompileShaders);
 
     AddCommand("TOGGLE_PHYSICS_DEBUG", &DevConsole::TogglePhysicsDebug);
+    AddCommand("PRINT_GRAPHICS_ALLOCATION_TRACKER", &DevConsole::PrintGraphicsAllocationTracker);
 
     //Init Log
     AddLog("//******************************");
@@ -485,6 +486,11 @@ namespace Editor
     {
       debugDrawer->SetDebugDrawActive(!(debugDrawer->GetDebugDrawActive()));
     }
+  }
+
+  void DevConsole::PrintGraphicsAllocationTracker(void)
+  {
+    Rendering::OpenglAllocationTracker::PrintAllocationState();
   }
 
   void DevConsole::ShowHelp(void)

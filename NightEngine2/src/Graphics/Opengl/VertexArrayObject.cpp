@@ -15,17 +15,17 @@
 
 namespace Rendering
 {
-  static void ReleaseVAOID(GLuint shaderID)
+  static void ReleaseVAOID(GLuint objID)
   {
-    glDeleteVertexArrays(1, &shaderID);
-    DECREMENT_ALLOCATION(VertexArrayObject, shaderID);
+    glDeleteVertexArrays(1, &objID);
+    DECREMENT_ALLOCATION(VertexArrayObject, objID);
     CHECKGL_ERROR();
   }
 
-  static void ReleaseVAOIBID(GLuint shaderID)
+  static void ReleaseVAOIBID(GLuint objID)
   {
-    glDeleteBuffers(1, &shaderID);
-    DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, shaderID);
+    glDeleteBuffers(1, &objID);
+    DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, objID);
     CHECKGL_ERROR();
   }
 
@@ -47,25 +47,30 @@ namespace Rendering
 	{
     CHECK_LEAK(VertexArrayObject, m_objectID);
     CHECK_LEAK(VertexArrayObjectInstanceBuffer, m_instanceBufferID);
-		//if (!(m_objectID & (~0)) 
-    //  && IS_ALLOCATED(VertexArrayObject, m_objectID))
-		//{
-		//	glDeleteVertexArrays(1, &m_objectID);
-    //  DECREMENT_ALLOCATION(VertexArrayObject, m_objectID);
-		//}
-    //
-    //if (!(m_instanceBufferID & (~0)) 
-    //  && IS_ALLOCATED(VertexArrayObjectInstanceBuffer, m_instanceBufferID))
-    //{
-    //  glDeleteBuffers(1, &m_instanceBufferID);
-    //  DECREMENT_ALLOCATION(VertexArrayObjectInstanceBuffer, m_instanceBufferID);
-    //}
 	}
 
   void VertexArrayObject::ReleaseAllLoadedVAO(void)
   {
     OpenglAllocationTracker::DeallocateAllObjects("VertexArrayObject", ReleaseVAOID);
     OpenglAllocationTracker::DeallocateAllObjects("VertexArrayObjectInstanceBuffer", ReleaseVAOIBID);
+  }
+
+  void VertexArrayObject::Release(void)
+  {
+    if (m_objectID != (~0)
+      && IS_ALLOCATED(VertexArrayObject, m_objectID))
+    {
+      ReleaseVAOID(m_objectID);
+    }
+    
+    if (m_instanceBufferID != (~0)
+      && IS_ALLOCATED(VertexArrayObjectInstanceBuffer, m_instanceBufferID))
+    {
+      ReleaseVAOIBID(m_instanceBufferID);
+    }
+
+    m_vbo.Release();
+    m_ebo.Release();
   }
 
 	void VertexArrayObject::Init(void)

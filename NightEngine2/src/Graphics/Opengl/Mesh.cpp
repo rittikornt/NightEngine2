@@ -70,4 +70,8 @@ namespace Rendering
     m_vao.DrawInstanced(amount);
   }
 
+  void Mesh::Release(void)
+  {
+    m_vao.Release();
+  }
 }

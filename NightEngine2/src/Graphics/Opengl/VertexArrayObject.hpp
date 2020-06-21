@@ -42,6 +42,9 @@ namespace Rendering
     //! @brief Deallocate all loaded VAO object
     static void ReleaseAllLoadedVAO(void);
 
+    //! @brief Deallocate this VAO object
+    void Release(void);
+
     //! @brief Init, generating opengl object ID
 		void Init(void); 
 
@@ -110,8 +113,11 @@ namespace Rendering
     //! @brief unbind
 		void Unbind(void) const;
 
+    /////////////////////////////////////////////////////////
+
     //! @brief Get opengl objectID
 		GLuint GetID(void) { return m_objectID; }
+
 	private:
     //! @brief Setup Attribute Pointer
     void SetupAttributePointer(void);

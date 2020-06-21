@@ -38,6 +38,9 @@ namespace Rendering
     //! @brief Initialization
 		void Init();
 
+    //! @brief Deallocate VBO
+    void Release();
+
     //! @brief Fill Vertex with vector of float
     void FillVertex(const std::vector<float>& floatArray);
 

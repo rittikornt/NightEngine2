@@ -399,7 +399,7 @@ namespace Rendering
       }
     }
 
-    InstanceDrawer::UnregisterAllInstances();
+    GPUInstancedDrawer::UnregisterAllInstances();
 
 #if(EDITOR_MODE)
     Editor::Terminate();
@@ -793,7 +793,7 @@ namespace Rendering
       Shader& shader = m_defaultMaterial->GetShader();
 
       //Draw Static Instances
-      InstanceDrawer::DrawInstances(shader);
+      GPUInstancedDrawer::DrawInstances(shader);
 
       //Draw Loop by traversing Containers
       Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);

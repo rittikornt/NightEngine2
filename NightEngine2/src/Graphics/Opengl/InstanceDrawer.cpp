@@ -39,7 +39,6 @@ namespace Rendering
       return container[drawPass];
     }
 
-    //TODO: Remove from Drawer?
     void RegisterMeshRenderer(MeshRenderer& meshRenderer
       , DrawPass drawPass)
     {
@@ -117,7 +116,7 @@ namespace Rendering
 
   /////////////////////////////////////////////////////////////
 
-  namespace InstanceDrawer
+  namespace GPUInstancedDrawer
   {
     void BatchInfo::AddMeshRenderer(RendererHandle mrHandle)
     {
@@ -178,13 +177,14 @@ namespace Rendering
       const char* ptr = reinterpret_cast<const char*>(&signature);
       U64 key = NightEngine::Container::ConvertToHash(ptr, sizeof(InstanceSignature));
 
-      //Initialize
+      //Initialize new Batch
       auto it = map.find(key);
       if (it == map.end())
       {
         map.insert({ key, BatchInfo() });
       }
 
+      //Add mesh renderer to the Batch
       map[key].AddMeshRenderer(meshRenderer.GetHandle());
     }
 
@@ -209,15 +209,36 @@ namespace Rendering
         if (it != map.end())
         {
           auto mrHandle = meshRenderer.GetHandle();
-          auto& meshHandles = it->second.m_meshrenderers;
-          for (auto it = meshHandles.begin();
-            it != meshHandles.end(); ++it)
+          auto& batchInfo = it->second;
+          auto& meshHandles = batchInfo.m_meshrenderers;
+          auto& datas = batchInfo.m_data;
+          auto& meshes = batchInfo.m_meshes;
+
+          bool erased = false;
+          int dataIndex = 0;
+          for (auto it2 = meshHandles.begin();
+            it2 != meshHandles.end(); ++it2, ++dataIndex)
           {
-            if (*it == mrHandle)
+            if (*it2 == mrHandle)
             {
-              meshHandles.erase(it);
+              meshHandles.erase(it2);
+              datas.erase(datas.begin() + dataIndex);
+              erased = true;
               break;
             }
+          }
+
+          if (erased && datas.size() == 0)
+          {
+            //TODO: Should now deallocate the VAO instanced Buffer
+            for (auto& mesh : meshes)
+            {
+              mesh.Release();
+            }
+            meshes.clear();
+
+            //Remove this empty batch
+            map.erase(key);
           }
         }
       }

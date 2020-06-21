@@ -90,6 +90,7 @@ namespace Editor
     void RecompileShaders(void);
 
     void TogglePhysicsDebug(void);
+    void PrintGraphicsAllocationTracker(void);
 
     void ShowHelp(void);
     void ShowHistory(void);

@@ -79,7 +79,7 @@ namespace Rendering
   //*********************************************
   // Helper Functions
   //*********************************************
-  void ProcessInput(float dt)
+  static void ProcessInput(float dt)
   {
     using namespace Input;
     static float moveSpeed = 4.0f;
@@ -149,7 +149,29 @@ namespace Rendering
     }
   }
 
-  void ApplyLight(Shader& shader)
+  static void ClearLightData(Shader& shader)
+  {
+    static const std::string g_pointLightStr[] =
+    { "u_pointLightInfo[0]", "u_pointLightInfo[1]", "u_pointLightInfo[2]"
+     , "u_pointLightInfo[3]", "u_pointLightInfo[4]" };
+
+    static const std::string g_spotLightStr[] =
+    { "u_spotLightInfo[0]", "u_spotLightInfo[1]", "u_spotLightInfo[2]"
+      , "u_spotLightInfo[3]", "u_spotLightInfo[4]" };
+
+    shader.SetUniform("u_dirLightInfo.m_intensity", 0.0f);
+    for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
+    {
+      shader.SetUniform(g_pointLightStr[i] + ".m_intensity", 0.0f);
+    }
+
+    for (int i = 0; i < SPOTLIGHT_AMOUNT; ++i)
+    {
+      shader.SetUniform(g_spotLightStr[i] + ".m_intensity", 0.0f);
+    }
+  }
+
+  static void ApplyLight(Shader& shader)
   {
     //Light Apply loop
     auto& lightContainer = Factory::GetTypeContainer<Light>();
@@ -165,7 +187,7 @@ namespace Rendering
     }
   }
 
-  void DrawLoop(Shader& shader)
+  static void DrawLoop(Shader& shader)
   {
     //MeshRenderer Draw Loop
     auto& meshRendererContainer = Factory::GetTypeContainer<MeshRenderer>();
@@ -635,6 +657,7 @@ namespace Rendering
         g_camera.ApplyCameraInfo(shader);
 
         //Apply Light information to the Shader
+        ClearLightData(shader);
         ApplyLight(shader);
 
         //Draw Fullscreen Mesh

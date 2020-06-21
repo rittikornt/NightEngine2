@@ -5,7 +5,10 @@
       "m_components": {
         "MeshRenderer": {
           "m_castShadow": true,
-          "m_drawMode": 0,
+          "m_drawMode": 1,
+          "m_material": {
+            "filePath": "./../Assets/Materials/RedMaterial.mat"
+          },
           "m_meshCount": 1,
           "m_meshLoadPath": "./../Assets/Models/Cube.obj"
         },
@@ -78,6 +81,9 @@
         "MeshRenderer": {
           "m_castShadow": true,
           "m_drawMode": 3,
+          "m_material": {
+            "filePath": ""
+          },
           "m_meshCount": 1,
           "m_meshLoadPath": "./../Assets/Models/Quad.obj"
         }

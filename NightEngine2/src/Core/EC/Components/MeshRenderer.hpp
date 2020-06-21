@@ -31,7 +31,7 @@ namespace NightEngine
           META_REGISTERER_WITHBASE(MeshRenderer, ComponentLogic
             , InheritType::PUBLIC, true
             , nullptr, nullptr)
-            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_material, false)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_material, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_drawMode, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_meshCount, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_meshLoadPath, true)

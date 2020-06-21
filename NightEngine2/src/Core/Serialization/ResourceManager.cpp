@@ -78,10 +78,15 @@ namespace NightEngine
       , fileName
       , FileSystem::DirectoryType::Materials);
 
+    //Set Name without extension
     std::string nameNoExt = fileName;
     FileSystem::RemoveExtension(nameNoExt);
     newHandle->SetName(nameNoExt);
-    
+
+    //Set FilePath
+    Container::String filePath{ FileSystem::GetFilePath(fileName, FileSystem::DirectoryType::Materials) };
+    newHandle->SetFilePath(filePath);
+
     return newHandle;
   }
 

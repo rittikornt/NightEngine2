@@ -53,6 +53,9 @@ namespace NightEngine
 		//! @brief Remove the trailing extension "."
 		void RemoveExtension(std::string& str);
 
+		//! @brief Remove the file directory path
+		void RemoveFileDirectoryPath(std::string& str, DirectoryType dir);
+
 		//! @brief Check if file exist
 		bool IsFileExist(Container::String fileName, DirectoryType dir);
 

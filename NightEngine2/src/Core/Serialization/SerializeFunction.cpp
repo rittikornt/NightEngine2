@@ -5,6 +5,7 @@
 */
 
 #include "SerializeFunction.hpp"
+#include "Core/Serialization/FileSystem.hpp"
 
 #include "Core/Macros.hpp"
 #include "Core/Reflection/MetaType.hpp"
@@ -175,6 +176,21 @@ namespace NightEngine
 
       return value;
     }
+
+    template<>
+    JsonValue DefaultSerializer<NightEngine::EC::Handle<Rendering::Material>>(Reflection::Variable& variable)
+    {
+      ASSERT_TRUE(variable.GetMetaType() != nullptr);
+      JsonValue value;
+      auto& matHandle = variable.GetValue<NightEngine::EC::Handle<Rendering::Material>>();
+
+      //File Path
+      JsonValue filePathVal = matHandle->GetFilePath();
+      value.emplace("filePath", filePathVal);
+
+      return value;
+    }
+
 		////////////////////////////////////////////////////////////
 
     DEFINE_DEFAULT_DESERIALIZER(bool)
@@ -376,6 +392,26 @@ namespace NightEngine
       material.InitTexture(diffuseFile
         , material.m_useNormal, normalFile
         , roughnessFile, metallicFile, emissiveFile);
+    }
+
+    template <>
+    void DefaultDeserializer<NightEngine::EC::Handle<Rendering::Material>>(ValueObject& valueObject
+      , Reflection::Variable& variable)
+    {
+      auto& matHandle = variable.GetValue<NightEngine::EC::Handle<Rendering::Material>>();
+      auto& obj = valueObject.get_object();
+
+      //File Path
+      auto it = obj.find("filePath");
+      if (it != obj.end())
+      {
+        auto filePath = it->second.as<std::string>();
+        FileSystem::RemoveFileDirectoryPath(filePath, FileSystem::DirectoryType::Materials);
+        if (filePath != "")
+        {
+          matHandle = Material::LoadMaterial(filePath);
+        }
+      }
     }
 	}
 }

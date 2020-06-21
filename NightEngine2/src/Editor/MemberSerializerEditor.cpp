@@ -30,7 +30,6 @@ namespace Editor
 {
   static ImVec4 g_color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
 
-
   static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Channel channel)
   {
     const char* k_none = "None";
@@ -62,7 +61,6 @@ namespace Editor
         m_currentItem = i;
       }
     }
-
 
     //Combo Box Imgui
     bool changed = ImGui::Combo(text, &m_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
@@ -132,7 +130,7 @@ namespace Editor
       if (currentIndex == 0)
       {
         *(handle) = Handle<Rendering::Material>();
-        Debug::Log << "Choosed: <None>\n";
+        Debug::Log << "Selected Material: <None>\n";
       }
       //Valid Material
       else
@@ -143,7 +141,8 @@ namespace Editor
           *(handle) = newHandle;
 
           auto mat = handle->Get();
-          Debug::Log << "Choosed: " << mat->GetName() << "\n";
+          Debug::Log << "Selected Material: " << mat->GetName()
+            << " [Path: " << mat->GetFilePath() << "]\n";
 
           SceneManager::ReregisterAllMeshRenderer();
         }

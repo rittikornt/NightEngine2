@@ -133,6 +133,20 @@ namespace NightEngine
 			}
 		}
 
+    void RemoveFileDirectoryPath(std::string& str, DirectoryType dir)
+    {
+			Container::String dirPath{ g_dirSubPath[static_cast<unsigned>(dir)] };
+			if (str.size() > dirPath.size())
+			{
+				auto pos = str.find(dirPath);
+				if (pos > 0 && pos < str.size())
+				{
+					auto postfix = str.substr(pos + dirPath.size() + 1, str.size() - pos);
+					str = postfix;
+				}
+			}
+    }
+
 		bool IsFileExist(Container::String fileName, DirectoryType dir)
 		{
 			struct stat buffer;

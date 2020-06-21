@@ -21,6 +21,7 @@ namespace Rendering
         , NightEngine::Serialization::DefaultSerializer<Material&>
         , NightEngine::Serialization::DefaultDeserializer<Material&>)
         .MR_ADD_MEMBER_PRIVATE(Material, m_name, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_filePath, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_diffuseTexture, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_diffuseColor, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_normalTexture, true)
@@ -63,12 +64,6 @@ namespace Rendering
       //! @brief Initialize Texture
       void RefreshTextureUniforms(void) const;
 
-      //! @brief Get Shader
-      Shader& GetShader(void) { return m_shader; }
-
-      //! @brief Get Name
-      inline const std::string& GetName(void) const { return m_name; }
-
       //! @brief Apply material to the shader
       void Bind(bool useTexture = true);
 
@@ -78,12 +73,6 @@ namespace Rendering
       //! @brief Clear Material
       void Clear(void);
 
-      //! @brief Set the material params
-      inline void SetParams(float roughness, float metallic) { m_roughnessValue = roughness; m_metallicValue = metallic; }
-
-      //! @brief Set the material name
-      inline void SetName(std::string name) { m_name = name; }
-
       //! @brief Load Material from File (eg. "fileName.mat")
       static NightEngine::EC::Handle<Material> LoadMaterial(const std::string& fileName);
 
@@ -92,8 +81,30 @@ namespace Rendering
 
       //! @brief Preload All Materials in the Path
       static void PreLoadAllMaterials(void);
+
+      //////////////////////////////////////////////////////////////
+
+      //! @brief Get Shader
+      Shader& GetShader(void) { return m_shader; }
+
+      //! @brief Get Name
+      inline const std::string& GetName(void) const { return m_name; }
+
+      //! @brief Get Load File Path
+      inline const std::string& GetFilePath(void) const { return m_filePath; }
+
+      //! @brief Set the material params
+      inline void SetParams(float roughness, float metallic) { m_roughnessValue = roughness; m_metallicValue = metallic; }
+
+      //! @brief Set the material name
+      inline void SetName(std::string name) { m_name = name; }
+
+      //! @brief Set Load File Path
+      inline void SetFilePath(std::string path) { m_filePath = path; }
+
     private:
       std::string m_name = "unnamed";
+      std::string m_filePath = "";
       Shader      m_shader;
 
       NightEngine::EC::Handle<Texture> m_diffuseTexture;

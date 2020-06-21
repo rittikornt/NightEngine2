@@ -6,6 +6,7 @@
 
 #pragma once
 #include "Core/Macros.hpp"
+#include "Core/EC/Handle.hpp"
 
 #include "Core/Reflection/MetaType.hpp"
 #include "Core/Reflection/Variable.hpp"
@@ -92,6 +93,9 @@ namespace NightEngine
 
     template <>
     JsonValue DefaultSerializer<Rendering::Material&>(Reflection::Variable& variable);
+    
+    template <>
+    JsonValue DefaultSerializer<NightEngine::EC::Handle<Rendering::Material>>(Reflection::Variable& variable);
 
 		//***********************************************************************
 		// Deserialize
@@ -154,5 +158,8 @@ namespace NightEngine
 
     template <>
     void DefaultDeserializer<Rendering::Material&>(ValueObject& valueObject, Reflection::Variable& variable);
+
+    template <>
+    void DefaultDeserializer<NightEngine::EC::Handle<Rendering::Material>>(ValueObject& valueObject, Reflection::Variable& variable);
 	}
 }

@@ -55,9 +55,12 @@ namespace NightEngine
       { 
         auto defaultMat = SceneManager::GetDefaultMaterial();
         bool validMat = m_material.IsValid();
+        bool shouldReregister = validMat
+          && m_drawMode != DrawMode::DEBUG 
+          && m_drawMode != DrawMode::STATIC;
 
         //Don't register draw call with invalid material
-        if (validMat && m_drawMode != DrawMode::DEBUG)
+        if (shouldReregister)
         {
           if (defaultMat.m_handle == m_material.m_handle)
           {
@@ -65,7 +68,6 @@ namespace NightEngine
           }
           else
           {
-            UnregisterDrawMode(m_drawMode);
             RegisterDrawMode(DrawMode::CUSTOM);
           }
         }

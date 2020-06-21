@@ -1,14 +1,19 @@
 {
   "Material": {
-    "Diffuse": "./../Assets/Textures/diffuse_brickwall.jpg",
-    "Emissive": "./../Assets/Textures/emissive_wood.png",
-    "Emissive Strength": 15.0,
+    "Diffuse": "./../Assets/Textures/Blank\\100.png",
+    "Diffuse Color": {
+      "x": 0.05882352590560913,
+      "y": 0.058822937309741974,
+      "z": 0.058822937309741974
+    },
+    "Emissive": "./../Assets/Textures/Blank\\000.png",
+    "Emissive Strength": 0.0,
     "Metallic": "./../Assets/Textures/Blank/000.png",
-    "Metallic Value": 0.0,
+    "Metallic Value": 0.6499999761581421,
     "Normal": "./../Assets/Textures/normal_brickwall.jpg",
-    "Normal Multiplier": 2.0,
+    "Normal Multiplier": 15.0,
     "Roughness": "./../Assets/Textures/Blank/000.png",
-    "Roughness Value": 0.0,
+    "Roughness Value": 0.30000001192092896,
     "Shaders": [
       "Rendering/deferred_geometry_pass.vert",
       "Rendering/deferred_geometry_pass.frag"

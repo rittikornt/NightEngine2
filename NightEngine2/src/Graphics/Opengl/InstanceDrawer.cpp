@@ -209,6 +209,8 @@ namespace Rendering
         if (it != map.end())
         {
           auto mrHandle = meshRenderer.GetHandle();
+          Debug::Log << "GPUInstancedDrawer:UnregisterInstance[" << mrHandle.Get<MeshRenderer>()->GetUID() << "]\n";
+
           auto& batchInfo = it->second;
           auto& meshHandles = batchInfo.m_meshrenderers;
           auto& datas = batchInfo.m_data;
@@ -230,7 +232,7 @@ namespace Rendering
 
           if (erased && datas.size() == 0)
           {
-            //TODO: Should now deallocate the VAO instanced Buffer
+            //Deallocate the VAO instanced Buffer
             for (auto& mesh : meshes)
             {
               mesh.Release();

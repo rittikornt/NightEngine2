@@ -159,13 +159,10 @@ namespace NightEngine
 		Container::String GetFilePath(const Container::String& fileName, DirectoryType dir)
 		{
       Container::String path{ dir == DirectoryType::Script ? PROJECT_DIR_SOURCE : PROJECT_DIR_SOURCE_ASSETS };
-      
-			if (dir != DirectoryType::Assets)
-			{
-				path += g_dirSubPath[static_cast<unsigned>(dir)];
-				path += "/";
-				path += fileName;
-			}
+
+			path += g_dirSubPath[static_cast<unsigned>(dir)];
+			path += (dir != DirectoryType::Assets) ? "/" : "";
+			path += fileName;
 			return path;
 		}
 	}

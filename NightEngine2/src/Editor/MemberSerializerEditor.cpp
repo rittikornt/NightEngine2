@@ -51,6 +51,7 @@ namespace Editor
     //Find all Texture name list only once per frame
     if (g_dirty)
     {
+      //This is the slow part
       s_items.clear();
       s_items.emplace_back(k_none);
 
@@ -64,7 +65,7 @@ namespace Editor
       {
         s_itemsMap.insert({ s_items[i] , i });
       }
-      g_dirty = true;
+      g_dirty = false;
     }
 
     m_currentItem = 0;

@@ -11,18 +11,6 @@
           },
           "m_meshCount": 1,
           "m_meshLoadPath": "./../Assets/Models/Cube.obj"
-        },
-        "Rigidbody": {
-          "m_colliderParams": {
-            "m_colliderType": 0,
-            "m_size": {
-              "x": 10.0,
-              "y": 1.0,
-              "z": 10.0
-            }
-          },
-          "m_mass": 0.0,
-          "m_static": true
         }
       },
       "m_name": "Floor",
@@ -34,7 +22,7 @@
         },
         "m_position": {
           "x": 0.0,
-          "y": -5.0,
+          "y": -13.75,
           "z": 0.0
         },
         "m_rotation": {
@@ -45,7 +33,7 @@
         },
         "m_scale": {
           "x": 20.0,
-          "y": 1.0,
+          "y": 20.0,
           "z": 20.0
         }
       }

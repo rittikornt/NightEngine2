@@ -91,8 +91,8 @@ namespace Rendering
     m_captureFBO.AttachRenderBuffer(m_captureRBO);
 
     //Baking IBL
-    //TODO: Don't bake every startup
-    ConvertHDRToCubemap("HDRI/Walk_Of_Fame/Mans_Outside_2k.hdr");
+    //ConvertHDRToCubemap("HDRI/Walk_Of_Fame/Mans_Outside_2k.hdr");
+    ConvertHDRToCubemap("HDRI/approaching_storm_4k.hdr");
     BakeIrradiancemap(g_irrandianceMapResolution);
     BakePrefilteredmap(g_prefilteredMapResolution);
     BakeBRDFLUT(g_brdfLUTResolution, screenVAO);

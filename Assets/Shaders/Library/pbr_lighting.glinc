@@ -43,7 +43,7 @@ uniform samplerCube u_shadowMap[POINTLIGHT_NUM];
 uniform float       u_farPlane;
 
 //IBL
-uniform float			u_ambientStrength = 0.6f;
+uniform float			u_ambientStrength = 0.3f;
 uniform samplerCube 	u_irradianceMap;
 
 //Specular IBL
@@ -350,6 +350,10 @@ vec3 CalculateAmbientLighting(SurfaceData surfaceData
 
 float GetFilteredRoughness(float roughness, vec3 worldNormal)
 {
+	return roughness;
+
+	//Somehow this cause a big black pixels bugs
+
 	//Specular Antialiasing to filter the roughness value
 	//https://twitter.com/longbool/status/1221773633263165440
 	//http://www.jp.square-enix.com/tech/library/pdf/ImprovedGeometricSpecularAA.pdf

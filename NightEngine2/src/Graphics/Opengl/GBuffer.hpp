@@ -46,37 +46,37 @@ namespace Rendering
       //Position color buffer
       m_textures[0] = Texture::GenerateNullTexture(width, height
         , Texture::Channel::RGB16F, Texture::Channel::RGB
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
       m_fbo.AttachTexture(m_textures[0], 0);
 
       //Normal color buffer
       m_textures[1] = Texture::GenerateNullTexture(width, height
         , Texture::Channel::RGB16F, Texture::Channel::RGB
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
       m_fbo.AttachTexture(m_textures[1], 1);
 
       //Albedo color buffer
       m_textures[2] = Texture::GenerateNullTexture(width, height
         , Texture::Channel::RGB, Texture::Channel::RGB
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
       m_fbo.AttachTexture(m_textures[2], 2);
 
       //RoughnessMetallic color buffer
       m_textures[3] = Texture::GenerateNullTexture(width, height
         , Texture::Channel::RGB16F, Texture::Channel::RGB
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
       m_fbo.AttachTexture(m_textures[3], 3);
 
       //Emissive color buffer
       m_textures[4] = Texture::GenerateNullTexture(width, height
         , Texture::Channel::RGB16F, Texture::Channel::RGB
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
       m_fbo.AttachTexture(m_textures[4], 4);
 
       //LightSpacePosition color buffer
       m_textures[5] = Texture::GenerateNullTexture(width, height
         , Texture::Channel::RGBA16F, Texture::Channel::RGBA
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
       m_fbo.AttachTexture(m_textures[5], 5);
 
       //Setup multiple render target

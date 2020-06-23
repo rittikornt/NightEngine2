@@ -260,7 +260,8 @@ namespace Rendering
     //Scene Texture
     m_sceneTexture = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
-      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+      , Texture::FilterMode::NEAREST
+      , Texture::WrapMode::CLAMP_TO_EDGE);
     m_sceneRbo.Init(width, height);
 
     //Scene Frame Buffer

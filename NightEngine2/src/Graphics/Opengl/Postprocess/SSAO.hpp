@@ -50,7 +50,7 @@ namespace Rendering
 
       //Settings
       glm::ivec2        m_resolution;
-      int               m_power = 5;
+      int               m_power = 2;
       int               m_blurIteration = 4;
       bool              m_useKawaseBlur = false;
       glm::vec3         m_color{1.0f};

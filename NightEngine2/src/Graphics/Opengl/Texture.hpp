@@ -98,7 +98,8 @@ namespace Rendering
 		{
 			LINEAR = GL_LINEAR,
 			NEAREST = GL_NEAREST,
-      TRILINEAR = GL_LINEAR_MIPMAP_LINEAR
+      TRILINEAR = GL_LINEAR_MIPMAP_LINEAR,
+      TRINEAREST = GL_NEAREST_MIPMAP_NEAREST
 		};
 
     //! @brief Constructor

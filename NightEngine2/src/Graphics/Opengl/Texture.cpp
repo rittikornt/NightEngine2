@@ -32,6 +32,17 @@ namespace Rendering
 
   REGISTER_DEALLOCATION_FUNC(Texture, ReleaseTextureID)
 
+  static Texture::FilterMode GetMagFilterMode(Texture::FilterMode filterMode)
+  {
+    switch (filterMode)
+    {
+    case Texture::FilterMode::TRILINEAR:
+      return Texture::FilterMode::NEAREST;
+    case Texture::FilterMode::TRINEAREST:
+      return Texture::FilterMode::LINEAR;
+    }
+    return filterMode;
+  }
   /////////////////////////////////////////////////////////////////////////
 
   Texture::Texture(const Texture& texture)
@@ -235,10 +246,11 @@ namespace Rendering
       , static_cast<GLint>(wrapMode));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T
       , static_cast<GLint>(wrapMode));
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER
       , static_cast<GLint>(filterMode));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER
-      , static_cast<GLint>(filterMode));
+      , static_cast<GLint>(GetMagFilterMode(filterMode)));
 
     CHECKGL_ERROR();
     texture.m_name = "NullTexture";
@@ -265,10 +277,11 @@ namespace Rendering
       , static_cast<GLint>(wrapMode));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T
       , static_cast<GLint>(wrapMode));
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER
       , static_cast<GLint>(filterMode));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER
-      , static_cast<GLint>(filterMode));
+      , static_cast<GLint>(GetMagFilterMode(filterMode)));
 
     if (imgData != nullptr)
     {

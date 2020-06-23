@@ -73,27 +73,27 @@ namespace Rendering
     if (diffuseTextureFile.size() > 0)
     {
       m_diffuseTexture = Texture::LoadTextureHandle(diffuseTextureFile
-      , Texture::Channel::SRGB);
+      , Texture::Channel::SRGB, Texture::FilterMode::TRILINEAR);
     }
     if (normalTextureFile.size() > 0)
     {
       m_normalTexture = Texture::LoadTextureHandle(normalTextureFile
-        , Texture::Channel::RGB);
+        , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
     }
     if (roughnessTextureFile.size() > 0)
     {
       m_roughnessTexture = Texture::LoadTextureHandle(roughnessTextureFile
-        , Texture::Channel::RGB);
+        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
     }
     if (metallicTexture.size() > 0)
     {
       m_metallicTexture = Texture::LoadTextureHandle(metallicTexture
-        , Texture::Channel::RGB);
+        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
     }
     if (emissiveTextureFile.size() > 0)
     {
       m_emissiveTexture = Texture::LoadTextureHandle(emissiveTextureFile
-        , Texture::Channel::RGB);
+        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
     }
   }
 

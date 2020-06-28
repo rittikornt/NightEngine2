@@ -30,7 +30,6 @@
 #include "Core/EC/SceneManager.hpp"
 
 //Subsystem
-#include "Core/Macros.hpp"
 #include "Core/Serialization/ResourceManager.hpp"
 #include "Core/Logger.hpp"
 #include "Core/Serialization/FileSystem.hpp"
@@ -51,6 +50,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <assimp/anim.h>
+
+//Engine defines
+#include "EngineConfigs.hpp"
 
 using namespace NightEngine;
 using namespace NightEngine::Factory;
@@ -80,7 +82,10 @@ namespace Rendering
   static size_t g_bufferIndex = 0;
   static bool g_debugDeferred = false;
   static bool g_showLight = true;
-  glm::mat4   g_dirLightWorldToLightSpaceMatrix;
+  static glm::mat4   g_dirLightWorldToLightSpaceMatrix;
+
+  static float g_dirLightResolution = 2048.0f;
+  static float g_pointLightResolution = 1024.0f;
 
   //*********************************************
   // Helper Functions
@@ -173,10 +178,9 @@ namespace Rendering
 
     //Depth FBO for shadow
     m_initResolution.x = width, m_initResolution.y = height;
-    m_shadowWidth = width, m_shadowHeight = height;
 
     m_depthfbo.Init();
-    m_shadowMapTexture = m_depthfbo.AttachDepthTexture(m_shadowWidth, m_shadowHeight);
+    m_shadowMapTexture = m_depthfbo.AttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
 
     m_depthMaterial.InitShader("Shadow/depth_directional.vert"
       , "Shadow/depth_directional.frag");
@@ -186,7 +190,7 @@ namespace Rendering
     {
       m_depth2fbo[i].Init();
 
-      m_shadowMapCubemap[i].InitDepthCubemap(m_shadowWidth);
+      m_shadowMapCubemap[i].InitDepthCubemap(g_pointLightResolution);
       m_depth2fbo[i].AttachCubemap(m_shadowMapCubemap[i]);
     }
 
@@ -475,7 +479,7 @@ namespace Rendering
       //*************************************************
       // Depth FBO Pass for directional light shadow
       //*************************************************
-      glViewport(0, 0, m_shadowWidth, m_shadowHeight);
+      glViewport(0, 0, g_dirLightResolution, g_dirLightResolution);
       glEnable(GL_DEPTH_TEST);
 
       //TODO: don't refresh lights component every frame
@@ -513,7 +517,7 @@ namespace Rendering
       //*************************************************
       // Depth FBO Pass for point shadow
       //*************************************************
-      glViewport(0, 0, m_shadowWidth, m_shadowWidth);
+      glViewport(0, 0, g_pointLightResolution, g_pointLightResolution);
       if (g_sceneLights.pointLights.size() > 0)
       {
         for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)

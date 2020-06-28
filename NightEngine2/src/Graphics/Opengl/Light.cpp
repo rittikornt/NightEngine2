@@ -105,19 +105,19 @@ namespace Rendering
     ASSERT_TRUE(m_gameObject.IsValid());
     ASSERT_TRUE(m_gameObject->GetTransform() != nullptr);
 
+    // TODO: Fits the size of DirLight camera to the scene bound better
+    // also should move the pos closest to the scene bound as possible without getting cliped
     auto transform = m_gameObject->GetTransform();
-    auto pos = transform->GetPosition();
     auto forward = transform->GetForward();
+    auto pos = forward * far_ * 0.5f;
 
     //View Matrix
-    auto view = CameraObject::CalculateViewMatrix(pos, -forward
-      , WORLD_UP);
+    auto view = CameraObject::CalculateViewMatrix(pos, -forward, WORLD_UP);
 
     //Proj Matrix
-    //TODO: Fits the DirLight camera bound the scene better
     auto projection = CameraObject::CalculateProjectionMatrix(
       CameraObject::CameraType::ORTHOGRAPHIC
-      , size, CameraObject::GetScreenAspectRatio(), near_, far_);
+      , size, 1.0f, near_, far_);
 
     m_worldToLightSpaceMatrix[0] = projection * view;
 

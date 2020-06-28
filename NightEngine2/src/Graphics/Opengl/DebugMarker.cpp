@@ -5,9 +5,10 @@
 */
 #include "Graphics/Opengl/DebugMarker.hpp"
 
-#include "Core/Macros.hpp"
-
 #include <glad/glad.h>
+
+//Engine defines
+#include "EngineConfigs.hpp"
 
 namespace Rendering
 {

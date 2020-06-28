@@ -68,7 +68,6 @@ namespace Rendering
     Material            m_depth2Material;
 
     glm::vec2           m_initResolution;
-    float               m_shadowWidth, m_shadowHeight;
 
     //Scene FrameBuffer
     GBuffer             m_gbuffer;

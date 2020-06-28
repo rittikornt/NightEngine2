@@ -5,6 +5,7 @@
 */
 #pragma once
 #include "Logger.hpp"
+#include "EngineConfigs.hpp"
 
 //TODO: Should this be in file system? 
 #ifdef _WIN32
@@ -39,9 +40,6 @@
 #define ENUMIFY(PREFIX, X) PREFIX_##X,        //for declaring enum
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-#define DEBUG_MODE true
-#define EDITOR_MODE true
 
 #if DEBUG_MODE
 	//Debug Block

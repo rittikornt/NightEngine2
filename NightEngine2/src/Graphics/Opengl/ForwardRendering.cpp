@@ -595,7 +595,7 @@
 //      //Shader and Matrices
 //      auto lightComponent = g_dirLight->GetComponent("Light");
 //      auto lightSpaceMatrix = lightComponent->Get<Light>()
-//        ->CalculateLightSpaceMatrix(g_cam, 25.0f, 0.01f, 100.0f);
+//        ->CalculateDirLightWorldToLightSpaceMatrix(g_cam, 25.0f, 0.01f, 100.0f);
 //
 //      //Draw pass to FBO
 //      g_depthfbo.Bind();
@@ -623,7 +623,7 @@
 //        //Shader and Matrices
 //        auto pointLightComponent = g_pointLight[i]->GetComponent("Light");
 //        auto lightSpaceMatrices = pointLightComponent->Get<Light>()
-//          ->CalculateLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
+//          ->CalculatePointLightWorldToLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
 //
 //        //Draw to FBO
 //        g_depth2fbo[i].Bind();

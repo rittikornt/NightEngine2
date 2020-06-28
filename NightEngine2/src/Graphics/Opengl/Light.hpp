@@ -77,12 +77,12 @@ namespace Rendering
       //! @brief Get Light information
       inline int GetLightIndex(void) { return m_lightIndex; }
 
-      //! @brief Calculate Light Space Matrix for Shadow calculation
-      glm::mat4& CalculateLightSpaceMatrix(CameraObject camera, float size
+      //! @brief Calculate Light Space Matrix for DirLight Shadow calculation
+      glm::mat4& CalculateDirLightWorldToLightSpaceMatrix(CameraObject camera, float size
         ,float near_ = 0.01f, float far_ = 100.0f);
 
-      //! @brief Calculate Light Space Matrix for 6 directions
-      std::vector<glm::mat4>& CalculateLightSpaceMatrices(float size = 90.0f
+      //! @brief Calculate Light Space Matrix for 6 directions for Omni-directional Shadow
+      std::vector<glm::mat4>& CalculatePointLightWorldToLightSpaceMatrices(float size = 90.0f
         , float aspect = 16.0f/9.0f
         , float near_ = 0.01f, float far_ = 100.0f);
     private:
@@ -90,6 +90,6 @@ namespace Rendering
       LightInfo m_lightInfo;
       int       m_lightIndex;
 
-      std::vector<glm::mat4> m_lightSpaceMatrix; //For Shadow calculation
+      std::vector<glm::mat4> m_worldToLightSpaceMatrix; //For Shadow calculation
   };
 }

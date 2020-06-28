@@ -57,9 +57,9 @@ void main()
 		normal.xz *= u_material.m_normalMultiplier;
 
 		//Transform to world space
-		normal = normalize(fs_in.ourTBNMatrix * normal);
+		normal = (fs_in.ourTBNMatrix * normal);
 	}
-	o_normal = normal;
+	o_normal = normalize(normal);
 
 	//Albedo
 	o_albedo.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb

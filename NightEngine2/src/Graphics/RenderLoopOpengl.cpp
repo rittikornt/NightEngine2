@@ -71,7 +71,7 @@ namespace Rendering
 
   //Camera
   static CameraObject g_camera{ CameraObject::CameraType::PERSPECTIVE
-    ,103.0f };
+    ,90.0f };
 
   static SceneLights g_sceneLights;
   static float g_time = 0.0f;
@@ -79,76 +79,6 @@ namespace Rendering
   //*********************************************
   // Helper Functions
   //*********************************************
-  static void ProcessInput(float dt)
-  {
-    using namespace Input;
-    static float moveSpeed = 4.0f;
-    static const float walkSpeed = 4.0f;
-    static const float runSpeed = 10.0f;
-
-    static float mouseSpeed = 10.0f;
-    static float rotateSpeed = 50.0f;
-
-    if (Input::GetMouseHold(MouseKeyCode::MOUSE_BUTTON_RIGHT))
-    {
-      if (Input::GetKeyHold(KeyCode::KEY_LEFT_SHIFT))
-      {
-        moveSpeed = runSpeed;
-      }
-      else
-      {
-        moveSpeed = walkSpeed;
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_W))
-      {
-        g_camera.Move(glm::vec3(0.0f, 0.0f, moveSpeed *dt));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_S))
-      {
-        g_camera.Move(glm::vec3(0.0f, 0.0f, -moveSpeed * dt));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_D))
-      {
-        g_camera.Move(glm::vec3(moveSpeed*dt, 0.0f, 0.0f));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_A))
-      {
-        g_camera.Move(glm::vec3(-moveSpeed * dt, 0.0f, 0.0f));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_Q))
-      {
-        g_camera.Move(glm::vec3(0.0f, -moveSpeed * dt, 0.0f));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_E))
-      {
-        g_camera.Move(glm::vec3(0.0f, moveSpeed * dt, 0.0f));
-      }
-
-      if (Input::GetKeyHold(KeyCode::KEY_LEFT))
-      {
-        g_camera.Rotate(glm::vec3(0.0f, -rotateSpeed * dt, 0.0f));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_RIGHT))
-      {
-        g_camera.Rotate(glm::vec3(0.0f, rotateSpeed * dt, 0.0f));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_UP))
-      {
-        g_camera.Rotate(glm::vec3(rotateSpeed * dt, 0.0f, 0.0f));
-      }
-      if (Input::GetKeyHold(KeyCode::KEY_DOWN))
-      {
-        g_camera.Rotate(glm::vec3(-rotateSpeed * dt, 0.0f, 0.0f));
-      }
-
-      glm::vec2 offset = Input::GetMouseOffset();
-      float pitch = -offset.y * mouseSpeed * dt;
-      float yaw = offset.x * mouseSpeed * dt;
-      g_camera.Rotate(glm::vec3(pitch
-        , yaw, 0.0f));
-    }
-  }
-
   static void ClearLightData(Shader& shader)
   {
     static const std::string g_pointLightStr[] =
@@ -443,7 +373,7 @@ namespace Rendering
   {
     g_time += dt;
     g_time = fmodf(g_time, FLT_MAX);
-    ProcessInput(dt);
+    CameraObject::ProcessCameraInput(g_camera, dt);
 
     //*************************************************
     // Rendering Loop
@@ -537,7 +467,7 @@ namespace Rendering
     {
       auto lightComponent = g_sceneLights.dirLights[0]->GetComponent("Light");
       lightSpaceMatrix = lightComponent->Get<Light>()
-        ->CalculateLightSpaceMatrix(g_camera, 10.0f, 0.01f, 100.0f);
+        ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, 10.0f, 0.3f, 100.0f);
 
       //Draw pass to FBO
       m_depthfbo.Bind();
@@ -571,7 +501,7 @@ namespace Rendering
         //Shader and Matrices
         auto pointLightComponent = g_sceneLights.pointLights[i]->GetComponent("Light");
         auto& lightSpaceMatrices = pointLightComponent->Get<Light>()
-          ->CalculateLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
+          ->CalculatePointLightWorldToLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
 
         //Draw to FBO
         m_depth2fbo[i].Bind();

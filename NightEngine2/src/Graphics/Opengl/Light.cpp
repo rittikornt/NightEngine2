@@ -38,19 +38,19 @@ namespace Rendering
     {
       case LightType::DIRECTIONAL:
       {
-        m_lightSpaceMatrix.reserve(1);
-        m_lightSpaceMatrix.emplace_back();
+        m_worldToLightSpaceMatrix.reserve(1);
+        m_worldToLightSpaceMatrix.emplace_back();
         break;
       }
       case LightType::POINT:
       {
-        m_lightSpaceMatrix.reserve(6);
-        m_lightSpaceMatrix.emplace_back();
-        m_lightSpaceMatrix.emplace_back();
-        m_lightSpaceMatrix.emplace_back();
-        m_lightSpaceMatrix.emplace_back();
-        m_lightSpaceMatrix.emplace_back();
-        m_lightSpaceMatrix.emplace_back();
+        m_worldToLightSpaceMatrix.reserve(6);
+        m_worldToLightSpaceMatrix.emplace_back();
+        m_worldToLightSpaceMatrix.emplace_back();
+        m_worldToLightSpaceMatrix.emplace_back();
+        m_worldToLightSpaceMatrix.emplace_back();
+        m_worldToLightSpaceMatrix.emplace_back();
+        m_worldToLightSpaceMatrix.emplace_back();
         break;
       }
       case LightType::SPOTLIGHT:
@@ -99,7 +99,7 @@ namespace Rendering
     }
   }
 
-  glm::mat4& Light::CalculateLightSpaceMatrix(CameraObject camera
+  glm::mat4& Light::CalculateDirLightWorldToLightSpaceMatrix(CameraObject camera
     , float size, float near_, float far_)
   {
     ASSERT_TRUE(m_gameObject.IsValid());
@@ -111,19 +111,20 @@ namespace Rendering
 
     //View Matrix
     auto view = CameraObject::CalculateViewMatrix(pos, -forward
-      , camera.m_worldUp);
+      , WORLD_UP);
 
     //Proj Matrix
+    //TODO: Fits the DirLight camera bound the scene better
     auto projection = CameraObject::CalculateProjectionMatrix(
       CameraObject::CameraType::ORTHOGRAPHIC
-      , size, camera.m_aspect,camera.m_near, camera.m_far);
+      , size, CameraObject::GetScreenAspectRatio(), near_, far_);
 
-    m_lightSpaceMatrix[0] = projection * view;
+    m_worldToLightSpaceMatrix[0] = projection * view;
 
-    return m_lightSpaceMatrix[0];
+    return m_worldToLightSpaceMatrix[0];
   }
 
-  std::vector<glm::mat4>& Light::CalculateLightSpaceMatrices(float size, float aspect
+  std::vector<glm::mat4>& Light::CalculatePointLightWorldToLightSpaceMatrices(float size, float aspect
     , float near_, float far_)
   {
     ASSERT_TRUE(m_gameObject.IsValid());
@@ -142,34 +143,34 @@ namespace Rendering
     //View Matrix Right
     auto view = CameraObject::CalculateViewMatrix(pos, glm::vec3(1.0, 0.0, 0.0)
       , glm::vec3(0.0, -1.0, 0.0));
-    m_lightSpaceMatrix[0] = (projection * view);
+    m_worldToLightSpaceMatrix[0] = (projection * view);
 
     //Left
     view = CameraObject::CalculateViewMatrix(pos, glm::vec3(-1.0, 0.0, 0.0)
       , glm::vec3(0.0, -1.0, 0.0));
-    m_lightSpaceMatrix[1] = (projection * view);
+    m_worldToLightSpaceMatrix[1] = (projection * view);
 
     //Top
     view = CameraObject::CalculateViewMatrix(pos, glm::vec3(0.0, 1.0, 0.0)
       , glm::vec3(0.0, 0.0, 1.0));
-    m_lightSpaceMatrix[2] = (projection * view);
+    m_worldToLightSpaceMatrix[2] = (projection * view);
     
     //Bottom
     view = CameraObject::CalculateViewMatrix(pos, glm::vec3(0.0, -1.0, 0.0)
       , glm::vec3(0.0, 0.0, -1.0));
-    m_lightSpaceMatrix[3] = (projection * view);
+    m_worldToLightSpaceMatrix[3] = (projection * view);
    
     //Near
     view = CameraObject::CalculateViewMatrix(pos, glm::vec3(0.0, 0.0, 1.0)
       , glm::vec3(0.0, -1.0, 0.0));
-    m_lightSpaceMatrix[4] = (projection * view);
+    m_worldToLightSpaceMatrix[4] = (projection * view);
     
     //Far
     view = CameraObject::CalculateViewMatrix(pos, glm::vec3(0.0, 0.0, -1.0)
       , glm::vec3(0.0, -1.0, 0.0));
-    m_lightSpaceMatrix[5] = (projection * view);
+    m_worldToLightSpaceMatrix[5] = (projection * view);
 
-    return m_lightSpaceMatrix;
+    return m_worldToLightSpaceMatrix;
   }
 
   Light::LightInfo::Value::Value(float intensity)

@@ -9,9 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define DEFAULT_CAM_POS (glm::vec3(0.0f, 0.0f, -10.0f))
+#define DEFAULT_CAM_POS (glm::vec3(0.0f, 0.0f, 10.0f))
 #define DEFAULT_FORWARD (glm::vec3(0.0f, 0.0f, -1.0f))
-#define DEFAULT_ANGLE (glm::vec3(0.0f, 90.0f, 0.0f))
+#define DEFAULT_ANGLE (glm::vec3(0.0f, -90.0f, 0.0f))
 
 #define WORLD_UP (glm::vec3(0.0f, 1.0f, 0.0f))
 #define VEC3_ZERO (glm::vec3(0.0f, 0.0f, 0.0f))
@@ -44,7 +44,7 @@ namespace Rendering
 
     union CameraSize
     {
-      float m_fov = 103.0f;
+      float m_fov = 90.0f;
       float m_size;
       CameraSize(void) = default;
       CameraSize(float size) 

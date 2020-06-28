@@ -39,7 +39,7 @@ void main()
 	vec3 specularTex = texture(u_gbufferResult.m_specularTex, OurTexCoords).rgb;
 	vec4 emissive = texture(u_gbufferResult.m_emissiveTex, OurTexCoords);
 	float roughness = GetFilteredRoughness(specularTex.r, normal); //0.2;
-	float metallic = specularTex.g; //1.0;
+	float metallic = specularTex.g;
 	
 	//Surface Data
 	SurfaceData surfaceData = GetSurfaceData(normal, fragPos);

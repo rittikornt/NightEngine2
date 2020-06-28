@@ -12,6 +12,7 @@
 #include "Graphics/Opengl/GBuffer.hpp"
 
 #include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
+#include "Graphics/Opengl/DebugMarker.hpp"
 
 namespace Rendering
 {
@@ -42,7 +43,11 @@ namespace Rendering
       //SSAO
       if (m_ssaoPP.m_enable)
       {
-        m_ssaoPP.Apply(*(context.screenVAO), *(context.camera), *(context.gbuffer), m_ppUtility);
+        DebugMarker::PushDebugGroup("SSAO Pass");
+        {
+          m_ssaoPP.Apply(*(context.screenVAO), *(context.camera), *(context.gbuffer), m_ppUtility);
+        }
+        DebugMarker::PopDebugGroup();
       }
       else
       {
@@ -52,7 +57,11 @@ namespace Rendering
       //Bloom
       if (m_bloomPP.m_enable)
       {
-        m_bloomPP.Apply(*(context.screenVAO), *(context.screenTexture), m_ppUtility);
+        DebugMarker::PushDebugGroup("Bloom Pass");
+        {
+          m_bloomPP.Apply(*(context.screenVAO), *(context.screenTexture), m_ppUtility);
+        }
+        DebugMarker::PopDebugGroup();
       }
       else
       {

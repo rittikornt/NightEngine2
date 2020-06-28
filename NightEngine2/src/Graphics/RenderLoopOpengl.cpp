@@ -18,6 +18,7 @@
 #include "Graphics/ShaderTracker.hpp"
 
 #include "Graphics/Opengl/Postprocess/PostProcessSetting.hpp"
+#include "Graphics/Opengl/DebugMarker.hpp"
 
 //GameObject
 #include "Core/EC/Components/MeshRenderer.hpp"
@@ -29,6 +30,7 @@
 #include "Core/EC/SceneManager.hpp"
 
 //Subsystem
+#include "Core/Macros.hpp"
 #include "Core/Serialization/ResourceManager.hpp"
 #include "Core/Logger.hpp"
 #include "Core/Serialization/FileSystem.hpp"
@@ -50,8 +52,6 @@
 
 #include <assimp/anim.h>
 
-#define EDITOR_MODE true
-
 using namespace NightEngine;
 using namespace NightEngine::Factory;
 using namespace NightEngine::EC;
@@ -71,10 +71,16 @@ namespace Rendering
 
   //Camera
   static CameraObject g_camera{ CameraObject::CameraType::PERSPECTIVE
-    ,90.0f };
+    ,100.0f };
 
   static SceneLights g_sceneLights;
   static float g_time = 0.0f;
+
+  static bool g_enablePostprocess = true;
+  static size_t g_bufferIndex = 0;
+  static bool g_debugDeferred = false;
+  static bool g_showLight = true;
+  glm::mat4   g_dirLightWorldToLightSpaceMatrix;
 
   //*********************************************
   // Helper Functions
@@ -382,13 +388,24 @@ namespace Rendering
     {
 #if(EDITOR_MODE)
       Editor::PreRender();
-      Render();
-      Editor::PostRender();
+
+      DebugMarker::PushDebugGroup("Render");
+      {
+        Render();
+      }
+      DebugMarker::PopDebugGroup();
+
+      DebugMarker::PushDebugGroup("ImGUI Editor");
+      {
+        Editor::PostRender();
+      }
+      DebugMarker::PopDebugGroup();
 #else
       Render();
 #endif
 
       // Flip Buffers and Draw
+      DebugMarker::EndFrame();
       Window::SwapBuffer();
       glfwPollEvents();
     }
@@ -451,87 +468,99 @@ namespace Rendering
     const float clear_color = 0.0f;
     glClearColor(clear_color, clear_color
       , clear_color, clear_color);
+    float pointShadowFarPlane = g_camera.m_far;
 
-    //*************************************************
-    // Depth FBO Pass for directional light shadow
-    //*************************************************
-    glViewport(0, 0, m_shadowWidth, m_shadowHeight);
-    glEnable(GL_DEPTH_TEST);
-
-    //TODO: don't refresh lights component every frame
-    SceneManager::GetLights(g_sceneLights);
-
-    //Shader and Matrices
-    glm::mat4 lightSpaceMatrix;
-    if (g_sceneLights.dirLights.size() > 0)
+    DebugMarker::PushDebugGroup("ShadowCaster Pass");
     {
-      auto lightComponent = g_sceneLights.dirLights[0]->GetComponent("Light");
-      lightSpaceMatrix = lightComponent->Get<Light>()
-        ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, 10.0f, 0.3f, 100.0f);
+      //*************************************************
+      // Depth FBO Pass for directional light shadow
+      //*************************************************
+      glViewport(0, 0, m_shadowWidth, m_shadowHeight);
+      glEnable(GL_DEPTH_TEST);
 
-      //Draw pass to FBO
-      m_depthfbo.Bind();
+      //TODO: don't refresh lights component every frame
+      SceneManager::GetLights(g_sceneLights);
+
+      //Shader and Matrices
+      DebugMarker::PushDebugGroup("DirectionalLight ShadowCaster Pass");
+      if (g_sceneLights.dirLights.size() > 0)
       {
-        glClear(GL_DEPTH_BUFFER_BIT);
-        m_depthMaterial.Bind(false);
-        {
-          m_depthMaterial.GetShader().SetUniform("u_lightSpaceMatrix"
-            , lightSpaceMatrix);
+        auto lightComponent = g_sceneLights.dirLights[0]->GetComponent("Light");
+        g_dirLightWorldToLightSpaceMatrix = lightComponent->Get<Light>()
+          ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, 10.0f, 0.3f, 100.0f);
 
-          //Draw all Mesh with depthMaterial
-          Drawer::DrawShadowWithoutBind(m_depthMaterial.GetShader()
-            , Drawer::DrawPass::BATCH);
-          Drawer::DrawShadowWithoutBind(m_depthMaterial.GetShader()
-            , Drawer::DrawPass::CUSTOM);
-        }
-        m_depthMaterial.Unbind();
-      }
-      m_depthfbo.Unbind();
-    }
-
-    //*************************************************
-    // Depth FBO Pass for point shadow
-    //*************************************************
-    glViewport(0, 0, m_shadowWidth, m_shadowWidth);
-    const float farPlane = g_camera.m_far;
-    if (g_sceneLights.pointLights.size() > 0)
-    {
-      for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
-      {
-        //Shader and Matrices
-        auto pointLightComponent = g_sceneLights.pointLights[i]->GetComponent("Light");
-        auto& lightSpaceMatrices = pointLightComponent->Get<Light>()
-          ->CalculatePointLightWorldToLightSpaceMatrices(90.0f, 1.0f, 0.01f, farPlane);
-
-        //Draw to FBO
-        m_depth2fbo[i].Bind();
+        //Draw pass to FBO
+        m_depthfbo.Bind();
         {
           glClear(GL_DEPTH_BUFFER_BIT);
-          //Depth Material
-          m_depth2Material.Bind(false);
+          m_depthMaterial.Bind(false);
           {
-            for (int i = 0; i < 6; ++i)
-            {
-              m_depth2Material.GetShader().SetUniform(g_lightSpaceMatrices[i]
-                , lightSpaceMatrices[i]);
-            }
-            m_depth2Material.GetShader().SetUniform("u_lightPos"
-              , g_sceneLights.pointLights[i]->GetTransform()->GetPosition());
-            m_depth2Material.GetShader().SetUniform("u_farPlane"
-              , farPlane);
+            m_depthMaterial.GetShader().SetUniform("u_lightSpaceMatrix"
+              , g_dirLightWorldToLightSpaceMatrix);
+
             //Draw all Mesh with depthMaterial
-            Drawer::DrawShadowWithoutBind(m_depth2Material.GetShader());
+            Drawer::DrawShadowWithoutBind(m_depthMaterial.GetShader()
+              , Drawer::DrawPass::BATCH);
+            Drawer::DrawShadowWithoutBind(m_depthMaterial.GetShader()
+              , Drawer::DrawPass::CUSTOM);
           }
-          m_depth2Material.Unbind();
+          m_depthMaterial.Unbind();
         }
-        m_depth2fbo[i].Unbind();
+        m_depthfbo.Unbind();
+      }
+      DebugMarker::PopDebugGroup();
+
+      //*************************************************
+      // Depth FBO Pass for point shadow
+      //*************************************************
+      glViewport(0, 0, m_shadowWidth, m_shadowWidth);
+      if (g_sceneLights.pointLights.size() > 0)
+      {
+        for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
+        {
+          //Shader and Matrices
+          auto pointLightComponent = g_sceneLights.pointLights[i]->GetComponent("Light");
+          auto& lightSpaceMatrices = pointLightComponent->Get<Light>()
+            ->CalculatePointLightWorldToLightSpaceMatrices(90.0f, 1.0f, 0.1f, pointShadowFarPlane);
+
+          //Draw to FBO
+          DebugMarker::PushDebugGroup("PointLight ShadowCaster Pass");
+          m_depth2fbo[i].Bind();
+          {
+            glClear(GL_DEPTH_BUFFER_BIT);
+            //Depth Material
+            m_depth2Material.Bind(false);
+            {
+              for (int i = 0; i < 6; ++i)
+              {
+                m_depth2Material.GetShader().SetUniform(g_lightSpaceMatrices[i]
+                  , lightSpaceMatrices[i]);
+              }
+              m_depth2Material.GetShader().SetUniform("u_lightPos"
+                , g_sceneLights.pointLights[i]->GetTransform()->GetPosition());
+              m_depth2Material.GetShader().SetUniform("u_farPlane"
+                , pointShadowFarPlane);
+
+              //Draw all Mesh with depthMaterial
+              Drawer::DrawShadowWithoutBind(m_depth2Material.GetShader()
+                , Drawer::DrawPass::BATCH);
+              Drawer::DrawShadowWithoutBind(m_depth2Material.GetShader()
+                , Drawer::DrawPass::CUSTOM);
+            }
+            m_depth2Material.Unbind();
+          }
+          m_depth2fbo[i].Unbind();
+          DebugMarker::PopDebugGroup();
+        }
       }
     }
+    DebugMarker::PopDebugGroup();
 
     //*************************************************
     // Geometry Pass
     //*************************************************
     glViewport(0, 0, m_initResolution.x, m_initResolution.y);
+    DebugMarker::PushDebugGroup("Deferred Geometry Pass");
     m_gbuffer.Bind();
     {
       //Clear Buffer
@@ -542,7 +571,7 @@ namespace Rendering
       m_defaultMaterial->Bind();
       {
         Shader& shader = m_defaultMaterial->GetShader();
-        shader.SetUniform("u_lightSpaceMatrix", lightSpaceMatrix);
+        shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
       }
       m_defaultMaterial->Unbind();
 
@@ -550,12 +579,15 @@ namespace Rendering
       DrawScene(false);
     }
     m_gbuffer.Unbind();
+    DebugMarker::PopDebugGroup();
 
 
     //*************************************************
     // Lighting Pass
     //*************************************************
     m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
+
+    DebugMarker::PushDebugGroup("Deferred Lighting Pass");
     m_sceneFbo.Bind();
     {
       //Clear Buffer
@@ -565,7 +597,7 @@ namespace Rendering
       m_lightingMaterial.Bind(false);
       {
         Shader& shader = m_lightingMaterial.GetShader();
-        shader.SetUniform("u_farPlane", farPlane);
+        shader.SetUniform("u_farPlane", pointShadowFarPlane);
 
         //Shadow 2D texture
         m_shadowMapTexture.BindToTextureUnit(6);
@@ -598,41 +630,36 @@ namespace Rendering
 
       //Draw Cubemap
       m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
-
     }
     m_sceneFbo.Unbind();
+    DebugMarker::PopDebugGroup();
 
     //*************************************************
     // PostProcess Pass
     //*************************************************
-    //FXAA
-    static bool enablePostprocess = true;
-    if (Input::GetKeyDown(Input::KeyCode::KEY_8))
+    DebugMarker::PushDebugGroup("PostProcess");
     {
-      enablePostprocess = !enablePostprocess;
-      if (!enablePostprocess)
+      if (Input::GetKeyDown(Input::KeyCode::KEY_8))
       {
-        m_postProcessSetting->Clear();
+        g_enablePostprocess = !g_enablePostprocess;
+        if (!g_enablePostprocess)
+        {
+          m_postProcessSetting->Clear();
+        }
+      }
+      if (g_enablePostprocess)
+      {
+        m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
+          , &m_screenTriangleVAO, &m_sceneTexture });
       }
     }
-    if (enablePostprocess)
-    {
-      m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
-        , & m_screenTriangleVAO, &m_sceneTexture });
-    }
+    DebugMarker::PopDebugGroup();
 
     //*************************************************
     // Final Pass to the screen
     //*************************************************
-    glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
 
     //Debugging View
-    static size_t g_bufferIndex = 0;
-    static bool g_debugDeferred = false;
-    static bool g_showLight = true;
     if (Input::GetKeyDown(Input::KeyCode::KEY_0))
     {
       g_bufferIndex = (g_bufferIndex + 1) %
@@ -647,89 +674,75 @@ namespace Rendering
       g_showLight = !g_showLight;
     }
 
-    //Draw Screen
-    m_sceneFbo.Bind();
+    DebugMarker::PushDebugGroup("UberPostProcess");
     {
-      m_postfxFinalMaterial.Bind(false);
+      glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
+      glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glDisable(GL_DEPTH_TEST);
+
+      //Draw Screen
+      m_sceneFbo.Bind();
       {
-        Shader& shader = m_postfxFinalMaterial.GetShader();
-        shader.SetUniform("u_screenTexture", 0);
-        shader.SetUniform("u_bloomTexture", 1);
-        shader.SetUniform("u_ssaoTexture", 2);
-        shader.SetUniform("u_exposure", 1.0f);
-        shader.SetUniform("u_time", g_time);
-
-        //Scene Texture
-        if (g_debugDeferred)
+        m_postfxFinalMaterial.Bind(false);
         {
-          shader.SetUniform("u_bloomTexture", 0);
-          m_gbuffer.GetTexture(g_bufferIndex).BindToTextureUnit(0);
+          Shader& shader = m_postfxFinalMaterial.GetShader();
+          shader.SetUniform("u_screenTexture", 0);
+          shader.SetUniform("u_bloomTexture", 1);
+          shader.SetUniform("u_ssaoTexture", 2);
+          shader.SetUniform("u_exposure", 1.0f);
+          shader.SetUniform("u_time", g_time);
+
+          //Scene Texture
+          if (g_debugDeferred)
+          {
+            shader.SetUniform("u_bloomTexture", 0);
+            m_gbuffer.GetTexture(g_bufferIndex).BindToTextureUnit(0);
+          }
+          else
+          {
+            m_sceneTexture.BindToTextureUnit(0);
+            m_postProcessSetting->m_bloomPP.m_targetTexture.BindToTextureUnit(1);
+            m_postProcessSetting->m_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
+          }
+
+          m_screenTriangleVAO.Draw();
         }
-        else
-        {
-          m_sceneTexture.BindToTextureUnit(0);
-          m_postProcessSetting->m_bloomPP.m_targetTexture.BindToTextureUnit(1);
-          m_postProcessSetting->m_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
-        }
+        m_postfxFinalMaterial.Unbind();
 
-        m_screenTriangleVAO.Draw();
+        //*************************************************
+        // Draw Debug Icons
+        //*************************************************
+        DrawDebugIcons();
       }
-      m_postfxFinalMaterial.Unbind();
-
-      //*************************************************
-      // Forward Rendering afterward
-      //*************************************************
-      if (g_showLight)
-      {
-        glEnable(GL_DEPTH_TEST);
-        Texture::SetBlendMode(true);
-        //Draw Light Icons Billboard
-        g_camera.ApplyViewMatrix(m_billboardMaterial->GetShader());
-        m_billboardMaterial->Bind(false);
-        {
-          Shader& shader = m_billboardMaterial->GetShader();
-          shader.SetUniform("u_texture", 0);
-          m_lightTexture.BindToTextureUnit(0);
-
-          Drawer::DrawWithoutBind(shader
-            , Drawer::DrawPass::DEBUG);
-        }
-        m_billboardMaterial->Unbind();
-        Texture::SetBlendMode(false);
-      }
-
-      //*************************************************
-      // Physics Debug Draw
-      //*************************************************
-      glClear(GL_DEPTH_BUFFER_BIT);
-      auto physicsScene = Physics::PhysicsScene::GetPhysicsScene(0);
-      if (physicsScene != nullptr)
-      {
-        physicsScene->DebugDraw(g_camera);
-      }
+      m_sceneFbo.Unbind();
     }
-    m_sceneFbo.Unbind();
+    DebugMarker::PopDebugGroup();
 
     //*************************************************
     // FXAA at the end, Directly onto the screen
     //*************************************************
-    if (enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
+    DebugMarker::PushDebugGroup("Final Draw");
     {
-      m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO
-        , m_sceneTexture);
-    }
-    else
-    {
-      m_blitCopyMaterial.Bind(false);
+      if (g_enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
       {
-        m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
-        m_sceneTexture.BindToTextureUnit(0);
-
-        //Draw Quad
-        m_screenTriangleVAO.Draw();
+        m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO
+          , m_sceneTexture);
       }
-      m_blitCopyMaterial.Unbind();
+      else
+      {
+        m_blitCopyMaterial.Bind(false);
+        {
+          m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
+          m_sceneTexture.BindToTextureUnit(0);
+
+          //Draw Quad
+          m_screenTriangleVAO.Draw();
+        }
+        m_blitCopyMaterial.Unbind();
+      }
     }
+    DebugMarker::PopDebugGroup();
   }
 
   void RenderLoopOpengl::DrawScene(bool debugNormal)
@@ -767,4 +780,39 @@ namespace Rendering
       m_normalDebug.Unbind();
     }
   }
+
+  void RenderLoopOpengl::DrawDebugIcons()
+  {
+    DebugMarker::PushDebugGroup("Editor Icons");
+    {
+      if (g_showLight)
+      {
+        glEnable(GL_DEPTH_TEST);
+        Texture::SetBlendMode(true);
+        //Draw Light Icons Billboard
+        g_camera.ApplyViewMatrix(m_billboardMaterial->GetShader());
+        m_billboardMaterial->Bind(false);
+        {
+          Shader& shader = m_billboardMaterial->GetShader();
+          shader.SetUniform("u_texture", 0);
+          m_lightTexture.BindToTextureUnit(0);
+
+          Drawer::DrawWithoutBind(shader
+            , Drawer::DrawPass::DEBUG);
+        }
+        m_billboardMaterial->Unbind();
+        Texture::SetBlendMode(false);
+      }
+
+      // Physics Debug Draw
+      glClear(GL_DEPTH_BUFFER_BIT);
+      auto physicsScene = Physics::PhysicsScene::GetPhysicsScene(0);
+      if (physicsScene != nullptr)
+      {
+        physicsScene->DebugDraw(g_camera);
+      }
+    }
+    DebugMarker::PopDebugGroup();
+  }
+
 } // Rendering

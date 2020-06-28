@@ -52,6 +52,8 @@ namespace Rendering
 
     void DrawScene(bool debugNormal);
 
+    void DrawDebugIcons(void);
+
     //Uniform Buffer Object
     UniformBufferObject m_uniformBufferObject;
 

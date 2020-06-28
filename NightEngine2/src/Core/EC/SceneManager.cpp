@@ -170,6 +170,7 @@ namespace NightEngine
 
         ComponentHandle* ch;
         Handle<GameObject>   floorGO;
+        Handle<GameObject>   boxGO;
 
         Handle<GameObject>   dirLight;
         //************************************************
@@ -204,6 +205,24 @@ namespace NightEngine
               , glm::vec3(10.0f, 1.0f, 10.0f) } );
 
           scene.AddGameObject(floorGO);
+        }
+
+        {
+          //Floor
+          boxGO = GameObject::Create("Cube", 1);
+
+          boxGO->AddComponent("MeshRenderer");
+          ch = boxGO->GetComponent("MeshRenderer");
+          ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
+            , FileSystem::DirectoryType::Models), true);
+          ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
+          g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
+          ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
+
+          boxGO->GetTransform()->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
+          boxGO->GetTransform()->SetScale(glm::vec3(2.0f, 2.0f, 2.0f));
+
+          scene.AddGameObject(boxGO);
         }
 
         //Lights

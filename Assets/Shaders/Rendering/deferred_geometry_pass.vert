@@ -42,9 +42,10 @@ void main()
 	
 	gl_Position = u_projection * u_view * model * vec4(inPos, 1.0f);
 	
-	//Support Non-uniform scaling
+	// NormalOS to NormalWS
+	// Support Non-uniform scaling
 	mat3 inverseTransposeModel = mat3(transpose(inverse(u_model)));
-	vs_out.ourFragNormal = inverseTransposeModel * inNormal;
+	vs_out.ourFragNormal = normalize(inverseTransposeModel * inNormal);
 
 	//Calculate TBN only if use Normal map
 	if(u_useNormalmap)

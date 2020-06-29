@@ -32,8 +32,9 @@ namespace NightEngine
             , InheritType::PUBLIC, true
             , nullptr, nullptr)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_material, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_useModelLoadedMaterials, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_drawMode, true)
-            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_meshCount, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_submeshCount, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_meshLoadPath, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_castShadow, true);
         }
@@ -118,8 +119,11 @@ namespace NightEngine
         private:
           EC::Handle<Rendering::Material> m_material;
 
+          std::vector <EC::Handle<Rendering::Material>> m_materials;
+          bool                            m_useModelLoadedMaterials = false;
+
           std::vector<Rendering::Mesh>    m_meshes; //All the submeshes
-          unsigned                        m_meshCount = 0;
+          unsigned                        m_submeshCount = 0;
           std::string                     m_meshLoadPath;
 
           bool                            m_castShadow = true;

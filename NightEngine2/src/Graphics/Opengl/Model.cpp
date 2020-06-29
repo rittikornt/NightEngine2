@@ -106,15 +106,17 @@ namespace Rendering
     }
 
     // Load Materials
+    m_validMaterialCount = 0;
     for (int i = 0; i < materialIndices.size(); ++i)
     {
-      if (materialIndices[i] >= 0)
+      if (materialIndices[i] == -1
+        || !AddMaterial(materialIndices[i], scene, handleMap))
       {
-        AddMaterial(materialIndices[i], scene, handleMap);
+        m_materials.emplace_back();
       }
       else
       {
-        m_materials.emplace_back();
+        ++m_validMaterialCount;
       }
     }
   }
@@ -178,7 +180,7 @@ namespace Rendering
     m_meshes.emplace_back(vertices, indices, false);
   }
 
-  void Model::AddMaterial(int index, const aiScene* scene
+  bool Model::AddMaterial(int index, const aiScene* scene
     , std::unordered_map<int, Handle<Material>>& handleMap)
   {
     std::vector<std::string> diffuseTextures;
@@ -239,10 +241,7 @@ namespace Rendering
       }
     }
 
-    if (!added)
-    {
-      m_materials.emplace_back();
-    }
+    return added;
   }
 
   bool Model::GetTextures(std::vector<std::string>& textures

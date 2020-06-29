@@ -31,7 +31,13 @@ namespace Rendering
       void Draw(void);
 
       //! @brief Get model meshes
-      std::vector<Mesh>& GetMeshes(void) { return m_meshes; }
+      inline std::vector<Mesh>& GetMeshes(void) { return m_meshes; }
+
+      //! @brief Get loaded materials
+      inline std::vector<NightEngine::EC::Handle<Rendering::Material>>& GetMaterials(void) { return m_materials; }
+
+      //! @brief Check if some of the loaded materials is valid or not
+      inline bool IsValidMaterials(void) { return m_validMaterialCount > 0; }
     private:
       void LoadModel(const std::string& path);
 
@@ -40,7 +46,7 @@ namespace Rendering
       void AddMesh(aiMesh* mesh
         , std::vector<Vertex>& vertices, std::vector<unsigned>& indices);
 
-      void AddMaterial(int index, const aiScene* scene
+      bool AddMaterial(int index, const aiScene* scene
         , std::unordered_map<int, NightEngine::EC::Handle<Rendering::Material>>& handleMap);
 
       bool GetTextures(std::vector<std::string>& textures
@@ -48,6 +54,7 @@ namespace Rendering
 
       std::vector<Mesh> m_meshes;
       std::vector <NightEngine::EC::Handle<Rendering::Material>> m_materials;
+      unsigned              m_validMaterialCount = 0;
 
       std::string       m_directory;
       std::string       m_name;

@@ -208,7 +208,7 @@ namespace NightEngine
         }
 
         {
-          //Floor
+          //Box gameobject
           boxGO = GameObject::Create("Cube", 1);
 
           boxGO->AddComponent("MeshRenderer");

@@ -6,10 +6,15 @@
 #include "Graphics/Opengl/Model.hpp"
 #include "Graphics/Opengl/Vertex.hpp"
 #include "Graphics/Opengl/Texture.hpp"
+#include "Graphics/Opengl/Material.hpp"
 
 #include "Core/Logger.hpp"
+#include "Core/EC/Factory.hpp"
+
+#include "Core/Serialization/FileSystem.hpp"
 
 using namespace NightEngine;
+using namespace NightEngine::EC;
 
 namespace Rendering
 {
@@ -37,45 +42,88 @@ namespace Rendering
   //*****************************************
   void Model::LoadModel(const std::string& path)
   {
-    Assimp::Importer import;
-    const aiScene* scene = import.ReadFile(path
-    , aiProcess_Triangulate | aiProcess_FlipUVs
-      | aiProcess_CalcTangentSpace);
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(path
+    , aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
     //Check for Load error
     if(scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
     || scene->mRootNode == nullptr)
     {
       Debug::Log << Logger::MessageType::ERROR_MSG 
-      << "Assimp: " << import.GetErrorString() << '\n';
+      << "Assimp: " << importer.GetErrorString() << '\n';
       return;
     }
 
     //Save the model directory
     m_directory = path.substr(0, path.find_last_of('/') + 1);
-    ProcessNode(scene->mRootNode, scene);
+    m_name = path.substr(path.find_last_of('/') + 1, path.size() - m_directory.size());
+    ProcessAINode(scene->mRootNode, scene);
   }
 
-  void Model::ProcessNode(aiNode* node, const aiScene* scene)
+  void Model::ProcessAINode(aiNode* rootNode, const aiScene* scene)
   {
-    //Get this Node's Mesh and Process it
-    for(size_t i=0; i < node->mNumMeshes; ++i)
-    {
-      aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      m_meshes.push_back(ProcessMesh(mesh, scene));
-    }
+    //Material indices to load (Per SubMesh)
+    std::vector<int> materialIndices;
+    materialIndices.reserve(scene->mNumMaterials);
+    std::unordered_map<int, Handle<Material>> handleMap;
 
-    //Recursively process all the children node
-    for(size_t i=0;i < node->mNumChildren; ++i)
-    {
-      ProcessNode(node->mChildren[i], scene);
-    }
-  }
-
-  Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
-  {
-    std::vector<Vertex> vertices;
+    //Vertices data
+    std::vector<Vertex> vertices; 
     std::vector<unsigned> indices;
+    std::vector<aiNode*> stack;
+
+    aiNode* currNode = rootNode;
+    while (currNode != nullptr)
+    {
+      //Get this Node's Mesh and Process it
+      for (size_t i = 0; i < currNode->mNumMeshes; ++i)
+      {
+        aiMesh* mesh = scene->mMeshes[currNode->mMeshes[i]];
+        AddMesh(mesh, vertices, indices);
+
+        int matIndex = mesh->mMaterialIndex >= 0
+          && mesh->mMaterialIndex < scene->mNumMaterials ? mesh->mMaterialIndex : -1;
+        materialIndices.emplace_back(matIndex);
+      }
+
+      //Save all the children node to be processed later
+      for (size_t i = 0; i < currNode->mNumChildren; ++i)
+      {
+        stack.emplace_back(currNode->mChildren[i]);
+      }
+
+      //Traverse next node in the stack
+      if (stack.size() > 0)
+      {
+        currNode = stack[stack.size() - 1];
+        stack.pop_back();
+      }
+      else
+      {
+        currNode = nullptr;
+      }
+    }
+
+    // Load Materials
+    for (int i = 0; i < materialIndices.size(); ++i)
+    {
+      if (materialIndices[i] >= 0)
+      {
+        AddMaterial(materialIndices[i], scene, handleMap);
+      }
+      else
+      {
+        m_materials.emplace_back();
+      }
+    }
+  }
+
+  void Model::AddMesh(aiMesh* mesh
+    ,std::vector<Vertex>& vertices, std::vector<unsigned>& indices)
+  {
+    vertices.clear();
+    indices.clear();
 
     //Process Data into Vertex
     for(size_t i=0; i < mesh->mNumVertices; ++i)
@@ -127,25 +175,79 @@ namespace Rendering
       }
     }
 
-    //if(mesh->mMaterialIndex >=0)
-    //{
-    //  //TODO: do something with texture data
-    //  aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    //  std::vector<Texture> diffuseMaps = ProcessMaterial(material,
-    //                                    aiTextureType_DIFFUSE, Texture::Channel::SRGB);
-    //  textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-    //  std::vector<Texture> specularMaps = ProcessMaterial(material,
-    //                                    aiTextureType_SPECULAR, Texture::Channel::RGB);
-    //  textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    //}
-
-    return Mesh(vertices, indices, false);
+    m_meshes.emplace_back(vertices, indices, false);
   }
-  
-  std::vector<Texture> Model::ProcessMaterial(aiMaterial* mat
-    , aiTextureType type, Texture::Channel channel)
+
+  void Model::AddMaterial(int index, const aiScene* scene
+    , std::unordered_map<int, Handle<Material>>& handleMap)
   {
-    std::vector<Texture> textures;
+    std::vector<std::string> diffuseTextures;
+    std::vector<std::string> specularTextures;
+    std::vector<std::string> heightTextures;
+    std::vector<std::string> normalsTextures;
+
+    bool added = false;
+    if(index >= 0 && index < scene->mNumMaterials)
+    {
+      aiMaterial* material = scene->mMaterials[index];
+      
+      bool hasTexture = GetTextures(diffuseTextures, material, aiTextureType_DIFFUSE);
+      hasTexture |= GetTextures(specularTextures, material, aiTextureType_SPECULAR);
+      hasTexture |= GetTextures(heightTextures, material, aiTextureType_HEIGHT);
+      hasTexture |= GetTextures(normalsTextures, material, aiTextureType_NORMALS);
+
+      //Create Material Handle
+      if(hasTexture)
+      {
+        //Only need to create Material for specifics index once
+        auto it = handleMap.find(index);
+        if (it != handleMap.end())
+        {
+          m_materials.emplace_back(it->second);
+        }
+        else
+        {
+          //Textures
+          std::string blackTexPath = FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures);
+          std::string diffTexPath = diffuseTextures.size() > 0 ?
+            diffuseTextures[0] : blackTexPath;
+          bool useNormal = normalsTextures.size() > 0;
+          std::string normalTexPath = normalsTextures.size() > 0 ?
+            normalsTextures[0] : blackTexPath;
+
+          //Init material
+          Handle<Material> handle = Factory::Create<Material>("Material");
+
+          std::string name = m_name + "[" + std::to_string(index) + "]";
+          handle.Get()->SetName(name);
+
+          handle->InitShader("Rendering/deferred_geometry_pass.vert"
+            , "Rendering/deferred_geometry_pass.frag");
+          handle->InitTexture(diffTexPath
+            , useNormal, normalTexPath
+            , blackTexPath, blackTexPath, blackTexPath);
+
+          m_materials.emplace_back(handle);
+          Debug::Log << "Created Material: " << name << '\n';
+
+          // Save handle for this index
+          // so we only need to create Material for specifics index once
+          handleMap.insert({ index, handle });
+        }
+
+        added = true;
+      }
+    }
+
+    if (!added)
+    {
+      m_materials.emplace_back();
+    }
+  }
+
+  bool Model::GetTextures(std::vector<std::string>& textures
+    , aiMaterial* mat, aiTextureType type)
+  {
     for(size_t i=0; i < mat->GetTextureCount(type); ++i)
     {
       aiString str;
@@ -156,8 +258,9 @@ namespace Rendering
       path+= str.C_Str();
 
       //Push to textures
-      textures.emplace_back(path, channel);
+      textures.emplace_back(path);
     }
-    return textures;
+
+    return textures.size() > 0;
   }
 }

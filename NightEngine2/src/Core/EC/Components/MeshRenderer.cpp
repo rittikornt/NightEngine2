@@ -314,7 +314,7 @@ namespace NightEngine
         auto model = ResourceManager::LoadModelResource(path);
         ASSERT_TRUE(model != nullptr);
 
-        //Model model{ path };
+        //TODO: Get Materials from Model too
         m_meshes = model->GetMeshes();
         m_meshCount = m_meshes.size();
 

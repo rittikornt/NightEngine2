@@ -23,9 +23,13 @@ namespace Rendering
 
   Material& Material::operator=(const Material& rhs)
   {
+    m_name = rhs.m_name;
+    m_filePath = rhs.m_filePath;
     m_shader = rhs.m_shader;
 
     m_diffuseTexture = rhs.m_diffuseTexture;
+    m_diffuseColor = rhs.m_diffuseColor;
+
     m_normalTexture = rhs.m_normalTexture;
     m_normalMultiplier = rhs.m_normalMultiplier;
     m_useNormal = rhs.m_useNormal;

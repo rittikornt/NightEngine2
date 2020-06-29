@@ -564,7 +564,7 @@ namespace Rendering
     // Geometry Pass
     //*************************************************
     glViewport(0, 0, m_initResolution.x, m_initResolution.y);
-    DebugMarker::PushDebugGroup("Deferred Geometry Pass");
+    DebugMarker::PushDebugGroup("Deferred GBuffer Pass");
     m_gbuffer.Bind();
     {
       //Clear Buffer
@@ -584,7 +584,6 @@ namespace Rendering
     }
     m_gbuffer.Unbind();
     DebugMarker::PopDebugGroup();
-
 
     //*************************************************
     // Lighting Pass

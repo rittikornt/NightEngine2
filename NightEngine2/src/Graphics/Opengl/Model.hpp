@@ -6,12 +6,14 @@
 #pragma once
 #include "Graphics/Opengl/Mesh.hpp"
 
+#include "Core/EC/Handle.hpp"
+#include "Core/Reflection/ReflectionMacros.hpp"
+
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include <vector>
-
-#include "Core/Reflection/ReflectionMacros.hpp"
+#include <unordered_map>
 
 namespace Rendering
 {
@@ -32,12 +34,22 @@ namespace Rendering
       std::vector<Mesh>& GetMeshes(void) { return m_meshes; }
     private:
       void LoadModel(const std::string& path);
-      void ProcessNode(aiNode* node, const aiScene* scene);
-      Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-      std::vector<Texture> ProcessMaterial(aiMaterial* mat
-        , aiTextureType type, Texture::Channel channel);
+
+      void ProcessAINode(aiNode* node, const aiScene* scene);
+
+      void AddMesh(aiMesh* mesh
+        , std::vector<Vertex>& vertices, std::vector<unsigned>& indices);
+
+      void AddMaterial(int index, const aiScene* scene
+        , std::unordered_map<int, NightEngine::EC::Handle<Rendering::Material>>& handleMap);
+
+      bool GetTextures(std::vector<std::string>& textures
+        , aiMaterial* mat, aiTextureType type);
 
       std::vector<Mesh> m_meshes;
+      std::vector <NightEngine::EC::Handle<Rendering::Material>> m_materials;
+
       std::string       m_directory;
+      std::string       m_name;
   };
 }

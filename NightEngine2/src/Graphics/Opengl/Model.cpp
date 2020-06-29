@@ -218,11 +218,11 @@ namespace Rendering
           //Init material
           Handle<Material> handle = Factory::Create<Material>("Material");
 
-          std::string name = m_name + "[" + std::to_string(index) + "]";
+          std::string name = "mat_" + m_name + "[" + std::to_string(index) + "]";
           handle.Get()->SetName(name);
 
-          handle->InitShader("Rendering/deferred_geometry_pass.vert"
-            , "Rendering/deferred_geometry_pass.frag");
+          handle->InitShader(DEFAULT_VERTEX_SHADER_PBR
+            , DEFAULT_FRAG_SHADER_PBR);
           handle->InitTexture(diffTexPath
             , useNormal, normalTexPath
             , blackTexPath, blackTexPath, blackTexPath);
@@ -255,9 +255,10 @@ namespace Rendering
 
       //Assume that path in the material is relative, not absolute path
       std::string path{m_directory};
-      path+= str.C_Str();
+      path += str.C_Str();
 
       //Push to textures
+      std::replace(path.begin(), path.end(), '\\', '/');
       textures.emplace_back(path);
     }
 

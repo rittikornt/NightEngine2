@@ -11,6 +11,9 @@
 
 #include "Core/EC/Handle.hpp"
 
+#define DEFAULT_VERTEX_SHADER_PBR "Rendering/deferred_geometry_pass.vert"
+#define DEFAULT_FRAG_SHADER_PBR "Rendering/deferred_geometry_pass.frag"
+
 namespace Rendering
 {
   class Material

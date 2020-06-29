@@ -227,8 +227,8 @@ namespace Editor
 
         Handle<Material> handle = Factory::Create<Material>("Material");
         handle.Get()->SetName(name);
-        handle->InitShader("Rendering/deferred_geometry_pass.vert"
-          , "Rendering/deferred_geometry_pass.frag");
+        handle->InitShader(DEFAULT_VERTEX_SHADER_PBR
+          , DEFAULT_FRAG_SHADER_PBR);
         handle->InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
           , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
           , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)

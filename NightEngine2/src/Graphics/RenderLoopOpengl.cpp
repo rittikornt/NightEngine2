@@ -237,8 +237,8 @@ namespace Rendering
     // Material
     //************************************************
     m_defaultMaterial = (SceneManager::GetDefaultMaterial());
-    m_defaultMaterial->InitShader("Rendering/deferred_geometry_pass.vert"
-      , "Rendering/deferred_geometry_pass.frag");
+    m_defaultMaterial->InitShader(DEFAULT_VERTEX_SHADER_PBR
+      , DEFAULT_FRAG_SHADER_PBR);
     m_defaultMaterial->SetName("DefaultMaterial");
 
     m_defaultMaterial->InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)

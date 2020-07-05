@@ -118,7 +118,6 @@ namespace NightEngine
         value.emplace("Shaders", shaderNameValue);
       }
 
-      //TODO: Fix the broken serialization
       //Convert texture map to <int, filePath>
       JsonValue textureMapValue;
       bool shouldEmplace = false;
@@ -177,62 +176,6 @@ namespace NightEngine
       {
         value.emplace("m_intMap", material.m_intMap);
       }
-
-      //Diffuse Color
-      //Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
-      //  , &material.m_diffuseColor };
-      //value.emplace("Diffuse Color", diffuseColorVar.Serialize());
-      //
-      ////Diffuse Texture
-      //if (material.m_diffuseTexture.IsValid()
-      //  && material.m_diffuseTexture->m_filePath.size() > 0)
-      //{
-      //  JsonValue diffuseValue = material.m_diffuseTexture->m_filePath;
-      //  value.emplace("Diffuse", diffuseValue);
-      //}
-      //
-      ////Normal Texture
-      //if (material.m_normalTexture.IsValid()
-      //  && material.m_normalTexture->m_filePath.size() > 0)
-      //{
-      //  JsonValue normalValue = material.m_normalTexture->m_filePath;
-      //  value.emplace("Normal", normalValue);
-      //}
-      //JsonValue normalMultiplierValue = material.m_normalMultiplier;
-      //value.emplace("Normal Multiplier", normalMultiplierValue);
-      //
-      //JsonValue useNormalValue = material.m_useNormal;
-      //value.emplace("UseNormal", useNormalValue);
-      //
-      ////Roughness Texture
-      //if (material.m_roughnessTexture.IsValid()
-      //  && material.m_roughnessTexture->m_filePath.size() > 0)
-      //{
-      //  JsonValue roughnessFilePath = material.m_roughnessTexture->m_filePath;
-      //  value.emplace("Roughness", roughnessFilePath);
-      //}
-      //JsonValue roughnessValue = material.m_roughnessValue;
-      //value.emplace("Roughness Value", roughnessValue);
-      //
-      ////Metallic Texture
-      //if (material.m_metallicTexture.IsValid()
-      //  && material.m_metallicTexture->m_filePath.size() > 0)
-      //{
-      //  JsonValue metallicFilePath = material.m_metallicTexture->m_filePath;
-      //  value.emplace("Metallic", metallicFilePath);
-      //}
-      //JsonValue metallicValue = material.m_metallicValue;
-      //value.emplace("Metallic Value", metallicValue);
-      //
-      ////Emissive Texture
-      //if (material.m_emissiveTexture.IsValid() 
-      //  && material.m_emissiveTexture->m_filePath.size() > 0)
-      //{
-      //  JsonValue emissiveValue = material.m_emissiveTexture->m_filePath;
-      //  value.emplace("Emissive", emissiveValue);
-      //}
-      //JsonValue emissiveStrValue = material.m_emissiveStrength;
-      //value.emplace("Emissive Strength", emissiveStrValue);
 
       return value;
     }
@@ -452,80 +395,8 @@ namespace NightEngine
         material.m_colorMap[MP_PBRMetallic::u_diffuseColor] = glm::vec4(color, 1.0f);
       }
 
-      //Normal Values
-      it = obj.find("Normal Multiplier");
-      if (it != obj.end())
-      {
-        auto normalMultiplier = it->second.as<float>();
-        material.m_floatMap[MP_PBRMetallic::m_normalMultiplier] = normalMultiplier;
-      }
-
-      bool useNormal = false;
-      it = obj.find("UseNormal");
-      if (it != obj.end())
-      {
-        useNormal = it->second.as<bool>();
-      }
-
-      //Roughness/Metallic Values
-      it = obj.find("Roughness Value");
-      if (it != obj.end())
-      {
-        auto roughnessValue = it->second.as<float>();
-        material.m_floatMap[MP_PBRMetallic::m_roughnessValue] = roughnessValue;
-      }
-      it = obj.find("Metallic Value");
-      if (it != obj.end())
-      {
-        auto metallicValue = it->second.as<float>();
-        material.m_floatMap[MP_PBRMetallic::m_metallicValue] = metallicValue;
-      }
-
-      //Emissive Values
-      it = obj.find("Emissive Strength");
-      if (it != obj.end())
-      {
-        auto emissiveStrength = it->second.as<float>();
-        material.m_floatMap[MP_PBRMetallic::m_emissiveStrength] = emissiveStrength;
-      }
-
-      //Textures
-      std::string diffuseFile;
-      std::string normalFile;
-      std::string roughnessFile;
-      std::string metallicFile;
-      std::string emissiveFile;
-
-      it = obj.find("Diffuse");
-      if (it != obj.end())
-      {
-        diffuseFile = it->second.as<std::string>();
-      }
-      it = obj.find("Normal");
-      if (it != obj.end())
-      {
-        normalFile = it->second.as<std::string>();
-      }
-      it = obj.find("Roughness");
-      if (it != obj.end())
-      {
-        roughnessFile = it->second.as<std::string>();
-      }
-      it = obj.find("Metallic");
-      if (it != obj.end())
-      {
-        metallicFile = it->second.as<std::string>();
-      }
-      it = obj.find("Emissive");
-      if (it != obj.end())
-      {
-        emissiveFile = it->second.as<std::string>();
-      }
-
       //Initialize Material Texture
-      material.InitPBRTexture(diffuseFile
-        , useNormal, normalFile
-        , roughnessFile, metallicFile, emissiveFile);
+      material.InitPBRTexture("", false, "", "", "", "");
     }
 
     template <>

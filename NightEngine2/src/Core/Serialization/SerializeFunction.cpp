@@ -118,61 +118,81 @@ namespace NightEngine
         value.emplace("Shaders", shaderNameValue);
       }
 
+      //TODO: Fix the broken serialization
+      //Convert texture map to <int, filePath>
+      JsonValue textureMapValue;
+      for (auto& pair : material.m_textureMap)
+      {
+        if (pair.second.IsValid())
+        {
+          textureMapValue[pair.first] = pair.second->m_filePath;
+        }
+        else
+        {
+          DEBUG_ERROR << "Error: trying to serialize invalid material property ("
+            << pair.first << ")\n";
+        }
+      }
+      value.emplace("m_textureMap", textureMapValue);
+      //value.emplace("m_vec4Map", material.m_vec4Map);
+      //value.emplace("m_floatMap", material.m_floatMap);
+      //value.emplace("m_intMap", material.m_intMap);
+
       //Diffuse Color
-      Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
-        , &material.m_diffuseColor };
-      value.emplace("Diffuse Color", diffuseColorVar.Serialize());
-
-      //Diffuse Texture
-      if (material.m_diffuseTexture.IsValid()
-        && material.m_diffuseTexture->m_filePath.size() > 0)
-      {
-        JsonValue diffuseValue = material.m_diffuseTexture->m_filePath;
-        value.emplace("Diffuse", diffuseValue);
-      }
-
-      //Normal Texture
-      if (material.m_normalTexture.IsValid()
-        && material.m_normalTexture->m_filePath.size() > 0)
-      {
-        JsonValue normalValue = material.m_normalTexture->m_filePath;
-        value.emplace("Normal", normalValue);
-      }
-      JsonValue normalMultiplierValue = material.m_normalMultiplier;
-      value.emplace("Normal Multiplier", normalMultiplierValue);
-
-      JsonValue useNormalValue = material.m_useNormal;
-      value.emplace("UseNormal", useNormalValue);
-
-      //Roughness Texture
-      if (material.m_roughnessTexture.IsValid()
-        && material.m_roughnessTexture->m_filePath.size() > 0)
-      {
-        JsonValue roughnessFilePath = material.m_roughnessTexture->m_filePath;
-        value.emplace("Roughness", roughnessFilePath);
-      }
-      JsonValue roughnessValue = material.m_roughnessValue;
-      value.emplace("Roughness Value", roughnessValue);
-
-      //Metallic Texture
-      if (material.m_metallicTexture.IsValid()
-        && material.m_metallicTexture->m_filePath.size() > 0)
-      {
-        JsonValue metallicFilePath = material.m_metallicTexture->m_filePath;
-        value.emplace("Metallic", metallicFilePath);
-      }
-      JsonValue metallicValue = material.m_metallicValue;
-      value.emplace("Metallic Value", metallicValue);
-
-      //Emissive Texture
-      if (material.m_emissiveTexture.IsValid() 
-        && material.m_emissiveTexture->m_filePath.size() > 0)
-      {
-        JsonValue emissiveValue = material.m_emissiveTexture->m_filePath;
-        value.emplace("Emissive", emissiveValue);
-      }
-      JsonValue emissiveStrValue = material.m_emissiveStrength;
-      value.emplace("Emissive Strength", emissiveStrValue);
+      //Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
+      //  , &material.m_diffuseColor };
+      //value.emplace("Diffuse Color", diffuseColorVar.Serialize());
+      //
+      ////Diffuse Texture
+      //if (material.m_diffuseTexture.IsValid()
+      //  && material.m_diffuseTexture->m_filePath.size() > 0)
+      //{
+      //  JsonValue diffuseValue = material.m_diffuseTexture->m_filePath;
+      //  value.emplace("Diffuse", diffuseValue);
+      //}
+      //
+      ////Normal Texture
+      //if (material.m_normalTexture.IsValid()
+      //  && material.m_normalTexture->m_filePath.size() > 0)
+      //{
+      //  JsonValue normalValue = material.m_normalTexture->m_filePath;
+      //  value.emplace("Normal", normalValue);
+      //}
+      //JsonValue normalMultiplierValue = material.m_normalMultiplier;
+      //value.emplace("Normal Multiplier", normalMultiplierValue);
+      //
+      //JsonValue useNormalValue = material.m_useNormal;
+      //value.emplace("UseNormal", useNormalValue);
+      //
+      ////Roughness Texture
+      //if (material.m_roughnessTexture.IsValid()
+      //  && material.m_roughnessTexture->m_filePath.size() > 0)
+      //{
+      //  JsonValue roughnessFilePath = material.m_roughnessTexture->m_filePath;
+      //  value.emplace("Roughness", roughnessFilePath);
+      //}
+      //JsonValue roughnessValue = material.m_roughnessValue;
+      //value.emplace("Roughness Value", roughnessValue);
+      //
+      ////Metallic Texture
+      //if (material.m_metallicTexture.IsValid()
+      //  && material.m_metallicTexture->m_filePath.size() > 0)
+      //{
+      //  JsonValue metallicFilePath = material.m_metallicTexture->m_filePath;
+      //  value.emplace("Metallic", metallicFilePath);
+      //}
+      //JsonValue metallicValue = material.m_metallicValue;
+      //value.emplace("Metallic Value", metallicValue);
+      //
+      ////Emissive Texture
+      //if (material.m_emissiveTexture.IsValid() 
+      //  && material.m_emissiveTexture->m_filePath.size() > 0)
+      //{
+      //  JsonValue emissiveValue = material.m_emissiveTexture->m_filePath;
+      //  value.emplace("Emissive", emissiveValue);
+      //}
+      //JsonValue emissiveStrValue = material.m_emissiveStrength;
+      //value.emplace("Emissive Strength", emissiveStrValue);
 
       return value;
     }
@@ -315,44 +335,76 @@ namespace NightEngine
         ASSERT_TRUE(false);
       }
 
+      //TODO:
+      /*it = obj.find("m_textureMap");
+      if (it != obj.end())
+      {
+      }
+
+      it = obj.find("m_vec4Map");
+      if (it != obj.end())
+      {
+      }
+
+      it = obj.find("m_floatMap");
+      if (it != obj.end())
+      {
+      }
+      
+      it = obj.find("m_intMap");
+      if (it != obj.end())
+      {
+      }*/
+
       //Diffuse Color
       it = obj.find("Diffuse Color");
       if (it != obj.end())
       {
-        Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
-          , &material.m_diffuseColor };
+        glm::vec3 color;
+        //Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
+        //  , &material.m_diffuseColor };
+        Variable diffuseColorVar{ METATYPE_FROM_OBJECT(color)
+          , & color };
         diffuseColorVar.Deserialize(it->second);
+
+        material.m_vec4Map[PBRShaderParams::u_diffuseColor] = glm::vec4(color, 1.0f);
       }
 
       //Normal Values
       it = obj.find("Normal Multiplier");
       if (it != obj.end())
       {
-        material.m_normalMultiplier = it->second.as<float>();
+        auto normalMultiplier = it->second.as<float>();
+        material.m_floatMap[PBRShaderParams::m_normalMultiplier] = normalMultiplier;
       }
+
+      bool useNormal = false;
       it = obj.find("UseNormal");
       if (it != obj.end())
       {
-        material.m_useNormal = it->second.as<bool>();
+        useNormal = it->second.as<bool>();
       }
 
       //Roughness/Metallic Values
       it = obj.find("Roughness Value");
       if (it != obj.end())
       {
-        material.m_roughnessValue = it->second.as<float>();
+        auto roughnessValue = it->second.as<float>();
+        material.m_floatMap[PBRShaderParams::m_roughnessValue] = roughnessValue;
       }
       it = obj.find("Metallic Value");
       if (it != obj.end())
       {
-        material.m_metallicValue = it->second.as<float>();
+        auto metallicValue = it->second.as<float>();
+        material.m_floatMap[PBRShaderParams::m_metallicValue] = metallicValue;
       }
 
       //Emissive Values
       it = obj.find("Emissive Strength");
       if (it != obj.end())
       {
-        material.m_emissiveStrength = it->second.as<float>();
+        auto emissiveStrength = it->second.as<float>();
+        material.m_floatMap[PBRShaderParams::m_emissiveStrength] = emissiveStrength;
       }
 
       //Textures
@@ -390,7 +442,7 @@ namespace NightEngine
 
       //Initialize Material Texture
       material.InitTexture(diffuseFile
-        , material.m_useNormal, normalFile
+        , useNormal, normalFile
         , roughnessFile, metallicFile, emissiveFile);
     }
 

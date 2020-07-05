@@ -46,7 +46,7 @@ namespace NightEngine
     };
 
     //! @brief Constructor for setting MessageType enum
-    MessageObject(MessageType msgType) : m_msgType(msgType) {}
+    MessageObject(MessageType msgType) : m_msgType(msgType), m_payload() {}
 
     //! @brief For sending message directly to handler
     virtual void SendMessageTo(IMessageHandler&) const = 0;

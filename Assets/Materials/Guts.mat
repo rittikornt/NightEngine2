@@ -1,12 +1,12 @@
 {
   "Material": {
-    "Diffuse": "./../Assets/Textures/Blank\\100.png",
+    "Diffuse": "./../Assets/Textures/Blank/100.png",
     "Diffuse Color": {
       "x": 0.05882352590560913,
       "y": 0.058822937309741974,
       "z": 0.058822937309741974
     },
-    "Emissive": "./../Assets/Textures/Blank\\000.png",
+    "Emissive": "./../Assets/Textures/Blank/000.png",
     "Emissive Strength": 0.0,
     "Metallic": "./../Assets/Textures/Blank/000.png",
     "Metallic Value": 0.6499999761581421,

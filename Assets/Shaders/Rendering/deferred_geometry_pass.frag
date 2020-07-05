@@ -34,7 +34,7 @@ struct Material
   float			m_emissiveStrength;
 };
 uniform Material u_material;
-uniform vec3		 u_diffuseColor = vec3(1.0f);
+uniform vec4	 u_diffuseColor = vec4(1.0f);
 
 //***************************************
 // Uniforms
@@ -63,7 +63,7 @@ void main()
 
 	//Albedo
 	o_albedo.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb
-								* u_diffuseColor;
+								* u_diffuseColor.rgb;
 
 	//Specular
 	float roughness = max(texture(u_material.m_roughnessMap, fs_in.ourTexCoord).r

@@ -11,6 +11,10 @@
 #include <sstream>
 #include <chrono>
 
+#define DEBUG_INFO NightEngine::Debug::Log << NightEngine::Logger::MessageType::INFO
+#define DEBUG_WARNING NightEngine::Debug::Log << NightEngine::Logger::MessageType::WARNING
+#define DEBUG_ERROR NightEngine::Debug::Log << NightEngine::Logger::MessageType::ERROR_MSG
+
 namespace NightEngine
 {
 	class Logger

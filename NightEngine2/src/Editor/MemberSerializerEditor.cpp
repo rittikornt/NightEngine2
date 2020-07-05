@@ -199,104 +199,134 @@ namespace Editor
       auto& dataPtr = variable.GetValue<Material>();
       float min = 0.0f, max = 1.0f, nmax = 50.0f;
 
-      //Diffuse
       Reflection::Variable var{ METATYPE(Material), &dataPtr };
-      auto memberPtr = var.GetMetaType()->FindMember("m_diffuseColor");
+
+      //Texture Property
+      auto memberPtr = var.GetMetaType()->FindMember("m_textureMap");
       void* ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      ImGui::ColorEdit3(memberName, (float*)ptr, ImGuiColorEditFlags_HDR);
+      TEXTURE_TABLE(Handle<Texture>)& textureMap = *static_cast<TEXTURE_TABLE(Handle<Texture>)*>(ptr);
 
-      memberPtr = var.GetMetaType()->FindMember("m_diffuseTexture");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox("Diffuse Texture", static_cast<Handle<Texture>*>(ptr)
-        , Texture::Channel::SRGB);
+      std::string text = "";
+      for (auto& pair : textureMap)
+      {
+        auto channel = Texture::Channel::RGB;
+        if (pair.second.IsValid() && pair.second->IsValid())
+        {
+          channel = pair.second->GetInternalFormat();
+        }
 
-      //Normal
-      memberPtr = var.GetMetaType()->FindMember("m_normalTexture");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox("Normal Texture", static_cast<Handle<Texture>*>(ptr)
-        , Texture::Channel::RGB);
+        Handle<Texture>* tex = &(pair.second);
+        text = PBRShaderParams::k_textureNames[pair.first];
 
-      memberPtr = var.GetMetaType()->FindMember("m_normalMultiplier");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      ImGui::DragScalar("Normal Multiplier", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &nmax);
+        DrawTextureComboBox(text.c_str(), tex
+          , channel);
+      }
+      if (textureMap.size() > 0)
+      {
+        ImGui::Spacing();
+        ImGui::Spacing();
+      }
 
-      memberPtr = var.GetMetaType()->FindMember("m_useNormal");
+      //Vec4 Property
+      memberPtr = var.GetMetaType()->FindMember("m_vec4Map");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      bool& bptr = *((bool*)ptr);
-      ImGui::Checkbox("Use Normal", &bptr);
+      PROPERTY_TABLE(glm::vec4)& vec4Map = *static_cast<PROPERTY_TABLE(glm::vec4)*>(ptr);
+      for (auto& pair : vec4Map)
+      {
+        //text = pair.first;
+        void* v4 = &(pair.second);
+        ImGui::ColorEdit4(memberName, (float*)v4, ImGuiColorEditFlags_HDR);
+      }
+      if (vec4Map.size() > 0)
+      {
+        ImGui::Spacing();
+        ImGui::Spacing();
+      }
 
-      //Roughness
-      memberPtr = var.GetMetaType()->FindMember("m_roughnessTexture");
+      //Float Property
+      memberPtr = var.GetMetaType()->FindMember("m_floatMap");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox("Roughness Texture", static_cast<Handle<Texture>*>(ptr)
-        , Texture::Channel::RGB);
+      PROPERTY_TABLE(float)& floatMap = *static_cast<PROPERTY_TABLE(float)*>(ptr);
+      for (auto& pair : floatMap)
+      {
+        text = pair.first;
+        void* val = &(pair.second);
+        ImGui::InputScalar(text.c_str(), ImGuiDataType_Float, (float*)val);
+      }
+      if (floatMap.size() > 0)
+      {
+        ImGui::Spacing();
+        ImGui::Spacing();
+      }
 
-      memberPtr = var.GetMetaType()->FindMember("m_roughnessValue");
+      //Int/Bool Property
+      memberPtr = var.GetMetaType()->FindMember("m_intMap");
       ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      ImGui::DragScalar("Roughness Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
+      PROPERTY_TABLE(int)& intMap = *static_cast<PROPERTY_TABLE(int)*>(ptr);
+      for (auto& pair : intMap)
+      {
+        text = pair.first;
+        void* val = &(pair.second);
+        ImGui::InputScalar(text.c_str(), ImGuiDataType_S32, (int*)val);
+      }
 
-      //Metallic
-      memberPtr = var.GetMetaType()->FindMember("m_metallicTexture");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox("Metallic Texture", static_cast<Handle<Texture>*>(ptr)
-        , Texture::Channel::RGB);
-
-      memberPtr = var.GetMetaType()->FindMember("m_metallicValue");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      ImGui::DragScalar("Metallic Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
-
-      //Emissive
-      memberPtr = var.GetMetaType()->FindMember("m_emissiveTexture");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      DrawTextureComboBox("Emissive Texture", static_cast<Handle<Texture>*>(ptr)
-        , Texture::Channel::RGB);
-
-      memberPtr = var.GetMetaType()->FindMember("m_emissiveStrength");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      ImGui::DragScalar("Emissive Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min);
+      //Diffuse
+      //auto memberPtr = var.GetMetaType()->FindMember("m_diffuseColor");
+      //void* ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ImGui::ColorEdit3(memberName, (float*)ptr, ImGuiColorEditFlags_HDR);
+      //
+      //memberPtr = var.GetMetaType()->FindMember("m_diffuseTexture");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //DrawTextureComboBox("Diffuse Texture", static_cast<Handle<Texture>*>(ptr)
+      //  , Texture::Channel::SRGB);
+      //
+      ////Normal
+      //memberPtr = var.GetMetaType()->FindMember("m_normalTexture");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //DrawTextureComboBox("Normal Texture", static_cast<Handle<Texture>*>(ptr)
+      //  , Texture::Channel::RGB);
+      //
+      //memberPtr = var.GetMetaType()->FindMember("m_normalMultiplier");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ImGui::DragScalar("Normal Multiplier", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &nmax);
+      //
+      //memberPtr = var.GetMetaType()->FindMember("m_useNormal");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //bool& bptr = *((bool*)ptr);
+      //ImGui::Checkbox("Use Normal", &bptr);
+      //
+      ////Roughness
+      //memberPtr = var.GetMetaType()->FindMember("m_roughnessTexture");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //DrawTextureComboBox("Roughness Texture", static_cast<Handle<Texture>*>(ptr)
+      //  , Texture::Channel::RGB);
+      //
+      //memberPtr = var.GetMetaType()->FindMember("m_roughnessValue");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ImGui::DragScalar("Roughness Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
+      //
+      ////Metallic
+      //memberPtr = var.GetMetaType()->FindMember("m_metallicTexture");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //DrawTextureComboBox("Metallic Texture", static_cast<Handle<Texture>*>(ptr)
+      //  , Texture::Channel::RGB);
+      //
+      //memberPtr = var.GetMetaType()->FindMember("m_metallicValue");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ImGui::DragScalar("Metallic Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
+      //
+      ////Emissive
+      //memberPtr = var.GetMetaType()->FindMember("m_emissiveTexture");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //DrawTextureComboBox("Emissive Texture", static_cast<Handle<Texture>*>(ptr)
+      //  , Texture::Channel::RGB);
+      //
+      //memberPtr = var.GetMetaType()->FindMember("m_emissiveStrength");
+      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ImGui::DragScalar("Emissive Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min);
     }
       });
 
-    /*m_typeEditorMap.insert({ "Material*",
-      [](Reflection::Variable& variable, const char* memberName)
-    {
-      auto dataPtr = variable.GetValue<Material*>();
-      if (dataPtr == nullptr)
-      {
-        ImGui::Text("nullptr");
-        return;
-      }
-      float min = 0.0f, max = 1.0f, nmax = 50.0f;
-
-      Reflection::Variable var{ METATYPE(Material), dataPtr };
-      auto memberPtr = var.GetMetaType()->FindMember("m_diffuseColor");
-      void* ptr = POINTER_OFFSET(&(*dataPtr), memberPtr->GetOffset());
-      ImGui::ColorEdit3(memberName, (float*)ptr, ImGuiColorEditFlags_HDR);
-
-      memberPtr = var.GetMetaType()->FindMember("m_normalMultiplier");
-      ptr = POINTER_OFFSET(&(*dataPtr), memberPtr->GetOffset());
-      ImGui::DragScalar("Normal Multiplier", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &nmax);
-
-      memberPtr = var.GetMetaType()->FindMember("m_useNormal");
-      ptr = POINTER_OFFSET( &(*dataPtr), memberPtr->GetOffset());
-      bool& bptr = *((bool*)ptr);
-      ImGui::Checkbox("Use Normal", &bptr);
-
-      memberPtr = var.GetMetaType()->FindMember("m_roughnessValue");
-      ptr = POINTER_OFFSET(&(*dataPtr), memberPtr->GetOffset());
-      ImGui::DragScalar("Roughness Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
-
-      memberPtr = var.GetMetaType()->FindMember("m_metallicValue");
-      ptr = POINTER_OFFSET(&(*dataPtr), memberPtr->GetOffset());
-      ImGui::DragScalar("Metallic Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
-
-      memberPtr = var.GetMetaType()->FindMember("m_emissiveStrength");
-      ptr = POINTER_OFFSET(&(*dataPtr), memberPtr->GetOffset());
-      ImGui::DragScalar("Emissive Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min);
-    }
-    });*/
-
-    //TODO: turn these into Macros?
     m_typeEditorMap.insert({ "std::string",
       [](Reflection::Variable& variable, const char* memberName)
     {

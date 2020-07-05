@@ -216,12 +216,28 @@ namespace Editor
         }
 
         Handle<Texture>* tex = &(pair.second);
-        text = PBRShaderParams::k_textureNames[pair.first];
+        text = MP_PBRMetallic::k_textureNames[pair.first];
 
         DrawTextureComboBox(text.c_str(), tex
           , channel);
       }
       if (textureMap.size() > 0)
+      {
+        ImGui::Spacing();
+        ImGui::Spacing();
+      }
+
+      //Color Property
+      memberPtr = var.GetMetaType()->FindMember("m_colorMap");
+      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      PROPERTY_TABLE(glm::vec4)& colorMap = *static_cast<PROPERTY_TABLE(glm::vec4)*>(ptr);
+      for (auto& pair : colorMap)
+      {
+        text = pair.first;
+        void* v4 = &(pair.second);
+        ImGui::ColorEdit4(text.c_str(), (float*)v4, ImGuiColorEditFlags_HDR);
+      }
+      if (colorMap.size() > 0)
       {
         ImGui::Spacing();
         ImGui::Spacing();
@@ -233,9 +249,9 @@ namespace Editor
       PROPERTY_TABLE(glm::vec4)& vec4Map = *static_cast<PROPERTY_TABLE(glm::vec4)*>(ptr);
       for (auto& pair : vec4Map)
       {
-        //text = pair.first;
+        text = pair.first;
         void* v4 = &(pair.second);
-        ImGui::ColorEdit4(memberName, (float*)v4, ImGuiColorEditFlags_HDR);
+        ImGui::InputFloat4(text.c_str(), (float*)v4, 3);
       }
       if (vec4Map.size() > 0)
       {
@@ -269,6 +285,8 @@ namespace Editor
         void* val = &(pair.second);
         ImGui::InputScalar(text.c_str(), ImGuiDataType_S32, (int*)val);
       }
+
+      //TODO: Rethink min/max Scalar/Slide Values
 
       //Diffuse
       //auto memberPtr = var.GetMetaType()->FindMember("m_diffuseColor");

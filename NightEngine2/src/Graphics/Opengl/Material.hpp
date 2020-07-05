@@ -1,15 +1,17 @@
 /*!
   @file Material.hpp
   @author Rittikorn Tangtrongchit
-  @brief Contain the Implementation of File
+  @brief Contain the Header of Material
 */
 #pragma once
 
 #include "Graphics/Opengl/Texture.hpp"
 #include "Graphics/Opengl/Shader.hpp"
-#include "Core/Reflection/ReflectionMacros.hpp"
+#include "Graphics/Opengl/MaterialProperty.hpp"
 
+#include "Core/Reflection/ReflectionMacros.hpp"
 #include "Core/EC/Handle.hpp"
+
 #include <unordered_map>
 
 #define DEFAULT_VERTEX_SHADER_PBR "Rendering/deferred_geometry_pass.vert"
@@ -17,30 +19,6 @@
 
 #define TEXTURE_TABLE(TYPE) std::unordered_map<int, TYPE>
 #define PROPERTY_TABLE(TYPE) std::unordered_map<std::string, TYPE>
-
-namespace Rendering
-{
-  struct PBRShaderParams
-  {
-    static const char* k_textureNames[5];
-
-    static const char* m_diffuseMap;
-    static const char* u_diffuseColor;
-
-    static const char* u_useNormalmap;
-    static const char* m_normalMultiplier;
-    static const char* m_normalMap;
-
-    static const char* m_roughnessMap;
-    static const char* m_roughnessValue;
-
-    static const char* m_metallicMap;
-    static const char* m_metallicValue;
-
-    static const char* m_emissiveMap;
-    static const char* m_emissiveStrength;
-  };
-}
 
 namespace Rendering
 {
@@ -53,19 +31,8 @@ namespace Rendering
         , NightEngine::Serialization::DefaultDeserializer<Material&>)
         .MR_ADD_MEMBER_PRIVATE(Material, m_name, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_filePath, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_diffuseTexture, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_diffuseColor, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_normalTexture, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_normalMultiplier, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_useNormal, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_roughnessTexture, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_roughnessValue, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_metallicTexture, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_metallicValue, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_emissiveTexture, true)
-        //.MR_ADD_MEMBER_PRIVATE(Material, m_emissiveStrength, true)
-
         .MR_ADD_MEMBER_PRIVATE(Material, m_textureMap, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_colorMap, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_vec4Map, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_floatMap, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_intMap, true);
@@ -144,24 +111,9 @@ namespace Rendering
       Shader      m_shader;
 
       TEXTURE_TABLE(NightEngine::EC::Handle<Texture>) m_textureMap;
+      PROPERTY_TABLE(glm::vec4) m_colorMap;
       PROPERTY_TABLE(glm::vec4) m_vec4Map;
       PROPERTY_TABLE(float)     m_floatMap;
       PROPERTY_TABLE(int)       m_intMap;
-
-      //NightEngine::EC::Handle<Texture> m_diffuseTexture;
-      //glm::vec3   m_diffuseColor = glm::vec3(1.0f);
-      //
-      //NightEngine::EC::Handle<Texture>  m_normalTexture;
-      //float       m_normalMultiplier  = 1.0f;
-      //bool        m_useNormal = false;
-      //
-      //NightEngine::EC::Handle<Texture>  m_roughnessTexture;
-      //float 	    m_roughnessValue    = 0.01f;
-      //
-      //NightEngine::EC::Handle<Texture>  m_metallicTexture;
-      //float 	    m_metallicValue     = 0.1f;
-      //
-      //NightEngine::EC::Handle<Texture> m_emissiveTexture;
-      //float 	    m_emissiveStrength = 15.0f;
   };
 }

@@ -367,7 +367,7 @@ namespace NightEngine
           , & color };
         diffuseColorVar.Deserialize(it->second);
 
-        material.m_vec4Map[PBRShaderParams::u_diffuseColor] = glm::vec4(color, 1.0f);
+        material.m_colorMap[MP_PBRMetallic::u_diffuseColor] = glm::vec4(color, 1.0f);
       }
 
       //Normal Values
@@ -375,7 +375,7 @@ namespace NightEngine
       if (it != obj.end())
       {
         auto normalMultiplier = it->second.as<float>();
-        material.m_floatMap[PBRShaderParams::m_normalMultiplier] = normalMultiplier;
+        material.m_floatMap[MP_PBRMetallic::m_normalMultiplier] = normalMultiplier;
       }
 
       bool useNormal = false;
@@ -390,13 +390,13 @@ namespace NightEngine
       if (it != obj.end())
       {
         auto roughnessValue = it->second.as<float>();
-        material.m_floatMap[PBRShaderParams::m_roughnessValue] = roughnessValue;
+        material.m_floatMap[MP_PBRMetallic::m_roughnessValue] = roughnessValue;
       }
       it = obj.find("Metallic Value");
       if (it != obj.end())
       {
         auto metallicValue = it->second.as<float>();
-        material.m_floatMap[PBRShaderParams::m_metallicValue] = metallicValue;
+        material.m_floatMap[MP_PBRMetallic::m_metallicValue] = metallicValue;
       }
 
       //Emissive Values
@@ -404,7 +404,7 @@ namespace NightEngine
       if (it != obj.end())
       {
         auto emissiveStrength = it->second.as<float>();
-        material.m_floatMap[PBRShaderParams::m_emissiveStrength] = emissiveStrength;
+        material.m_floatMap[MP_PBRMetallic::m_emissiveStrength] = emissiveStrength;
       }
 
       //Textures

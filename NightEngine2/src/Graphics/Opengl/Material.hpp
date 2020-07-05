@@ -13,12 +13,10 @@
 #include "Core/EC/Handle.hpp"
 
 #include <unordered_map>
-
-#define DEFAULT_VERTEX_SHADER_PBR "Rendering/deferred_geometry_pass.vert"
-#define DEFAULT_FRAG_SHADER_PBR "Rendering/deferred_geometry_pass.frag"
+#include <map>
 
 #define TEXTURE_TABLE(TYPE) std::unordered_map<int, TYPE>
-#define PROPERTY_TABLE(TYPE) std::unordered_map<std::string, TYPE>
+#define PROPERTY_TABLE(TYPE) std::map<std::string, TYPE>  //use std::map for tao::json native serialization support
 
 namespace Rendering
 {
@@ -57,7 +55,7 @@ namespace Rendering
         , const std::string& fragmentShader, const std::string& geometryShader);
 
       //! @brief Initialize Texture
-      void	InitTexture(const std::string& diffuseTextureFile
+      void	InitPBRTexture(const std::string& diffuseTextureFile
         , bool useNormal
         , const std::string& normalTextureFile
         , const std::string& roughnessTextureFile

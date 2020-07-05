@@ -1,9 +1,12 @@
 /*!
   @file Material.hpp
   @author Rittikorn Tangtrongchit
-  @brief Contain the Implementation of MaterialProperty
+  @brief Contain the Header of MaterialProperty
 */
 #pragma once
+
+#define DEFAULT_VERTEX_SHADER_PBR "Rendering/deferred_geometry_pass.vert"
+#define DEFAULT_FRAG_SHADER_PBR "Rendering/deferred_geometry_pass.frag"
 
 #define DIFFUSE_TEXUNIT_INDEX 0
 #define NORMAL_TEXUNIT_INDEX 1
@@ -41,6 +44,32 @@ namespace Rendering
 
     static const char* m_roughnessMap;
     static const char* m_roughnessValue;
+
+    static const char* m_metallicMap;
+    static const char* m_metallicValue;
+
+    static const char* m_emissiveMap;
+    static const char* m_emissiveStrength;
+
+    static void SetTextureBindingUnit(const Shader& shader);
+  };
+
+  ////////////////////////////////////////////////////////////
+
+  //TODO: Fill this for sponza
+  struct MP_PBRSpecularBumpmap
+  {
+    static const char* k_textureNames[5];
+
+    static const char* m_diffuseMap;
+    static const char* u_diffuseColor;
+
+    static const char* u_useBumpmap;
+    static const char* m_bumpMultiplier;
+    static const char* m_bumpMap;
+
+    static const char* m_specularMap;
+    static const char* m_specularValue;
 
     static const char* m_metallicMap;
     static const char* m_metallicValue;

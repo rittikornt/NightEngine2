@@ -121,22 +121,62 @@ namespace NightEngine
       //TODO: Fix the broken serialization
       //Convert texture map to <int, filePath>
       JsonValue textureMapValue;
+      bool shouldEmplace = false;
       for (auto& pair : material.m_textureMap)
       {
         if (pair.second.IsValid())
         {
-          textureMapValue[pair.first] = pair.second->m_filePath;
+          TextureData texData = pair.second->GetTextureData();
+          Variable texDataVar{ METATYPE_FROM_OBJECT(texData), &texData };
+
+          textureMapValue.emplace(std::to_string(pair.first)
+            , texDataVar.Serialize());
+          shouldEmplace = true;
         }
         else
         {
-          DEBUG_ERROR << "Error: trying to serialize invalid material property ("
+          DEBUG_WARNING << "Error: trying to serialize invalid material property ("
             << pair.first << ")\n";
         }
       }
-      value.emplace("m_textureMap", textureMapValue);
-      //value.emplace("m_vec4Map", material.m_vec4Map);
-      //value.emplace("m_floatMap", material.m_floatMap);
-      //value.emplace("m_intMap", material.m_intMap);
+      if (shouldEmplace)
+      {
+        value.emplace("m_textureMap", textureMapValue);
+      }
+
+      //Color map
+      JsonValue colorValue;
+      for (auto& pair : material.m_colorMap)
+      {
+        Variable colVar{ METATYPE_FROM_OBJECT(pair.second), &pair.second };
+        colorValue.emplace(pair.first, colVar.Serialize());
+      }
+      if (material.m_colorMap.size() > 0)
+      {
+        value.emplace("m_colorMap", colorValue);
+      }
+
+      //Vec4 map
+      JsonValue vec4Value;
+      for (auto& pair : material.m_vec4Map)
+      {
+        Variable vec4Var{ METATYPE_FROM_OBJECT(pair.second), &pair.second };
+        vec4Value.emplace(pair.first, vec4Var.Serialize());
+      }
+      if (material.m_vec4Map.size() > 0)
+      {
+        value.emplace("m_vec4Map", vec4Value);
+      }
+
+      //Float/Int map
+      if (material.m_floatMap.size() > 0)
+      {
+        value.emplace("m_floatMap", material.m_floatMap);
+      }
+      if (material.m_intMap.size() > 0)
+      {
+        value.emplace("m_intMap", material.m_intMap);
+      }
 
       //Diffuse Color
       //Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
@@ -335,36 +375,78 @@ namespace NightEngine
         ASSERT_TRUE(false);
       }
 
-      //TODO:
-      /*it = obj.find("m_textureMap");
+      //Deserializing Property Map
+      it = obj.find("m_textureMap");
       if (it != obj.end())
       {
+        auto map = it->second.get_object();
+        for (auto& pair : map)
+        {
+          TextureData texData;
+          Variable texDataVar{ METATYPE_FROM_OBJECT(texData), &texData };
+          texDataVar.Deserialize(pair.second);
+
+          //Creating Texture
+          int bindingUnit = std::stoi(pair.first);
+          material.m_textureMap[bindingUnit] = Texture::LoadTextureHandle(texData.m_filePath
+            , (Texture::Channel)texData.m_channel, (Texture::FilterMode)texData.m_filterMode);
+        }
+      }
+
+      it = obj.find("m_colorMap");
+      if (it != obj.end())
+      {
+        auto map = it->second.get_object();
+        for (auto& pair : map)
+        {
+          glm::vec4 color;
+          Variable colorVar{ METATYPE_FROM_OBJECT(color), &color };
+          colorVar.Deserialize(pair.second);
+
+          material.m_colorMap[pair.first] = color;
+        }
       }
 
       it = obj.find("m_vec4Map");
       if (it != obj.end())
       {
+        auto map = it->second.get_object();
+        for (auto& pair : map)
+        {
+          glm::vec4 v4;
+          Variable v4Var{ METATYPE_FROM_OBJECT(v4), &v4 };
+          v4Var.Deserialize(pair.second);
+
+          material.m_vec4Map[pair.first] = v4;
+        }
       }
 
       it = obj.find("m_floatMap");
       if (it != obj.end())
       {
+        auto map = it->second.get_object();
+        for (auto& pair : map)
+        {
+          material.m_floatMap[pair.first] = pair.second.as<float>();
+        }
       }
       
       it = obj.find("m_intMap");
       if (it != obj.end())
       {
-      }*/
+        auto map = it->second.get_object();
+        for (auto& pair : map)
+        {
+          material.m_intMap[pair.first] = pair.second.as<int>();
+        }
+      }
 
       //Diffuse Color
       it = obj.find("Diffuse Color");
       if (it != obj.end())
       {
         glm::vec3 color;
-        //Variable diffuseColorVar{ METATYPE_FROM_OBJECT(material.m_diffuseColor)
-        //  , &material.m_diffuseColor };
-        Variable diffuseColorVar{ METATYPE_FROM_OBJECT(color)
-          , & color };
+        Variable diffuseColorVar{ METATYPE_FROM_OBJECT(color), & color };
         diffuseColorVar.Deserialize(it->second);
 
         material.m_colorMap[MP_PBRMetallic::u_diffuseColor] = glm::vec4(color, 1.0f);
@@ -441,7 +523,7 @@ namespace NightEngine
       }
 
       //Initialize Material Texture
-      material.InitTexture(diffuseFile
+      material.InitPBRTexture(diffuseFile
         , useNormal, normalFile
         , roughnessFile, metallicFile, emissiveFile);
     }

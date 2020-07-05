@@ -218,7 +218,7 @@
 //    g_defaultMaterial.InitShader("Lighting/blinnphong_forward.vert"
 //      , "Lighting/blinnphong_forward.frag");
 //
-//    g_defaultMaterial.InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
+//    g_defaultMaterial.InitPBRTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
 //      , true ,FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
 //      , FileSystem::GetFilePath("specular_wood.png", FileSystem::DirectoryType::Textures)
 //      , FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures));

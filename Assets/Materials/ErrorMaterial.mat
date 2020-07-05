@@ -1,23 +1,52 @@
 {
   "Material": {
-    "Diffuse": "./../Assets/Textures/Blank\\100.png",
-    "Diffuse Color": {
-      "x": 0.9420081377029419,
-      "y": 0.014705896377563477,
-      "z": 1.0
-    },
-    "Emissive": "./../Assets/Textures/Blank\\000.png",
-    "Emissive Strength": 0.0,
-    "Metallic": "./../Assets/Textures/Blank/000.png",
-    "Metallic Value": 0.0,
-    "Normal": "./../Assets/Textures/Blank\\000.png",
-    "Normal Multiplier": 1.0,
-    "Roughness": "./../Assets/Textures/Blank/000.png",
-    "Roughness Value": 1.0,
     "Shaders": [
       "Rendering/deferred_geometry_pass.vert",
       "Rendering/deferred_geometry_pass.frag"
     ],
-    "UseNormal": false
+    "m_colorMap": {
+      "u_diffuseColor": {
+        "w": 1.0,
+        "x": 0.9420081377029419,
+        "y": 0.014705896377563477,
+        "z": 1.0
+      }
+    },
+    "m_floatMap": {
+      "u_material.m_emissiveStrength": 0.0,
+      "u_material.m_metallicValue": 0.0,
+      "u_material.m_normalMultiplier": 1.0,
+      "u_material.m_roughnessValue": 1.0
+    },
+    "m_intMap": {
+      "u_useNormalmap": 0
+    },
+    "m_textureMap": {
+      "0": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/100.png",
+        "m_filterMode": 9729
+      },
+      "1": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/000.png",
+        "m_filterMode": 9729
+      },
+      "2": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/100.png",
+        "m_filterMode": 9729
+      },
+      "3": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/000.png",
+        "m_filterMode": 9729
+      },
+      "4": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/000.png",
+        "m_filterMode": 9729
+      }
+    }
   }
 }

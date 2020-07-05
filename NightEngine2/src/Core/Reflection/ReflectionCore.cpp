@@ -143,7 +143,27 @@ namespace NightEngine
           ADD_MEMBER_PRIVATE(Texture, m_name, true);
           ADD_MEMBER_PRIVATE(Texture, m_filePath, true);
           ADD_MEMBER_PRIVATE(Texture, m_internalFormat, true);
+          ADD_MEMBER_PRIVATE(Texture, m_filterMode, true);
         }
+
+        REGISTER_METATYPE_WITH_SERIALIZER(TextureIdentifier, true
+          , nullptr, nullptr);
+        {
+          ADD_MEMBER_PUBLIC(TextureIdentifier, m_textureID, false);
+          ADD_MEMBER_PUBLIC(TextureIdentifier, m_name, true);
+          ADD_MEMBER_PUBLIC(TextureIdentifier, m_filePath, true);
+          ADD_MEMBER_PUBLIC(TextureIdentifier, m_internalFormat, true);
+          ADD_MEMBER_PUBLIC(TextureIdentifier, m_filterMode, true);
+        }
+
+        REGISTER_METATYPE_WITH_SERIALIZER(TextureData, true
+          , nullptr, nullptr);
+        {
+          ADD_MEMBER_PUBLIC(TextureData, m_filePath, true);
+          ADD_MEMBER_PUBLIC(TextureData, m_channel, true);
+          ADD_MEMBER_PUBLIC(TextureData, m_filterMode, true);
+        }
+
         REGISTER_METATYPE_WITH_SERIALIZER(Model, true
           , nullptr, nullptr);
         {

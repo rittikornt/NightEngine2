@@ -55,35 +55,40 @@ namespace Rendering
     m_shader.Link();
   }
 
-  void Material::InitTexture(const std::string& diffuseTextureFile
+  //TODO: Move this function out of Material into MaterialProperty
+  void Material::InitPBRTexture(const std::string& diffuseTextureFile
     , bool useNormal, const std::string& normalTextureFile
     , const std::string& roughnessTextureFile
     , const std::string& metallicTextureFile
     , const std::string& emissiveTextureFile)
   {
     //Init PBR Vals
-    m_intMap[MP_PBRMetallic::u_useNormalmap] = useNormal;
+    auto it0 = m_intMap.find(MP_PBRMetallic::u_useNormalmap);
+    if (it0 == m_intMap.end())
+    {
+      m_intMap[MP_PBRMetallic::u_useNormalmap] = useNormal;
+    }
 
-    auto it = m_floatMap.find(MP_PBRMetallic::m_normalMultiplier);
-    if (it == m_floatMap.end())
+    auto it1 = m_floatMap.find(MP_PBRMetallic::m_normalMultiplier);
+    if (it1 == m_floatMap.end())
     {
       m_floatMap[MP_PBRMetallic::m_normalMultiplier] = 1.0f;
     }
 
-    it = m_floatMap.find(MP_PBRMetallic::m_roughnessValue);
-    if (it == m_floatMap.end())
+    it1 = m_floatMap.find(MP_PBRMetallic::m_roughnessValue);
+    if (it1 == m_floatMap.end())
     {
       m_floatMap[MP_PBRMetallic::m_roughnessValue] = 0.5f;
     }
 
-    it = m_floatMap.find(MP_PBRMetallic::m_metallicValue);
-    if (it == m_floatMap.end())
+    it1 = m_floatMap.find(MP_PBRMetallic::m_metallicValue);
+    if (it1 == m_floatMap.end())
     {
       m_floatMap[MP_PBRMetallic::m_metallicValue] = 0.1f;
     }
 
-    it = m_floatMap.find(MP_PBRMetallic::m_emissiveStrength);
-    if (it == m_floatMap.end())
+    it1 = m_floatMap.find(MP_PBRMetallic::m_emissiveStrength);
+    if (it1 == m_floatMap.end())
     {
       m_floatMap[MP_PBRMetallic::m_emissiveStrength] = 15.0f;
     }
@@ -103,7 +108,12 @@ namespace Rendering
     }
     else
     {
-      m_textureMap[DIFFUSE_TEXUNIT_INDEX] = ResourceManager::GetWhiteTexture();
+      //Replace with default texture if null
+      auto it3 = m_textureMap.find(DIFFUSE_TEXUNIT_INDEX);
+      if (it3 == m_textureMap.end())
+      {
+        m_textureMap[DIFFUSE_TEXUNIT_INDEX] = ResourceManager::GetWhiteTexture();
+      }
     }
 
     if (normalTextureFile.size() > 0)
@@ -114,7 +124,12 @@ namespace Rendering
     }
     else
     {
-      m_textureMap[DIFFUSE_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
+      //Replace with default texture if null
+      auto it3 = m_textureMap.find(NORMAL_TEXUNIT_INDEX);
+      if (it3 == m_textureMap.end())
+      {
+        m_textureMap[NORMAL_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
+      }
     }
 
     if (roughnessTextureFile.size() > 0)
@@ -125,7 +140,12 @@ namespace Rendering
     }
     else
     {
-      m_textureMap[DIFFUSE_TEXUNIT_INDEX] = ResourceManager::GetWhiteTexture();
+      //Replace with default texture if null
+      auto it3 = m_textureMap.find(ROUGHNESS_TEXUNIT_INDEX);
+      if (it3 == m_textureMap.end())
+      {
+        m_textureMap[ROUGHNESS_TEXUNIT_INDEX] = ResourceManager::GetWhiteTexture();
+      }
     }
 
     if (metallicTextureFile.size() > 0)
@@ -136,7 +156,12 @@ namespace Rendering
     }
     else
     {
-      m_textureMap[DIFFUSE_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
+      //Replace with default texture if null
+      auto it3 = m_textureMap.find(METALLIC_TEXUNIT_INDEX);
+      if (it3 == m_textureMap.end())
+      {
+        m_textureMap[METALLIC_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
+      }
     }
 
     if (emissiveTextureFile.size() > 0)
@@ -147,7 +172,12 @@ namespace Rendering
     }
     else
     {
-      m_textureMap[DIFFUSE_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
+      //Replace with default texture if null
+      auto it3 = m_textureMap.find(EMISSIVE_TEXUNIT_INDEX);
+      if (it3 == m_textureMap.end())
+      {
+        m_textureMap[EMISSIVE_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
+      }
     }
 
     RefreshTextureUniforms();

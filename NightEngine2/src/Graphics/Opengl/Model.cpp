@@ -225,7 +225,7 @@ namespace Rendering
 
           handle->InitShader(DEFAULT_VERTEX_SHADER_PBR
             , DEFAULT_FRAG_SHADER_PBR);
-          handle->InitTexture(diffTexPath
+          handle->InitPBRTexture(diffTexPath
             , useNormal, normalTexPath
             , blackTexPath, blackTexPath, blackTexPath);
 

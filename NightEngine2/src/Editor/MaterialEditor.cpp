@@ -229,7 +229,7 @@ namespace Editor
         handle.Get()->SetName(name);
         handle->InitShader(DEFAULT_VERTEX_SHADER_PBR
           , DEFAULT_FRAG_SHADER_PBR);
-        handle->InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
+        handle->InitPBRTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
           , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
           , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
           , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)

@@ -25,6 +25,15 @@ namespace Rendering
     std::string m_name = "";
     std::string m_filePath = "";
     GLenum m_internalFormat = GL_INVALID_ENUM;
+    GLenum m_filterMode = GL_INVALID_ENUM;
+  };
+
+  //! @brief Texture Data for serialization
+  struct TextureData
+  {
+    std::string m_filePath = "";
+    GLenum m_channel = GL_INVALID_ENUM;
+    GLenum m_filterMode = GL_INVALID_ENUM;
   };
 
   //! @brief Texture Class
@@ -147,6 +156,9 @@ namespace Rendering
     //! @brief Get File Path
     std::string GetFilePath(void) const { return m_filePath; }
 
+    //! @brief Get Texture Data
+    TextureData GetTextureData(void) const { return TextureData{m_filePath, (GLenum)m_internalFormat, (GLenum)m_filterMode}; }
+
     //! @brief Check if the texture is valid
 		GLuint IsValid(void) const { return m_textureID != ~(0);}
 
@@ -192,7 +204,8 @@ namespace Rendering
     std::string m_name;
     std::string m_filePath; //path to be serialize/deserialize
 
-    Channel     m_internalFormat;
+    Channel     m_internalFormat = Channel::RGB;
+    FilterMode  m_filterMode = FilterMode::TRINEAREST;
 	};
 } // Rendering
 

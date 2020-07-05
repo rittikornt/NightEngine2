@@ -50,6 +50,7 @@ namespace Rendering
     , m_name(texture.m_name)
     , m_filePath(texture.m_filePath)
     , m_internalFormat(texture.m_internalFormat)
+    , m_filterMode(texture.m_filterMode)
   {
   }
 
@@ -58,6 +59,7 @@ namespace Rendering
     , m_name(textureIdentifier.m_name)
     , m_filePath(textureIdentifier.m_filePath)
     , m_internalFormat((Channel)textureIdentifier.m_internalFormat)
+    , m_filterMode((FilterMode)textureIdentifier.m_filterMode)
   {
   }
 
@@ -255,6 +257,7 @@ namespace Rendering
     CHECKGL_ERROR();
     texture.m_name = "NullTexture";
     texture.m_internalFormat = (GLenum)internalformat;
+    texture.m_filterMode = (GLenum)filterMode;
     return texture;
   }
 
@@ -310,6 +313,7 @@ namespace Rendering
 
     CHECKGL_ERROR();
     texture.m_internalFormat = (GLenum)internalFormat;
+    texture.m_filterMode = (GLenum)filterMode;
     return texture;
   }
 

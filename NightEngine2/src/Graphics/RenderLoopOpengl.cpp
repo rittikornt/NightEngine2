@@ -241,7 +241,7 @@ namespace Rendering
       , DEFAULT_FRAG_SHADER_PBR);
     m_defaultMaterial->SetName("DefaultMaterial");
 
-    m_defaultMaterial->InitTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
+    m_defaultMaterial->InitPBRTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
       , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)

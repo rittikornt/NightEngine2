@@ -36,4 +36,6 @@ namespace Rendering
     shader.SetUniform(MP_PBRMetallic::m_metallicMap, METALLIC_TEXUNIT_INDEX);
     shader.SetUniform(MP_PBRMetallic::m_emissiveMap, EMISSIVE_TEXUNIT_INDEX);
   }
+
+  ////////////////////////////////////////////////////////////
 }

@@ -122,7 +122,9 @@ namespace NightEngine
 
             //Set Default Material if null
             auto& defaultMaterial = SceneManager::GetDefaultMaterial();
-            if (meshRenderer->GetMaterial() == nullptr)
+
+            auto mat = meshRenderer->GetMaterial();
+            if (mat == nullptr)
             {
               meshRenderer->SetMaterial(defaultMaterial);
             }

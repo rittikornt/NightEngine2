@@ -27,6 +27,8 @@ namespace Rendering
     m_filePath = rhs.m_filePath;
     m_shader = rhs.m_shader;
 
+    m_materialProperty = rhs.m_materialProperty;
+
     m_textureMap = rhs.m_textureMap;
     m_vec4Map = rhs.m_vec4Map;
     m_floatMap = rhs.m_floatMap;
@@ -220,6 +222,8 @@ namespace Rendering
         Debug::Log << (success? Logger::MessageType::INFO: Logger::MessageType::WARNING)
           << "Loading Material: " << s_items[i]
           << (success ? " successfully\n": " unsuccessfully\n");
+
+        newHandle->RefreshTextureUniforms();
       }
     }
   }

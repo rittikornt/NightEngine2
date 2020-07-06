@@ -379,6 +379,17 @@ namespace NightEngine
         {
           m_meshes[i].Release();
         }
+
+        m_material.m_handle.Nullify();
+
+        m_useModelLoadedMaterials = false;
+        m_submeshCount = 0;
+        m_materials.clear();
+        m_meshes.clear();
+
+        m_meshLoadPath = "";
+        m_castShadow = false;
+        m_drawMode = DrawMode::UNINITIALIZED;
       }
 
       void MeshRenderer::LoadMaterial(std::string fileName)

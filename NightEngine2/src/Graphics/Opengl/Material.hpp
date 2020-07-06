@@ -29,6 +29,7 @@ namespace Rendering
         , NightEngine::Serialization::DefaultDeserializer<Material&>)
         .MR_ADD_MEMBER_PRIVATE(Material, m_name, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_filePath, true)
+        .MR_ADD_MEMBER_PRIVATE(Material, m_materialProperty, false)
         .MR_ADD_MEMBER_PRIVATE(Material, m_textureMap, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_vec4Map, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_floatMap, true)

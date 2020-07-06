@@ -379,6 +379,8 @@ namespace NightEngine
         if (filePath != "")
         {
           matHandle = Material::LoadMaterial(filePath);
+          auto mat = matHandle.Get();
+          auto mp = mat->GetMaterialProperty();
         }
       }
     }

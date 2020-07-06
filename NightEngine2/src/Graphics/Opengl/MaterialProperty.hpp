@@ -9,6 +9,9 @@
 #define DEFAULT_VERTEX_SHADER_PBR "Rendering/deferred_geometry_pass.vert"
 #define DEFAULT_FRAG_SHADER_PBR "Rendering/deferred_geometry_pass.frag"
 
+#define DEFAULT_VERTEX_SHADER_PBR_SB "Rendering/deferred_geometry_pass_specular_bump.vert"
+#define DEFAULT_FRAG_SHADER_PBR_SB "Rendering/deferred_geometry_pass_specular_bump.frag"
+
 #define DIFFUSE_TEXUNIT_INDEX 0
 #define BUMP_TEXUNIT_INDEX 1
 #define NORMAL_TEXUNIT_INDEX 1
@@ -95,7 +98,6 @@ namespace Rendering
 
   ////////////////////////////////////////////////////////////
 
-  //TODO: Fill this for sponza
   struct MP_PBRSpecularBumpmap : public MaterialProperty
   {
     static const char* k_textureNames[5];

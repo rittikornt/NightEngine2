@@ -21,7 +21,7 @@ namespace Rendering
       };
 
       //! @brief Constructor
-      RenderBufferObject(void):m_id(~(0)) {}
+      RenderBufferObject(void):m_id(~(0)), m_format(Format::DEPTH24) {}
       
       //! @brief Destructor
       ~RenderBufferObject(void);

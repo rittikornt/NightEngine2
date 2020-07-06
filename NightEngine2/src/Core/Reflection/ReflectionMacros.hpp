@@ -170,19 +170,19 @@ ReflectionManager::RegisterType<RawType<TYPE>>(#TYPE, MURMURHASH2(TYPE)\
 #define META_REGISTERER(TYPE, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static NightEngine::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
         = NightEngine::Reflection::MetaRegisterer<TYPE>() \
           .RegisterType(#TYPE, MURMURHASH2(TYPE) \
-            , sizeof(TYPE), { nullptr, InheritType::PUBLIC} \
+            , { nullptr, InheritType::PUBLIC} \
             , SERIALIZER, DESERIALIZER, SHOULDSERIALIZED)
 
 #define META_REGISTERER_WITHNAME(TYPE, NEWNAME, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static NightEngine::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
         = NightEngine::Reflection::MetaRegisterer<TYPE>() \
           .RegisterType(NEWNAME, MURMURHASH2(TYPE) \
-            , sizeof(TYPE), { nullptr, InheritType::PUBLIC} \
+            , { nullptr, InheritType::PUBLIC} \
             , SERIALIZER, DESERIALIZER, SHOULDSERIALIZED)
 
 #define META_REGISTERER_WITHBASE(TYPE, BASETYPE, INHERITTYPE, SHOULDSERIALIZED,SERIALIZER, DESERIALIZER) static NightEngine::Reflection::MetaRegisterer<TYPE> registerer##TYPE \
         = NightEngine::Reflection::MetaRegisterer<TYPE>() \
           .RegisterType(#TYPE, MURMURHASH2(TYPE) \
-            , sizeof(TYPE), { ReflectionManager::GetMetaType<RawType<BASETYPE>>(), INHERITTYPE} \
+            , { ReflectionManager::GetMetaType<RawType<BASETYPE>>(), INHERITTYPE} \
             , SERIALIZER, DESERIALIZER, SHOULDSERIALIZED)
 
 /////////////////////////////////////////////////

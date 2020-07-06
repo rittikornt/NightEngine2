@@ -48,7 +48,7 @@ namespace Rendering
           .MR_ADD_MEMBER_PROTECTED(PostProcessSetting, m_fxaaPP, true);
       }
 
-      glm::ivec2        m_resolution;
+      glm::ivec2        m_resolution = glm::ivec2(1);
 
       //PostProcess
       Postprocess::PostProcessUtility   m_ppUtility;

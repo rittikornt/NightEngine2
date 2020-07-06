@@ -27,7 +27,7 @@ namespace Rendering
 	public:
 
     //! @brief Constructor
-		VertexBufferObject() :m_objectID(~0){}
+		VertexBufferObject() :m_objectID(~0u){}
 
     //! @brief Destructor
     ~VertexBufferObject();

@@ -18,7 +18,7 @@ class btRigidBody;
 namespace Physics
 {
   class PhysicsScene;
-  class CollisionResult;
+  struct CollisionResult;
   class Collider;
   struct ColliderInitializer;
 }

@@ -14,8 +14,7 @@ namespace Rendering
   {
     struct PostProcessEffect
     {
-      //NightEngine::Reflection::Variable m_variable;
-      NightEngine::Reflection::MetaType* m_metaType;
+      NightEngine::Reflection::MetaType* m_metaType = nullptr;
       bool m_enable = true;
 
       void GetVariable(NightEngine::Reflection::Variable& variable)

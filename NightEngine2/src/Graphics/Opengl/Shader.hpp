@@ -113,8 +113,10 @@ namespace Rendering
     }
 
 	private:
-		GLuint	CreateShaderObject(const std::string const & filename);
+		GLuint	CreateShaderObject(const std::string& filename);
+
     std::string LoadShaderSourceCode(const std::string& filePath);
+
     bool CompileShader(GLuint shaderID, const char* sourceCode);
 
 		// Private Member Variables

@@ -286,7 +286,7 @@ namespace Rendering
 
 	/////////////////////////////////////////////////////////////////////////
 
-	GLuint Shader::CreateShaderObject(const std::string const& filename)
+	GLuint Shader::CreateShaderObject(const std::string& filename)
 	{
 		auto index = filename.rfind(".");
 		auto ext = filename.substr(index + 1);

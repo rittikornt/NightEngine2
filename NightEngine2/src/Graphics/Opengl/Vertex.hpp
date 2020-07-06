@@ -44,7 +44,7 @@ namespace Rendering
     size_t GetStrideSize()
     {
       size_t sum = 0;
-      for (int i = 0; i < m_attributeCount; ++i)
+      for (unsigned i = 0; i < m_attributeCount; ++i)
       {
         //Only normal attribute stay in the same buffer
         if (m_divisor[i] == 0)

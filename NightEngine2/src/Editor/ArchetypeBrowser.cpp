@@ -27,8 +27,8 @@ using namespace Reflection;
 namespace Editor
 {
   static ImVec4 g_color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
-  static ImVec4 g_color_orange_dark = ImVec4(0.96, 0.68f, 0.05f, 1.0f);
-  static ImVec4 g_color_orange_light = ImVec4(0.96, 0.86f, 0.05f, 1.0f);
+  static ImVec4 g_color_orange_dark = ImVec4(0.96f, 0.68f, 0.05f, 1.0f);
+  static ImVec4 g_color_orange_light = ImVec4(0.96f, 0.86f, 0.05f, 1.0f);
   static ImVec4 g_color_green = ImVec4(0.165f, 0.86f, 0.33f, 1.0f);
 
   //Confirmation Box
@@ -106,7 +106,7 @@ namespace Editor
               {
                 //ID Column 
                 char label[8];
-                sprintf(label, "%d", archetypeIndex);
+                sprintf_s(label, "%d", archetypeIndex);
                 if (ImGui::Selectable(label, g_selectedIndex == archetypeIndex))
                 {
                   g_selectedIndex = archetypeIndex;
@@ -308,7 +308,7 @@ namespace Editor
                   if (pair.second->IsDerivedFrom(componentMetaType))
                   {
                     char label[128];
-                    sprintf(label, pair.first.c_str());
+                    sprintf_s(label, pair.first.c_str());
 
                     //Selectable
                     bool selected = pair.first == selectedComponent;

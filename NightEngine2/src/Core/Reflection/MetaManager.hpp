@@ -133,7 +133,7 @@ namespace NightEngine
     {
     public:
       MetaRegisterer<TYPE> RegisterType(Container::String typeName, Container::U64 hash
-        , size_t size, BaseClass baseClass
+        , BaseClass baseClass
         , typename MetaType::SerializeFn serializeFn = nullptr
         , typename MetaType::DeserializeFn deserializeFn = nullptr
         , bool shouldSerialized = true)

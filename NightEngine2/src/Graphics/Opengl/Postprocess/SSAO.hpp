@@ -19,7 +19,7 @@ namespace Rendering
 {
   class VertexArrayObject;
   class GBuffer;
-  class CameraObject;
+  struct CameraObject;
 
   namespace Postprocess
   {
@@ -49,7 +49,7 @@ namespace Rendering
       Shader            m_simpleBlur;
 
       //Settings
-      glm::ivec2        m_resolution;
+      glm::ivec2        m_resolution = glm::ivec2(1);
       int               m_power = 2;
       int               m_blurIteration = 4;
       bool              m_useKawaseBlur = false;

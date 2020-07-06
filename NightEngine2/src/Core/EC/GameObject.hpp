@@ -19,7 +19,7 @@
 namespace NightEngine
 {
 	class IMessageHandler;
-	class PlayerUpdateMessage;
+	struct PlayerUpdateMessage;
 }
 
 namespace NightEngine

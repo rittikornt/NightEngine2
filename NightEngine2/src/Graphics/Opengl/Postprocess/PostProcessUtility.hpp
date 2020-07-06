@@ -21,8 +21,8 @@ namespace Rendering
     //! @brief Bloom struct
     struct PostProcessUtility
     {
-      glm::ivec2        m_resolution;
-      glm::vec4        m_clearColor;
+      glm::ivec2        m_resolution = glm::ivec2(1);
+      glm::vec4         m_clearColor = glm::vec4(0.0f);
 
       FrameBufferObject m_temp1Fbo;
       FrameBufferObject m_temp2Fbo;

@@ -29,7 +29,8 @@ namespace Rendering
     FrameBufferObject   m_fbo;
     Texture             m_textures[static_cast<size_t>(GBufferTarget::Count)];
     RenderBufferObject  m_depthBuffer;
-    int                 m_width, m_height;
+    int                 m_width  = 1;
+    int                 m_height = 1;
 
     //! @brief Initialize G buffer
     void Init(int width, int height)

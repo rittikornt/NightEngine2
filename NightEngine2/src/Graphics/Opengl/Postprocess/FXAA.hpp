@@ -32,7 +32,7 @@ namespace Rendering
       }
 
       Shader    m_fxaaShader;
-      glm::vec2 m_resolution;
+      glm::vec2 m_resolution{1.0f};
 
       //! @brief Initialization
       void Init(int width, int height);

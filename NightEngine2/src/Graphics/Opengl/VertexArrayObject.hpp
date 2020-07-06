@@ -29,7 +29,7 @@ namespace Rendering
 	{
 	public:
     //! @brief Constructor
-		VertexArrayObject(void) : m_objectID(~0), m_instanceBufferID(~0){}
+		VertexArrayObject(void) : m_objectID(~0u), m_instanceBufferID(~0u){}
 
     //! @brief Constructor
     VertexArrayObject(BufferMode mode

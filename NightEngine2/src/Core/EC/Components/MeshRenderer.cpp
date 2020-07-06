@@ -34,7 +34,7 @@ namespace NightEngine
         m_meshes.emplace_back(vertices
           , indices, buildNow);
 
-        m_submeshCount = m_meshes.size();
+        m_submeshCount = (unsigned)m_meshes.size();
       }
 
       void MeshRenderer::InitMesh(const Vertex* vertices, size_t vertexArraySize
@@ -48,7 +48,7 @@ namespace NightEngine
         m_meshes.emplace_back(vertices, vertexArraySize
           , indices, indexArraySize, buildNow);
 
-        m_submeshCount = m_meshes.size();
+        m_submeshCount = (unsigned)m_meshes.size();
       }
 
       void MeshRenderer::ReregisterDrawMode(void)
@@ -340,7 +340,7 @@ namespace NightEngine
         ASSERT_TRUE(model != nullptr);
 
         m_meshes = model->GetMeshes();
-        m_submeshCount = m_meshes.size();
+        m_submeshCount = (unsigned)m_meshes.size();
 
         // Get Materials from Model if there are all materials for each submesh
         // and all valid materials

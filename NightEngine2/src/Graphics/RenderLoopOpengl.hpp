@@ -67,7 +67,7 @@ namespace Rendering
     Cubemap             m_shadowMapCubemap[POINTLIGHT_AMOUNT];
     Material            m_depth2Material;
 
-    glm::vec2           m_initResolution;
+    glm::vec2           m_initResolution{1.0f};
 
     //Scene FrameBuffer
     GBuffer             m_gbuffer;

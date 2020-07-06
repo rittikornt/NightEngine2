@@ -10,7 +10,7 @@ namespace Rendering
 {
   //Forward declaration
   class Texture;
-  class TextureIdentifier;
+  struct TextureIdentifier;
   class RenderBufferObject;
   class Cubemap;
 

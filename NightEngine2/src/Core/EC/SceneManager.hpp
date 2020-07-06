@@ -16,7 +16,7 @@ namespace Rendering
 
   namespace Postprocess
   {
-    class PostProcessSetting;
+    struct PostProcessSetting;
   }
 }
 

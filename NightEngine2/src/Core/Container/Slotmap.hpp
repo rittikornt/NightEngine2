@@ -22,7 +22,7 @@ namespace NightEngine
       U64 m_index: 47;	      //Array index for direct lookup
       U64 m_generation: 17;	  //For validate reference
 
-			SlotmapID(void): m_index(~0), m_generation(~0){}
+			SlotmapID(void): m_index(~0u), m_generation(~0u){}
 			explicit SlotmapID(U64 index, U64 generation)
 				: m_index(index), m_generation(generation) {}
 

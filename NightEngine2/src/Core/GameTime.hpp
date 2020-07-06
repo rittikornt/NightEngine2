@@ -58,7 +58,7 @@ namespace NightEngine
 		bool	m_shouldClose = false;
 			
     //Frame datas
-		float m_deltaTime = 1.0f / c_DEFAULT_FPS_CAP;							//Feed into all other system for update
+		float m_deltaTime = 1.0f / c_DEFAULT_FPS_CAP;				//Feed into all other system for update
 		float m_fps = c_DEFAULT_FPS_CAP;										//For display
 		float m_averageFps = c_DEFAULT_FPS_CAP;							//For display
 
@@ -71,6 +71,6 @@ namespace NightEngine
 		float m_newSampleWeight = (1.0f / m_averageFrameRateSample);
 
     TimePoint m_frameStartTime;
-		FloatDuration m_deltaDuration;
+		FloatDuration m_deltaDuration{};
   };
 } // namespace World

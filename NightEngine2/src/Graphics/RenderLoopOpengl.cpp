@@ -177,7 +177,7 @@ namespace Rendering
     int width = Window::GetWidth(), height = Window::GetHeight();
 
     //Depth FBO for shadow
-    m_initResolution.x = width, m_initResolution.y = height;
+    m_initResolution.x = (float)width, m_initResolution.y = (float)height;
 
     m_depthfbo.Init();
     m_shadowMapTexture = m_depthfbo.AttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
@@ -190,7 +190,7 @@ namespace Rendering
     {
       m_depth2fbo[i].Init();
 
-      m_shadowMapCubemap[i].InitDepthCubemap(g_pointLightResolution);
+      m_shadowMapCubemap[i].InitDepthCubemap((unsigned)g_pointLightResolution);
       m_depth2fbo[i].AttachCubemap(m_shadowMapCubemap[i]);
     }
 
@@ -479,7 +479,7 @@ namespace Rendering
       //*************************************************
       // Depth FBO Pass for directional light shadow
       //*************************************************
-      glViewport(0, 0, g_dirLightResolution, g_dirLightResolution);
+      glViewport(0, 0, (GLsizei)g_dirLightResolution, (GLsizei)g_dirLightResolution);
       glEnable(GL_DEPTH_TEST);
 
       //TODO: don't refresh lights component every frame
@@ -517,7 +517,7 @@ namespace Rendering
       //*************************************************
       // Depth FBO Pass for point shadow
       //*************************************************
-      glViewport(0, 0, g_pointLightResolution, g_pointLightResolution);
+      glViewport(0, 0, (GLsizei)g_pointLightResolution, (GLsizei)g_pointLightResolution);
       if (g_sceneLights.pointLights.size() > 0)
       {
         for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
@@ -563,7 +563,7 @@ namespace Rendering
     //*************************************************
     // Geometry Pass
     //*************************************************
-    glViewport(0, 0, m_initResolution.x, m_initResolution.y);
+    glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
     DebugMarker::PushDebugGroup("Deferred GBuffer Pass");
     m_gbuffer.Bind();
     {

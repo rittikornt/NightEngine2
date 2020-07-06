@@ -26,7 +26,7 @@ namespace Rendering
       PREFILTERED //Specular
     };
 
-    int                 m_width, m_height;
+    int                 m_width = 1, m_height = 1;
 
     Cubemap             m_cubemap;
     VertexArrayObject   m_cubeVAO;

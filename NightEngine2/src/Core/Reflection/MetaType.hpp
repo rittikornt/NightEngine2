@@ -32,8 +32,8 @@ namespace NightEngine
 			{
 				PUBLIC = 0, PROTECTED, PRIVATE
 			};
-			MetaType* m_metaType;	//Can modify to support multiple inheritance here
-			InheritType m_inheritType;
+			MetaType* m_metaType = nullptr;	//Can modify to support multiple inheritance here
+			InheritType m_inheritType = InheritType::PUBLIC;
 		};
 
     //! @brief Class containing information for each type
@@ -97,12 +97,12 @@ namespace NightEngine
       Container::U64 m_hash;	//Hash of the m_name
       size_t m_size;
 
-			BaseClass m_baseClass;	//Not support multiple inheritance
+      BaseClass m_baseClass{};	//Not support multiple inheritance
       Container::Vector<Member> m_members;
 
       bool m_shouldSerialized = true;
-			SerializeFn m_serializeFn;
-			DeserializeFn m_deserializeFn;
+			SerializeFn m_serializeFn = nullptr;
+			DeserializeFn m_deserializeFn = nullptr;
     };
   }
 

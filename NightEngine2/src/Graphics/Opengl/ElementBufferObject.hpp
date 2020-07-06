@@ -27,7 +27,7 @@ namespace Rendering
 		static void SetDrawMethod(DrawMethod mode);
 
     //! @brief Constructor
-		ElementBufferObject() :m_objectID(~0){}
+		ElementBufferObject() :m_objectID(~0u){}
 
     //! @brief Destructor
     ~ElementBufferObject();

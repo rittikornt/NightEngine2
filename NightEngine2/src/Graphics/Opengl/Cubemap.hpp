@@ -17,7 +17,7 @@ namespace Rendering
   {
     public:
       //! @brief Constructor
-      Cubemap(void): m_id(~(0)){};
+      Cubemap(void): m_id(~(0u)){};
       
       //! @brief Destructor
       ~Cubemap(void);

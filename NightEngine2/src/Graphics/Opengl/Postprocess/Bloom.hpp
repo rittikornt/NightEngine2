@@ -51,7 +51,7 @@ namespace Rendering
       FrameBufferObject m_bloomUpscaleFbo[k_bloomPyramidCount + 1];
       Texture           m_bloomUpscaleTexture[k_bloomPyramidCount + 1];
 
-      glm::ivec2        m_resolution;
+      glm::ivec2        m_resolution = glm::ivec2(1);;
 
       //Shader
       Shader            m_thresholdShader;
@@ -67,7 +67,7 @@ namespace Rendering
       float             m_scattering = 0.5f;
       float             m_bloomThreshold = 6.0f;
       int               m_blurIteration = 4;
-      glm::vec2         m_blurDir;
+      glm::vec2         m_blurDir = glm::vec2(0.0f);
 
       //! @brief Initialization
       void Init(int width, int height);

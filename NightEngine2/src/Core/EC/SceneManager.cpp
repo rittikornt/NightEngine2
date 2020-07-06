@@ -449,7 +449,7 @@ namespace NightEngine
             ch = pointLight[i]->GetComponent("Light");
             ch->Get<Light>()->Init(Light::LightType::POINT
               , { glm::vec3(0.0f, 1.0f,0.0f)
-              ,{ Light::LightInfo::Value{ 8.0f } } }, i);
+              ,{ Light::LightInfo::Value{ 8.0f } } }, (int)i);
 
             //Spotlight
             name = std::string{ "Spotlight" };
@@ -471,7 +471,7 @@ namespace NightEngine
             ch->Get<Light>()->Init(Light::LightType::SPOTLIGHT
               ,
               { glm::vec3(0.0f,0.0f, 0.7f)
-                , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, i);
+                , Light::LightInfo::Value{ 1.0f, 0.95f, 5.0f } }, (int)i);
 
             //Add to Scene
             scene.AddGameObject(pointLight[i]);

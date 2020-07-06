@@ -70,7 +70,7 @@ namespace Rendering
   {
     BindUnsafe();
     {
-      glDrawBuffers(m_renderTarget.size(), &m_renderTarget[0]);
+      glDrawBuffers((GLsizei)m_renderTarget.size(), &m_renderTarget[0]);
     }
     Unbind();
   }
@@ -124,7 +124,7 @@ namespace Rendering
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     //Setup Texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, 
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLsizei)width, (GLsizei)height, 0,
     GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
     BindUnsafe();
@@ -143,7 +143,7 @@ namespace Rendering
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     //Setup Texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, (GLsizei)width, (GLsizei)height, 0,
       GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

@@ -4,14 +4,6 @@
       "Rendering/deferred_geometry_pass.vert",
       "Rendering/deferred_geometry_pass.frag"
     ],
-    "m_colorMap": {
-      "u_diffuseColor": {
-        "w": 1.0,
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    },
     "m_floatMap": {
       "u_material.m_emissiveStrength": 15.0,
       "u_material.m_metallicValue": 0.05000000074505806,
@@ -46,6 +38,14 @@
         "m_channel": 6407,
         "m_filePath": "./../Assets/Textures/Blank\\000.png",
         "m_filterMode": 9987
+      }
+    },
+    "m_vec4Map": {
+      "u_diffuseColor": {
+        "w": 1.0,
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
       }
     }
   }

@@ -14,24 +14,47 @@
 #define METALLIC_TEXUNIT_INDEX 3
 #define EMISSIVE_TEXUNIT_INDEX 4
 
-namespace Rendering
+namespace NightEngine
 {
-  class Shader;
+  namespace IMGUI
+  {
+    enum class IMGUIEditorType : unsigned
+    {
+      DEFAULT = 0,
+      CHECKBOX,
+      INPUTSCALAR,
+      DRAGSCALAR,
+      SLIDER,
+      COLOR4, //Vec4
+    };
+
+    struct IMGUIEditorData
+    {
+      IMGUIEditorType type = IMGUIEditorType::DEFAULT;
+      float min = 0.0f;
+      float max = 1.0f;
+      float speed = 0.05f;
+    };
+  }
 }
 
 namespace Rendering
 {
-  class MaterialProperty
+  class Shader;
+
+  struct MaterialProperty
   {
-  public:
     template<typename T>
-    static void SetTextureBindingUnit(const Shader& shader)
+    static const T& Get(void)
     {
-      T::SetTextureBindingUnit(shader);
+      static T mp;
+      return mp;
     }
+
+    virtual NightEngine::IMGUI::IMGUIEditorData GetEditorData(const char* name) const = 0;
   };
 
-  struct MP_PBRMetallic
+  struct MP_PBRMetallic: public MaterialProperty
   {
     static const char* k_textureNames[5];
 
@@ -50,6 +73,8 @@ namespace Rendering
 
     static const char* m_emissiveMap;
     static const char* m_emissiveStrength;
+
+    NightEngine::IMGUI::IMGUIEditorData GetEditorData(const char* name) const override;
 
     static void SetTextureBindingUnit(const Shader& shader);
   };

@@ -7,6 +7,10 @@
 #include "Graphics/Opengl/MaterialProperty.hpp"
 #include "Graphics/Opengl/Shader.hpp"
 
+#include <unordered_map>
+
+using namespace NightEngine::IMGUI;
+
 namespace Rendering
 {
   const char* MP_PBRMetallic::k_textureNames[5] = 
@@ -28,6 +32,27 @@ namespace Rendering
   const char* MP_PBRMetallic::m_emissiveMap = "u_material.m_emissiveMap";
   const char* MP_PBRMetallic::m_emissiveStrength = "u_material.m_emissiveStrength";
   
+  static const std::unordered_map<std::string, IMGUIEditorData> s_PBRMetallicMap
+  { 
+    {"u_diffuseColor", {IMGUIEditorType::COLOR4}}
+  , {"u_useNormalmap", {IMGUIEditorType::CHECKBOX}}
+  , {"u_material.m_normalMultiplier", {IMGUIEditorType::DRAGSCALAR, 0.01f, 5.0f}}
+  , {"u_material.m_roughnessValue", {IMGUIEditorType::DRAGSCALAR, 0.0f, 1.0f}}
+  , {"u_material.m_metallicValue", {IMGUIEditorType::DRAGSCALAR, 0.0f, 1.0f}}
+  , {"u_material.m_emissiveStrength", {IMGUIEditorType::DRAGSCALAR, 0.0f, 20.0f}}
+  };
+
+  NightEngine::IMGUI::IMGUIEditorData MP_PBRMetallic::GetEditorData(const char* name) const
+  {
+    auto it = s_PBRMetallicMap.find(name);
+    if (it != s_PBRMetallicMap.end())
+    {
+      return it->second;
+    }
+
+    return IMGUIEditorData{ IMGUIEditorType::DEFAULT };
+  }
+
   void MP_PBRMetallic::SetTextureBindingUnit(const Shader& shader)
   {
     shader.SetUniform(MP_PBRMetallic::m_diffuseMap, DIFFUSE_TEXUNIT_INDEX);

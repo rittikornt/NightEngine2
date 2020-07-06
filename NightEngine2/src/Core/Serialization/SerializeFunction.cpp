@@ -143,18 +143,6 @@ namespace NightEngine
         value.emplace("m_textureMap", textureMapValue);
       }
 
-      //Color map
-      JsonValue colorValue;
-      for (auto& pair : material.m_colorMap)
-      {
-        Variable colVar{ METATYPE_FROM_OBJECT(pair.second), &pair.second };
-        colorValue.emplace(pair.first, colVar.Serialize());
-      }
-      if (material.m_colorMap.size() > 0)
-      {
-        value.emplace("m_colorMap", colorValue);
-      }
-
       //Vec4 map
       JsonValue vec4Value;
       for (auto& pair : material.m_vec4Map)
@@ -336,20 +324,6 @@ namespace NightEngine
         }
       }
 
-      it = obj.find("m_colorMap");
-      if (it != obj.end())
-      {
-        auto map = it->second.get_object();
-        for (auto& pair : map)
-        {
-          glm::vec4 color;
-          Variable colorVar{ METATYPE_FROM_OBJECT(color), &color };
-          colorVar.Deserialize(pair.second);
-
-          material.m_colorMap[pair.first] = color;
-        }
-      }
-
       it = obj.find("m_vec4Map");
       if (it != obj.end())
       {
@@ -384,16 +358,16 @@ namespace NightEngine
         }
       }
 
-      //Diffuse Color
-      it = obj.find("Diffuse Color");
-      if (it != obj.end())
-      {
-        glm::vec3 color;
-        Variable diffuseColorVar{ METATYPE_FROM_OBJECT(color), & color };
-        diffuseColorVar.Deserialize(it->second);
+      ////Diffuse Color
+      //it = obj.find("Diffuse Color");
+      //if (it != obj.end())
+      //{
+      //  glm::vec3 color;
+      //  Variable diffuseColorVar{ METATYPE_FROM_OBJECT(color), & color };
+      //  diffuseColorVar.Deserialize(it->second);
 
-        material.m_colorMap[MP_PBRMetallic::u_diffuseColor] = glm::vec4(color, 1.0f);
-      }
+      //  material.m_vec4Map[MP_PBRMetallic::u_diffuseColor] = glm::vec4(color, 1.0f);
+      //}
 
       //Initialize Material Texture
       material.InitPBRTexture("", false, "", "", "", "");

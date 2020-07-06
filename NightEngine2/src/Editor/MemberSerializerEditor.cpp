@@ -29,6 +29,72 @@ using namespace NightEngine::EC;
 using namespace NightEngine;
 using namespace Rendering;
 
+namespace NightEngine
+{
+  namespace IMGUI
+  {
+    bool DrawVec4Property(IMGUIEditorData data, const char* text, float val[4])
+    {
+      switch (data.type)
+      {
+      case NightEngine::IMGUI::IMGUIEditorType::DRAGSCALAR:
+        return ImGui::DragFloat4(text, val, data.speed, data.min, data.max);
+      case NightEngine::IMGUI::IMGUIEditorType::SLIDER:
+        return ImGui::SliderFloat4(text, val, data.min, data.max);
+      case IMGUIEditorType::COLOR4:
+        return ImGui::ColorEdit4(text, val, ImGuiColorEditFlags_HDR);
+      case NightEngine::IMGUI::IMGUIEditorType::INPUTSCALAR:
+        return ImGui::InputFloat4(text, val, 3);
+      default:
+        return ImGui::InputFloat4(text, val, 3);
+      }
+
+      return false;
+    }
+
+    bool DrawFloatProperty(IMGUIEditorData data, const char* text, float* val)
+    {
+      switch (data.type)
+      {
+      case NightEngine::IMGUI::IMGUIEditorType::DRAGSCALAR:
+        return ImGui::DragScalar(text, ImGuiDataType_Float, val, data.speed, &data.min, &data.max);
+      case NightEngine::IMGUI::IMGUIEditorType::SLIDER:
+        return ImGui::SliderFloat(text, val, data.min, data.max);
+      case NightEngine::IMGUI::IMGUIEditorType::INPUTSCALAR:
+        return ImGui::InputScalar(text, ImGuiDataType_Float, val);
+      default:
+        return ImGui::InputScalar(text, ImGuiDataType_Float, val);
+      }
+
+      return false;
+    }
+
+    bool DrawIntProperty(IMGUIEditorData data, const char* text, int* val)
+    {
+      bool bval = (bool)*val;
+      bool changed = false;
+
+      switch (data.type)
+      {
+      case NightEngine::IMGUI::IMGUIEditorType::CHECKBOX:
+        changed = ImGui::Checkbox(text, &bval);
+        *val = bval? 1.0f: 0.0f;
+        return changed;
+      case NightEngine::IMGUI::IMGUIEditorType::DRAGSCALAR:
+        return ImGui::DragScalar(text, ImGuiDataType_S32, val, data.speed, &data.min, &data.max);
+      case NightEngine::IMGUI::IMGUIEditorType::SLIDER:
+        return ImGui::SliderInt(text, val, data.min, data.max);
+      case NightEngine::IMGUI::IMGUIEditorType::INPUTSCALAR:
+        return ImGui::InputScalar(text, ImGuiDataType_S32, val);
+      default:
+        return ImGui::InputScalar(text, ImGuiDataType_S32, val);
+      }
+
+      return false;
+    }
+  }
+}
+
 namespace Editor
 {
   static ImVec4 g_color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
@@ -196,17 +262,14 @@ namespace Editor
     m_typeEditorMap.insert({ "Material",
       [](Reflection::Variable& variable, const char* memberName)
     {
-      auto& dataPtr = variable.GetValue<Material>();
-      float min = 0.0f, max = 1.0f, nmax = 50.0f;
+      auto& material = variable.GetValue<Material>();
+      auto mp = material.GetMaterialProperty();
 
-      Reflection::Variable var{ METATYPE(Material), &dataPtr };
+      Reflection::Variable var{ METATYPE(Material), &material };
 
       //Texture Property
-      auto memberPtr = var.GetMetaType()->FindMember("m_textureMap");
-      void* ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      TEXTURE_TABLE(Handle<Texture>)& textureMap = *static_cast<TEXTURE_TABLE(Handle<Texture>)*>(ptr);
+      TEXTURE_TABLE(Handle<Texture>)& textureMap = material.GetTextureMap();
 
-      std::string text = "";
       for (auto& pair : textureMap)
       {
         auto channel = Texture::Channel::RGB;
@@ -216,9 +279,7 @@ namespace Editor
         }
 
         Handle<Texture>* tex = &(pair.second);
-        text = MP_PBRMetallic::k_textureNames[pair.first];
-
-        DrawTextureComboBox(text.c_str(), tex
+        DrawTextureComboBox(MP_PBRMetallic::k_textureNames[pair.first], tex
           , channel);
       }
       if (textureMap.size() > 0)
@@ -227,31 +288,13 @@ namespace Editor
         ImGui::Spacing();
       }
 
-      //Color Property
-      memberPtr = var.GetMetaType()->FindMember("m_colorMap");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      PROPERTY_TABLE(glm::vec4)& colorMap = *static_cast<PROPERTY_TABLE(glm::vec4)*>(ptr);
-      for (auto& pair : colorMap)
-      {
-        text = pair.first;
-        void* v4 = &(pair.second);
-        ImGui::ColorEdit4(text.c_str(), (float*)v4, ImGuiColorEditFlags_HDR);
-      }
-      if (colorMap.size() > 0)
-      {
-        ImGui::Spacing();
-        ImGui::Spacing();
-      }
-
       //Vec4 Property
-      memberPtr = var.GetMetaType()->FindMember("m_vec4Map");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      PROPERTY_TABLE(glm::vec4)& vec4Map = *static_cast<PROPERTY_TABLE(glm::vec4)*>(ptr);
+      PROPERTY_TABLE(glm::vec4)& vec4Map = material.GetVec4Map();
       for (auto& pair : vec4Map)
       {
-        text = pair.first;
+        auto data = mp->GetEditorData(pair.first.c_str());
         void* v4 = &(pair.second);
-        ImGui::InputFloat4(text.c_str(), (float*)v4, 3);
+        IMGUI::DrawVec4Property(data, pair.first.c_str(), (float*)v4);
       }
       if (vec4Map.size() > 0)
       {
@@ -260,14 +303,12 @@ namespace Editor
       }
 
       //Float Property
-      memberPtr = var.GetMetaType()->FindMember("m_floatMap");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      PROPERTY_TABLE(float)& floatMap = *static_cast<PROPERTY_TABLE(float)*>(ptr);
+      PROPERTY_TABLE(float)& floatMap = material.GetFloatMap();
       for (auto& pair : floatMap)
       {
-        text = pair.first;
+        auto data = mp->GetEditorData(pair.first.c_str());
         void* val = &(pair.second);
-        ImGui::InputScalar(text.c_str(), ImGuiDataType_Float, (float*)val);
+        IMGUI::DrawFloatProperty(data, pair.first.c_str(), (float*)val);
       }
       if (floatMap.size() > 0)
       {
@@ -276,71 +317,70 @@ namespace Editor
       }
 
       //Int/Bool Property
-      memberPtr = var.GetMetaType()->FindMember("m_intMap");
-      ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
-      PROPERTY_TABLE(int)& intMap = *static_cast<PROPERTY_TABLE(int)*>(ptr);
+      PROPERTY_TABLE(int)& intMap = material.GetIntMap();
       for (auto& pair : intMap)
       {
-        text = pair.first;
+        auto data = mp->GetEditorData(pair.first.c_str());
         void* val = &(pair.second);
-        ImGui::InputScalar(text.c_str(), ImGuiDataType_S32, (int*)val);
+        //ImGui::InputScalar(pair.first.c_str(), ImGuiDataType_S32, (int*)val);
+        IMGUI::DrawIntProperty(data, pair.first.c_str(), (int*)val);
       }
 
       //TODO: Rethink min/max Scalar/Slide Values
 
       //Diffuse
       //auto memberPtr = var.GetMetaType()->FindMember("m_diffuseColor");
-      //void* ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //void* ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //ImGui::ColorEdit3(memberName, (float*)ptr, ImGuiColorEditFlags_HDR);
       //
       //memberPtr = var.GetMetaType()->FindMember("m_diffuseTexture");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //DrawTextureComboBox("Diffuse Texture", static_cast<Handle<Texture>*>(ptr)
       //  , Texture::Channel::SRGB);
       //
       ////Normal
       //memberPtr = var.GetMetaType()->FindMember("m_normalTexture");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //DrawTextureComboBox("Normal Texture", static_cast<Handle<Texture>*>(ptr)
       //  , Texture::Channel::RGB);
       //
       //memberPtr = var.GetMetaType()->FindMember("m_normalMultiplier");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //ImGui::DragScalar("Normal Multiplier", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &nmax);
       //
       //memberPtr = var.GetMetaType()->FindMember("m_useNormal");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //bool& bptr = *((bool*)ptr);
       //ImGui::Checkbox("Use Normal", &bptr);
       //
       ////Roughness
       //memberPtr = var.GetMetaType()->FindMember("m_roughnessTexture");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //DrawTextureComboBox("Roughness Texture", static_cast<Handle<Texture>*>(ptr)
       //  , Texture::Channel::RGB);
       //
       //memberPtr = var.GetMetaType()->FindMember("m_roughnessValue");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //ImGui::DragScalar("Roughness Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
       //
       ////Metallic
       //memberPtr = var.GetMetaType()->FindMember("m_metallicTexture");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //DrawTextureComboBox("Metallic Texture", static_cast<Handle<Texture>*>(ptr)
       //  , Texture::Channel::RGB);
       //
       //memberPtr = var.GetMetaType()->FindMember("m_metallicValue");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //ImGui::DragScalar("Metallic Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min, &max);
       //
       ////Emissive
       //memberPtr = var.GetMetaType()->FindMember("m_emissiveTexture");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //DrawTextureComboBox("Emissive Texture", static_cast<Handle<Texture>*>(ptr)
       //  , Texture::Channel::RGB);
       //
       //memberPtr = var.GetMetaType()->FindMember("m_emissiveStrength");
-      //ptr = POINTER_OFFSET(&dataPtr, memberPtr->GetOffset());
+      //ptr = POINTER_OFFSET(&material, memberPtr->GetOffset());
       //ImGui::DragScalar("Emissive Value", ImGuiDataType_Float, (float*)ptr, 0.05f, &min);
     }
       });

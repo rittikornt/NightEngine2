@@ -4,18 +4,10 @@
       "Rendering/deferred_geometry_pass.vert",
       "Rendering/deferred_geometry_pass.frag"
     ],
-    "m_colorMap": {
-      "u_diffuseColor": {
-        "w": 1.0,
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      }
-    },
     "m_floatMap": {
       "u_material.m_emissiveStrength": 15.0,
       "u_material.m_metallicValue": 0.10000000149011612,
-      "u_material.m_normalMultiplier": 2.0,
+      "u_material.m_normalMultiplier": 1.0,
       "u_material.m_roughnessValue": 0.20000000298023224
     },
     "m_intMap": {
@@ -46,6 +38,14 @@
         "m_channel": 6407,
         "m_filePath": "./../Assets/Textures/emissive_wood.png",
         "m_filterMode": 9987
+      }
+    },
+    "m_vec4Map": {
+      "u_diffuseColor": {
+        "w": 1.0,
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
       }
     }
   }

@@ -28,7 +28,6 @@ namespace Rendering
     m_shader = rhs.m_shader;
 
     m_textureMap = rhs.m_textureMap;
-    m_colorMap = rhs.m_colorMap;
     m_vec4Map = rhs.m_vec4Map;
     m_floatMap = rhs.m_floatMap;
     m_intMap = rhs.m_intMap;
@@ -62,6 +61,8 @@ namespace Rendering
     , const std::string& metallicTextureFile
     , const std::string& emissiveTextureFile)
   {
+    m_materialProperty = &(MaterialProperty::Get<MP_PBRMetallic>());
+
     //Init PBR Vals
     auto it0 = m_intMap.find(MP_PBRMetallic::u_useNormalmap);
     if (it0 == m_intMap.end())
@@ -93,10 +94,10 @@ namespace Rendering
       m_floatMap[MP_PBRMetallic::m_emissiveStrength] = 15.0f;
     }
 
-    auto it2 = m_colorMap.find(MP_PBRMetallic::u_diffuseColor);
-    if (it2 == m_colorMap.end())
+    auto it2 = m_vec4Map.find(MP_PBRMetallic::u_diffuseColor);
+    if (it2 == m_vec4Map.end())
     {
-      m_colorMap[MP_PBRMetallic::u_diffuseColor] = glm::vec4(1.0f);
+      m_vec4Map[MP_PBRMetallic::u_diffuseColor] = glm::vec4(1.0f);
     }
 
     //Init Textures
@@ -187,13 +188,6 @@ namespace Rendering
   {
     m_shader.Bind();
     {
-      auto it = m_floatMap.find(MP_PBRMetallic::m_normalMultiplier);
-      if (it != m_floatMap.end())
-      {
-        auto val = it->second;
-        m_shader.SetUniform(MP_PBRMetallic::m_normalMultiplier, val);
-      }
-
       MP_PBRMetallic::SetTextureBindingUnit(m_shader);
     }
     m_shader.Unbind();
@@ -215,11 +209,6 @@ namespace Rendering
         {
           ResourceManager::GetWhiteTexture()->BindToTextureUnit(pair.first);
         }
-      }
-
-      for (auto& pair : m_colorMap)
-      {
-        m_shader.SetUniform(pair.first, pair.second);
       }
 
       for (auto& pair : m_vec4Map)

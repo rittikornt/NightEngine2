@@ -30,7 +30,6 @@ namespace Rendering
         .MR_ADD_MEMBER_PRIVATE(Material, m_name, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_filePath, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_textureMap, true)
-        .MR_ADD_MEMBER_PRIVATE(Material, m_colorMap, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_vec4Map, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_floatMap, true)
         .MR_ADD_MEMBER_PRIVATE(Material, m_intMap, true);
@@ -86,7 +85,7 @@ namespace Rendering
       //////////////////////////////////////////////////////////////
 
       //! @brief Get Shader
-      Shader& GetShader(void) { return m_shader; }
+      inline Shader& GetShader(void) { return m_shader; }
 
       //! @brief Get Name
       inline const std::string& GetName(void) const { return m_name; }
@@ -103,13 +102,25 @@ namespace Rendering
       //! @brief Set Load File Path
       inline void SetFilePath(std::string path) { m_filePath = path; }
 
+      //////////////////////////////////////////////////////////////
+
+      inline TEXTURE_TABLE(NightEngine::EC::Handle<Texture>)& GetTextureMap(void) { return m_textureMap; }
+
+      inline PROPERTY_TABLE(glm::vec4)& GetVec4Map(void) { return m_vec4Map; }
+
+      inline PROPERTY_TABLE(float)& GetFloatMap(void) { return m_floatMap; }
+
+      inline PROPERTY_TABLE(int)& GetIntMap(void) { return m_intMap; }
+
+      const MaterialProperty* GetMaterialProperty(void) { return m_materialProperty; }
     private:
       std::string m_name = "unnamed";
       std::string m_filePath = "";
       Shader      m_shader;
 
+      const MaterialProperty* m_materialProperty = nullptr;
+
       TEXTURE_TABLE(NightEngine::EC::Handle<Texture>) m_textureMap;
-      PROPERTY_TABLE(glm::vec4) m_colorMap;
       PROPERTY_TABLE(glm::vec4) m_vec4Map;
       PROPERTY_TABLE(float)     m_floatMap;
       PROPERTY_TABLE(int)       m_intMap;

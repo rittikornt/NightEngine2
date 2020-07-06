@@ -331,6 +331,41 @@ namespace Editor
     }
       });
 
+
+    m_typeEditorMap.insert({ "Vector<Handle<Material>>",
+      [](Reflection::Variable& variable, const char* memberName)
+    {
+      auto& dataPtr = variable.GetValue<Vector<Handle<Material>>>();
+      const auto redColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+      const auto greenColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+
+      if(dataPtr.size() > 0 && ImGui::TreeNode("materials"))
+      {
+        std::string text = "";
+        ImVec4 currColor = greenColor;
+        for (int i = 0; i < dataPtr.size(); ++i)
+        {
+          text = "[" + std::to_string(i) + "] ";
+          if (dataPtr[i].IsValid())
+          {
+            text += dataPtr[i]->GetName().c_str();
+            currColor = greenColor;
+          }
+          else
+          {
+            text += "Invalid";
+            currColor = redColor;
+          }
+          ImGui::TextColored(currColor, text.c_str());
+        }
+
+        ImGui::TreePop();
+      }
+    }
+      });
+
+    ///////////////////////////////////////////////////////
+
     m_typeEditorMap.insert({ "std::string",
       [](Reflection::Variable& variable, const char* memberName)
     {

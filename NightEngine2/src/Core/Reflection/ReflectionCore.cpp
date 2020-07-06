@@ -70,6 +70,7 @@ namespace NightEngine
       REGISTER_METATYPE(std::string);
 
 			REGISTER_METATYPE_WITHNAME(std::vector<int>, "Vector<int>");
+			REGISTER_METATYPE_WITHNAME(std::vector<EC::Handle<Rendering::Material>>, "Vector<Handle<Material>>");
 
       REGISTER_METATYPE_WITH_SERIALIZER(MetaType*, true
         , DefaultSerializer<int>, DefaultDeserializer<int>);

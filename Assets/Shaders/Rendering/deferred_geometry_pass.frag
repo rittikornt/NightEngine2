@@ -1,11 +1,12 @@
 #version 330 core
 
-layout (location = 0) out vec3 o_position;	//Final output Color
-layout (location = 1) out vec3 o_normal;
-layout (location = 2) out vec3 o_albedo;
-layout (location = 3) out vec3 o_roughnessMetallic;
-layout (location = 4) out vec3 o_emissive;
-layout (location = 5) out vec4 o_lightSpacePos;
+// 4 4 4 4
+layout (location = 0) out vec3 o_position;	//3
+layout (location = 1) out vec3 o_normal;	//2
+layout (location = 2) out vec3 o_albedo;	//3
+layout (location = 3) out vec3 o_roughnessMetallic; //2
+layout (location = 4) out vec3 o_emissive; //3
+layout (location = 5) out vec4 o_lightSpacePos; //3
 
 in VS_OUT
 {

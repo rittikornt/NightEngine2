@@ -4,7 +4,7 @@ out vec4 o_fragColor;	//Final output Color
 
 in vec2 OurTexCoords;
 
-#include "Library/pbr_lighting.glinc"
+#include "Library/pbr_lighting.glsl"
 
 //***************************************
 // Uniforms

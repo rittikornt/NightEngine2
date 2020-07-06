@@ -358,19 +358,9 @@ namespace NightEngine
         }
       }
 
-      ////Diffuse Color
-      //it = obj.find("Diffuse Color");
-      //if (it != obj.end())
-      //{
-      //  glm::vec3 color;
-      //  Variable diffuseColorVar{ METATYPE_FROM_OBJECT(color), & color };
-      //  diffuseColorVar.Deserialize(it->second);
-
-      //  material.m_vec4Map[MP_PBRMetallic::u_diffuseColor] = glm::vec4(color, 1.0f);
-      //}
-
       //Initialize Material Texture
-      material.InitPBRTexture("", false, "", "", "", "");
+      //material.InitPBRTexture("", false, "", "", "", "");
+      MaterialProperty::Get<MP_PBRMetallic>().Init(material);
     }
 
     template <>

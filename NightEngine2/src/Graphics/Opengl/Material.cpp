@@ -61,43 +61,11 @@ namespace Rendering
     , const std::string& metallicTextureFile
     , const std::string& emissiveTextureFile)
   {
-    m_materialProperty = &(MaterialProperty::Get<MP_PBRMetallic>());
-
     //Init PBR Vals
     auto it0 = m_intMap.find(MP_PBRMetallic::u_useNormalmap);
     if (it0 == m_intMap.end())
     {
       m_intMap[MP_PBRMetallic::u_useNormalmap] = useNormal;
-    }
-
-    auto it1 = m_floatMap.find(MP_PBRMetallic::m_normalMultiplier);
-    if (it1 == m_floatMap.end())
-    {
-      m_floatMap[MP_PBRMetallic::m_normalMultiplier] = 1.0f;
-    }
-
-    it1 = m_floatMap.find(MP_PBRMetallic::m_roughnessValue);
-    if (it1 == m_floatMap.end())
-    {
-      m_floatMap[MP_PBRMetallic::m_roughnessValue] = 0.5f;
-    }
-
-    it1 = m_floatMap.find(MP_PBRMetallic::m_metallicValue);
-    if (it1 == m_floatMap.end())
-    {
-      m_floatMap[MP_PBRMetallic::m_metallicValue] = 0.1f;
-    }
-
-    it1 = m_floatMap.find(MP_PBRMetallic::m_emissiveStrength);
-    if (it1 == m_floatMap.end())
-    {
-      m_floatMap[MP_PBRMetallic::m_emissiveStrength] = 15.0f;
-    }
-
-    auto it2 = m_vec4Map.find(MP_PBRMetallic::u_diffuseColor);
-    if (it2 == m_vec4Map.end())
-    {
-      m_vec4Map[MP_PBRMetallic::u_diffuseColor] = glm::vec4(1.0f);
     }
 
     //Init Textures
@@ -107,30 +75,12 @@ namespace Rendering
       , Texture::Channel::SRGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[DIFFUSE_TEXUNIT_INDEX] = diffuseTexture;
     }
-    else
-    {
-      //Replace with default texture if null
-      auto it3 = m_textureMap.find(DIFFUSE_TEXUNIT_INDEX);
-      if (it3 == m_textureMap.end())
-      {
-        m_textureMap[DIFFUSE_TEXUNIT_INDEX] = ResourceManager::GetWhiteTexture();
-      }
-    }
 
     if (normalTextureFile.size() > 0)
     {
       auto normalTexture = Texture::LoadTextureHandle(normalTextureFile
         , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
       m_textureMap[NORMAL_TEXUNIT_INDEX] = normalTexture;
-    }
-    else
-    {
-      //Replace with default texture if null
-      auto it3 = m_textureMap.find(NORMAL_TEXUNIT_INDEX);
-      if (it3 == m_textureMap.end())
-      {
-        m_textureMap[NORMAL_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
-      }
     }
 
     if (roughnessTextureFile.size() > 0)
@@ -139,30 +89,12 @@ namespace Rendering
         , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[ROUGHNESS_TEXUNIT_INDEX] = roughnessTexture;
     }
-    else
-    {
-      //Replace with default texture if null
-      auto it3 = m_textureMap.find(ROUGHNESS_TEXUNIT_INDEX);
-      if (it3 == m_textureMap.end())
-      {
-        m_textureMap[ROUGHNESS_TEXUNIT_INDEX] = ResourceManager::GetWhiteTexture();
-      }
-    }
 
     if (metallicTextureFile.size() > 0)
     {
       auto metallicTexture = Texture::LoadTextureHandle(metallicTextureFile
         , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[METALLIC_TEXUNIT_INDEX] = metallicTexture;
-    }
-    else
-    {
-      //Replace with default texture if null
-      auto it3 = m_textureMap.find(METALLIC_TEXUNIT_INDEX);
-      if (it3 == m_textureMap.end())
-      {
-        m_textureMap[METALLIC_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
-      }
     }
 
     if (emissiveTextureFile.size() > 0)
@@ -171,16 +103,8 @@ namespace Rendering
         , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[EMISSIVE_TEXUNIT_INDEX] = emissiveTexture;
     }
-    else
-    {
-      //Replace with default texture if null
-      auto it3 = m_textureMap.find(EMISSIVE_TEXUNIT_INDEX);
-      if (it3 == m_textureMap.end())
-      {
-        m_textureMap[EMISSIVE_TEXUNIT_INDEX] = ResourceManager::GetBlackTexture();
-      }
-    }
 
+    MaterialProperty::Get<MP_PBRMetallic>().Init(*this);
     RefreshTextureUniforms();
   }
 
@@ -188,7 +112,10 @@ namespace Rendering
   {
     m_shader.Bind();
     {
-      MP_PBRMetallic::SetTextureBindingUnit(m_shader);
+      if (m_materialProperty != nullptr)
+      {
+        m_materialProperty->RefreshTextureUniforms(m_shader);
+      }
     }
     m_shader.Unbind();
   }
@@ -295,11 +222,5 @@ namespace Rendering
           << (success ? " successfully\n": " unsuccessfully\n");
       }
     }
-  }
-
-  void Material::SetParams(float roughness, float metallic) 
-  {
-    m_floatMap[MP_PBRMetallic::m_roughnessValue] = roughness;
-    m_floatMap[MP_PBRMetallic::m_metallicValue] = metallic;
   }
 }

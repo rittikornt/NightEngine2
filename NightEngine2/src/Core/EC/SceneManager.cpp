@@ -192,7 +192,6 @@ namespace NightEngine
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
             , FileSystem::DirectoryType::Models), true);
           ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
-          g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
           ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
           floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
           floorGO->GetTransform()->SetScale(glm::vec3(20.0f, 1.0f, 20.0f));
@@ -216,7 +215,6 @@ namespace NightEngine
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
             , FileSystem::DirectoryType::Models), true);
           ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
-          g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
           ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
 
           boxGO->GetTransform()->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
@@ -342,7 +340,6 @@ namespace NightEngine
           ch->Get<MeshRenderer>()->LoadModel(FileSystem::GetFilePath("Cube.obj"
             , FileSystem::DirectoryType::Models), true);
           ch->Get<MeshRenderer>()->RegisterDrawMode(MeshRenderer::DrawMode::PREBIND);
-          g_defaultMaterial.Get()->SetParams(0.2f, 0.1f);
           ch->Get<MeshRenderer>()->SetMaterial(g_defaultMaterial);
           floorGO->GetTransform()->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
           floorGO->GetTransform()->SetScale(glm::vec3(20.0f, 1.0f, 20.0f));

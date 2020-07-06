@@ -93,14 +93,14 @@ namespace Rendering
       //! @brief Get Load File Path
       inline const std::string& GetFilePath(void) const { return m_filePath; }
 
-      //! @brief Set the material params
-      void SetParams(float roughness, float metallic);
-
       //! @brief Set the material name
       inline void SetName(std::string name) { m_name = name; }
 
       //! @brief Set Load File Path
       inline void SetFilePath(std::string path) { m_filePath = path; }
+
+      //! @brief Set Material Property
+      inline void SetMaterialProperty(const MaterialProperty* mp) { m_materialProperty = mp; }
 
       //////////////////////////////////////////////////////////////
 

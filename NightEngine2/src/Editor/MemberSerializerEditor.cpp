@@ -279,8 +279,7 @@ namespace Editor
         }
 
         Handle<Texture>* tex = &(pair.second);
-        DrawTextureComboBox(MP_PBRMetallic::k_textureNames[pair.first], tex
-          , channel);
+        DrawTextureComboBox(mp->GetName(pair.first), tex, channel);
       }
       if (textureMap.size() > 0)
       {

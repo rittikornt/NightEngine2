@@ -245,7 +245,7 @@ namespace Editor
       ImGui::SameLine();
       if (ImGui::Button("Rename", size))
       {
-        std::string desc{ "rename gameobject: " };
+        std::string desc{ "rename material: " };
         g_confirmBox.ShowConfirmationBoxWithInput(const_cast<char*>(desc.c_str())
           , [](void* ptr)
         {

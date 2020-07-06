@@ -4,12 +4,15 @@
   @brief Contain the Header of MaterialProperty
 */
 #pragma once
+#include "Core/Reflection/RemoveQualifier.hpp"
 
 #define DEFAULT_VERTEX_SHADER_PBR "Rendering/deferred_geometry_pass.vert"
 #define DEFAULT_FRAG_SHADER_PBR "Rendering/deferred_geometry_pass.frag"
 
 #define DIFFUSE_TEXUNIT_INDEX 0
+#define BUMP_TEXUNIT_INDEX 1
 #define NORMAL_TEXUNIT_INDEX 1
+#define SPECULAR_TEXUNIT_INDEX 2
 #define ROUGHNESS_TEXUNIT_INDEX 2
 #define METALLIC_TEXUNIT_INDEX 3
 #define EMISSIVE_TEXUNIT_INDEX 4
@@ -41,15 +44,22 @@ namespace NightEngine
 namespace Rendering
 {
   class Shader;
+  class Material;
 
   struct MaterialProperty
   {
     template<typename T>
     static const T& Get(void)
     {
-      static T mp;
+      static RawType<T> mp;
       return mp;
     }
+
+    virtual void Init(Material& material) const = 0;
+
+    virtual void RefreshTextureUniforms(const Shader& shader) const = 0;
+
+    virtual const char* GetName(int index) const = 0;
 
     virtual NightEngine::IMGUI::IMGUIEditorData GetEditorData(const char* name) const = 0;
   };
@@ -74,15 +84,19 @@ namespace Rendering
     static const char* m_emissiveMap;
     static const char* m_emissiveStrength;
 
-    NightEngine::IMGUI::IMGUIEditorData GetEditorData(const char* name) const override;
+    void Init(Material& material) const override;
 
-    static void SetTextureBindingUnit(const Shader& shader);
+    void RefreshTextureUniforms(const Shader& shader) const override;
+
+    const char* GetName(int index) const override { return k_textureNames[index]; }
+
+    NightEngine::IMGUI::IMGUIEditorData GetEditorData(const char* name) const override;
   };
 
   ////////////////////////////////////////////////////////////
 
   //TODO: Fill this for sponza
-  struct MP_PBRSpecularBumpmap
+  struct MP_PBRSpecularBumpmap : public MaterialProperty
   {
     static const char* k_textureNames[5];
 
@@ -102,6 +116,12 @@ namespace Rendering
     static const char* m_emissiveMap;
     static const char* m_emissiveStrength;
 
-    static void SetTextureBindingUnit(const Shader& shader);
+    void Init(Material& material) const override;
+
+    void RefreshTextureUniforms(const Shader& shader) const override;
+
+    const char* GetName(int index) const override { return k_textureNames[index]; }
+
+    NightEngine::IMGUI::IMGUIEditorData GetEditorData(const char* name) const override;
   };
 }

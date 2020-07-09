@@ -11,12 +11,10 @@ in vec2 OurTexCoords;
 //***************************************
 struct GBufferResult
 {
-	sampler2D m_positionTex; // (0) vec4(pos.xyz, n.x)
-	sampler2D m_normalTex; //(1) vec4(albedo.xyz, n.y)
-	sampler2D m_albedoTex; //(2) vec4(lightSpacePos, metallic.x)
-	sampler2D m_specularTex; //(3) vec4(emissive.xyz, roughness.x)
-	sampler2D m_emissiveTex;
-	sampler2D m_lightSpacePos;
+	sampler2D positionAndNormalX;   //(0) vec4(pos.xyz, n.x)
+	sampler2D albedoAndNormalY;     //(1) vec4(albedo.xyz, n.y)
+	sampler2D lsPosAndMetallic;     //(2) vec4(lightSpacePos, metallic.x)
+	sampler2D emissiveAndRoughness; //(3) vec4(emissive.xyz, roughness.x)
 };
 uniform GBufferResult u_gbufferResult;
 
@@ -31,45 +29,37 @@ void UnpackNormalFromRG(inout vec3 normal)
 
 void main()
 {
-	//Discard if normal is black
-	vec4 albedoNY = texture(u_gbufferResult.m_normalTex, OurTexCoords);
-	vec3 diffuse = albedoNY.rgb;
-	//if(normal == vec3(0.0,0.0,0.0))
-	//{
-	//	discard;
-	//}
+	//Unpack datas from GBuffer
+	vec4 albedoAndNormalY = texture(u_gbufferResult.albedoAndNormalY, OurTexCoords);
+	vec3 diffuse = albedoAndNormalY.rgb;
 	
-    //Sample Values from G-buffer
-	vec4 fragPosNormalX = texture(u_gbufferResult.m_positionTex, OurTexCoords);
-	vec3 fragPos = fragPosNormalX.xyz;
+	vec4 positionAndNormalX = texture(u_gbufferResult.positionAndNormalX, OurTexCoords);
+	vec3 fragPos = positionAndNormalX.xyz;
 
+	//Unpack normal
 	vec3 normal = vec3(0.0);
-	normal.x = fragPosNormalX.a;
-	normal.y = albedoNY.a;
+	normal.x = positionAndNormalX.a;
+	normal.y = albedoAndNormalY.a;
 
+	//Discard if normal is black
 	if(normal.xy == vec2(0.0, 0.0))
 	{
 		discard;
 	}
 	UnpackNormalFromRG(normal);
 	normal = normalize(normal);
-	//o_fragColor = vec4(normal, 1.0);
-	//return;
 
 	//Material data
-	vec4 lspM = texture(u_gbufferResult.m_albedoTex, OurTexCoords);
-	vec4 specularTex = texture(u_gbufferResult.m_specularTex, OurTexCoords);
+	vec4 lsPosAndMetallic = texture(u_gbufferResult.lsPosAndMetallic, OurTexCoords);
+	vec4 emissiveAndRoughness = texture(u_gbufferResult.emissiveAndRoughness, OurTexCoords);
 	
-	//vec4 emissive = texture(u_gbufferResult.m_emissiveTex, OurTexCoords);
-	vec3 emissive = specularTex.xyz;//texture(u_gbufferResult.m_emissiveTex, OurTexCoords);
-	
-	//vec4 fragPosLightSpace = texture(u_gbufferResult.m_lightSpacePos, OurTexCoords);
-	vec3 fragPosLightSpace = lspM.xyz;//texture(u_gbufferResult.m_lightSpacePos, OurTexCoords);
+	vec3 emissive = emissiveAndRoughness.xyz;
+	vec3 fragPosLightSpace = lsPosAndMetallic.xyz;
 
-	//float roughness = GetFilteredRoughness(specularTex.r, normal); //0.2;
-	float roughness = GetFilteredRoughness(specularTex.a, normal); //0.2;
-	//float metallic = specularTex.g;
-	float metallic = lspM.a;
+	float roughness = GetFilteredRoughness(emissiveAndRoughness.a, normal);
+	float metallic = lsPosAndMetallic.a;
+
+	/////////////////////////////////////////////////////////
 
 	//Surface Data
 	SurfaceData surfaceData = GetSurfaceData(normal, fragPos.xyz);

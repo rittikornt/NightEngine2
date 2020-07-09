@@ -270,18 +270,7 @@ namespace Rendering
       shader.SetUniform("u_brdfLUT", 13);
 
       //Gbuffer's texture
-      shader.SetUniform("u_gbufferResult.m_positionTex"
-        , 0);
-      shader.SetUniform("u_gbufferResult.m_normalTex"
-        , 1);
-      shader.SetUniform("u_gbufferResult.m_albedoTex"
-        , 2);
-      shader.SetUniform("u_gbufferResult.m_specularTex"
-        , 3);
-      shader.SetUniform("u_gbufferResult.m_emissiveTex"
-        , 4);
-      shader.SetUniform("u_gbufferResult.m_lightSpacePos"
-        , 5);
+      m_gbuffer.RefreshTextureUniforms(shader);
     }
     m_lightingMaterial.Unbind();
 
@@ -442,18 +431,7 @@ namespace Rendering
       shader.SetUniform("u_brdfLUT", 13);
 
       //Gbuffer's texture
-      shader.SetUniform("u_gbufferResult.m_positionTex"
-        , 0);
-      shader.SetUniform("u_gbufferResult.m_normalTex"
-        , 1);
-      shader.SetUniform("u_gbufferResult.m_albedoTex"
-        , 2);
-      shader.SetUniform("u_gbufferResult.m_specularTex"
-        , 3);
-      shader.SetUniform("u_gbufferResult.m_emissiveTex"
-        , 4);
-      shader.SetUniform("u_gbufferResult.m_lightSpacePos"
-        , 5);
+      m_gbuffer.RefreshTextureUniforms(shader);
     }
     m_lightingMaterial.Unbind();
     

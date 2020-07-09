@@ -159,8 +159,8 @@ namespace Rendering
       //Set Uniform
       m_ssaoShader.Bind();
       {
-        m_ssaoShader.SetUniform("u_gbufferResult.m_positionTex", 0);
-        m_ssaoShader.SetUniform("u_gbufferResult.m_normalTex", 1);
+        m_ssaoShader.SetUniform("u_gbufferResult.positionAndNormalX", 0);
+        m_ssaoShader.SetUniform("u_gbufferResult.albedoAndNormalY", 1);
         m_ssaoShader.SetUniform("u_noiseTexture", 2);
       }
       m_ssaoShader.Unbind();

@@ -1,12 +1,10 @@
 #version 330 core
 
 // 4 4 4 4
-layout (location = 0) out vec4 o_position;	// (0) vec4(pos.xyz, n.x)
-layout (location = 1) out vec4 o_normal;	//(1) vec4(albedo.xyz, n.y)
-layout (location = 2) out vec4 o_albedo;	//(2) vec4(lightSpacePos, metallic.x)
-layout (location = 3) out vec4 o_roughnessMetallic; //(3) vec4(emissive.xyz, roughness.x)
-layout (location = 4) out vec3 o_emissive; //3
-layout (location = 5) out vec4 o_lightSpacePos; //3
+layout (location = 0) out vec4 o_positionAndNormalX;   //(0) vec4(pos.xyz, n.x)
+layout (location = 1) out vec4 o_albedoAndNormalY;	   //(1) vec4(albedo.xyz, n.y)
+layout (location = 2) out vec4 o_lsPosAndMetallic;	   //(2) vec4(lightSpacePos, metallic.x)
+layout (location = 3) out vec4 o_emissiveAndRoughness; //(3) vec4(emissive.xyz, roughness.x)
 
 in VS_OUT
 {
@@ -58,24 +56,6 @@ void main()
 		normal = (fs_in.ourTBNMatrix * normal);
 	}
 
-	// Pack normal to only RG
-	// sqrt(x^2 + y^2 + z^2) = 1
-	// z^2 = (1 - x^2 - y^2)
-	// z = sqrt(1 - x^2 - y^2)
-	//normal = normalize(normal);
-	//o_normal.xy = normal.xy;
-	//o_normal = normal;
-	//o_normal.z = 0.0;
-
-	// (0) vec4(pos.xyz, n.x)
-	o_position.xyz = fs_in.ourFragPos.xyz;
-	o_position.w = normal.x;
-
-	//(1) vec4(albedo.xyz, n.x)
-	o_normal.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb
-								* u_diffuseColor.rgb;
-	o_normal.a = normal.y;
-
 	//Roughness, Metallic
 	float roughness = max(texture(u_material.m_roughnessMap, fs_in.ourTexCoord).r
 								, u_material.m_roughnessValue);
@@ -84,23 +64,24 @@ void main()
 	float metallic = max(texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
 								, u_material.m_metallicValue);
 
-	//o_roughnessMetallic.r = roughness;
-	//o_roughnessMetallic.g = metallic;
+	/////////////////////////////////////////////
+
+	// (0) vec4(pos.xyz, n.x)
+	o_positionAndNormalX.xyz = fs_in.ourFragPos.xyz;
+	o_positionAndNormalX.w = normal.x;
+
+	//(1) vec4(albedo.xyz, n.x)
+	o_albedoAndNormalY.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb
+								* u_diffuseColor.rgb;
+	o_albedoAndNormalY.a = normal.y;
 
 	//(2) vec4(lightSpacePos, metallic.x)
 	vec3 lightSpacePos = fs_in.ourFragPosLightSpace.xyz / fs_in.ourFragPosLightSpace.w;
-	o_albedo.xyz = lightSpacePos;
-	o_albedo.w = metallic;
-
-	//Emissive
-	//o_emissive.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
-	//							* u_material.m_emissiveStrength;
+	o_lsPosAndMetallic.xyz = lightSpacePos;
+	o_lsPosAndMetallic.w = metallic;
 
 	//(3) vec4(emissive.xyz, roughness.x)
-	o_roughnessMetallic.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
+	o_emissiveAndRoughness.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
 								* u_material.m_emissiveStrength;
-	o_roughnessMetallic.a = roughness;
-
-	//Light space Matrix
-	//o_lightSpacePos = fs_in.ourFragPosLightSpace;
+	o_emissiveAndRoughness.a = roughness;
 }

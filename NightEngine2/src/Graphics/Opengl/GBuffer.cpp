@@ -1,3 +1,4 @@
+#include "GBuffer.hpp"
 /*!
   @file GBuffer.cpp
   @author Rittikorn Tangtrongchit
@@ -8,6 +9,7 @@
 
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
+#include "Graphics/Opengl/Shader.hpp"
 
 #include <glad/glad.h>
 
@@ -26,41 +28,31 @@ namespace Rendering
     m_fbo.AttachRenderBuffer(m_depthBuffer);
     CHECKGL_ERROR();
 
-    //Position color buffer
+    // TODO: Actually should have group low precision things together 
+    // like (albedo.xyz, metallic) and that can be R8G8B8A8
+    // (0) vec4(pos.xyz, n.x)
     m_textures[0] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[0], 0);
 
-    //Normal color buffer
+    //(1) vec4(albedo.xyz, n.y)
     m_textures[1] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[1], 1);
 
-    //Albedo color buffer
+    //(2) vec4(lightSpacePos, metallic.x)
     m_textures[2] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[2], 2);
 
-    //RoughnessMetallic color buffer
+    //(3) vec4(emissive.xyz, roughness.x)
     m_textures[3] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[3], 3);
-
-    //Emissive color buffer
-    m_textures[4] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGB16F, Texture::Channel::RGBA
-      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_fbo.AttachTexture(m_textures[4], 4);
-
-    //LightSpacePosition color buffer
-    m_textures[5] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGBA16F, Texture::Channel::RGBA
-      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_fbo.AttachTexture(m_textures[5], 5);
 
     //Setup multiple render target
     m_fbo.SetupMultipleRenderTarget();
@@ -101,5 +93,18 @@ namespace Rendering
   {
     m_fbo.CopyBufferToTarget(m_width, m_height, m_width, m_height
       , fboId, GL_DEPTH_BUFFER_BIT);
+  }
+
+  void GBuffer::RefreshTextureUniforms(Shader& shader)
+  {
+    //Gbuffer's texture
+    shader.SetUniform("u_gbufferResult.positionAndNormalX"
+      , 0);
+    shader.SetUniform("u_gbufferResult.albedoAndNormalY"
+      , 1);
+    shader.SetUniform("u_gbufferResult.lsPosAndMetallic"
+      , 2);
+    shader.SetUniform("u_gbufferResult.emissiveAndRoughness"
+      , 3);
   }
 }

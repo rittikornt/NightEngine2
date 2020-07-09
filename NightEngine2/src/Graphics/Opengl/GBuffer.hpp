@@ -7,18 +7,17 @@
 #include "Graphics/Opengl/FrameBufferObject.hpp"
 #include "Graphics/Opengl/RenderBufferObject.hpp"
 #include "Graphics/Opengl/Texture.hpp"
-#include "Graphics/Opengl/Shader.hpp"
 
 namespace Rendering
 {
+  class Shader;
+
   enum class GBufferTarget: size_t
   {
-    Position = 0,
-    Normal,
-    Albedo,
-    RoughnessMetallic,
-    Emissive,
-    LightSpacePosition,
+    PositionAndNormalX = 0,         // (0) vec4(pos.xyz, n.x)
+    AlbedoAndNormalY,               // (1) vec4(albedo.xyz, n.y)
+    LightSpacePositionAndMetallic,  // (2) vec4(lightSpacePos, metallic.x)
+    RoughnessMetallic,              // (3) vec4(emissive.xyz, roughness.x)
     Count
   };
   //TODO: Calculate Position from Depth Buffer
@@ -52,5 +51,8 @@ namespace Rendering
 
     //! @brief Copy Depth buffer to fbo target (0 for screen fbo)
     void CopyDepthBufferTo(unsigned fboId);
+
+    //! @brief Set the Texture binding units
+    void RefreshTextureUniforms(Shader& shader);
   };
 }

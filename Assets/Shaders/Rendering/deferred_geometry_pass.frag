@@ -1,10 +1,10 @@
 #version 330 core
 
 // 4 4 4 4
-layout (location = 0) out vec3 o_position;	//3
-layout (location = 1) out vec3 o_normal;	//2
-layout (location = 2) out vec3 o_albedo;	//3
-layout (location = 3) out vec3 o_roughnessMetallic; //2
+layout (location = 0) out vec4 o_position;	// (0) vec4(pos.xyz, n.x)
+layout (location = 1) out vec4 o_normal;	//(1) vec4(albedo.xyz, n.y)
+layout (location = 2) out vec4 o_albedo;	//(2) vec4(lightSpacePos, metallic.x)
+layout (location = 3) out vec4 o_roughnessMetallic; //(3) vec4(emissive.xyz, roughness.x)
 layout (location = 4) out vec3 o_emissive; //3
 layout (location = 5) out vec4 o_lightSpacePos; //3
 
@@ -20,7 +20,7 @@ in VS_OUT
 //! brief Store Material information
 struct Material
 {
-  sampler2D 	m_diffuseMap;
+  sampler2D 	m_diffuseMap;	//albedo
   
   sampler2D 	m_normalMap;
   float         m_normalMultiplier;
@@ -44,9 +44,6 @@ uniform bool        u_useNormalmap = false;
 
 void main()
 {
-	//Position
-	o_position = fs_in.ourFragPos;
-
 	//Sample Normal map
 	vec3 normal = fs_in.ourFragNormal;
 	if(u_useNormalmap)
@@ -60,25 +57,50 @@ void main()
 		//Transform to world space
 		normal = (fs_in.ourTBNMatrix * normal);
 	}
-	o_normal = normalize(normal);
 
-	//Albedo
-	o_albedo.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb
+	// Pack normal to only RG
+	// sqrt(x^2 + y^2 + z^2) = 1
+	// z^2 = (1 - x^2 - y^2)
+	// z = sqrt(1 - x^2 - y^2)
+	//normal = normalize(normal);
+	//o_normal.xy = normal.xy;
+	//o_normal = normal;
+	//o_normal.z = 0.0;
+
+	// (0) vec4(pos.xyz, n.x)
+	o_position.xyz = fs_in.ourFragPos.xyz;
+	o_position.w = normal.x;
+
+	//(1) vec4(albedo.xyz, n.x)
+	o_normal.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb
 								* u_diffuseColor.rgb;
+	o_normal.a = normal.y;
 
-	//Specular
+	//Roughness, Metallic
 	float roughness = max(texture(u_material.m_roughnessMap, fs_in.ourTexCoord).r
 								, u_material.m_roughnessValue);
 	roughness = max(0.01, roughness);	//Somehow 0 roughness doesn't behave properly
 
-	o_roughnessMetallic.r = roughness;
-	o_roughnessMetallic.g = max(texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
+	float metallic = max(texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
 								, u_material.m_metallicValue);
 
+	//o_roughnessMetallic.r = roughness;
+	//o_roughnessMetallic.g = metallic;
+
+	//(2) vec4(lightSpacePos, metallic.x)
+	vec3 lightSpacePos = fs_in.ourFragPosLightSpace.xyz / fs_in.ourFragPosLightSpace.w;
+	o_albedo.xyz = lightSpacePos;
+	o_albedo.w = metallic;
+
 	//Emissive
-	o_emissive.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
+	//o_emissive.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
+	//							* u_material.m_emissiveStrength;
+
+	//(3) vec4(emissive.xyz, roughness.x)
+	o_roughnessMetallic.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
 								* u_material.m_emissiveStrength;
+	o_roughnessMetallic.a = roughness;
 
 	//Light space Matrix
-	o_lightSpacePos = fs_in.ourFragPosLightSpace;
+	//o_lightSpacePos = fs_in.ourFragPosLightSpace;
 }

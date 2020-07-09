@@ -595,6 +595,7 @@ namespace Rendering
     {
       //Clear Buffer
       glClear(GL_COLOR_BUFFER_BIT);
+      //glDisable(GL_DEPTH_TEST);
 
       //Set Material Uniform
       m_lightingMaterial.Bind(false);
@@ -632,6 +633,7 @@ namespace Rendering
       m_lightingMaterial.Unbind();
 
       //Draw Cubemap
+      glEnable(GL_DEPTH_TEST);
       m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
     }
     m_sceneFbo.Unbind();

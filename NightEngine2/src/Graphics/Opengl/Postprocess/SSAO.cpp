@@ -94,6 +94,10 @@ namespace Rendering
       //Generate AO
       m_fbo.Bind();
       {
+        //Clear with white
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         camera.ApplyViewMatrix(m_ssaoShader);
         camera.ApplyProjectionMatrix(m_ssaoShader);
 

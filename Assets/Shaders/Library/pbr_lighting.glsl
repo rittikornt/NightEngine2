@@ -105,10 +105,10 @@ float GetSpotLightAttenuation(vec3 fragPos, LightInfo lightInfo)
 }
 
 //! @brief Calculate direction light attenutation by doing shadowmap PCF sampling [0,1]
-float CalculateDirLightAttenuation(vec4 fragLightSpacePos, vec3 lightDir, vec3 normal)
+float CalculateDirLightAttenuation(vec3 fragLightSpacePos, vec3 lightDir, vec3 normal)
 {
 	//Perspective division
-	vec3 projCoords = fragLightSpacePos.xyz / fragLightSpacePos.w;
+	vec3 projCoords = fragLightSpacePos.xyz;// / fragLightSpacePos.w;
 
 	//Check for oversampling
 	if(projCoords.z > 1.0)

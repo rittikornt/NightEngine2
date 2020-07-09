@@ -34,19 +34,34 @@ uniform vec3      u_ssaoColor = vec3(1.0f);
 uniform float     u_sampleRadius = 0.5f;
 uniform float     u_bias = 0.025f;
 
+void UnpackNormalFromRG(inout vec3 normal)
+{
+	// Unpack B value from only RG
+	// sqrt(x^2 + y^2 + z^2) = 1
+	// z^2 = (1 - x^2 - y^2)
+	// z = sqrt(1 - x^2 - y^2)
+	normal.z = sqrt(1 - (normal.r * normal.r) - (normal.g * normal.g));
+}
+
 void main()
 { 
-  //Normal in view space
-  vec3 normal = texture(u_gbufferResult.m_normalTex, OurTexCoords).rgb;
-	if(normal == vec3(0.0,0.0,0.0))
-	{
-    FragColor = vec4(1.0);
-		return;
-	}
-  normal = (u_view * vec4(normal, 0.0)).rgb;
-
   //FragPos in view space
-  vec3 fragPos = (u_view * texture(u_gbufferResult.m_positionTex, OurTexCoords)).rgb;
+  vec4 fragPosNormalX = texture(u_gbufferResult.m_positionTex, OurTexCoords);
+  vec3 fragPos = (u_view * vec4(fragPosNormalX.xyz, 1.0)).xyz;
+
+  //Normal in view space
+  vec4 albedoNY = texture(u_gbufferResult.m_normalTex, OurTexCoords);
+	vec3 normal = vec3(0.0);
+	normal.x = fragPosNormalX.a;
+	normal.y = albedoNY.a;
+
+	if(normal.xy == vec2(0.0, 0.0))
+	{
+		discard;
+	}
+	UnpackNormalFromRG(normal);
+	normal = normalize(normal);
+  normal = (u_view * vec4(normal, 0.0)).rgb;
 
   //Sample noise
   vec3 randomVector = texture(u_noiseTexture, OurTexCoords * g_noiseScale).xyz;
@@ -73,7 +88,7 @@ void main()
     clipPos.xyz = clipPos.xyz * 0.5 + 0.5;  //Remap to Screen space [0.0,1.0]
 
     //Sample depth from world position
-    float closestDepth = (u_view * texture(u_gbufferResult.m_positionTex, clipPos.xy) ).z;
+    float closestDepth = (u_view * vec4(texture(u_gbufferResult.m_positionTex, clipPos.xy).xyz, 1.0) ).z;
 
     //Rangecheck scale
     float depthDiff = abs(fragPos.z - closestDepth);

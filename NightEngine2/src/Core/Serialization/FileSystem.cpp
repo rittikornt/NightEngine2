@@ -15,7 +15,7 @@ namespace NightEngine
 	namespace FileSystem
 	{
 		static Container::String g_dirSubPath[] = {"","Models","Textures"
-      ,"Shaders", "Script", "Cubemaps", "Archetypes", "Materials", "Scenes"};
+      ,"Shaders", "ErrorLog", "Cubemaps", "Archetypes", "Materials", "Scenes"};
 
 		std::unique_ptr<std::ofstream> CreateFileTo(const Container::String& fileName, DirectoryType dir, bool append)
 		{
@@ -34,7 +34,7 @@ namespace NightEngine
 			//Error, if file doesn't exist
 			ASSERT_TRUE(IsFileExist(fileName, dir));
 
-			//If exist, open and return the ofstream
+			//If exist, open and return the ifstream
 			return std::unique_ptr<std::ifstream>{ new std::ifstream{ path } };
 		}
 
@@ -45,7 +45,7 @@ namespace NightEngine
 			//Error, if file doesn't exist
 			ASSERT_TRUE(IsFileExist(fileName, dir));
 
-			//If exist, open and return the ofstream
+			//If exist, open and return
 			std::ifstream out{ path };
 			return Container::String(std::istreambuf_iterator<char>(out),
 				(std::istreambuf_iterator<char>()));
@@ -158,7 +158,7 @@ namespace NightEngine
 
 		Container::String GetFilePath(const Container::String& fileName, DirectoryType dir)
 		{
-      Container::String path{ dir == DirectoryType::Script ? PROJECT_DIR_SOURCE : PROJECT_DIR_SOURCE_ASSETS };
+      Container::String path{ PROJECT_DIR_SOURCE_ASSETS };
 
 			path += g_dirSubPath[static_cast<unsigned>(dir)];
 			path += (dir != DirectoryType::Assets) ? "/" : "";

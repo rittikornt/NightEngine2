@@ -21,7 +21,7 @@ namespace NightEngine
 			Models,
 			Textures,
 			Shaders,
-      Script,
+      ErrorLog,
       Cubemaps,
       Archetypes,
       Materials,

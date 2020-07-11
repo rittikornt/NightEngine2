@@ -55,7 +55,7 @@ namespace Rendering
 		bool		AttachShaderFile(const std::string& filename);
 
     //! @brief Attach shader file
-    bool		AttachShaderFileFromPath(const std::string& filePath);
+    bool		AttachShaderFileFromPathNoAssert(const std::string& filePath);
 
     //! @brief Link the shader
     bool		Link() const;

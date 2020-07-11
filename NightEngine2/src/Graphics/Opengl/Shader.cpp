@@ -10,6 +10,7 @@
 
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
+#include "Core/Serialization/FileSystem.hpp"
 
 // System Headers
 #include <glm/gtc/type_ptr.hpp>
@@ -153,6 +154,19 @@ namespace Rendering
 		// Create a Shader Object
 		auto shaderID = CreateShaderObject(filename);
     bool success = CompileShader(shaderID, srcCodeStr.c_str());
+    if (!success)
+    {
+      //Output full source code file to the error log, so its easier to trace the error lod when using #include
+      auto pos = filename.find_last_of('/');
+      auto fileNameNoSlash = pos != filename.npos ?
+        filename.substr(pos + 1, filename.size() - pos) : filename;
+
+      auto file = FileSystem::CreateFileTo("[" + fileNameNoSlash + "] shader_error.txt"
+        , FileSystem::DirectoryType::ErrorLog);
+      *file << srcCodeStr;
+      file->flush();
+      file->close();
+    }
     ASSERT_TRUE(success);
 
 		// Attach the Shader and Free Allocated Memory
@@ -167,7 +181,7 @@ namespace Rendering
     return success;
 	}
 
-  bool Shader::AttachShaderFileFromPath(const std::string& filePath)
+  bool Shader::AttachShaderFileFromPathNoAssert(const std::string& filePath)
   {
     //TODO: Load Shader through ResourceManager and cache it
     Debug::Log << Logger::MessageType::INFO
@@ -256,7 +270,7 @@ namespace Rendering
       bool success = true;
       for (auto path : m_filePath)
       {
-        success &= tempShader.AttachShaderFileFromPath(path);
+        success &= tempShader.AttachShaderFileFromPathNoAssert(path);
       }
       success &= tempShader.LinkNoAssert();
 

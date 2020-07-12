@@ -13,6 +13,7 @@
 
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 #include "Graphics/Opengl/Mesh.hpp"
+#include "Graphics/Opengl/Shader.hpp"
 #include "Core/EC/Handle.hpp"
 
 namespace NightEngine
@@ -30,7 +31,6 @@ namespace NightEngine
 namespace Rendering
 {
   class Material;
-  class Shader;
 
   namespace Drawer
   {
@@ -60,7 +60,8 @@ namespace Rendering
       , DrawPass drawPass = DrawPass::BATCH);
 
     //! @brief Draw all registered mesh without binding
-    void Draw(DrawPass drawPass = DrawPass::BATCH);
+    void Draw(DrawPass drawPass = DrawPass::BATCH
+      , Rendering::ShaderUniformsFn fn = nullptr);
 
     //! @brief Draw pass for Shadow
     void DrawShadowWithoutBind(Shader& shader

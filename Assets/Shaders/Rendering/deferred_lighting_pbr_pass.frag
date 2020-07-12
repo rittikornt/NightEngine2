@@ -18,20 +18,11 @@ struct GBufferResult
 };
 uniform GBufferResult u_gbufferResult;
 
-void UnpackNormalFromRG(inout vec3 normal)
-{
-	// Unpack B value from only RG
-	// sqrt(x^2 + y^2 + z^2) = 1
-	// z^2 = (1 - x^2 - y^2)
-	// z = sqrt(1 - x^2 - y^2)
-	normal.z = sqrt(1 - (normal.r * normal.r) - (normal.g * normal.g));
-}
-
 void main()
 {
 	//Unpack datas from GBuffer
 	vec4 albedoAndNormalY = texture(u_gbufferResult.albedoAndNormalY, OurTexCoords);
-	vec3 diffuse = albedoAndNormalY.rgb;
+	vec3 albedo = albedoAndNormalY.rgb;
 	
 	vec4 positionAndNormalX = texture(u_gbufferResult.positionAndNormalX, OurTexCoords);
 	vec3 fragPos = positionAndNormalX.xyz;
@@ -69,15 +60,15 @@ void main()
 	float atten = CalculateDirLightAttenuation(fragPosLightSpace.xyz, surfaceData.lightDir, surfaceData.normal);
 
 	vec3 Lo = atten * CalculateMainLighting(surfaceData
-					, diffuse.rgb, roughness, metallic);
+					, albedo.rgb, roughness, metallic);
 
 	//Additional Lighting (Point/Spot Lights)
 	Lo += CalculateAdditionalLighting(viewDir, surfaceData.normal, fragPos.xyz
-					, diffuse.rgb, roughness, metallic);
+					, albedo.rgb, roughness, metallic);
 
 	//Ambient
 	vec3 ambient = CalculateAmbientLighting(surfaceData
-					, diffuse.rgb, roughness, metallic);
+					, albedo.rgb, roughness, metallic);
 	vec3 color = Lo + ambient;
 	o_fragColor = vec4(color, 1.0);
 

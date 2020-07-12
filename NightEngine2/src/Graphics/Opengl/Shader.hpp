@@ -129,5 +129,7 @@ namespace Rendering
   {
     return (lhs.GetProgramID() == rhs.GetProgramID());
   }
+
+  using ShaderUniformsFn = void(*)(Shader&);
 } // Rendering
 

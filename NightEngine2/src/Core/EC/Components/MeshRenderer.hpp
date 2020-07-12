@@ -12,12 +12,6 @@
 
 #include <vector>
 
-namespace Rendering
-{
-  //Forward Declaration
-  class Shader;
-}
-
 namespace NightEngine
 {
   namespace EC
@@ -94,7 +88,7 @@ namespace NightEngine
           bool IsCastingShadow(void) { return m_castShadow; }
 
           //! @brief Draw mesh with custom m_material
-          void DrawWithMaterial(void);
+          void DrawWithMaterial(Rendering::ShaderUniformsFn fn = nullptr);
 
           //! @brief Plain draw loop
           void DrawMeshes(void);

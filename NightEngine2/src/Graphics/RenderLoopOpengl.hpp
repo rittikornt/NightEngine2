@@ -47,12 +47,15 @@ namespace Rendering
     virtual void Terminate(void) override;
     
     virtual void OnRecompiledShader(void) override;
-  private:
+
+  protected:
     void Render(void);
 
     void DrawScene(bool debugNormal);
 
     void DrawDebugIcons(void);
+
+    void SetDeferredLightingPassUniforms(Material& material);
 
     //Uniform Buffer Object
     UniformBufferObject m_uniformBufferObject;
@@ -89,6 +92,8 @@ namespace Rendering
     //Material
     NightEngine::EC::Handle<Material>  m_defaultMaterial;
     Material                           m_lightingMaterial;
+
+    Material                           m_debugViewMaterial;
     Material                           m_normalDebug;
 
     //Light

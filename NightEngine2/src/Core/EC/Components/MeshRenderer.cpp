@@ -179,7 +179,7 @@ namespace NightEngine
         return t->CalculateModelMatrix();
       }
 
-      void MeshRenderer::DrawWithMaterial(void)
+      void MeshRenderer::DrawWithMaterial(ShaderUniformsFn fn)
       {
         if (m_useModelLoadedMaterials)
         {
@@ -196,6 +196,11 @@ namespace NightEngine
               auto t = m_gameObject->GetTransform();
               ASSERT_TRUE(t != nullptr);
               currMat->GetShader().SetUniform("u_model", t->CalculateModelMatrix());
+              
+              if (fn != nullptr)
+              {
+                fn(currMat->GetShader());
+              }
 
               m_meshes[i].Draw();
             }
@@ -217,6 +222,11 @@ namespace NightEngine
             auto t = m_gameObject->GetTransform();
             ASSERT_TRUE(t != nullptr);
             m_material->GetShader().SetUniform("u_model", t->CalculateModelMatrix());
+
+            if (fn != nullptr)
+            {
+              fn(m_material->GetShader());
+            }
 
             //Draw meshes
             for (size_t i = 0; i < m_meshes.size(); ++i)

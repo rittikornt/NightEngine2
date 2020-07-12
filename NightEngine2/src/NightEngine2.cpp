@@ -195,6 +195,11 @@ namespace NightEngine
     m_event = event;
   }
 
+  void Engine::SetDebugViews(DebugView dv, DebugShadowView dsv)
+  {
+    m_renderloop->SetDebugViews(dv, dsv);
+  }
+
   void Engine::FixedUpdate(float dt)
   {
     static float accumulator = 0.0f;

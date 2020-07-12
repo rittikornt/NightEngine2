@@ -7,6 +7,8 @@
 
 namespace Rendering
 {
+  enum class DebugView;
+  enum class DebugShadowView;
   class IRenderLoop;
 }
 
@@ -36,6 +38,8 @@ namespace NightEngine
     void SendPostRenderEvent(PostRenderEngineEvent event);
 
     static Engine* GetInstance(){ return s_instance; }
+
+    void SetDebugViews(Rendering::DebugView dv, Rendering::DebugShadowView dsv);
 
   private:
     void FixedUpdate(float dt);

@@ -86,14 +86,14 @@ namespace Rendering
       }
     }
 
-    void Draw(DrawPass drawPass)
+    void Draw(DrawPass drawPass, ShaderUniformsFn fn)
     {
       auto& container = GetDrawContainer(drawPass);
 
       //Profiled, this loop is as fast as direct Slotmap lookup
       for (auto& mesh : container)
       {
-        mesh.Get<MeshRenderer>()->DrawWithMaterial();
+        mesh.Get<MeshRenderer>()->DrawWithMaterial(fn);
       }
     }
 

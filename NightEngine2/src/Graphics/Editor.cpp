@@ -316,15 +316,6 @@ namespace Editor
       ImGui::NextColumn();
       ImGui::NextColumn();
 
-      //Play button
-      /*static bool play = false;
-      static std::string text{"Play"};
-      if (ImGui::Button(text.c_str()))
-      {
-        play = !play;
-        text = play? "Pause": "Play";
-      }*/
-
       ImGui::NextColumn();
       ImGui::NextColumn();
 

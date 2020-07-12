@@ -52,7 +52,7 @@ void main()
 		normal = normalize(normal * 2.0 - 1.0);
 		normal.xz *= u_material.m_normalMultiplier;
 
-		//Transform to world space
+		//Transform tangent to world space normal
 		normal = (fs_in.ourTBNMatrix * normal);
 	}
 

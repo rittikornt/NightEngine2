@@ -108,7 +108,7 @@ namespace Editor
   static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Channel channel)
   {
     const char* k_none = "None";
-    static int m_currentItem = 0;
+    static int s_currentItem = 0;
     static std::vector <std::string> s_items;
     static std::unordered_map <std::string, int> s_itemsMap;
     static std::vector <const char*> s_itemsPtr;
@@ -134,7 +134,7 @@ namespace Editor
       g_dirty = false;
     }
 
-    m_currentItem = 0;
+    s_currentItem = 0;
     bool validTex = handle->IsValid();
     s_texFilePath = validTex ? handle->Get()->GetFilePath() : "";
 
@@ -149,16 +149,16 @@ namespace Editor
     auto it = s_itemsMap.find(s_texFilePath);
     if (validTex && it != s_itemsMap.end())
     {
-      m_currentItem = it->second;
+      s_currentItem = it->second;
     }
 
     //Combo Box Imgui
-    bool changed = ImGui::Combo(text, &m_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
+    bool changed = ImGui::Combo(text, &s_currentItem, s_itemsPtr.data(), s_itemsPtr.size());
     if (changed)
     {
-      if (s_items[m_currentItem] != k_none)
+      if (s_items[s_currentItem] != k_none)
       {
-        auto newHandle = Texture::LoadTextureHandle(s_items[m_currentItem]
+        auto newHandle = Texture::LoadTextureHandle(s_items[s_currentItem]
           , channel);
         if (newHandle.IsValid())
         {

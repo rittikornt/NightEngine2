@@ -79,8 +79,6 @@ namespace Rendering
   static float g_time = 0.0f;
 
   static bool g_enablePostprocess = true;
-  static size_t g_bufferIndex = 0;
-  static bool g_debugDeferred = false;
   static bool g_showLight = true;
   static glm::mat4   g_dirLightWorldToLightSpaceMatrix;
 
@@ -249,31 +247,12 @@ namespace Rendering
 
     m_lightingMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Rendering/deferred_lighting_pbr_pass.frag");
+    SetDeferredLightingPassUniforms(m_lightingMaterial);
 
-    m_lightingMaterial.Bind(false);
-    {
-      Shader& shader = m_lightingMaterial.GetShader();
-
-      //Directional Shadow
-      shader.SetUniform("u_shadowMap2D", 6);
-      m_shadowMapTexture.BindToTextureUnit(6);
-
-      //Point Shadow
-      shader.SetUniform("u_shadowMap[0]", 7);
-      shader.SetUniform("u_shadowMap[1]", 8);
-      shader.SetUniform("u_shadowMap[2]", 9);
-      shader.SetUniform("u_shadowMap[3]", 10);
-
-      //IBL
-      shader.SetUniform("u_irradianceMap", 11);
-      shader.SetUniform("u_prefilterMap", 12);
-      shader.SetUniform("u_brdfLUT", 13);
-
-      //Gbuffer's texture
-      m_gbuffer.RefreshTextureUniforms(shader);
-    }
-    m_lightingMaterial.Unbind();
-
+    m_debugViewMaterial.InitShader("Utility/fullscreenTriangle.vert"
+      , "Utility/pbr_debug_view.frag");
+    SetDeferredLightingPassUniforms(m_debugViewMaterial);
+    
     //Normal Debugger
     m_normalDebug.InitShader("Debugger/debug_vertex.vert"
       , "Debugger/debug_fragment.frag", "Debugger/debug_normal_geometry.geom");
@@ -411,29 +390,8 @@ namespace Rendering
     ResourceManager::RefreshMaterialTextureUniforms();
 
     //Lighting Pass
-    m_lightingMaterial.Bind(false);
-    {
-      Shader& shader = m_lightingMaterial.GetShader();
-
-      //Directional Shadow
-      shader.SetUniform("u_shadowMap2D", 6);
-      m_shadowMapTexture.BindToTextureUnit(6);
-
-      //Point Shadow
-      shader.SetUniform("u_shadowMap[0]", 7);
-      shader.SetUniform("u_shadowMap[1]", 8);
-      shader.SetUniform("u_shadowMap[2]", 9);
-      shader.SetUniform("u_shadowMap[3]", 10);
-
-      //IBL
-      shader.SetUniform("u_irradianceMap", 11);
-      shader.SetUniform("u_prefilterMap", 12);
-      shader.SetUniform("u_brdfLUT", 13);
-
-      //Gbuffer's texture
-      m_gbuffer.RefreshTextureUniforms(shader);
-    }
-    m_lightingMaterial.Unbind();
+    SetDeferredLightingPassUniforms(m_lightingMaterial);
+    SetDeferredLightingPassUniforms(m_debugViewMaterial);
     
     //IBL
     m_ibl.RefreshTextureUniforms(g_camera);
@@ -542,7 +500,7 @@ namespace Rendering
     // Geometry Pass
     //*************************************************
     glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
-    DebugMarker::PushDebugGroup("Deferred GBuffer Pass");
+    DebugMarker::PushDebugGroup("GBuffer Pass");
     m_gbuffer.Bind();
     {
       //Clear Buffer
@@ -576,10 +534,19 @@ namespace Rendering
       //glDisable(GL_DEPTH_TEST);
 
       //Set Material Uniform
-      m_lightingMaterial.Bind(false);
+      bool debugView = IsDebugView();
+      Material& lightingPassMat = debugView ? m_debugViewMaterial: m_lightingMaterial;
+      
+      lightingPassMat.Bind(false);
       {
-        Shader& shader = m_lightingMaterial.GetShader();
+        Shader& shader = lightingPassMat.GetShader();
         shader.SetUniform("u_farPlane", pointShadowFarPlane);
+
+        if (debugView)
+        {
+          shader.SetUniform("u_debugViewIndex", (int)m_debugView);
+          shader.SetUniform("u_debugShadowViewIndex", (int)m_debugShadowView);
+        }
 
         //Shadow 2D texture
         m_shadowMapTexture.BindToTextureUnit(6);
@@ -608,7 +575,7 @@ namespace Rendering
         //Draw Fullscreen Mesh
         m_screenTriangleVAO.Draw();
       }
-      m_lightingMaterial.Unbind();
+      lightingPassMat.Unbind();
 
       //Draw Cubemap
       glEnable(GL_DEPTH_TEST);
@@ -643,15 +610,6 @@ namespace Rendering
     //*************************************************
 
     //Debugging View
-    if (Input::GetKeyDown(Input::KeyCode::KEY_0))
-    {
-      g_bufferIndex = (g_bufferIndex + 1) %
-        static_cast<unsigned>(GBufferTarget::Count);
-    }
-    if (Input::GetKeyDown(Input::KeyCode::KEY_9))
-    {
-      g_debugDeferred = !g_debugDeferred;
-    }
     if (Input::GetKeyDown(Input::KeyCode::KEY_7))
     {
       g_showLight = !g_showLight;
@@ -676,13 +634,7 @@ namespace Rendering
           shader.SetUniform("u_exposure", 1.0f);
           shader.SetUniform("u_time", g_time);
 
-          //Scene Texture
-          if (g_debugDeferred)
-          {
-            shader.SetUniform("u_bloomTexture", 0);
-            m_gbuffer.GetTexture(g_bufferIndex).BindToTextureUnit(0);
-          }
-          else
+          //PP Texture
           {
             m_sceneTexture.BindToTextureUnit(0);
             m_postProcessSetting->m_bloomPP.m_targetTexture.BindToTextureUnit(1);
@@ -749,7 +701,11 @@ namespace Rendering
       Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
 
       //Draw Custom Pass
-      Drawer::Draw(Drawer::DrawPass::CUSTOM);
+      Drawer::Draw(Drawer::DrawPass::CUSTOM
+        , [](Shader& shader)
+        {
+          shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
+        });
     }
     m_defaultMaterial->Unbind();
 
@@ -796,6 +752,33 @@ namespace Rendering
       }
     }
     DebugMarker::PopDebugGroup();
+  }
+
+  void RenderLoopOpengl::SetDeferredLightingPassUniforms(Material& material)
+  {
+    material.Bind(false);
+    {
+      Shader& shader = material.GetShader();
+
+      //Directional Shadow
+      shader.SetUniform("u_shadowMap2D", 6);
+      m_shadowMapTexture.BindToTextureUnit(6);
+
+      //Point Shadow
+      shader.SetUniform("u_shadowMap[0]", 7);
+      shader.SetUniform("u_shadowMap[1]", 8);
+      shader.SetUniform("u_shadowMap[2]", 9);
+      shader.SetUniform("u_shadowMap[3]", 10);
+
+      //IBL
+      shader.SetUniform("u_irradianceMap", 11);
+      shader.SetUniform("u_prefilterMap", 12);
+      shader.SetUniform("u_brdfLUT", 13);
+
+      //Gbuffer's texture
+      m_gbuffer.RefreshTextureUniforms(shader);
+    }
+    material.Unbind();
   }
 
 } // Rendering

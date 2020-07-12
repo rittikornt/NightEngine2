@@ -11,6 +11,8 @@
 #include "Editor/ConfirmationBox.hpp"
 #include "imgui/imgui.h"
 
+#include "NightEngine2.hpp"
+
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/ArchetypeManager.hpp"
 #include "Core/EC/SceneManager.hpp"
@@ -19,6 +21,7 @@
 
 #include "Graphics/Opengl/Window.hpp"
 #include "Graphics/Opengl/Postprocess/PostProcessSetting.hpp"
+#include "Graphics/IRenderLoop.hpp"
 
 using namespace NightEngine;
 using namespace NightEngine::EC;
@@ -69,7 +72,7 @@ namespace Editor
       // Component PostProcessSettingEditor
       ImGui::BeginGroup();
       {
-        ImGui::BeginChild("GameObject Properties", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+        ImGui::BeginChild("PostProcess Properties", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
         {
           //GameObject Property, if not null
           if (g_postprocessSetting != nullptr)
@@ -130,6 +133,25 @@ namespace Editor
 
             //Clear Column
             ImGui::Columns(1);
+          }
+
+          //Debug View ComboBox
+          {
+            static int s_debugViewEnum = 0;
+            static int s_debugShadowViewEnum = 0;
+
+            bool changed = ImGui::Combo("Debug View", &s_debugViewEnum
+              , k_debugViewStr, (int)Rendering::DebugView::COUNT);
+
+            changed |= ImGui::Combo("Shadow Debug View", &s_debugShadowViewEnum
+              , k_debugShadowViewStr, (int)Rendering::DebugShadowView::COUNT);
+            
+            if(changed)
+            {
+              Rendering::DebugView dv = (Rendering::DebugView)s_debugViewEnum;
+              Rendering::DebugShadowView dsv = (Rendering::DebugShadowView)s_debugShadowViewEnum;
+              NightEngine::Engine::GetInstance()->SetDebugViews(dv, dsv);
+            }
           }
         }
         ImGui::EndChild();

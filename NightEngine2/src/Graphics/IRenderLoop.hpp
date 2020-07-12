@@ -23,7 +23,8 @@ namespace Rendering
   enum class DebugShadowView
   {
     NONE = 0,
-    SHADOW_ONLY,
+    SHADOW_MAIN_ONLY,
+    SHADOW_ALL,
     SHADOW_CASCADE,
     COUNT
   };

@@ -38,6 +38,7 @@ vec3 GetAdditionalLightingShadows(vec3 ViewDir, vec3 Normal, vec3 fragPos
 
 		Lo += vec3(shadowAtten);
 	}
+	Lo /= POINTLIGHT_NUM;
 	return Lo;
 }
 
@@ -129,13 +130,18 @@ void main()
 
 	switch(u_debugShadowViewIndex)
 	{
-		case 1:	//SHADOW_ONLY
+		case 1:	//SHADOW_MAIN_ONLY
 		float atten = CalculateDirLightAttenuation(fragPosLightSpace.xyz, surfaceData.lightDir, surfaceData.normal);
 
-		color = vec3(atten) * GetAdditionalLightingShadows(viewDir, surfaceData.normal, fragPos.xyz
+		color = vec3(atten);
+		break;
+		case 2:	//SHADOW_ALL
+		float atten2 = CalculateDirLightAttenuation(fragPosLightSpace.xyz, surfaceData.lightDir, surfaceData.normal);
+
+		color = vec3(atten2) * GetAdditionalLightingShadows(viewDir, surfaceData.normal, fragPos.xyz
 						, albedo.rgb, roughness, metallic);
 		break;
-		case 2: //SHADOW_CASCADE
+		case 3: //SHADOW_CASCADE
 		break;
 	}
 

@@ -50,10 +50,11 @@ void main()
 
 		//Remap to range [-1,1]
 		normal = normalize(normal * 2.0 - 1.0);
-		normal.xz *= u_material.m_normalMultiplier;
+		normal.z *= u_material.m_normalMultiplier;
 
 		//Transform tangent to world space normal
 		normal = (fs_in.ourTBNMatrix * normal);
+		normal = normalize(normal);
 	}
 
 	//Roughness, Metallic

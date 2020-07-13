@@ -6,11 +6,11 @@
 #pragma once
 #include "Core/Reflection/RemoveQualifier.hpp"
 
-#define DEFAULT_VERTEX_SHADER_PBR "Rendering/deferred_geometry_pass.vert"
-#define DEFAULT_FRAG_SHADER_PBR "Rendering/deferred_geometry_pass.frag"
+#define DEFAULT_VERTEX_SHADER_PBR "Rendering/gbuffer_pass.vert"
+#define DEFAULT_FRAG_SHADER_PBR "Rendering/gbuffer_pass.frag"
 
-#define DEFAULT_VERTEX_SHADER_PBR_SB "Rendering/deferred_geometry_pass_specular_bump.vert"
-#define DEFAULT_FRAG_SHADER_PBR_SB "Rendering/deferred_geometry_pass_specular_bump.frag"
+#define DEFAULT_VERTEX_SHADER_PBR_SB "Rendering/gbuffer_pass_specular_bump.vert"
+#define DEFAULT_FRAG_SHADER_PBR_SB "Rendering/gbuffer_pass_specular_bump.frag"
 
 #define DIFFUSE_TEXUNIT_INDEX 0
 #define BUMP_TEXUNIT_INDEX 1

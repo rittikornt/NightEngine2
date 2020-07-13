@@ -177,22 +177,22 @@ namespace Rendering
     //Depth FBO for shadow
     m_initResolution.x = (float)width, m_initResolution.y = (float)height;
 
-    m_depthfbo.Init();
-    m_shadowMapTexture = m_depthfbo.AttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
+    m_depthDirShadowFBO.Init();
+    m_shadowMapDirShadowTexture = m_depthDirShadowFBO.AttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
 
-    m_depthMaterial.InitShader("Shadow/depth_directional.vert"
+    m_depthDirShadowMaterial.InitShader("Shadow/depth_directional.vert"
       , "Shadow/depth_directional.frag");
 
     //Depth FBO for point shadow
     for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
     {
-      m_depth2fbo[i].Init();
+      m_depthPointShadowFBO[i].Init();
 
-      m_shadowMapCubemap[i].InitDepthCubemap((unsigned)g_pointLightResolution);
-      m_depth2fbo[i].AttachCubemap(m_shadowMapCubemap[i]);
+      m_shadowMapPointShadow[i].InitDepthCubemap((unsigned)g_pointLightResolution);
+      m_depthPointShadowFBO[i].AttachCubemap(m_shadowMapPointShadow[i]);
     }
 
-    m_depth2Material.InitShader("Shadow/depth_point.vert"
+    m_depthPointShadowMaterial.InitShader("Shadow/depth_point.vert"
       , "Shadow/depth_point.frag", "Shadow/depth_point.geom");
 
     //Scene Texture
@@ -430,23 +430,23 @@ namespace Rendering
           ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, 10.0f, 0.3f, 100.0f);
 
         //Draw pass to FBO
-        m_depthfbo.Bind();
+        m_depthDirShadowFBO.Bind();
         {
           glClear(GL_DEPTH_BUFFER_BIT);
-          m_depthMaterial.Bind(false);
+          m_depthDirShadowMaterial.Bind(false);
           {
-            m_depthMaterial.GetShader().SetUniform("u_lightSpaceMatrix"
+            m_depthDirShadowMaterial.GetShader().SetUniform("u_lightSpaceMatrix"
               , g_dirLightWorldToLightSpaceMatrix);
 
             //Draw all Mesh with depthMaterial
-            Drawer::DrawShadowWithoutBind(m_depthMaterial.GetShader()
+            Drawer::DrawShadowWithoutBind(m_depthDirShadowMaterial.GetShader()
               , Drawer::DrawPass::BATCH);
-            Drawer::DrawShadowWithoutBind(m_depthMaterial.GetShader()
+            Drawer::DrawShadowWithoutBind(m_depthDirShadowMaterial.GetShader()
               , Drawer::DrawPass::CUSTOM);
           }
-          m_depthMaterial.Unbind();
+          m_depthDirShadowMaterial.Unbind();
         }
-        m_depthfbo.Unbind();
+        m_depthDirShadowFBO.Unbind();
       }
       DebugMarker::PopDebugGroup();
 
@@ -465,31 +465,31 @@ namespace Rendering
 
           //Draw to FBO
           DebugMarker::PushDebugGroup("PointLight ShadowCaster Pass");
-          m_depth2fbo[i].Bind();
+          m_depthPointShadowFBO[i].Bind();
           {
             glClear(GL_DEPTH_BUFFER_BIT);
             //Depth Material
-            m_depth2Material.Bind(false);
+            m_depthPointShadowMaterial.Bind(false);
             {
               for (int i = 0; i < 6; ++i)
               {
-                m_depth2Material.GetShader().SetUniform(g_lightSpaceMatrices[i]
+                m_depthPointShadowMaterial.GetShader().SetUniform(g_lightSpaceMatrices[i]
                   , lightSpaceMatrices[i]);
               }
-              m_depth2Material.GetShader().SetUniform("u_lightPos"
+              m_depthPointShadowMaterial.GetShader().SetUniform("u_lightPos"
                 , g_sceneLights.pointLights[i]->GetTransform()->GetPosition());
-              m_depth2Material.GetShader().SetUniform("u_farPlane"
+              m_depthPointShadowMaterial.GetShader().SetUniform("u_farPlane"
                 , pointShadowFarPlane);
 
               //Draw all Mesh with depthMaterial
-              Drawer::DrawShadowWithoutBind(m_depth2Material.GetShader()
+              Drawer::DrawShadowWithoutBind(m_depthPointShadowMaterial.GetShader()
                 , Drawer::DrawPass::BATCH);
-              Drawer::DrawShadowWithoutBind(m_depth2Material.GetShader()
+              Drawer::DrawShadowWithoutBind(m_depthPointShadowMaterial.GetShader()
                 , Drawer::DrawPass::CUSTOM);
             }
-            m_depth2Material.Unbind();
+            m_depthPointShadowMaterial.Unbind();
           }
-          m_depth2fbo[i].Unbind();
+          m_depthPointShadowFBO[i].Unbind();
           DebugMarker::PopDebugGroup();
         }
       }
@@ -549,12 +549,12 @@ namespace Rendering
         }
 
         //Shadow 2D texture
-        m_shadowMapTexture.BindToTextureUnit(6);
+        m_shadowMapDirShadowTexture.BindToTextureUnit(6);
 
         //Shadow Cubemap texture
         for (int j = 0; j < POINTLIGHT_AMOUNT; ++j)
         {
-          m_shadowMapCubemap[j].BindToTextureUnit(7 + j);
+          m_shadowMapPointShadow[j].BindToTextureUnit(7 + j);
         }
 
         //IBL
@@ -762,7 +762,7 @@ namespace Rendering
 
       //Directional Shadow
       shader.SetUniform("u_shadowMap2D", 6);
-      m_shadowMapTexture.BindToTextureUnit(6);
+      m_shadowMapDirShadowTexture.BindToTextureUnit(6);
 
       //Point Shadow
       shader.SetUniform("u_shadowMap[0]", 7);

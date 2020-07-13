@@ -54,6 +54,7 @@ namespace Editor
 {
   //Editor
   static bool show_global_window = true;
+  static bool show_frameinfo_window = true;
 
   //Top Menu
   static bool show_top_menu = true;
@@ -80,8 +81,11 @@ namespace Editor
   static ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);//ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   static ImVec4 color_orange_dark = ImVec4(0.96, 0.68f, 0.05f, 1.0f);
   static ImVec4 color_orange_light = ImVec4(0.96, 0.86f, 0.05f, 1.0f);
-  static ImVec4 color_green = ImVec4(0.165f, 0.86f, 0.33f, 1.0f);
   static ImVec4 color_blue = ImVec4(0.165f, 0.6f, 1.0f, 1.0f);
+
+  static ImVec4 color_green = ImVec4(0.165f, 0.86f, 0.33f, 1.0f);
+  static ImVec4 color_red = ImVec4(0.658f, 0.196f, 0.274f, 1.0f);
+  static ImVec4 color_yellow = ImVec4(0.909f, 0.9019f, 0.3804f, 1.0f);
 
   //********************************************
   // Utility
@@ -253,16 +257,17 @@ namespace Editor
         {
           Debug::Log << Logger::MessageType::INFO << "Undo\n";
         }
-        if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) 
+        if (ImGui::MenuItem("Redo", "CTRL+Y", false, false))  // Disabled item
         {
           Debug::Log << Logger::MessageType::INFO << "Redo\n";
-        }  // Disabled item
+        }  
         ImGui::Separator();
         if (ImGui::MenuItem("Cut", "CTRL+X")) {}
         if (ImGui::MenuItem("Copy", "CTRL+C")) {}
         if (ImGui::MenuItem("Paste", "CTRL+V")) {}
         ImGui::EndMenu();
       }
+
       //Window
       if (ImGui::BeginMenu("Window"))
       {
@@ -271,6 +276,12 @@ namespace Editor
           Debug::Log << Logger::MessageType::INFO
             << "Global Window: " << show_global_window << '\n';
         }
+        if (ImGui::MenuItem("Profiling Window", "", &show_frameinfo_window))
+        {
+          Debug::Log << Logger::MessageType::INFO
+            << "Profiling Window: " << show_frameinfo_window << '\n';
+        }
+
         if (ImGui::MenuItem("DevConsole", "`",&g_devConsole.GetBool()))
         {
           Debug::Log << Logger::MessageType::INFO 
@@ -315,7 +326,6 @@ namespace Editor
       ImGui::NextColumn();
       ImGui::NextColumn();
       ImGui::NextColumn();
-
       ImGui::NextColumn();
       ImGui::NextColumn();
 
@@ -360,6 +370,88 @@ namespace Editor
         ImGui::Separator();
 
         ImGui::Checkbox("Demo Window", &show_demo_window);
+      }
+      ImGui::End();
+    }
+
+    //Global Profiling window
+    if (show_frameinfo_window)
+    {
+      ImGui::SetNextWindowBgAlpha(0.4f);
+      ImGui::SetNextWindowSize(ImVec2(140, 200), ImGuiCond_Appearing);
+      ImGui::SetNextWindowPos(ImVec2(200, 20), ImGuiCond_Appearing);
+      ImGui::Begin("Frame Information", &show_global_window
+        , ImGuiWindowFlags_AlwaysAutoResize);
+      {
+        {
+          //Helper lambda
+          static auto GetTimeColor = [](float timeMS) -> ImVec4
+          {
+            const float cap_val = c_DEFAULT_FRAME_MS_CAP;
+            const float cap_val_half = c_DEFAULT_FRAME_MS_CAP * 0.5f;
+            return timeMS > cap_val ? color_red
+              : timeMS > cap_val_half ? color_yellow : color_green;
+          };
+
+          static auto IMGUIIndent = [](int count)
+          {
+            bool unindent = count < 0;
+            count = std::abs(count);
+            for (int i = 0; i < count; ++i)
+            {
+              if (unindent)
+              {
+                ImGui::Unindent();
+              }
+              else
+              {
+                ImGui::Indent();
+              }
+            }
+          };
+
+          //Frame time Plot
+          auto& gameTime = NightEngine::GameTime::GetInstance();
+          char overlay[32];
+          sprintf(overlay, "avr: %.3f ms", gameTime.m_averageFrameTimeMS);
+
+          ImGui::PlotLines("", gameTime.m_averageFrameTimes.data()
+            , gameTime.m_averageFrameTimes.size()
+            , 0, overlay
+            , 0, NightEngine::c_DEFAULT_FRAME_MS_CAP, ImVec2(0, 80));
+          
+          //Frame Time Texture
+          auto totalFrameTimeMS = NightEngine::GameTime::GetInstance().m_currTotalFrameTimeMS.count();
+
+          ImVec4 col = GetTimeColor(totalFrameTimeMS);
+          ImGui::Text("Total Frame Time: "); ImGui::SameLine(0, 5);
+          ImGui::TextColored(col, "(%.3f ms)", totalFrameTimeMS);
+          ImGui::Separator();
+
+          //Time Stamp texts
+          int currIndentCount = 0;
+          auto& timeStampResult = gameTime.m_frameTimeStampResult;
+          std::string text = "";
+          std::string timeText = "";
+          for (auto& fts : timeStampResult)
+          {
+            text = fts.sortIndex == 0 ? "" : std::to_string(fts.sortIndex) + ") ";
+            text += fts.name;
+            text += ": ";
+
+            timeText = "(%.3f ms)";
+            col = GetTimeColor(fts.totalTimeMS);
+
+            //Canceled the last indent, and set current indentation
+            IMGUIIndent(-currIndentCount);
+            IMGUIIndent(fts.indentCount);
+            currIndentCount = fts.indentCount;
+
+            ImGui::Text(text.c_str()); ImGui::SameLine(0, 5);
+            ImGui::TextColored(col, timeText.c_str(), fts.totalTimeMS);
+          }
+        }
+
       }
       ImGui::End();
     }

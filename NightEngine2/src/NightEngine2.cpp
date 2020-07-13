@@ -132,10 +132,10 @@ namespace NightEngine
   {
     while (!m_gameTime->m_shouldClose)
     {
-      m_gameTime->StartFrame();
+      m_gameTime->BeginFrame();
       PROFILE_BLOCK_INSTRUMENT("GameLoop")
       {
-        float dt = m_gameTime->m_deltaTime;
+        float dt = m_gameTime->m_deltaTimeSeconds;
 
         //Update Simulation
         PROFILE_BLOCK_INSTRUMENT("FixedUpdate")

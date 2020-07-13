@@ -57,18 +57,19 @@ namespace Rendering
 
     void SetDeferredLightingPassUniforms(Material& material);
 
+  protected:
     //Uniform Buffer Object
     UniformBufferObject m_uniformBufferObject;
 
     //Depth FrameBuffer for Directional Shadow
-    FrameBufferObject   m_depthfbo;
-    Texture             m_shadowMapTexture;
-    Material            m_depthMaterial;
+    FrameBufferObject   m_depthDirShadowFBO;
+    Texture             m_shadowMapDirShadowTexture;
+    Material            m_depthDirShadowMaterial;
 
     //Depth FrameBuffer for Point Shadow
-    FrameBufferObject   m_depth2fbo[POINTLIGHT_AMOUNT];
-    Cubemap             m_shadowMapCubemap[POINTLIGHT_AMOUNT];
-    Material            m_depth2Material;
+    FrameBufferObject   m_depthPointShadowFBO[POINTLIGHT_AMOUNT];
+    Cubemap             m_shadowMapPointShadow[POINTLIGHT_AMOUNT];
+    Material            m_depthPointShadowMaterial;
 
     glm::vec2           m_initResolution{1.0f};
 

@@ -4,6 +4,7 @@
   @brief Contain the Definition of DebugMarker
 */
 #include "Graphics/Opengl/DebugMarker.hpp"
+#include "Core/GameTime.hpp"
 
 #include <glad/glad.h>
 
@@ -20,16 +21,21 @@ namespace Rendering
       return s_counter;
     }
 
-    void PushDebugGroup(const char* label)
+    void PushDebugGroup(const char* label, bool recordTimeStamp)
     {
 #if(EDITOR_MODE)
-      glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, ++(GetID()), -1, label);
+      int& id = GetID();
+      glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, (id), -1, label);
+      NightEngine::GameTime::GetInstance().BeginTimeStamp(label, id);
+
+      ++id;
 #endif
     }
 
     void PopDebugGroup()
     {
 #if(EDITOR_MODE)
+      NightEngine::GameTime::GetInstance().EndTimeStamp();
       glPopDebugGroup();
 #endif
     }

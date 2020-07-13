@@ -9,7 +9,7 @@ namespace Rendering
 {
   namespace DebugMarker
   {
-    void PushDebugGroup(const char* label);
+    void PushDebugGroup(const char* label, bool recordTimeStamp = true);
 
     void PopDebugGroup();
 

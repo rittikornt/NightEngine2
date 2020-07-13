@@ -20,6 +20,7 @@
 #include <memory>
 
 using namespace NightEngine;
+#define SHADER_INVALID_UNIFORM_ERROR_LOG false
 
 namespace Rendering
 {
@@ -300,7 +301,21 @@ namespace Rendering
 
 	/////////////////////////////////////////////////////////////////////////
 
-	GLuint Shader::CreateShaderObject(const std::string& filename)
+  bool Shader::CheckErrorLocation(int location) const
+  {
+    if (location == -1)
+    {
+#if SHADER_INVALID_UNIFORM_ERROR_LOG
+      Debug::Log << Logger::MessageType::ERROR_MSG
+        << "Missing Uniform: " << name << '\n';
+#endif
+      return true;
+    }
+    return false;
+  }
+
+
+  GLuint Shader::CreateShaderObject(const std::string& filename)
 	{
 		auto index = filename.rfind(".");
 		auto ext = filename.substr(index + 1);

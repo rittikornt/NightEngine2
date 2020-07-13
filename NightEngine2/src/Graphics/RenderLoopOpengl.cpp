@@ -241,9 +241,7 @@ namespace Rendering
 
     m_defaultMaterial->InitPBRTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
-      , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
-      , FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
-      , FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures));
+      , "", "", FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures));
 
     m_lightingMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Rendering/deferred_lighting_pbr_pass.frag");
@@ -531,7 +529,8 @@ namespace Rendering
     {
       //Clear Buffer
       glClear(GL_COLOR_BUFFER_BIT);
-      //glDisable(GL_DEPTH_TEST);
+      glDisable(GL_DEPTH_TEST);
+      glDepthMask(GL_FALSE);
 
       //Set Material Uniform
       bool debugView = IsDebugView();
@@ -705,6 +704,7 @@ namespace Rendering
         , [](Shader& shader)
         {
           shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
+          shader.SetUniformNoErrorCheck("u_cameraPosWS", g_camera.m_position);
         });
     }
     m_defaultMaterial->Unbind();

@@ -57,12 +57,12 @@ void main()
 	normal.y = albedoAndNormalY.a;
 
 	//Discard if normal is black
-	if(normal.xy == vec2(0.0, 0.0))
+	UnpackNormalFromRG(normal);
+	normal = normalize(normal);
+	if(normal == vec3(0.0, 0.0, 0.0))
 	{
 		discard;
 	}
-	UnpackNormalFromRG(normal);
-	normal = normalize(normal);
 
 	//Material data
 	vec4 lsPosAndMetallic = texture(u_gbufferResult.lsPosAndMetallic, OurTexCoords);

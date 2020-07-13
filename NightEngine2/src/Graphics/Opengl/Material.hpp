@@ -63,6 +63,14 @@ namespace Rendering
         , const std::string& emissiveTextureFile);
 
       //! @brief Initialize Texture
+      void	InitPBRTexture_SpecularBump(const std::string& diffuseTextureFile
+        , bool useBump
+        , const std::string& bumpTextureFile
+        , const std::string& specularTextureFile
+        , const std::string& metallicTextureFile
+        , const std::string& emissiveTextureFile);
+
+      //! @brief Initialize Texture
       void RefreshTextureUniforms(void) const;
 
       //! @brief Apply material to the shader

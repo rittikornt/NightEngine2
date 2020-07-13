@@ -93,18 +93,24 @@ namespace Rendering
       using namespace NightEngine;
 			//Note: Need to Bind() first before calling this method
 			int location = glGetUniformLocation(m_programID, name.c_str());
-			if (location == -1)
+			if (!CheckErrorLocation(location))
 			{
-        Debug::Log << Logger::MessageType::ERROR_MSG 
-          <<"Missing Uniform: " << name << '\n';
-
-        CHECKGL_ERROR();
-			}
-			else
-			{
-				SetUniform(location, std::forward<T>(value));
+        SetUniform(location, std::forward<T>(value));
 			}
 		}
+
+    //! @brief Set Uniform Function
+    template<typename T>
+    void	SetUniformNoErrorCheck(const std::string& name, T&& value) const
+    {
+      using namespace NightEngine;
+      //Note: Need to Bind() first before calling this method
+      int location = glGetUniformLocation(m_programID, name.c_str());
+      if (location != -1)
+      {
+        SetUniform(location, std::forward<T>(value));
+      }
+    }
 
     //! @brief Check if this uniform is available
     bool IsValidUniform(std::string const & name) const
@@ -113,6 +119,8 @@ namespace Rendering
     }
 
 	private:
+    bool CheckErrorLocation(int location) const;
+
 		GLuint	CreateShaderObject(const std::string& filename);
 
     std::string LoadShaderSourceCode(const std::string& filePath);

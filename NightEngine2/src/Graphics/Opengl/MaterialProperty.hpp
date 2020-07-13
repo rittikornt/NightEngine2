@@ -110,7 +110,7 @@ namespace Rendering
     static const char* m_bumpMap;
 
     static const char* m_specularMap;
-    static const char* m_specularValue;
+    static const char* m_specularMul;
 
     static const char* m_metallicMap;
     static const char* m_metallicValue;

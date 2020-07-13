@@ -58,12 +58,12 @@ void main()
 	}
 
 	//Roughness, Metallic
-	float roughness = max(texture(u_material.m_roughnessMap, fs_in.ourTexCoord).r
-								, u_material.m_roughnessValue);
+	float roughness = texture(u_material.m_roughnessMap, fs_in.ourTexCoord).r
+								* u_material.m_roughnessValue;
 	roughness = max(0.01, roughness);	//Somehow 0 roughness doesn't behave properly
 
-	float metallic = max(texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
-								, u_material.m_metallicValue);
+	float metallic = texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
+								* u_material.m_metallicValue;
 
 	/////////////////////////////////////////////
 

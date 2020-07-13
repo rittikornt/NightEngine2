@@ -92,11 +92,19 @@ namespace NightEngine
 
   void ResourceManager::RefreshMaterialTextureUniforms()
   {
-    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetContainer< EC::Handle<Rendering::Material>>();
-
+    /*Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetContainer< EC::Handle<Rendering::Material>>();
     for (auto& pair : hashmap)
     {
       pair.second.Get()->RefreshTextureUniforms();
+    }*/
+
+    //Actually Traverse all material, Refreshing all texture binding index
+    auto& materialContainer = Factory::GetTypeContainer<Material>();
+    auto it = materialContainer.GetIterator();
+    while (!it.IsEnd())
+    {
+      it.Get()->RefreshTextureUniforms();
+      it.Next();
     }
   }
 

@@ -11,7 +11,8 @@ out VS_OUT
 	vec3 ourFragPos;
 	vec3 ourFragNormal;
 	vec4 ourFragPosLightSpace;
-	mat3 ourTBNMatrix;
+	vec3 ourCameraPosTS;
+	vec3 ourFragPosTS;
 } vs_out;
 
 //***************************************
@@ -28,6 +29,7 @@ uniform bool u_instanceRendering = false;
 
 uniform mat4 u_lightSpaceMatrix;
 uniform bool u_useBumpmap = false;
+uniform vec3 u_cameraPosWS;
 
 void main()
 {
@@ -53,6 +55,8 @@ void main()
 		//TBN
 		vec3 T = normalize(vec3(inverseTransposeModel * inTangent));
 		vec3 B = normalize(cross(vs_out.ourFragNormal, T));
-		vs_out.ourTBNMatrix = mat3(T, B, vs_out.ourFragNormal);
+		mat3 InverseTBNMatrix = transpose(mat3(T, B, vs_out.ourFragNormal));
+		vs_out.ourCameraPosTS = InverseTBNMatrix * u_cameraPosWS;
+		vs_out.ourFragPosTS = InverseTBNMatrix * vs_out.ourFragPos;
 	}
 }

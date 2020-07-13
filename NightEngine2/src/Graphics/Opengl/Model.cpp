@@ -211,30 +211,53 @@ namespace Rendering
         {
           //Textures
           std::string blackTexPath = FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures);
+          std::string whiteTexPath = FileSystem::GetFilePath("Blank/100.png", FileSystem::DirectoryType::Textures);
           std::string diffTexPath = diffuseTextures.size() > 0 ?
-            diffuseTextures[0] : blackTexPath;
+            diffuseTextures[0] : whiteTexPath;
+
           bool useNormal = normalsTextures.size() > 0;
           std::string normalTexPath = normalsTextures.size() > 0 ?
             normalsTextures[0] : blackTexPath;
 
-          //Init material
-          Handle<Material> handle = Factory::Create<Material>("Material");
+          bool useBump = heightTextures.size() > 0;
+          std::string bumpTexPath = heightTextures.size() > 0 ?
+            heightTextures[0] : blackTexPath;
 
-          std::string name = "mat_" + m_name + "[" + std::to_string(index) + "]";
-          handle.Get()->SetName(name);
+          bool IsbumpSpecularWorkflow = useBump || specularTextures.size() > 0;
+          {
+            //Init material
+            Handle<Material> handle = Factory::Create<Material>("Material");
 
-          handle->InitShader(DEFAULT_VERTEX_SHADER_PBR
-            , DEFAULT_FRAG_SHADER_PBR);
-          handle->InitPBRTexture(diffTexPath
-            , useNormal, normalTexPath
-            , blackTexPath, blackTexPath, blackTexPath);
+            std::string name = "mat_" + m_name + "[" + std::to_string(index) + "]";
+            handle.Get()->SetName(name);
 
-          m_materials.emplace_back(handle);
-          Debug::Log << "Created Material: " << name << '\n';
+            if (IsbumpSpecularWorkflow)
+            {
+              std::string specularTexPath = specularTextures.size() > 0 ?
+                specularTextures[0] : "";
 
-          // Save handle for this index
-          // so we only need to create Material for specifics index once
-          handleMap.insert({ index, handle });
+              handle->InitShader(DEFAULT_VERTEX_SHADER_PBR_SB
+                , DEFAULT_FRAG_SHADER_PBR_SB);
+              handle->InitPBRTexture_SpecularBump(diffTexPath
+                , useBump, bumpTexPath
+                , specularTexPath, "", "");
+            }
+            else
+            {
+              handle->InitShader(DEFAULT_VERTEX_SHADER_PBR
+                , DEFAULT_FRAG_SHADER_PBR);
+              handle->InitPBRTexture(diffTexPath
+                , useNormal, normalTexPath
+                , "", "", blackTexPath);
+            }
+
+            m_materials.emplace_back(handle);
+            Debug::Log << "Created Material: " << name << '\n';
+
+            // Save handle for this index
+            // so we only need to create Material for specifics index once
+            handleMap.insert({ index, handle });
+          }
         }
 
         added = true;

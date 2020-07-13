@@ -12,7 +12,8 @@ in VS_OUT
 	vec3 ourFragPos;
 	vec3 ourFragNormal;
 	vec4 ourFragPosLightSpace;
-	mat3 ourTBNMatrix;
+	vec3 ourCameraPosTS;
+	vec3 ourFragPosTS;
 } fs_in;
 
 //! brief Store Material information
@@ -24,7 +25,7 @@ struct Material
   float         m_bumpMultiplier;
 
   sampler2D 	m_specularMap;
-  float 		m_specularValue;
+  float 		m_specularMul;
 
   sampler2D		m_metallicMap;
   float 		m_metallicValue;
@@ -40,32 +41,41 @@ uniform vec4	 u_diffuseColor = vec4(1.0f);
 //***************************************
 uniform bool        u_useBumpmap = false;
 
+//https://learnopengl.com/Advanced-Lighting/Parallax-Mapping
+//https://forum.unity.com/threads/how-do-i-use-a-heightmap-in-shader-graph.538170/#post-3547729
+vec2 GetParallaxOffsetUV(vec2 uv, vec3 viewDirTS)
+{
+	float heightMul = 0.05;
+	float heightScale = u_material.m_bumpMultiplier;
+	float height =  texture(u_material.m_bumpMap, uv).r; 
+    heightScale = heightScale * height - (height * 0.5f);
+
+    vec3 v = (viewDirTS);
+    v.z += 0.42;
+    return uv - (heightMul * heightScale * (v.xy / v.z));
+}
+
 void main()
 {
+	vec2 uv = fs_in.ourTexCoord.xy;
+
 	//Sample Bump map
 	vec3 normal = fs_in.ourFragNormal;
+	normal = normalize(normal);
 	if(u_useBumpmap)
 	{
-		float bump = (texture(u_material.m_bumpMap, fs_in.ourTexCoord).r);
-
-		//Remap to range [-1,1]
-		bump = (bump * 2.0 - 1.0);
-		bump *= u_material.m_bumpMultiplier;
-		
-		normal.z = bump;
-		normal = normalize(normal);
-
-		//Transform tangent to world space normal
-		//normal = (fs_in.ourTBNMatrix * bump);
+		//Parallaxing map offset
+		vec3 viewDirTS = normalize(fs_in.ourCameraPosTS - fs_in.ourFragPosTS);
+		uv = GetParallaxOffsetUV(uv, viewDirTS.xyz);
 	}
 
 	//Roughness, Metallic
-	float roughness = max(texture(u_material.m_specularMap, fs_in.ourTexCoord).r
-								, u_material.m_specularValue);
+	float roughness = 1.1 - (texture(u_material.m_specularMap, uv).r * u_material.m_specularMul);
 	roughness = max(0.01, roughness);	//Somehow 0 roughness doesn't behave properly
+	roughness = clamp(roughness, 0.0, 1.0);
 
-	float metallic = max(texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
-								, u_material.m_metallicValue);
+	float metallic = texture(u_material.m_metallicMap, uv).r
+								* u_material.m_metallicValue;
 
 	/////////////////////////////////////////////
 
@@ -74,7 +84,7 @@ void main()
 	o_positionAndNormalX.w = normal.x;
 
 	//(1) vec4(albedo.xyz, n.x)
-	o_albedoAndNormalY.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb
+	o_albedoAndNormalY.rgb = texture(u_material.m_diffuseMap, uv).rgb
 								* u_diffuseColor.rgb;
 	o_albedoAndNormalY.a = normal.y;
 
@@ -84,7 +94,7 @@ void main()
 	o_lsPosAndMetallic.w = metallic;
 
 	//(3) vec4(emissive.xyz, roughness.x)
-	o_emissiveAndRoughness.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
+	o_emissiveAndRoughness.rgb = texture(u_material.m_emissiveMap, uv).rgb
 								* u_material.m_emissiveStrength;
 	o_emissiveAndRoughness.a = roughness;
 }

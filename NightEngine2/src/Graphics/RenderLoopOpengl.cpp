@@ -82,8 +82,8 @@ namespace Rendering
   static bool g_showLight = true;
   static glm::mat4   g_dirLightWorldToLightSpaceMatrix;
 
-  static float g_dirLightResolution = 2048.0f;
-  static float g_pointLightResolution = 1024.0f;
+  static int g_dirLightResolution = 2048;
+  static int g_pointLightResolution = 1024;
 
   //*********************************************
   // Helper Functions
@@ -425,7 +425,7 @@ namespace Rendering
       {
         auto lightComponent = g_sceneLights.dirLights[0]->GetComponent("Light");
         g_dirLightWorldToLightSpaceMatrix = lightComponent->Get<Light>()
-          ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, 10.0f, 0.3f, 100.0f);
+          ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, 10.0f, 0.3f, mainShadowsFarPlane);
 
         //Draw pass to FBO
         m_depthDirShadowFBO.Bind();
@@ -540,6 +540,7 @@ namespace Rendering
       {
         Shader& shader = lightingPassMat.GetShader();
         shader.SetUniform("u_farPlane", pointShadowFarPlane);
+        shader.SetUniform("u_ambientStrength", ambientStrength);
 
         if (debugView)
         {

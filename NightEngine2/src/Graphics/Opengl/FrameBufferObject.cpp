@@ -134,7 +134,7 @@ namespace Rendering
     return TextureIdentifier{ textureID, "DepthStencil" };
   }
 
-  TextureIdentifier FrameBufferObject::AttachDepthTexture(float width, float height)
+  TextureIdentifier FrameBufferObject::AttachDepthTexture(int width, int height)
   {
     //Generate ID
     unsigned int textureID;

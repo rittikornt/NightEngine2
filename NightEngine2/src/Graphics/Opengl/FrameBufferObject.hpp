@@ -53,7 +53,7 @@ namespace Rendering
       TextureIdentifier AttachDepthStencilTexture(float width, float height);
 
       //! @brief Attach depth texture to framebuffer
-      TextureIdentifier AttachDepthTexture(float width, float height);
+      TextureIdentifier AttachDepthTexture(int width, int height);
 
       //! @brief Attach Render buffer to framebuffer
       void AttachRenderBuffer(RenderBufferObject& rbo);

@@ -39,7 +39,7 @@ namespace NightEngine
 
     static Engine* GetInstance(){ return s_instance; }
 
-    void SetDebugViews(Rendering::DebugView dv, Rendering::DebugShadowView dsv);
+    Rendering::IRenderLoop* GetRenderLoop(void) { return m_renderloop; }
 
   private:
     void FixedUpdate(float dt);

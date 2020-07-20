@@ -81,6 +81,11 @@ void UnpackNormalFromRG(inout vec3 normal)
 	// z^2 = (1 - x^2 - y^2)
 	// z = sqrt(1 - x^2 - y^2)
 	normal.z = sqrt(1 - (normal.r * normal.r) - (normal.g * normal.g));
+
+	//TODO: Should use this one instead
+	// the above one somehow could cause black pixel (probably due to negating the float on GPU)
+	//normal.z = sqrt(1 - ((normal.r * normal.r) + (normal.g * normal.g)));
+	//sqrt(1 - saturate(dot(unitVector.xy, unitVector.xy)));
 }
 //**********************************************************
 // Helper Function

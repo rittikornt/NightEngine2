@@ -57,6 +57,14 @@ namespace Rendering
 
     void SetDeferredLightingPassUniforms(Material& material);
 
+  public:
+    float ambientStrength = 0.3f;
+    
+    float mainShadowsFarPlane = 100.0f;
+    int mainShadowscascadeCount = 1;
+    ShadowsResolution mainShadowResolution = ShadowsResolution::_2048;
+    ShadowsResolution pointShadowResolution = ShadowsResolution::_1024;
+
   protected:
     //Uniform Buffer Object
     UniformBufferObject m_uniformBufferObject;

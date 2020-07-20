@@ -16,7 +16,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 //Editor
-#include "Editor/PostProcessSettingEditor.hpp"
+#include "Editor/RenderSettingEditor.hpp"
 #include "Editor/DevConsole.hpp"
 
 #include "Editor/MemberSerializerEditor.hpp"
@@ -61,7 +61,7 @@ namespace Editor
 
   //Custom editor
   static DevConsole g_devConsole;
-  static PostProcessSettingEditor g_postprocessSetting;
+  static RenderSettingEditor g_postprocessSetting;
 
   static MemberSerializerEditor g_memberSerializer;
   static GameObjectBrowser      g_gameObjectBrowser;

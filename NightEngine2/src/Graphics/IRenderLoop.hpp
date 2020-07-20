@@ -7,6 +7,22 @@
 
 namespace Rendering
 {
+  enum class ShadowsResolution
+  {
+    _512 = 512,
+    _1024 = 1024,
+    _2048 = 2048,
+    _4096 = 4096
+  };
+  extern const ShadowsResolution k_shadowResEnum[4];
+
+  enum class GraphicsAPI
+  {
+    OPENGL = 0,
+    VULKAN,
+    DX12
+  };
+
   enum class DebugView
   {
     NONE = 0,
@@ -19,6 +35,7 @@ namespace Rendering
     AMBIENT,
     COUNT
   };
+  extern const char* k_debugViewStr[];
 
   enum class DebugShadowView
   {
@@ -28,8 +45,6 @@ namespace Rendering
     SHADOW_CASCADE,
     COUNT
   };
-
-  extern const char* k_debugViewStr[];
   extern const char* k_debugShadowViewStr[];
 
   class IRenderLoop
@@ -49,7 +64,11 @@ namespace Rendering
     inline void SetDebugViews(DebugView dv, DebugShadowView dsv) { m_debugView = dv; m_debugShadowView = dsv;}
 
     inline bool IsDebugView(void) { return m_debugView != DebugView::NONE || m_debugShadowView != DebugShadowView::NONE; }
+
+    inline GraphicsAPI GetAPI(void) { return m_graphicsAPI; }
   protected:
+    GraphicsAPI m_graphicsAPI = GraphicsAPI::OPENGL;
+
     DebugView m_debugView = DebugView::NONE;
     DebugShadowView m_debugShadowView = DebugShadowView::NONE;
   };

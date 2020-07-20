@@ -114,7 +114,9 @@ namespace Rendering
     , bool useBump, const std::string& bumpTextureFile
     , const std::string& specularTextureFile
     , const std::string& metallicTextureFile
-    , const std::string& emissiveTextureFile)
+    , const std::string& emissiveTextureFile
+    , bool useOpacityMask
+    , const std::string& opacityTextureFile)
   {
     //Init PBR Vals
     auto it0 = m_intMap.find(MP_PBRSpecularBumpmap::u_useBumpmap);
@@ -122,6 +124,7 @@ namespace Rendering
     {
       m_intMap[MP_PBRSpecularBumpmap::u_useBumpmap] = useBump;
     }
+    m_intMap[MP_PBRSpecularBumpmap::u_useOpacityMap] = useOpacityMask;
 
     //Init Textures
     if (diffuseTextureFile.size() > 0)
@@ -157,6 +160,13 @@ namespace Rendering
       auto emissiveTexture = Texture::LoadTextureHandle(emissiveTextureFile
         , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[EMISSIVE_TEXUNIT_INDEX] = emissiveTexture;
+    }
+
+    if (opacityTextureFile.size() > 0)
+    {
+      auto opacityTexture = Texture::LoadTextureHandle(opacityTextureFile
+        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
+      m_textureMap[OPACITYMASK_TEXUNIT_INDEX] = opacityTexture;
     }
 
     MaterialProperty::Get<MP_PBRSpecularBumpmap>().Init(*this);

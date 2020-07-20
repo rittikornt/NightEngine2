@@ -19,6 +19,13 @@
 #define ROUGHNESS_TEXUNIT_INDEX 2
 #define METALLIC_TEXUNIT_INDEX 3
 #define EMISSIVE_TEXUNIT_INDEX 4
+#define OPACITYMASK_TEXUNIT_INDEX 5
+
+// NOTE: To add MaterialProperty:
+// 1) Define const char* in MaterialProperty header/cpp
+// 2) Fill default value in MaterialProperty.Init()
+// 2.5) If the property is a texture, then fill MaterialProperty.RefreshTextureUniforms() and MaterialProperty.GetName()
+// 3) Fill editor information in MaterialProperty.GetEditorData()
 
 namespace NightEngine
 {
@@ -100,7 +107,7 @@ namespace Rendering
 
   struct MP_PBRSpecularBumpmap : public MaterialProperty
   {
-    static const char* k_textureNames[5];
+    static const char* k_textureNames[6];
 
     static const char* m_diffuseMap;
     static const char* u_diffuseColor;
@@ -117,6 +124,10 @@ namespace Rendering
 
     static const char* m_emissiveMap;
     static const char* m_emissiveStrength;
+
+    static const char* u_useOpacityMap;
+    static const char* m_opacityMap;
+    static const char* m_cutOffValue;
 
     void Init(Material& material) const override;
 

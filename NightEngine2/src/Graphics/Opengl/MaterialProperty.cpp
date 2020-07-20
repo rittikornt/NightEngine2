@@ -25,7 +25,7 @@ using namespace NightEngine::IMGUI;
 
 namespace Rendering
 {
-  const char* MP_PBRMetallic::k_textureNames[5] = 
+  const char* MP_PBRMetallic::k_textureNames[5] =
   { "DiffuseMap" , "NormalMap", "RoughnessMap", "MetallicMap", "EmissiveMap" };
 
   const char* MP_PBRMetallic::m_diffuseMap = "u_material.m_diffuseMap";
@@ -43,9 +43,9 @@ namespace Rendering
 
   const char* MP_PBRMetallic::m_emissiveMap = "u_material.m_emissiveMap";
   const char* MP_PBRMetallic::m_emissiveStrength = "u_material.m_emissiveStrength";
-  
+
   static const std::unordered_map<std::string, IMGUIEditorData> s_PBRMetallicMap
-  { 
+  {
     {"u_diffuseColor", {IMGUIEditorType::COLOR4}}
   , {"u_useNormalmap", {IMGUIEditorType::CHECKBOX}}
   , {"u_useRoughnessMap", {IMGUIEditorType::CHECKBOX}}
@@ -66,7 +66,7 @@ namespace Rendering
 
     return IMGUIEditorData{ IMGUIEditorType::DEFAULT };
   }
-  
+
   void MP_PBRMetallic::Init(Material& material) const
   {
     material.SetMaterialProperty(this);
@@ -77,22 +77,22 @@ namespace Rendering
     auto& intMap = material.GetIntMap();
 
     FILL_IF_NOT_EXIST(intMap, MP_PBRMetallic::u_useNormalmap, false)
-    FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_normalMultiplier, 1.0f)
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_normalMultiplier, 1.0f)
 
-    float rVal = (IF_EXIST(texMap, ROUGHNESS_TEXUNIT_INDEX)) ? 1.0f: 0.5f;
+      float rVal = (IF_EXIST(texMap, ROUGHNESS_TEXUNIT_INDEX)) ? 1.0f : 0.5f;
     FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_roughnessValue, rVal)
 
-    float mVal = (IF_EXIST(texMap, METALLIC_TEXUNIT_INDEX)) ? 1.0f : 0.1f;
+      float mVal = (IF_EXIST(texMap, METALLIC_TEXUNIT_INDEX)) ? 1.0f : 0.1f;
     FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_metallicValue, mVal)
 
-    FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_emissiveStrength, 15.0f)
-    FILL_IF_NOT_EXIST(vec4Map, MP_PBRMetallic::u_diffuseColor, glm::vec4(1.0f))
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_emissiveStrength, 15.0f)
+      FILL_IF_NOT_EXIST(vec4Map, MP_PBRMetallic::u_diffuseColor, glm::vec4(1.0f))
 
-    FILL_IF_NOT_EXIST(texMap, DIFFUSE_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
-    FILL_IF_NOT_EXIST(texMap, NORMAL_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
-    FILL_IF_NOT_EXIST(texMap, ROUGHNESS_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
-    FILL_IF_NOT_EXIST(texMap, METALLIC_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
-    FILL_IF_NOT_EXIST(texMap, EMISSIVE_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
+      FILL_IF_NOT_EXIST(texMap, DIFFUSE_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
+      FILL_IF_NOT_EXIST(texMap, NORMAL_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
+      FILL_IF_NOT_EXIST(texMap, ROUGHNESS_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
+      FILL_IF_NOT_EXIST(texMap, METALLIC_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
+      FILL_IF_NOT_EXIST(texMap, EMISSIVE_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
   }
 
   void MP_PBRMetallic::RefreshTextureUniforms(const Shader& shader) const
@@ -103,11 +103,14 @@ namespace Rendering
     shader.SetUniform(MP_PBRMetallic::m_metallicMap, METALLIC_TEXUNIT_INDEX);
     shader.SetUniform(MP_PBRMetallic::m_emissiveMap, EMISSIVE_TEXUNIT_INDEX);
   }
+}
 
-  ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 
-  const char* MP_PBRSpecularBumpmap::k_textureNames[5] =
-  { "DiffuseMap" , "BumpMap", "SpecularMap", "MetallicMap", "EmissiveMap" };
+namespace Rendering
+{
+  const char* MP_PBRSpecularBumpmap::k_textureNames[6] =
+  { "DiffuseMap" , "BumpMap", "SpecularMap", "MetallicMap", "EmissiveMap", "OpacityMap" };
 
   const char* MP_PBRSpecularBumpmap::m_diffuseMap = "u_material.m_diffuseMap";
   const char* MP_PBRSpecularBumpmap::u_diffuseColor = "u_diffuseColor";
@@ -125,15 +128,19 @@ namespace Rendering
   const char* MP_PBRSpecularBumpmap::m_emissiveMap = "u_material.m_emissiveMap";
   const char* MP_PBRSpecularBumpmap::m_emissiveStrength = "u_material.m_emissiveStrength";
 
+  const char* MP_PBRSpecularBumpmap::u_useOpacityMap = "u_useOpacityMap";
+  const char* MP_PBRSpecularBumpmap::m_opacityMap = "u_material.m_opacityMap";
+  const char* MP_PBRSpecularBumpmap::m_cutOffValue = "u_material.m_cutOffValue";
+
   static const std::unordered_map<std::string, IMGUIEditorData> s_SBMap
   {
     {"u_diffuseColor", {IMGUIEditorType::COLOR4}}
   , {"u_useBumpmap", {IMGUIEditorType::CHECKBOX}}
-  , {"u_useMetallicMap", {IMGUIEditorType::CHECKBOX}}
   , {"u_material.m_bumpMultiplier", {IMGUIEditorType::DRAGSCALAR, 0.01f, 5.0f}}
   , {"u_material.m_specularMul", {IMGUIEditorType::DRAGSCALAR, 0.0f, 1.0f}}
   , {"u_material.m_metallicValue", {IMGUIEditorType::DRAGSCALAR, 0.0f, 1.0f}}
   , {"u_material.m_emissiveStrength", {IMGUIEditorType::DRAGSCALAR, 0.0f, 20.0f}}
+  , {"u_useOpacityMap", {IMGUIEditorType::CHECKBOX}}
   };
 
   void MP_PBRSpecularBumpmap::Init(Material& material) const
@@ -145,23 +152,28 @@ namespace Rendering
     auto& floatMap = material.GetFloatMap();
     auto& intMap = material.GetIntMap();
 
-    FILL_IF_NOT_EXIST(intMap, MP_PBRSpecularBumpmap::u_useBumpmap, false)
-    FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_bumpMultiplier, 1.0f)
+      FILL_IF_NOT_EXIST(intMap, MP_PBRSpecularBumpmap::u_useBumpmap, false)
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_bumpMultiplier, 1.0f)
 
-    float sVal = (IF_EXIST(texMap, SPECULAR_TEXUNIT_INDEX)) ? 1.0f : 0.5f;
-    FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_specularMul, sVal)
+      float sVal = (IF_EXIST(texMap, SPECULAR_TEXUNIT_INDEX)) ? 1.0f : 0.5f;
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_specularMul, sVal)
 
-    float mVal = (IF_EXIST(texMap, METALLIC_TEXUNIT_INDEX)) ? 1.0f : 0.1f;
-    FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_metallicValue, mVal)
+      float mVal = (IF_EXIST(texMap, METALLIC_TEXUNIT_INDEX)) ? 1.0f : 0.1f;
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_metallicValue, mVal)
 
-    FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_emissiveStrength, 15.0f)
-    FILL_IF_NOT_EXIST(vec4Map, MP_PBRSpecularBumpmap::u_diffuseColor, glm::vec4(1.0f))
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_emissiveStrength, 15.0f)
 
-    FILL_IF_NOT_EXIST(texMap, DIFFUSE_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
-    FILL_IF_NOT_EXIST(texMap, BUMP_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
-    FILL_IF_NOT_EXIST(texMap, SPECULAR_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
-    FILL_IF_NOT_EXIST(texMap, METALLIC_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
-    FILL_IF_NOT_EXIST(texMap, EMISSIVE_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
+      FILL_IF_NOT_EXIST(vec4Map, MP_PBRSpecularBumpmap::u_diffuseColor, glm::vec4(1.0f))
+
+      FILL_IF_NOT_EXIST(intMap, MP_PBRSpecularBumpmap::u_useOpacityMap, false)
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRSpecularBumpmap::m_cutOffValue, 0.1f)
+
+      FILL_IF_NOT_EXIST(texMap, DIFFUSE_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
+      FILL_IF_NOT_EXIST(texMap, BUMP_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
+      FILL_IF_NOT_EXIST(texMap, SPECULAR_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
+      FILL_IF_NOT_EXIST(texMap, METALLIC_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
+      FILL_IF_NOT_EXIST(texMap, EMISSIVE_TEXUNIT_INDEX, ResourceManager::GetBlackTexture())
+      FILL_IF_NOT_EXIST(texMap, OPACITYMASK_TEXUNIT_INDEX, ResourceManager::GetWhiteTexture())
   }
 
   void MP_PBRSpecularBumpmap::RefreshTextureUniforms(const Shader& shader) const
@@ -171,6 +183,7 @@ namespace Rendering
     shader.SetUniform(MP_PBRSpecularBumpmap::m_specularMap, SPECULAR_TEXUNIT_INDEX);
     shader.SetUniform(MP_PBRSpecularBumpmap::m_metallicMap, METALLIC_TEXUNIT_INDEX);
     shader.SetUniform(MP_PBRSpecularBumpmap::m_emissiveMap, EMISSIVE_TEXUNIT_INDEX);
+    shader.SetUniform(MP_PBRSpecularBumpmap::m_opacityMap, OPACITYMASK_TEXUNIT_INDEX);
   }
 
   NightEngine::IMGUI::IMGUIEditorData MP_PBRSpecularBumpmap::GetEditorData(const char* name) const

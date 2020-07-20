@@ -187,6 +187,7 @@ namespace Rendering
     std::vector<std::string> specularTextures;
     std::vector<std::string> heightTextures;
     std::vector<std::string> normalsTextures;
+    std::vector<std::string> opacityTextures;
 
     bool added = false;
     if(index >= 0 && index < scene->mNumMaterials)
@@ -197,6 +198,7 @@ namespace Rendering
       hasTexture |= GetTextures(specularTextures, material, aiTextureType_SPECULAR);
       hasTexture |= GetTextures(heightTextures, material, aiTextureType_HEIGHT);
       hasTexture |= GetTextures(normalsTextures, material, aiTextureType_NORMALS);
+      hasTexture |= GetTextures(opacityTextures, material, aiTextureType_OPACITY);
 
       //Create Material Handle
       if(hasTexture)
@@ -216,12 +218,16 @@ namespace Rendering
             diffuseTextures[0] : whiteTexPath;
 
           bool useNormal = normalsTextures.size() > 0;
-          std::string normalTexPath = normalsTextures.size() > 0 ?
+          std::string normalTexPath = useNormal ?
             normalsTextures[0] : blackTexPath;
 
           bool useBump = heightTextures.size() > 0;
-          std::string bumpTexPath = heightTextures.size() > 0 ?
+          std::string bumpTexPath = useBump ?
             heightTextures[0] : blackTexPath;
+
+          bool useOpacityMask = opacityTextures.size() > 0;
+          std::string opacityTexPath = useOpacityMask ?
+            opacityTextures[0] : whiteTexPath;
 
           bool IsbumpSpecularWorkflow = useBump || specularTextures.size() > 0;
           {
@@ -240,7 +246,8 @@ namespace Rendering
                 , DEFAULT_FRAG_SHADER_PBR_SB);
               handle->InitPBRTexture_SpecularBump(diffTexPath
                 , useBump, bumpTexPath
-                , specularTexPath, "", "");
+                , specularTexPath, "", ""
+                , useOpacityMask, opacityTexPath);
             }
             else
             {

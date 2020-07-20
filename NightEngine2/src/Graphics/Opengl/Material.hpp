@@ -68,7 +68,9 @@ namespace Rendering
         , const std::string& bumpTextureFile
         , const std::string& specularTextureFile
         , const std::string& metallicTextureFile
-        , const std::string& emissiveTextureFile);
+        , const std::string& emissiveTextureFile
+        , bool useOpacityMask
+        , const std::string& opacityTextureFile);
 
       //! @brief Initialize Texture
       void RefreshTextureUniforms(void) const;

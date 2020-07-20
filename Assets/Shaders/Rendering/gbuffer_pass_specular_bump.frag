@@ -32,6 +32,9 @@ struct Material
 	
   sampler2D 	m_emissiveMap;
   float			m_emissiveStrength;
+  
+  sampler2D 	m_opacityMap;
+  float			m_cutOffValue;
 };
 uniform Material u_material;
 uniform vec4	 u_diffuseColor = vec4(1.0f);
@@ -40,6 +43,7 @@ uniform vec4	 u_diffuseColor = vec4(1.0f);
 // Uniforms
 //***************************************
 uniform bool        u_useBumpmap = false;
+uniform bool        u_useOpacityMap = false;
 
 //https://learnopengl.com/Advanced-Lighting/Parallax-Mapping
 //https://forum.unity.com/threads/how-do-i-use-a-heightmap-in-shader-graph.538170/#post-3547729
@@ -58,6 +62,15 @@ vec2 GetParallaxOffsetUV(vec2 uv, vec3 viewDirTS)
 void main()
 {
 	vec2 uv = fs_in.ourTexCoord.xy;
+
+	if(u_useOpacityMap)
+	{
+		float opacity = texture(u_material.m_opacityMap, uv).r;
+		if(opacity < u_material.m_cutOffValue)
+		{
+			discard;
+		}
+	}
 
 	//Sample Bump map
 	vec3 normal = fs_in.ourFragNormal;

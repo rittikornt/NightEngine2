@@ -231,7 +231,8 @@ namespace Editor
           , DEFAULT_FRAG_SHADER_PBR);
         handle->InitPBRTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
           , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
-          , "", "", FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures));
+          , "", "", FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures)
+          , false, "");
 
         g_curSelectedMaterial = Slotmap<Material>::Iterator{};
         g_selectedIndex = 0;

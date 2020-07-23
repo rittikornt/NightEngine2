@@ -60,14 +60,6 @@ namespace Rendering
         , const std::string& normalTextureFile
         , const std::string& roughnessTextureFile
         , const std::string& metallicTextureFile
-        , const std::string& emissiveTextureFile);
-
-      //! @brief Initialize Texture
-      void	InitPBRTexture_SpecularBump(const std::string& diffuseTextureFile
-        , bool useBump
-        , const std::string& bumpTextureFile
-        , const std::string& specularTextureFile
-        , const std::string& metallicTextureFile
         , const std::string& emissiveTextureFile
         , bool useOpacityMask
         , const std::string& opacityTextureFile);

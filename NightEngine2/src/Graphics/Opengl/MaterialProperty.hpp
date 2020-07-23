@@ -9,11 +9,7 @@
 #define DEFAULT_VERTEX_SHADER_PBR "Rendering/gbuffer_pass.vert"
 #define DEFAULT_FRAG_SHADER_PBR "Rendering/gbuffer_pass.frag"
 
-#define DEFAULT_VERTEX_SHADER_PBR_SB "Rendering/gbuffer_pass_specular_bump.vert"
-#define DEFAULT_FRAG_SHADER_PBR_SB "Rendering/gbuffer_pass_specular_bump.frag"
-
 #define DIFFUSE_TEXUNIT_INDEX 0
-#define BUMP_TEXUNIT_INDEX 1
 #define NORMAL_TEXUNIT_INDEX 1
 #define SPECULAR_TEXUNIT_INDEX 2
 #define ROUGHNESS_TEXUNIT_INDEX 2
@@ -76,7 +72,7 @@ namespace Rendering
 
   struct MP_PBRMetallic: public MaterialProperty
   {
-    static const char* k_textureNames[5];
+    static const char* k_textureNames[6];
 
     static const char* m_diffuseMap;
     static const char* u_diffuseColor;
@@ -87,37 +83,6 @@ namespace Rendering
 
     static const char* m_roughnessMap;
     static const char* m_roughnessValue;
-
-    static const char* m_metallicMap;
-    static const char* m_metallicValue;
-
-    static const char* m_emissiveMap;
-    static const char* m_emissiveStrength;
-
-    void Init(Material& material) const override;
-
-    void RefreshTextureUniforms(const Shader& shader) const override;
-
-    const char* GetName(int index) const override { return k_textureNames[index]; }
-
-    NightEngine::IMGUI::IMGUIEditorData GetEditorData(const char* name) const override;
-  };
-
-  ////////////////////////////////////////////////////////////
-
-  struct MP_PBRSpecularBumpmap : public MaterialProperty
-  {
-    static const char* k_textureNames[6];
-
-    static const char* m_diffuseMap;
-    static const char* u_diffuseColor;
-
-    static const char* u_useBumpmap;
-    static const char* m_bumpMultiplier;
-    static const char* m_bumpMap;
-
-    static const char* m_specularMap;
-    static const char* m_specularMul;
 
     static const char* m_metallicMap;
     static const char* m_metallicValue;

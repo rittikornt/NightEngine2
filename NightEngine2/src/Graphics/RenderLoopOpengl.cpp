@@ -241,7 +241,8 @@ namespace Rendering
 
     m_defaultMaterial->InitPBRTexture(FileSystem::GetFilePath("diffuse_brickwall.jpg", FileSystem::DirectoryType::Textures)
       , true, FileSystem::GetFilePath("normal_brickwall.jpg", FileSystem::DirectoryType::Textures)
-      , "", "", FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures));
+      , "", "", FileSystem::GetFilePath("emissive_wood.png", FileSystem::DirectoryType::Textures)
+      , false, "");
 
     m_lightingMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Rendering/deferred_lighting_pbr_pass.frag");
@@ -349,6 +350,13 @@ namespace Rendering
   {
     g_time += dt;
     g_time = fmodf(g_time, FLT_MAX);
+
+    //Update the new Projection Matrix
+    g_camera.m_camSize.m_fov = cameraFOV;
+    g_camera.m_far = cameraFarPlane;
+    m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
+      , glm::value_ptr(g_camera.GetProjectionMatrix()));
+
     CameraObject::ProcessCameraInput(g_camera, dt);
 
     //*************************************************

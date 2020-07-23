@@ -177,6 +177,16 @@ namespace Editor
                 static float s_ai_max = 1.0f;
                 ImGui::DragScalar("Ambient Intensity", ImGuiDataType_Float
                   , &(rlgl->ambientStrength), 0.5f, &s_ai_min, &s_ai_max);
+
+                static float s_cfov_min = 10.0f;
+                static float s_cfov_max = 120.0f;
+                ImGui::DragScalar("Camera FOV", ImGuiDataType_Float
+                  , &(rlgl->cameraFOV), 0.5f, &s_cfov_min, &s_cfov_max);
+
+                static float s_cfp_min = 10.0f;
+                static float s_cfp_max = 2000.0f;
+                ImGui::DragScalar("Camera Far Plane", ImGuiDataType_Float
+                  , &(rlgl->cameraFarPlane), 0.5f, &s_cfp_min, &s_cfp_max);
               }
               ImGui::Unindent();
             }

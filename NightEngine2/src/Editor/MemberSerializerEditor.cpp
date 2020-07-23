@@ -125,6 +125,8 @@ namespace Editor
         , FileSystem::FileFilter::FullPath, ".png", false, true, false);
       FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Assets, s_items
         , FileSystem::FileFilter::FullPath, ".jpg", false, true, false);
+      FileSystem::GetAllFilesInDirectory(FileSystem::DirectoryType::Assets, s_items
+        , FileSystem::FileFilter::FullPath, ".tga", false, true, false);
 
       s_itemsMap.clear();
       for (int i = 0; i < s_items.size(); ++i)

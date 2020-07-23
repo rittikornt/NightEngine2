@@ -31,6 +31,9 @@ struct Material
 	
   sampler2D 	m_emissiveMap;
   float			m_emissiveStrength;
+  
+  sampler2D 	m_opacityMap;
+  float			m_cutOffValue;
 };
 uniform Material u_material;
 uniform vec4	 u_diffuseColor = vec4(1.0f);
@@ -39,14 +42,26 @@ uniform vec4	 u_diffuseColor = vec4(1.0f);
 // Uniforms
 //***************************************
 uniform bool        u_useNormalmap = false;
+uniform bool        u_useOpacityMap = false;
 
 void main()
 {
+	vec2 uv = fs_in.ourTexCoord.xy;
+
+	if(u_useOpacityMap)
+	{
+		float opacity = texture(u_material.m_opacityMap, uv).r;
+		if(opacity < u_material.m_cutOffValue)
+		{
+			discard;
+		}
+	}
+
 	//Sample Normal map
 	vec3 normal = fs_in.ourFragNormal;
 	if(u_useNormalmap)
 	{
-		normal = (texture(u_material.m_normalMap, fs_in.ourTexCoord).rgb);
+		normal = (texture(u_material.m_normalMap, uv).rgb);
 
 		//Remap to range [-1,1]
 		normal = normalize(normal * 2.0 - 1.0);
@@ -58,11 +73,11 @@ void main()
 	}
 
 	//Roughness, Metallic
-	float roughness = texture(u_material.m_roughnessMap, fs_in.ourTexCoord).r
+	float roughness = texture(u_material.m_roughnessMap, uv).r
 								* u_material.m_roughnessValue;
 	roughness = max(0.01, roughness);	//Somehow 0 roughness doesn't behave properly
 
-	float metallic = texture(u_material.m_metallicMap, fs_in.ourTexCoord).r
+	float metallic = texture(u_material.m_metallicMap, uv).r
 								* u_material.m_metallicValue;
 
 	/////////////////////////////////////////////
@@ -72,7 +87,7 @@ void main()
 	o_positionAndNormalX.w = normal.x;
 
 	//(1) vec4(albedo.xyz, n.x)
-	o_albedoAndNormalY.rgb = texture(u_material.m_diffuseMap, fs_in.ourTexCoord).rgb
+	o_albedoAndNormalY.rgb = texture(u_material.m_diffuseMap, uv).rgb
 								* u_diffuseColor.rgb;
 	o_albedoAndNormalY.a = normal.y;
 
@@ -82,7 +97,7 @@ void main()
 	o_lsPosAndMetallic.w = metallic;
 
 	//(3) vec4(emissive.xyz, roughness.x)
-	o_emissiveAndRoughness.rgb = texture(u_material.m_emissiveMap, fs_in.ourTexCoord).rgb
+	o_emissiveAndRoughness.rgb = texture(u_material.m_emissiveMap, uv).rgb
 								* u_material.m_emissiveStrength;
 	o_emissiveAndRoughness.a = roughness;
 }

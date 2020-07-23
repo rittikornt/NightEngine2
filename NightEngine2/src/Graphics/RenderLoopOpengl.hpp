@@ -59,6 +59,8 @@ namespace Rendering
 
   public:
     float ambientStrength = 0.3f;
+    float cameraFOV = 100.0f;
+    float cameraFarPlane = 100.0f;
     
     float mainShadowsFarPlane = 100.0f;
     int mainShadowscascadeCount = 1;

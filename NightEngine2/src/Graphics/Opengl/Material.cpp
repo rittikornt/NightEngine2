@@ -61,7 +61,9 @@ namespace Rendering
     , bool useNormal, const std::string& normalTextureFile
     , const std::string& roughnessTextureFile
     , const std::string& metallicTextureFile
-    , const std::string& emissiveTextureFile)
+    , const std::string& emissiveTextureFile
+    , bool useOpacityMask
+    , const std::string& opacityTextureFile)
   {
     //Init PBR Vals
     auto it0 = m_intMap.find(MP_PBRMetallic::u_useNormalmap);
@@ -69,6 +71,7 @@ namespace Rendering
     {
       m_intMap[MP_PBRMetallic::u_useNormalmap] = useNormal;
     }
+    m_intMap[MP_PBRMetallic::u_useOpacityMap] = useOpacityMask;
 
     //Init Textures
     if (diffuseTextureFile.size() > 0)
@@ -106,62 +109,6 @@ namespace Rendering
       m_textureMap[EMISSIVE_TEXUNIT_INDEX] = emissiveTexture;
     }
 
-    MaterialProperty::Get<MP_PBRMetallic>().Init(*this);
-    RefreshTextureUniforms();
-  }
-
-  void Material::InitPBRTexture_SpecularBump(const std::string& diffuseTextureFile
-    , bool useBump, const std::string& bumpTextureFile
-    , const std::string& specularTextureFile
-    , const std::string& metallicTextureFile
-    , const std::string& emissiveTextureFile
-    , bool useOpacityMask
-    , const std::string& opacityTextureFile)
-  {
-    //Init PBR Vals
-    auto it0 = m_intMap.find(MP_PBRSpecularBumpmap::u_useBumpmap);
-    if (it0 == m_intMap.end())
-    {
-      m_intMap[MP_PBRSpecularBumpmap::u_useBumpmap] = useBump;
-    }
-    m_intMap[MP_PBRSpecularBumpmap::u_useOpacityMap] = useOpacityMask;
-
-    //Init Textures
-    if (diffuseTextureFile.size() > 0)
-    {
-      auto diffuseTexture = Texture::LoadTextureHandle(diffuseTextureFile
-        , Texture::Channel::SRGB, Texture::FilterMode::TRILINEAR);
-      m_textureMap[DIFFUSE_TEXUNIT_INDEX] = diffuseTexture;
-    }
-
-    if (bumpTextureFile.size() > 0)
-    {
-      auto bumpTexture = Texture::LoadTextureHandle(bumpTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
-      m_textureMap[BUMP_TEXUNIT_INDEX] = bumpTexture;
-    }
-
-    if (specularTextureFile.size() > 0)
-    {
-      auto specularTexture = Texture::LoadTextureHandle(specularTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
-      m_textureMap[SPECULAR_TEXUNIT_INDEX] = specularTexture;
-    }
-
-    if (metallicTextureFile.size() > 0)
-    {
-      auto metallicTexture = Texture::LoadTextureHandle(metallicTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
-      m_textureMap[METALLIC_TEXUNIT_INDEX] = metallicTexture;
-    }
-
-    if (emissiveTextureFile.size() > 0)
-    {
-      auto emissiveTexture = Texture::LoadTextureHandle(emissiveTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
-      m_textureMap[EMISSIVE_TEXUNIT_INDEX] = emissiveTexture;
-    }
-
     if (opacityTextureFile.size() > 0)
     {
       auto opacityTexture = Texture::LoadTextureHandle(opacityTextureFile
@@ -169,7 +116,7 @@ namespace Rendering
       m_textureMap[OPACITYMASK_TEXUNIT_INDEX] = opacityTexture;
     }
 
-    MaterialProperty::Get<MP_PBRSpecularBumpmap>().Init(*this);
+    MaterialProperty::Get<MP_PBRMetallic>().Init(*this);
     RefreshTextureUniforms();
   }
 

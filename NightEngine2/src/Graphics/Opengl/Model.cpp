@@ -184,9 +184,10 @@ namespace Rendering
     , std::unordered_map<int, Handle<Material>>& handleMap)
   {
     std::vector<std::string> diffuseTextures;
-    std::vector<std::string> specularTextures;
-    std::vector<std::string> heightTextures;
     std::vector<std::string> normalsTextures;
+
+    std::vector<std::string> roughnessTextures;
+    std::vector<std::string> metallicTextures;
     std::vector<std::string> opacityTextures;
 
     bool added = false;
@@ -194,10 +195,12 @@ namespace Rendering
     {
       aiMaterial* material = scene->mMaterials[index];
       
+      //This is specifically for loading sponza scene
       bool hasTexture = GetTextures(diffuseTextures, material, aiTextureType_DIFFUSE);
-      hasTexture |= GetTextures(specularTextures, material, aiTextureType_SPECULAR);
-      hasTexture |= GetTextures(heightTextures, material, aiTextureType_HEIGHT);
       hasTexture |= GetTextures(normalsTextures, material, aiTextureType_NORMALS);
+      
+      hasTexture |= GetTextures(roughnessTextures, material, aiTextureType_SPECULAR);
+      hasTexture |= GetTextures(metallicTextures, material, aiTextureType_AMBIENT);
       hasTexture |= GetTextures(opacityTextures, material, aiTextureType_OPACITY);
 
       //Create Material Handle
@@ -221,41 +224,28 @@ namespace Rendering
           std::string normalTexPath = useNormal ?
             normalsTextures[0] : blackTexPath;
 
-          bool useBump = heightTextures.size() > 0;
-          std::string bumpTexPath = useBump ?
-            heightTextures[0] : blackTexPath;
-
+          std::string roughnessTexPath = roughnessTextures.size() > 0 ?
+            roughnessTextures[0] : "";
+          std::string metallicTexPath = metallicTextures.size() > 0 ?
+            metallicTextures[0] : "";
           bool useOpacityMask = opacityTextures.size() > 0;
           std::string opacityTexPath = useOpacityMask ?
             opacityTextures[0] : whiteTexPath;
 
-          bool IsbumpSpecularWorkflow = useBump || specularTextures.size() > 0;
           {
             //Init material
             Handle<Material> handle = Factory::Create<Material>("Material");
-
+            
             std::string name = "mat_" + m_name + "[" + std::to_string(index) + "]";
             handle.Get()->SetName(name);
 
-            if (IsbumpSpecularWorkflow)
-            {
-              std::string specularTexPath = specularTextures.size() > 0 ?
-                specularTextures[0] : "";
-
-              handle->InitShader(DEFAULT_VERTEX_SHADER_PBR_SB
-                , DEFAULT_FRAG_SHADER_PBR_SB);
-              handle->InitPBRTexture_SpecularBump(diffTexPath
-                , useBump, bumpTexPath
-                , specularTexPath, "", ""
-                , useOpacityMask, opacityTexPath);
-            }
-            else
             {
               handle->InitShader(DEFAULT_VERTEX_SHADER_PBR
                 , DEFAULT_FRAG_SHADER_PBR);
               handle->InitPBRTexture(diffTexPath
                 , useNormal, normalTexPath
-                , "", "", blackTexPath);
+                , roughnessTexPath, metallicTexPath, blackTexPath
+                , useOpacityMask, opacityTexPath);
             }
 
             m_materials.emplace_back(handle);

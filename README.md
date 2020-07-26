@@ -2,7 +2,7 @@
 ![Screenshot](https://i.imgur.com/orlfchK.png)
 
 ## Summary
-NightEngine2 is a open-source 3D component-based game engine written in C++. This is a project migrated from my old repo [NightEngine](https://bitbucket.org/BellyLand/nightengine/overview).
+NightEngine2 is a open-source 3D component-based game engine written in C++. This is a project migrated from my old repo [NightEngine](https://bitbucket.org/BellyLand/nightengine/overview). This project is mostly for education purpose and is by no mean production ready.
 
 ## Feature List
 --Coming Soon

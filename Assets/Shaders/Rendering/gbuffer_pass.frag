@@ -75,7 +75,7 @@ void main()
 	//Roughness, Metallic
 	float roughness = texture(u_material.m_roughnessMap, uv).r
 								* u_material.m_roughnessValue;
-	roughness = max(0.01, roughness);	//Somehow 0 roughness doesn't behave properly
+	roughness = clamp(roughness, 0.01, 1.0);
 
 	float metallic = texture(u_material.m_metallicMap, uv).r
 								* u_material.m_metallicValue;

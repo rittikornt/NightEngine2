@@ -91,14 +91,14 @@ namespace Rendering
     if (roughnessTextureFile.size() > 0)
     {
       auto roughnessTexture = Texture::LoadTextureHandle(roughnessTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
+        , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
       m_textureMap[ROUGHNESS_TEXUNIT_INDEX] = roughnessTexture;
     }
 
     if (metallicTextureFile.size() > 0)
     {
       auto metallicTexture = Texture::LoadTextureHandle(metallicTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
+        , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
       m_textureMap[METALLIC_TEXUNIT_INDEX] = metallicTexture;
     }
 

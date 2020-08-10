@@ -33,6 +33,7 @@ namespace Rendering
     EMISSIVE,
     LIGHT_SPACE_POS,
     AMBIENT,
+    MAIN_SHADOW_DEPTH,
     COUNT
   };
   extern const char* k_debugViewStr[];

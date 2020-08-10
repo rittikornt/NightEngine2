@@ -101,6 +101,7 @@ void main()
 		color.rgb += emissive.rgb;
 	}
 
+	//Match the case in IRenderLoop.hpp DebugView enum
 	switch(u_debugViewIndex)
 	{
 		case 1:	//ALBEDO
@@ -125,6 +126,9 @@ void main()
 		case 7: //AMBIENT
 		color = CalculateAmbientLighting(surfaceData
 						, albedo.rgb, roughness, metallic);
+		break;
+		case 8: //MAIN_SHADOW_DEPTH
+		color = vec3(texture(u_shadowMap2D, OurTexCoords).r, 0.0, 0.0);
 		break;
 	}
 

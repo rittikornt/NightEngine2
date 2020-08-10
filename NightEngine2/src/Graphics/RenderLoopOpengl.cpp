@@ -433,7 +433,7 @@ namespace Rendering
       {
         auto lightComponent = g_sceneLights.dirLights[0]->GetComponent("Light");
         g_dirLightWorldToLightSpaceMatrix = lightComponent->Get<Light>()
-          ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, 10.0f, 0.3f, mainShadowsFarPlane);
+          ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, mainShadowsSize, 0.3f, mainShadowsFarPlane);
 
         //Draw pass to FBO
         m_depthDirShadowFBO.Bind();
@@ -586,8 +586,11 @@ namespace Rendering
       lightingPassMat.Unbind();
 
       //Draw Cubemap
-      glEnable(GL_DEPTH_TEST);
-      m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
+      if (m_debugView != DebugView::MAIN_SHADOW_DEPTH)
+      {
+        glEnable(GL_DEPTH_TEST);
+        m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
+      }
     }
     m_sceneFbo.Unbind();
     DebugMarker::PopDebugGroup();

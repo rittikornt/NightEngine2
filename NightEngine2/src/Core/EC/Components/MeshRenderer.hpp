@@ -26,7 +26,7 @@ namespace NightEngine
             , InheritType::PUBLIC, true
             , nullptr, nullptr)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_material, true)
-            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_materials, true)
+            .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_materials, false)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_useModelLoadedMaterials, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_drawMode, true)
             .MR_ADD_MEMBER_PROTECTED(MeshRenderer, m_submeshCount, true)

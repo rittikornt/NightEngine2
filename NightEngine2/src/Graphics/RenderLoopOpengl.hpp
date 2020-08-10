@@ -62,6 +62,7 @@ namespace Rendering
     float cameraFOV = 100.0f;
     float cameraFarPlane = 100.0f;
     
+    float mainShadowsSize = 10.0f;
     float mainShadowsFarPlane = 100.0f;
     int mainShadowscascadeCount = 1;
     ShadowsResolution mainShadowResolution = ShadowsResolution::_2048;

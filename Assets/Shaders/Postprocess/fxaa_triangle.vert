@@ -42,6 +42,6 @@ void main()
     gl_Position = vec4(TriangleVertexPosToScreenPos(inPos.xy).xy, 0.0, 1.0); 
     OurTexCoords = TriangleVertexPosToUV(inPos.xy);
 
-  vec2 fragCoord = OurTexCoords * u_resolution;
-  texcoords(fragCoord, u_resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
+  vec2 posSS = OurTexCoords * u_resolution;
+  texcoords(posSS, u_resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
 }  

@@ -27,12 +27,10 @@ namespace Rendering
         META_REGISTERER_WITHBASE(FXAA, PostProcessEffect
           , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
-          .MR_ADD_MEMBER_PROTECTED(FXAA, m_resolution, true)
           .MR_ADD_MEMBER_PROTECTED(FXAA, m_fxaaShader, true);
       }
 
       Shader    m_fxaaShader;
-      glm::vec2 m_resolution{1.0f};
 
       //! @brief Initialization
       void Init(int width, int height);

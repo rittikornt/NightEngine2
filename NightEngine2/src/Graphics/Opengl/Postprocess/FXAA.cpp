@@ -20,12 +20,12 @@ namespace Rendering
       INIT_POSTPROCESSEFFECT();
       m_fxaaShader.Create();
       //m_fxaaShader.AttachShaderFile("Postprocess/fxaa.vert");
-      m_fxaaShader.AttachShaderFile("Postprocess/fxaa_triangle.vert");
+      //m_fxaaShader.AttachShaderFile("Postprocess/fxaa_triangle.vert");
+      m_fxaaShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
       m_fxaaShader.AttachShaderFile("Postprocess/fxaa.frag");
       m_fxaaShader.Link();
 
       RefreshTextureUniforms();
-      m_resolution = glm::vec2(width, height);
     }
 
     void FXAA::Apply(VertexArrayObject& screenVAO
@@ -35,7 +35,6 @@ namespace Rendering
       {
         m_fxaaShader.Bind();
         {
-          m_fxaaShader.SetUniform("u_resolution", m_resolution);
           screenTexture.BindToTextureUnit(0);
 
           //Draw Quad
@@ -50,7 +49,6 @@ namespace Rendering
     {
       m_fxaaShader.Bind();
       {
-        m_fxaaShader.SetUniform("u_resolution", m_resolution);
         screenTexture.BindToTextureUnit(0);
 
         //Draw Quad

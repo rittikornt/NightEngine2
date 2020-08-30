@@ -29,7 +29,7 @@ uniform mat4      u_projection;
 //***************************************
 // Exposed Parameter
 //***************************************
-uniform int       u_power = 1;
+uniform float     u_intensity = 1.0;
 uniform vec3      u_ssaoColor = vec3(1.0f);
 uniform float     u_sampleRadius = 0.5f;
 uniform float     u_bias = 0.025f;
@@ -97,9 +97,12 @@ void main()
     //Check if the sampled fragment is not visible to screen
     occlusionFactor += (closestDepth >= samplePos.z + u_bias? 1.0: 0.0) * rangeCheck;
   }
-  occlusionFactor = (1 - (occlusionFactor/ kernelSize) );
+  //occlusionFactor = (1 - (occlusionFactor/ kernelSize) );
+  //occlusionFactor = pow(occlusionFactor, u_power);
 
-  occlusionFactor = pow(occlusionFactor, u_power);
+  occlusionFactor = (occlusionFactor/ kernelSize);
+  occlusionFactor *= u_intensity;
+  occlusionFactor = 1.0 - occlusionFactor;
 
   FragColor = vec4(u_ssaoColor * occlusionFactor,1.0);
 }

@@ -34,7 +34,7 @@ namespace Rendering
           , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_resolution, true)
-          .MR_ADD_MEMBER_PROTECTED(SSAO, m_power, true)
+          .MR_ADD_MEMBER_PROTECTED(SSAO, m_intensity, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_blurIteration, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_useKawaseBlur, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_color, true)
@@ -50,7 +50,7 @@ namespace Rendering
 
       //Settings
       glm::ivec2        m_resolution = glm::ivec2(1);
-      int               m_power = 2;
+      float             m_intensity = 2.0f;
       int               m_blurIteration = 4;
       bool              m_useKawaseBlur = false;
       glm::vec3         m_color{1.0f};

@@ -114,7 +114,7 @@ namespace Rendering
           }
 
           //Uniforms
-          m_ssaoShader.SetUniform("u_power", m_power);
+          m_ssaoShader.SetUniform("u_intensity", m_intensity);
           m_ssaoShader.SetUniform("u_ssaoColor", m_color);
           m_ssaoShader.SetUniform("u_sampleRadius", m_sampleRadius);
           m_ssaoShader.SetUniform("u_bias", m_bias);

@@ -65,7 +65,7 @@ namespace Rendering
       bool              m_halfResolution = false;
       bool              m_upscalingPass = true;
       float             m_scattering = 0.5f;
-      float             m_bloomThreshold = 6.0f;
+      float             m_bloomThreshold = 2.0f;
       int               m_blurIteration = 4;
       glm::vec2         m_blurDir = glm::vec2(0.0f);
 

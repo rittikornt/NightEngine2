@@ -91,7 +91,7 @@ namespace Rendering
       float mVal = (IF_EXIST(texMap, METALLIC_TEXUNIT_INDEX)) ? 1.0f : 0.1f;
       FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_metallicValue, mVal)
 
-      FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_emissiveStrength, 15.0f)
+      FILL_IF_NOT_EXIST(floatMap, MP_PBRMetallic::m_emissiveStrength, 5.0f)
       FILL_IF_NOT_EXIST(vec4Map, MP_PBRMetallic::u_diffuseColor, glm::vec4(1.0f))
 
       FILL_IF_NOT_EXIST(intMap, MP_PBRMetallic::u_useOpacityMap, false)

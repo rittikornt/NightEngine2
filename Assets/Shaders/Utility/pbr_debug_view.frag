@@ -121,7 +121,7 @@ void main()
 		break;
 		case 6: //LIGHT_SPACE_POS
 		float lsdepth = (fragPosLightSpace.z * 0.5) + 0.5;
-		color = vec3(lsdepth);
+		color = vec3(lsdepth, 0.0, 0.0);
 		break;
 		case 7: //AMBIENT
 		color = CalculateAmbientLighting(surfaceData

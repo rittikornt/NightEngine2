@@ -198,7 +198,7 @@ namespace Rendering
     //Scene Texture
     m_sceneTexture = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
-      , Texture::FilterMode::NEAREST
+      , Texture::FilterMode::LINEAR
       , Texture::WrapMode::CLAMP_TO_EDGE);
     m_sceneRbo.Init(width, height);
 
@@ -220,8 +220,8 @@ namespace Rendering
     m_screenTriangleVAO.Build(BufferMode::Static, Triangle::vertices
       , Triangle::indices, Triangle::info);
     
-    m_postfxFinalMaterial.InitShader("Utility/fullscreenTriangle.vert"
-      , "Postprocess/finaldraw.frag");
+    m_uberPostMaterial.InitShader("Utility/fullscreenTriangle.vert"
+      , "Postprocess/uberpost.frag");
     m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Utility/blitCopy.frag");
 
@@ -636,9 +636,9 @@ namespace Rendering
       //Draw Screen
       m_sceneFbo.Bind();
       {
-        m_postfxFinalMaterial.Bind(false);
+        m_uberPostMaterial.Bind(false);
         {
-          Shader& shader = m_postfxFinalMaterial.GetShader();
+          Shader& shader = m_uberPostMaterial.GetShader();
           shader.SetUniform("u_screenTexture", 0);
           shader.SetUniform("u_bloomTexture", 1);
           shader.SetUniform("u_ssaoTexture", 2);
@@ -654,7 +654,7 @@ namespace Rendering
 
           m_screenTriangleVAO.Draw();
         }
-        m_postfxFinalMaterial.Unbind();
+        m_uberPostMaterial.Unbind();
 
         //*************************************************
         // Draw Debug Icons

@@ -95,7 +95,7 @@ namespace Rendering
 
     //FullScreen Postfx
     VertexArrayObject                  m_screenTriangleVAO;
-    Material                           m_postfxFinalMaterial;
+    Material                           m_uberPostMaterial;
     Material                           m_blitCopyMaterial;
                                        
     //Cubemap IBL                      

@@ -239,6 +239,7 @@ namespace Rendering
       || internalformat == Channel::RG16F
       || internalformat == Channel::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
+    //https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalformat)
       , width, height, 0, static_cast<GLenum>(format)
       , pixelTarget, NULL);

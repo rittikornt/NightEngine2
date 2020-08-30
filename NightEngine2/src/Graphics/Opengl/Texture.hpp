@@ -54,11 +54,13 @@ namespace Rendering
 			RGBA = GL_RGBA,
       SRGB = GL_SRGB,
       SRGBA = GL_SRGB_ALPHA,
+      SRGB8_ALPHA8 = GL_SRGB8_ALPHA8, //SRGB8 with linear Alpha
       RG16F = GL_RG16F,
       RGB16F = GL_RGB16F,
       RGB32F = GL_RGB32F,
       RGBA16F = GL_RGBA16F,
       RGBA32F = GL_RGBA32F,
+      RGBA12 = GL_RGBA12,
       INVALID = GL_INVALID_ENUM
 		};
 		enum class TextureUnit : GLenum

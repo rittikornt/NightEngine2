@@ -15,10 +15,10 @@ const int   kernelSize = 64;
 //***************************************
 struct GBufferResult
 {
-	sampler2D positionAndNormalX;
-	sampler2D albedoAndNormalY;
+	sampler2D gbuffer0;
+	sampler2D gbuffer2;
 };
-uniform GBufferResult u_gbufferResult;
+uniform GBufferResult u_gbuffer;
 
 uniform sampler2D u_noiseTexture;
 uniform vec3      u_sampleKernel[kernelSize];
@@ -46,14 +46,14 @@ void UnpackNormalFromRG(inout vec3 normal)
 void main()
 { 
   //FragPos in view space
-  vec4 fragPosNormalX = texture(u_gbufferResult.positionAndNormalX, OurTexCoords);
+  vec4 fragPosNormalX = texture(u_gbuffer.gbuffer0, OurTexCoords);
   vec3 fragPos = (u_view * vec4(fragPosNormalX.xyz, 1.0)).xyz;
 
   //Normal in view space
-  vec4 albedoNY = texture(u_gbufferResult.albedoAndNormalY, OurTexCoords);
+  vec4 posLSAndNormalY = texture(u_gbuffer.gbuffer2, OurTexCoords);
 	vec3 normal = vec3(0.0);
 	normal.x = fragPosNormalX.a;
-	normal.y = albedoNY.a;
+	normal.y = posLSAndNormalY.a;
 
 	if(normal.xy == vec2(0.0, 0.0))
 	{
@@ -88,7 +88,7 @@ void main()
     clipPos.xyz = clipPos.xyz * 0.5 + 0.5;  //Remap to Screen space [0.0,1.0]
 
     //Sample depth from world position
-    float closestDepth = (u_view * vec4(texture(u_gbufferResult.positionAndNormalX, clipPos.xy).xyz, 1.0) ).z;
+    float closestDepth = (u_view * vec4(texture(u_gbuffer.gbuffer0, clipPos.xy).xyz, 1.0) ).z;
 
     //Rangecheck scale
     float depthDiff = abs(fragPos.z - closestDepth);

@@ -1,10 +1,12 @@
 #version 330 core
 
 // 4 4 4 4
-layout (location = 0) out vec4 o_gbuffer0;   //(0) vec4(pos.xyz, n.x)
-layout (location = 1) out vec4 o_gbuffer1;	//(1) vec4(albedo.xyz, n.y)
-layout (location = 2) out vec4 o_gbuffer2;	//(2) vec4(lightSpacePos, metallic.x)
+layout (location = 0) out vec4 o_gbuffer0;  //(0) vec4(pos.xyz, n.x)
+layout (location = 1) out vec4 o_gbuffer1;	//(1) vec4(albedo.xyz, metallic.x)
+layout (location = 2) out vec4 o_gbuffer2;	//(2) vec4(lightSpacePos, n.y)
 layout (location = 3) out vec4 o_gbuffer3;	//(3) vec4(emissive.xyz, roughness.x)
+
+#include "Library/common.glsl"
 
 in VS_OUT
 {
@@ -86,18 +88,18 @@ void main()
 	o_gbuffer0.xyz = fs_in.ourFragPos.xyz;
 	o_gbuffer0.w = normal.x;
 
-	//(1) vec4(albedo.xyz, n.x)
+	//(1) vec4(albedo.xyz, n.y)
 	o_gbuffer1.rgb = texture(u_material.m_diffuseMap, uv).rgb
 								* u_diffuseColor.rgb;
-	o_gbuffer1.a = normal.y;
+	o_gbuffer1.a = metallic;
 
-	//(2) vec4(lightSpacePos, metallic.x)
+	//(2) vec4(lightSpacePos, metallic)
 	vec3 lightSpacePos = fs_in.ourFragPosLightSpace.xyz / fs_in.ourFragPosLightSpace.w;
 	o_gbuffer2.xyz = lightSpacePos;
-	o_gbuffer2.w = metallic;
+	o_gbuffer2.w = normal.y;
 
 	//(3) vec4(emissive.xyz, roughness.x)
-	o_gbuffer3.rgb = texture(u_material.m_emissiveMap, uv).rgb
-								* u_material.m_emissiveStrength;
+	o_gbuffer3.rgb = EncodeQuantization(texture(u_material.m_emissiveMap, uv).rgb
+								* u_material.m_emissiveStrength, 12);
 	o_gbuffer3.a = roughness;
 }

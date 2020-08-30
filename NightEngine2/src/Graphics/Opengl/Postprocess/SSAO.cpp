@@ -104,7 +104,7 @@ namespace Rendering
         m_ssaoShader.Bind();
         {
           gbuffer.GetTexture(0).BindToTextureUnit(0);
-          gbuffer.GetTexture(1).BindToTextureUnit(1);
+          gbuffer.GetTexture(2).BindToTextureUnit(1);
 
           //Noise and sample kernel
           m_noiseTexture.BindToTextureUnit(2);
@@ -159,8 +159,8 @@ namespace Rendering
       //Set Uniform
       m_ssaoShader.Bind();
       {
-        m_ssaoShader.SetUniform("u_gbufferResult.positionAndNormalX", 0);
-        m_ssaoShader.SetUniform("u_gbufferResult.albedoAndNormalY", 1);
+        m_ssaoShader.SetUniform("u_gbuffer.gbuffer0", 0);
+        m_ssaoShader.SetUniform("u_gbuffer.gbuffer2", 1);
         m_ssaoShader.SetUniform("u_noiseTexture", 2);
       }
       m_ssaoShader.Unbind();

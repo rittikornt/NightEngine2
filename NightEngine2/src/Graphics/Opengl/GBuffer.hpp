@@ -14,10 +14,10 @@ namespace Rendering
 
   enum class GBufferTarget: size_t
   {
-    PositionAndNormalX = 0,         // (0) vec4(pos.xyz, n.x)
-    AlbedoAndNormalY,               // (1) vec4(albedo.xyz, n.y)
-    LightSpacePositionAndMetallic,  // (2) vec4(lightSpacePos, metallic.x)
-    RoughnessMetallic,              // (3) vec4(emissive.xyz, roughness.x)
+    PositionAndNormalX = 0,        // (0) vec4(pos.xyz, n.x)
+    AlbedoAndMetallic,             // (1) vec4(albedo.xyz, metallic)
+    LightSpacePositionAndNormalY,  // (2) vec4(lightSpacePos, n.y)
+    EmissiveAndRoughness,          // (3) vec4(emissive.xyz, roughness)
     Count
   };
   //TODO: Calculate Position from Depth Buffer

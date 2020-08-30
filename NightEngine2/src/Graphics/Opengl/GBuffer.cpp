@@ -28,29 +28,28 @@ namespace Rendering
     m_fbo.AttachRenderBuffer(m_depthBuffer);
     CHECKGL_ERROR();
 
-    // TODO: Actually should have group low precision things together 
-    // like (albedo.xyz, metallic) and that can be R8G8B8A8
+    // TODO: Replace posWS with Depth texture (viewpos reconstruction instead)
     // (0) vec4(pos.xyz, n.x)
     m_textures[0] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[0], 0);
 
-    //(1) vec4(albedo.xyz, n.y)
+    //(1) vec4(albedo.xyz, metallic)
     m_textures[1] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+      , Texture::Channel::SRGB8_ALPHA8, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[1], 1);
 
-    //(2) vec4(lightSpacePos, metallic.x)
+    //(2) vec4(lightSpacePos, n.y)
     m_textures[2] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[2], 2);
 
-    //(3) vec4(emissive.xyz, roughness.x)
+    //(3) vec4(emissive.xyz, roughness)
     m_textures[3] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+      , Texture::Channel::RGBA12, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[3], 3);
 
@@ -98,13 +97,13 @@ namespace Rendering
   void GBuffer::RefreshTextureUniforms(Shader& shader)
   {
     //Gbuffer's texture
-    shader.SetUniform("u_gbufferResult.positionAndNormalX"
+    shader.SetUniform("u_gbuffer.gbuffer0"
       , 0);
-    shader.SetUniform("u_gbufferResult.albedoAndNormalY"
+    shader.SetUniform("u_gbuffer.gbuffer1"
       , 1);
-    shader.SetUniform("u_gbufferResult.lsPosAndMetallic"
+    shader.SetUniform("u_gbuffer.gbuffer2"
       , 2);
-    shader.SetUniform("u_gbufferResult.emissiveAndRoughness"
+    shader.SetUniform("u_gbuffer.gbuffer3"
       , 3);
   }
 }

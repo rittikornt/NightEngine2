@@ -4,9 +4,6 @@
 ## Summary
 NightEngine2 is a open-source 3D component-based game engine written in C++. This is a project migrated from my old repo [NightEngine](https://bitbucket.org/BellyLand/nightengine/overview). This project is mostly for education purpose and is by no mean production ready.
 
-## Feature List
---Coming Soon
-
 ## Getting Started
 NightEngine2 use cmake as build generator: [cmake](http://www.cmake.org/download/), which is used to generate platform-specific makefiles or project files. Start by cloning this repository, making sure to pass the `--recursive` flag to grab all the dependencies. If you forgot, then you can `git submodule update --init` instead.
 
@@ -31,8 +28,6 @@ cmake -G "Visual Studio 14 Win64" ..
 cmake -G "Visual Studio 15 2017 Win64" ..
 ...
 ```
-## Documentation
---Coming Soon
 
 ## Dependency
 Functionality           | Library

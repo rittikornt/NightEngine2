@@ -1,0 +1,59 @@
+{
+  "Material": {
+    "Shaders": [
+      "Rendering/gbuffer_pass.vert",
+      "Rendering/gbuffer_pass.frag"
+    ],
+    "m_floatMap": {
+      "u_material.m_cutOffValue": 0.8999999761581421,
+      "u_material.m_emissiveStrength": 0.0,
+      "u_material.m_metallicValue": 0.10000000149011612,
+      "u_material.m_normalMultiplier": 1.0,
+      "u_material.m_roughnessValue": 0.10000000149011612
+    },
+    "m_intMap": {
+      "u_useNormalmap": 1,
+      "u_useOpacityMap": 0
+    },
+    "m_textureMap": {
+      "0": {
+        "m_channel": 35904,
+        "m_filePath": "./../Assets/Textures/diffuse_brickwall.jpg",
+        "m_filterMode": 9987
+      },
+      "1": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/normal_brickwall.jpg",
+        "m_filterMode": 9984
+      },
+      "2": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/100.png",
+        "m_filterMode": 9729
+      },
+      "3": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/100.png",
+        "m_filterMode": 9729
+      },
+      "4": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/emissive_wood.png",
+        "m_filterMode": 9987
+      },
+      "5": {
+        "m_channel": 6407,
+        "m_filePath": "./../Assets/Textures/Blank/100.png",
+        "m_filterMode": 9729
+      }
+    },
+    "m_vec4Map": {
+      "u_diffuseColor": {
+        "w": 1.0,
+        "x": 1.0,
+        "y": 0.9999899864196777,
+        "z": 0.9999899864196777
+      }
+    }
+  }
+}

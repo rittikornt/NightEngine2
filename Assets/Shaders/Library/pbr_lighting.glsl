@@ -305,8 +305,8 @@ vec3 CalculateAdditionalLighting(vec3 ViewDir, vec3 Normal, vec3 fragPos
 		float shadowAtten = SamplePointLightShadowPCF(i, fragPos
 		, u_pointLightInfo[i].m_position, u_cameraInfo.m_position);
 
-		Lo += shadowAtten * CalculatePBRLighting(ViewDir, LightDir, Halfway, Normal
-						, attenuation, u_pointLightInfo[i].m_color
+		Lo += CalculatePBRLighting(ViewDir, LightDir, Halfway, Normal
+						, attenuation * shadowAtten, u_pointLightInfo[i].m_color
 						, Albedo, Roughness, Metallic);
 	}
 	

@@ -5,19 +5,11 @@ out vec4 o_fragColor;	//Final output Color
 in vec2 OurTexCoords;
 
 #include "Library/pbr_lighting.glsl"
+#include "Library/gbuffer.glsl"
 
 //***************************************
 // Uniforms
 //***************************************
-struct GBufferResult
-{
-	sampler2D positionAndNormalX;   //(0) vec4(pos.xyz, n.x)
-	sampler2D albedoAndNormalY;     //(1) vec4(albedo.xyz, n.y)
-	sampler2D lsPosAndMetallic;     //(2) vec4(lightSpacePos, metallic.x)
-	sampler2D emissiveAndRoughness; //(3) vec4(emissive.xyz, roughness.x)
-};
-uniform GBufferResult u_gbufferResult;
-
 uniform int u_debugViewIndex;
 uniform int u_debugShadowViewIndex;
 
@@ -44,41 +36,27 @@ vec3 GetAdditionalLightingShadows(vec3 ViewDir, vec3 Normal, vec3 fragPos
 
 void main()
 {
-	//Unpack datas from GBuffer
-	vec4 albedoAndNormalY = texture(u_gbufferResult.albedoAndNormalY, OurTexCoords);
-	vec3 albedo = albedoAndNormalY.rgb;
-	
-	vec4 positionAndNormalX = texture(u_gbufferResult.positionAndNormalX, OurTexCoords);
-	vec3 fragPos = positionAndNormalX.xyz;
+	MaterialData matData;
+	SurfaceData surfaceData;
+	UnpackGBufferData(OurTexCoords, matData, surfaceData);
 
-	//Unpack normal
-	vec3 normal = vec3(0.0);
-	normal.x = positionAndNormalX.a;
-	normal.y = albedoAndNormalY.a;
+	vec3 viewDir = surfaceData.viewDir;
 
-	//Discard if normal is black
-	UnpackNormalFromRG(normal);
-	normal = normalize(normal);
-	if(normal == vec3(0.0, 0.0, 0.0))
+	if(surfaceData.normal == vec3(0.0, 0.0, 0.0))
 	{
 		discard;
 	}
-
-	//Material data
-	vec4 lsPosAndMetallic = texture(u_gbufferResult.lsPosAndMetallic, OurTexCoords);
-	vec4 emissiveAndRoughness = texture(u_gbufferResult.emissiveAndRoughness, OurTexCoords);
 	
-	vec3 emissive = emissiveAndRoughness.xyz;
-	vec3 fragPosLightSpace = lsPosAndMetallic.xyz;
+	vec3 albedo = matData.albedo.rgb;
+	vec3 normal = surfaceData.normal;
+	vec3 emissive = matData.emissive.xyz;
+	float roughness = matData.roughness;
+	float metallic = matData.metallic;
 
-	float roughness = GetFilteredRoughness(emissiveAndRoughness.a, normal);
-	float metallic = lsPosAndMetallic.a;
+	vec3 fragPos = matData.positionWS.xyz;
+	vec3 fragPosLightSpace = matData.positionLS.xyz;
 
 	/////////////////////////////////////////////////////////
-
-	//Surface Data
-	SurfaceData surfaceData = GetSurfaceData(normal, fragPos.xyz);
-		vec3 viewDir = surfaceData.viewDir;
 
 	vec3 color = vec3(0.0);
 	if(u_debugViewIndex == 0)

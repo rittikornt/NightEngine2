@@ -1,10 +1,10 @@
 #version 330 core
 
 // 4 4 4 4
-layout (location = 0) out vec4 o_positionAndNormalX;   //(0) vec4(pos.xyz, n.x)
-layout (location = 1) out vec4 o_albedoAndNormalY;	   //(1) vec4(albedo.xyz, n.y)
-layout (location = 2) out vec4 o_lsPosAndMetallic;	   //(2) vec4(lightSpacePos, metallic.x)
-layout (location = 3) out vec4 o_emissiveAndRoughness; //(3) vec4(emissive.xyz, roughness.x)
+layout (location = 0) out vec4 o_gbuffer0;   //(0) vec4(pos.xyz, n.x)
+layout (location = 1) out vec4 o_gbuffer1;	//(1) vec4(albedo.xyz, n.y)
+layout (location = 2) out vec4 o_gbuffer2;	//(2) vec4(lightSpacePos, metallic.x)
+layout (location = 3) out vec4 o_gbuffer3;	//(3) vec4(emissive.xyz, roughness.x)
 
 in VS_OUT
 {
@@ -83,21 +83,21 @@ void main()
 	/////////////////////////////////////////////
 
 	// (0) vec4(pos.xyz, n.x)
-	o_positionAndNormalX.xyz = fs_in.ourFragPos.xyz;
-	o_positionAndNormalX.w = normal.x;
+	o_gbuffer0.xyz = fs_in.ourFragPos.xyz;
+	o_gbuffer0.w = normal.x;
 
 	//(1) vec4(albedo.xyz, n.x)
-	o_albedoAndNormalY.rgb = texture(u_material.m_diffuseMap, uv).rgb
+	o_gbuffer1.rgb = texture(u_material.m_diffuseMap, uv).rgb
 								* u_diffuseColor.rgb;
-	o_albedoAndNormalY.a = normal.y;
+	o_gbuffer1.a = normal.y;
 
 	//(2) vec4(lightSpacePos, metallic.x)
 	vec3 lightSpacePos = fs_in.ourFragPosLightSpace.xyz / fs_in.ourFragPosLightSpace.w;
-	o_lsPosAndMetallic.xyz = lightSpacePos;
-	o_lsPosAndMetallic.w = metallic;
+	o_gbuffer2.xyz = lightSpacePos;
+	o_gbuffer2.w = metallic;
 
 	//(3) vec4(emissive.xyz, roughness.x)
-	o_emissiveAndRoughness.rgb = texture(u_material.m_emissiveMap, uv).rgb
+	o_gbuffer3.rgb = texture(u_material.m_emissiveMap, uv).rgb
 								* u_material.m_emissiveStrength;
-	o_emissiveAndRoughness.a = roughness;
+	o_gbuffer3.a = roughness;
 }

@@ -1,5 +1,5 @@
 # [NightEngine2](https://github.com/rittikornt/NightEngine2)
-![Screenshot](https://i.imgur.com/orlfchK.png)
+![Screenshot](https://user-images.githubusercontent.com/12661089/91659778-e2cfae00-ea86-11ea-9d29-3f489c54565b.jpg)
 
 ## Summary
 NightEngine2 is a open-source 3D component-based game engine written in C++. This is a project migrated from my old repo [NightEngine](https://bitbucket.org/BellyLand/nightengine/overview). This project is mostly for education purpose and is by no mean production ready.
@@ -40,6 +40,15 @@ OpenGL Mathematics      | [glm](https://github.com/g-truc/glm)
 Texture Loading         | [stb](https://github.com/nothings/stb)
 JSON Serialization      | [json](https://github.com/taocpp/json)
 UnitTest                | [catch2](https://github.com/catchorg/Catch2)
+
+## Screenshot
+![nightengine_crytek_sponza](https://user-images.githubusercontent.com/12661089/91659795-fed34f80-ea86-11ea-8828-80c20371df4a.jpg)
+
+![nightengine_manylights_scene](https://user-images.githubusercontent.com/12661089/91659816-21fdff00-ea87-11ea-9f8b-a9929abb449f.jpg)
+
+![nightengine_defaultscene](https://user-images.githubusercontent.com/12661089/91659823-2e825780-ea87-11ea-8725-6b411ddf5ad5.jpg)
+
+![nightengine_tools](https://user-images.githubusercontent.com/12661089/91659809-14e11000-ea87-11ea-8507-598de7f27235.jpg)
 
 ## License
 >The MIT License (MIT)

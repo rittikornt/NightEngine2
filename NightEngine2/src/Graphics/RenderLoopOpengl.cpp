@@ -202,8 +202,10 @@ namespace Rendering
       , Texture::WrapMode::CLAMP_TO_EDGE);
     m_sceneRbo.Init(width, height);
 
-    //Scene Frame Buffer
+    //GBuffer
     m_gbuffer.Init(width, height);
+
+    //Scene FBO
     m_sceneFbo.Init();
     m_sceneFbo.AttachTexture(m_sceneTexture);
     m_sceneFbo.AttachRenderBuffer(m_sceneRbo);
@@ -214,6 +216,9 @@ namespace Rendering
     //************************************************
     m_postProcessSetting = &(SceneManager::GetPostProcessSetting());
     m_postProcessSetting->Init(width, height);
+
+    //Prepass
+    m_cameraMotionVector.Init(width, height, m_gbuffer);
 
     //Screen Quad
     m_screenTriangleVAO.Init();
@@ -291,8 +296,9 @@ namespace Rendering
     //************************************************
     // Uniform Buffer Object
     //************************************************
-    m_defaultMaterial->GetShader().SetUniformBlockBindingPoint("u_matrices", 0);
-    m_uniformBufferObject.Init(sizeof(glm::mat4) * 2, 0);
+    int bindingPoint = 0;
+    m_defaultMaterial->GetShader().SetUniformBlockBindingPoint("u_matrices", bindingPoint);
+    m_uniformBufferObject.Init(sizeof(glm::mat4) * 2, bindingPoint);
     m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
       , glm::value_ptr(g_camera.GetProjectionMatrix()));
 
@@ -351,13 +357,18 @@ namespace Rendering
     g_time += dt;
     g_time = fmodf(g_time, FLT_MAX);
 
+    CameraObject::ProcessCameraInput(g_camera, dt);
+
     //Update the new Projection Matrix
     g_camera.m_camSize.m_fov = cameraFOV;
     g_camera.m_far = cameraFarPlane;
-    m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
-      , glm::value_ptr(g_camera.GetProjectionMatrix()));
+    g_camera.OnStartFrame();
 
-    CameraObject::ProcessCameraInput(g_camera, dt);
+    //Update View/Projection matrix to Shader
+    m_uniformBufferObject.FillBuffer(0, sizeof(glm::mat4)
+      , glm::value_ptr(g_camera.m_unjitteredVP));
+    m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
+      , glm::value_ptr(g_camera.m_projection));
 
     //*************************************************
     // Rendering Loop
@@ -387,6 +398,8 @@ namespace Rendering
       Window::SwapBuffer();
       glfwPollEvents();
     }
+
+    g_camera.OnEndFrame();
   }
 
   void RenderLoopOpengl::OnRecompiledShader(void)
@@ -528,6 +541,16 @@ namespace Rendering
     DebugMarker::PopDebugGroup();
 
     //*************************************************
+    // Camera Motion Vector Pass
+    //*************************************************
+    DebugMarker::PushDebugGroup("CameraMotionVector");
+    {
+      m_cameraMotionVector.Render(m_screenTriangleVAO
+        , m_gbuffer, g_camera);
+    }
+    DebugMarker::PopDebugGroup();
+
+    //*************************************************
     // Lighting Pass
     //*************************************************
     m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
@@ -554,6 +577,9 @@ namespace Rendering
         {
           shader.SetUniform("u_debugViewIndex", (int)m_debugView);
           shader.SetUniform("u_debugShadowViewIndex", (int)m_debugShadowView);
+          
+          shader.SetUniform("u_motionVector", 4);
+          m_gbuffer.GetTexture(GBufferTarget::MotionVector).BindToTextureUnit(4);
         }
 
         //Shadow 2D texture
@@ -693,10 +719,6 @@ namespace Rendering
 
   void RenderLoopOpengl::DrawScene(bool debugNormal)
   {
-    //Update View matrix to Shader
-    m_uniformBufferObject.FillBuffer(0, sizeof(glm::mat4)
-      , glm::value_ptr(g_camera.GetViewMatix()));
-
     //g_camera.ApplyViewMatrix(g_defaultMaterial.GetShader());
     g_camera.ApplyViewMatrix(m_normalDebug.GetShader());
 

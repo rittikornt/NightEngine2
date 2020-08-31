@@ -53,6 +53,12 @@ namespace Rendering
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_fbo.AttachTexture(m_textures[3], 3);
 
+    // (4) vec2(motionvector.xy);
+    m_textures[4] = Texture::GenerateNullTexture(width, height
+      , Texture::Channel::RG16F, Texture::Channel::RGBA
+      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_fbo.AttachTexture(m_textures[4], 4);
+
     //Setup multiple render target
     m_fbo.SetupMultipleRenderTarget();
 

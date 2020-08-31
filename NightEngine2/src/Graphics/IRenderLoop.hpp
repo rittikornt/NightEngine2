@@ -34,6 +34,7 @@ namespace Rendering
     LIGHT_SPACE_POS,
     AMBIENT,
     MAIN_SHADOW_DEPTH,
+    MOTION_VECTOR,
     COUNT
   };
   extern const char* k_debugViewStr[];

@@ -25,6 +25,7 @@
 #include "Graphics/Opengl/Postprocess/SSAO.hpp"
 #include "Graphics/Opengl/Postprocess/Bloom.hpp"
 #include "Graphics/Opengl/Postprocess/FXAA.hpp"
+#include "Graphics/Opengl/Postprocess/CameraMotionVector.hpp"
 
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
@@ -92,6 +93,9 @@ namespace Rendering
 
     //PostProcess
     Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
+
+    //Prepass
+    Rendering::Prepass::CameraMotionVector m_cameraMotionVector;
 
     //FullScreen Postfx
     VertexArrayObject                  m_screenTriangleVAO;

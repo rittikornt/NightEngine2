@@ -15,7 +15,7 @@ out VS_OUT
 
 layout (std140) uniform u_matrices
 {
-	mat4 u_view;
+	mat4 u_vp;
 	mat4 u_projection;
 };
 
@@ -37,5 +37,5 @@ void main()
 
 	vs_out.ourFragPosLightSpace = u_lightSpaceMatrix * vec4(vs_out.ourFragPos, 1.0);
 	
-	gl_Position = u_projection * u_view * model * vec4(inPos, 1.0f);
+	gl_Position = u_vp * model * vec4(inPos, 1.0f);
 }

@@ -1,7 +1,7 @@
 /*!
   @file PostProcessUtility.hpp
   @author Rittikorn Tangtrongchit
-  @brief Contain the Interface of Bloom
+  @brief Contain the Interface of PostProcessUtility
 */
 
 #pragma once
@@ -18,7 +18,7 @@ namespace Rendering
 
   namespace Postprocess
   {
-    //! @brief Bloom struct
+    //! @brief PostProcessUtility struct
     struct PostProcessUtility
     {
       glm::ivec2        m_resolution = glm::ivec2(1);

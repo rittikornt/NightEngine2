@@ -1,7 +1,7 @@
 /*!
   @file PostProcessUtility.cpp
   @author Rittikorn Tangtrongchit
-  @brief Contain the Implementation of Bloom
+  @brief Contain the Implementation of PostProcessUtility
 */
 #include "Graphics/Opengl/Postprocess/PostProcessUtility.hpp"
 #include "Graphics/Opengl/VertexArrayObject.hpp"

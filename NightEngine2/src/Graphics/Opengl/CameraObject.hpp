@@ -42,6 +42,10 @@ namespace Rendering
 		glm::mat4 m_view;
 		glm::mat4 m_projection;
 
+    glm::mat4 m_jitteredVP;
+    glm::mat4 m_unjitteredVP;
+    glm::mat4 m_prevUnjitteredVP;
+
     union CameraSize
     {
       float m_fov = 90.0f;
@@ -72,6 +76,12 @@ namespace Rendering
     void ApplyViewMatrix(Shader& shader);
 
     void ApplyViewMatrix(Cubemap& cubemap);
+
+    //////////////////////////////////////////////////////////
+
+    void OnStartFrame(void);
+
+    void OnEndFrame(void);
 
     //////////////////////////////////////////////////////////
 

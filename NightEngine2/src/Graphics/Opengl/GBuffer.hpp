@@ -18,6 +18,7 @@ namespace Rendering
     AlbedoAndMetallic,             // (1) vec4(albedo.xyz, metallic)
     LightSpacePositionAndNormalY,  // (2) vec4(lightSpacePos, n.y)
     EmissiveAndRoughness,          // (3) vec4(emissive.xyz, roughness)
+    MotionVector,                  // (4) vec2(motionvector.xy);
     Count
   };
   //TODO: Calculate Position from Depth Buffer

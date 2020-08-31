@@ -40,7 +40,9 @@ namespace Rendering
     INCREMENT_ALLOCATION(UniformBufferObject, m_id);
 
     Bind();
-    glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STREAM_DRAW);
+    //glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);
+    //glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
     Unbind();
     
     glBindBufferRange(GL_UNIFORM_BUFFER, bufferPointIndex, m_id, 0, size);
@@ -63,5 +65,4 @@ namespace Rendering
     glBufferSubData(GL_UNIFORM_BUFFER, offset, dataSize, data);
     Unbind();
   }
-  
 }

@@ -14,7 +14,7 @@ out VS_OUT
 
 layout (std140) uniform u_matrices
 {
-	mat4 u_view;
+	mat4 u_vp;
 	mat4 u_projection;
 };
 
@@ -24,7 +24,7 @@ uniform bool u_instanceRendering = false;
 void main()
 {
 	mat4 model = u_instanceRendering? inInstanceModel:u_model;
-	gl_Position = u_projection * u_view * model * vec4(inPos, 1.0f);
+	gl_Position = u_vp * model * vec4(inPos, 1.0f);
 
 	vs_out.ourTexCoord = inTexCoord;
 

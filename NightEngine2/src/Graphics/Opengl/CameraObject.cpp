@@ -40,22 +40,13 @@ namespace Rendering
     Rotate(VEC3_ZERO);
   }
 
+  //////////////////////////////////////////////////////////
+
   void CameraObject::ApplyCameraInfo(Shader& shader)
   {
     static std::string pos{ "u_cameraInfo.m_position" };
     shader.SetUniform(pos, m_position);
     //shader.SetUniform("u_cameraInfo.m_lookDir", m_dirForward);
-  }
-
-  glm::mat4& CameraObject::GetProjectionMatrix(void)
-  {
-    //TODO: Dirty flag for projection/view matrix, only calculate once per frame
-    //Projection
-    m_projection = CalculateProjectionMatrix(m_projectionType
-      , m_camSize.m_fov, SCREEN_ASPECT_RATIO
-      , m_near, m_far);
-
-    return m_projection;
   }
 
   void CameraObject::ApplyProjectionMatrix(Shader& shader)
@@ -68,13 +59,6 @@ namespace Rendering
     shader.Bind();
     shader.SetUniform("u_projection", m_projection);
     shader.Unbind();
-  }
-
-  glm::mat4& CameraObject::GetViewMatix(void)
-  {
-    m_view = CalculateViewMatrix(m_position, m_dirForward, WORLD_UP);
-    //m_view = glm::lookAt(m_position, glm::vec3(0.0f,0.0f,0.0f), WORLD_UP);;
-    return m_view;
   }
 
   void CameraObject::ApplyViewMatrix(Shader& shader)
@@ -95,6 +79,48 @@ namespace Rendering
     shader.SetUniform("u_view", view);
     shader.Unbind();
   }
+
+  //////////////////////////////////////////////////////////
+
+  void CameraObject::OnStartFrame(void)
+  {
+    m_projection = CalculateProjectionMatrix(m_projectionType
+      , m_camSize.m_fov, SCREEN_ASPECT_RATIO
+      , m_near, m_far);
+    m_view = CalculateViewMatrix(m_position, m_dirForward, WORLD_UP);
+
+    m_unjitteredVP = m_projection * m_view;
+
+    //TODO: Calculate jittered VP matrix
+    m_jitteredVP = m_unjitteredVP;
+  }
+
+  void CameraObject::OnEndFrame(void)
+  {
+    m_prevUnjitteredVP = m_unjitteredVP;
+  }
+
+  //////////////////////////////////////////////////////////
+
+  glm::mat4& CameraObject::GetProjectionMatrix(void)
+  {
+    //TODO: Dirty flag for projection/view matrix, only calculate once per frame
+    //Projection
+    m_projection = CalculateProjectionMatrix(m_projectionType
+      , m_camSize.m_fov, SCREEN_ASPECT_RATIO
+      , m_near, m_far);
+
+    return m_projection;
+  }
+
+  glm::mat4& CameraObject::GetViewMatix(void)
+  {
+    m_view = CalculateViewMatrix(m_position, m_dirForward, WORLD_UP);
+    //m_view = glm::lookAt(m_position, glm::vec3(0.0f,0.0f,0.0f), WORLD_UP);;
+    return m_view;
+  }
+
+  //////////////////////////////////////////////////////////
 
   void CameraObject::Move(glm::vec3 amount)
   {
@@ -236,11 +262,13 @@ namespace Rendering
         camera.Rotate(glm::vec3(-rotateSpeed * dt, 0.0f, 0.0f));
       }
 
-      glm::vec2 offset = Input::GetMouseOffset();
-      float pitch = -offset.y * mouseSpeed * dt;
-      float yaw = offset.x * mouseSpeed * dt;
-      camera.Rotate(glm::vec3(pitch
-        , yaw, 0.0f));
+      {
+        glm::vec2 offset = Input::GetMouseOffset();
+        float pitch = -offset.y * mouseSpeed * dt;
+        float yaw = offset.x * mouseSpeed * dt;
+        camera.Rotate(glm::vec3(pitch
+          , yaw, 0.0f));
+      }
     }
   }
 

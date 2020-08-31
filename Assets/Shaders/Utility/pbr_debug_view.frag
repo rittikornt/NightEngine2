@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 
 out vec4 o_fragColor;	//Final output Color
 
@@ -12,6 +12,8 @@ in vec2 OurTexCoords;
 //***************************************
 uniform int u_debugViewIndex;
 uniform int u_debugShadowViewIndex;
+
+layout(binding=4) uniform sampler2D u_motionVector;
 
 vec3 GetAdditionalLightingShadows(vec3 ViewDir, vec3 Normal, vec3 fragPos
 , vec3 Albedo, float Roughness, float Metallic)
@@ -107,6 +109,9 @@ void main()
 		break;
 		case 8: //MAIN_SHADOW_DEPTH
 		color = vec3(texture(u_shadowMap2D, OurTexCoords).r, 0.0, 0.0);
+		case 9: //MOTION_VECTOR
+		vec2 velocity = (texture(u_motionVector, OurTexCoords).rg);
+		color = vec3(velocity.rg, 0.0);
 		break;
 	}
 

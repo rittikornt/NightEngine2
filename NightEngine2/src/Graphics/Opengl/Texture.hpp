@@ -149,6 +149,9 @@ namespace Rendering
     //! @brief Unbind
 		void Unbind(void) const;
 
+    //! @brief Set name (and internal debug name)
+    void SetName(const char* name);
+
     //! @brief Get Internal Format
     Channel GetInternalFormat(void) { return m_internalFormat; }
 

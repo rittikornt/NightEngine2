@@ -178,7 +178,7 @@ namespace Rendering
     m_initResolution.x = (float)width, m_initResolution.y = (float)height;
 
     m_depthDirShadowFBO.Init();
-    m_shadowMapDirShadowTexture = m_depthDirShadowFBO.AttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
+    m_shadowMapDirShadowTexture = m_depthDirShadowFBO.CreateAndAttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
 
     m_depthDirShadowMaterial.InitShader("Shadow/depth_directional.vert"
       , "Shadow/depth_directional.frag");
@@ -195,15 +195,15 @@ namespace Rendering
     m_depthPointShadowMaterial.InitShader("Shadow/depth_point.vert"
       , "Shadow/depth_point.frag", "Shadow/depth_point.geom");
 
+    //GBuffer
+    m_gbuffer.Init(width, height);
+
     //Scene Texture
     m_sceneTexture = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::LINEAR
       , Texture::WrapMode::CLAMP_TO_EDGE);
     m_sceneRbo.Init(width, height);
-
-    //GBuffer
-    m_gbuffer.Init(width, height);
 
     //Scene FBO
     m_sceneFbo.Init();
@@ -692,10 +692,13 @@ namespace Rendering
     DebugMarker::PopDebugGroup();
 
     //*************************************************
-    // FXAA at the end, Directly onto the screen
+    // AA at the end, Directly onto the screen
     //*************************************************
     DebugMarker::PushDebugGroup("Final Draw");
     {
+      //TODO: TAA here
+
+      //FXAA
       if (g_enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
       {
         m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO

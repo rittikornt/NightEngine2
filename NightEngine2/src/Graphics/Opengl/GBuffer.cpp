@@ -24,8 +24,7 @@ namespace Rendering
     m_fbo.Init();
 
     //Depth Buffer
-    m_depthBuffer.Init(width, height);
-    m_fbo.AttachRenderBuffer(m_depthBuffer);
+    m_depthTexture = m_fbo.CreateAndAttachDepthStencilTexture(width, height);
     CHECKGL_ERROR();
 
     // TODO: Replace posWS with Depth texture (viewpos reconstruction instead)
@@ -33,30 +32,35 @@ namespace Rendering
     m_textures[0] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_textures[0].SetName("GBuffer0 (Pos.xyz, N.x)");
     m_fbo.AttachTexture(m_textures[0], 0);
 
     //(1) vec4(albedo.xyz, metallic)
     m_textures[1] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::SRGB8_ALPHA8, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_textures[1].SetName("GBuffer1 (albedo.xyz, metallic)");
     m_fbo.AttachTexture(m_textures[1], 1);
 
     //(2) vec4(lightSpacePos, n.y)
     m_textures[2] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_textures[2].SetName("GBuffer2 (lightSpacePos, n.y)");
     m_fbo.AttachTexture(m_textures[2], 2);
 
     //(3) vec4(emissive.xyz, roughness)
     m_textures[3] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RGBA12, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_textures[3].SetName("GBuffer3 (emissive.xyz, roughness)");
     m_fbo.AttachTexture(m_textures[3], 3);
 
     // (4) vec2(motionvector.xy);
     m_textures[4] = Texture::GenerateNullTexture(width, height
       , Texture::Channel::RG16F, Texture::Channel::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_textures[4].SetName("GBuffer4 (motionvector.xy)");
     m_fbo.AttachTexture(m_textures[4], 4);
 
     //Setup multiple render target

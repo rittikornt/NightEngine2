@@ -138,6 +138,13 @@ namespace Rendering
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+  void Texture::SetName(const char* name)
+  {
+    Bind();
+    glObjectLabel(GL_TEXTURE, GetID(), -1, name);
+    Unbind();
+  }
+
   //*****************************************************
   // Static Method
   //*****************************************************

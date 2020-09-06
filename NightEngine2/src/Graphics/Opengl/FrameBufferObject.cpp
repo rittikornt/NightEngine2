@@ -115,7 +115,7 @@ namespace Rendering
     Unbind();
   }
 
-  TextureIdentifier FrameBufferObject::AttachDepthStencilTexture(float width, float height)
+  TextureIdentifier FrameBufferObject::CreateAndAttachDepthStencilTexture(float width, float height)
   {
     //Generate ID
     unsigned int textureID;
@@ -127,14 +127,21 @@ namespace Rendering
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLsizei)width, (GLsizei)height, 0,
     GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
     BindUnsafe();
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
     Unbind();
 
-    return TextureIdentifier{ textureID, "DepthStencil" };
+    return TextureIdentifier{ textureID, "Depth24Stencil8" };
   }
 
-  TextureIdentifier FrameBufferObject::AttachDepthTexture(int width, int height)
+  TextureIdentifier FrameBufferObject::CreateAndAttachDepthTexture(int width, int height)
   {
     //Generate ID
     unsigned int textureID;
@@ -159,7 +166,7 @@ namespace Rendering
       glReadBuffer(GL_NONE);
     Unbind();
 
-    return TextureIdentifier{ textureID, "DepthOnly" };
+    return TextureIdentifier{ textureID, "Depth24" };
   }
 
   void FrameBufferObject::AttachRenderBuffer(RenderBufferObject& rbo)

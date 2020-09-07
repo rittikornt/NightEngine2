@@ -23,6 +23,11 @@ namespace Rendering
   {
     m_width = width, m_height = height;
 
+    //Material
+    m_depthPrepassMaterial.InitShader("ShaderPass/depth_prepass.vert"
+      , "ShaderPass/depth_prepass.frag");
+
+    //FBO
     m_fbo.Init();
     m_fbo.AttachDepthTexture(depthTexture);
     CHECKGL_ERROR();

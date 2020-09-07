@@ -431,16 +431,22 @@ namespace Rendering
     {
       glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-      //Set Uniform
-      m_defaultMaterial->Bind();
+      //Draw Depth prepass
       {
-        Shader& shader = m_defaultMaterial->GetShader();
-        shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
-      }
-      m_defaultMaterial->Unbind();
+        auto& shader = m_depthPrepass.m_depthPrepassMaterial.GetShader();
+        shader.Bind();
+        {
+          //Draw Static Instances
+          GPUInstancedDrawer::DrawInstances(shader);
 
-      //Draw Scene
-      DrawScene();
+          //Draw Loop by traversing Containers
+          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
+
+          //Draw Custom Pass
+          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::CUSTOM);
+        }
+        shader.Unbind();
+      }
     }
     m_depthPrepass.Unbind();
     DebugMarker::PopDebugGroup();
@@ -743,6 +749,7 @@ namespace Rendering
 
   void RenderLoopOpengl::DrawScene()
   {
+    //This is technically DrawGBuffer, should be inside GBuffer pass
     //g_camera.ApplyViewMatrix(g_defaultMaterial.GetShader());
 
     //Bind Shader
@@ -755,16 +762,16 @@ namespace Rendering
 
       //Draw Loop by traversing Containers
       Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
-
-      //Draw Custom Pass
-      Drawer::Draw(Drawer::DrawPass::CUSTOM
-        , [](Shader& shader)
-        {
-          shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
-          shader.SetUniformNoErrorCheck("u_cameraPosWS", g_camera.m_position);
-        });
     }
     m_defaultMaterial->Unbind();
+
+    //Draw Custom Pass
+    Drawer::Draw(Drawer::DrawPass::CUSTOM
+      , [](Shader& shader)
+      {
+        shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
+        shader.SetUniformNoErrorCheck("u_cameraPosWS", g_camera.m_position);
+      });
   }
 
   void RenderLoopOpengl::DrawDebugIcons()

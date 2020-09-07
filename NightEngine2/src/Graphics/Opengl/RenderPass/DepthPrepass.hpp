@@ -5,6 +5,7 @@
 */
 #pragma once
 #include "Graphics/Opengl/FrameBufferObject.hpp"
+#include "Graphics/Opengl/Material.hpp"
 
 namespace Rendering
 {
@@ -13,6 +14,7 @@ namespace Rendering
   //! @brief DepthPrepass struct
   struct DepthPrepass
   {
+    Material            m_depthPrepassMaterial;
     FrameBufferObject   m_fbo;
     int                 m_width  = 1;
     int                 m_height = 1;

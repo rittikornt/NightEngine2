@@ -320,7 +320,7 @@ namespace NightEngine
           //Creating Texture
           int bindingUnit = std::stoi(pair.first);
           material.m_textureMap[bindingUnit] = Texture::LoadTextureHandle(texData.m_filePath
-            , (Texture::Channel)texData.m_channel, (Texture::FilterMode)texData.m_filterMode);
+            , (Texture::Format)texData.m_channel, (Texture::FilterMode)texData.m_filterMode);
         }
       }
 

@@ -24,14 +24,14 @@ namespace Rendering
 
       //! @brief Initliaze with texture names
       void Init(std::vector<std::string>& fileNames, const std::string& vertexShader
-        , const std::string& fragmentShader, Texture::Channel channel
+        , const std::string& fragmentShader, Texture::Format channel
         , bool generateMipmap = false);
 
       //! @brief Initliaze
       void Init(int width, int height
         , const std::string& vertexShader
         , const std::string& fragmentShader
-        , Texture::Channel channel
+        , Texture::Format channel
         , Texture::FilterMode minFilter = Texture::FilterMode::LINEAR
         , Texture::FilterMode magFilter = Texture::FilterMode::LINEAR
         , bool generateMipmap = false);

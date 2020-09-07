@@ -8,7 +8,7 @@
 
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 #include "Graphics/Opengl/CameraObject.hpp"
-#include "Graphics/Opengl/GBuffer.hpp"
+#include "Graphics/Opengl/RenderPass/GBuffer.hpp"
 
 #include <random>
 
@@ -25,14 +25,14 @@ namespace Rendering
       INIT_POSTPROCESSEFFECT();
       m_resolution = glm::ivec2(width, height);
 
-      m_ssaoTexture = Texture::GenerateNullTexture(
-        width, height, Texture::Channel::RGB
-        , Texture::Channel::RGB, Texture::FilterMode::NEAREST
+      m_ssaoTexture = Texture::GenerateRenderTexture(
+        width, height, Texture::Format::RGB
+        , Texture::Format::RGB, Texture::FilterMode::NEAREST
         , Texture::WrapMode::CLAMP_TO_EDGE);
       
       //FBO
       m_fbo.Init();
-      m_fbo.AttachTexture(m_ssaoTexture);
+      m_fbo.AttachColorTexture(m_ssaoTexture);
       m_fbo.Bind();
       m_fbo.Unbind();
 
@@ -84,7 +84,7 @@ namespace Rendering
         ssaoNoise.emplace_back(noise);
       }
       m_noiseTexture = Texture::GenerateTextureData(&ssaoNoise[0]
-        , 4, 4, Texture::Channel::RGB16F, Texture::Channel::RGB
+        , 4, 4, Texture::Format::RGB16F, Texture::Format::RGB
         , Texture::FilterMode::NEAREST, Texture::WrapMode::REPEAT);
     }
 

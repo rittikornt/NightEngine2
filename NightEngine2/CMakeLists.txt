@@ -41,6 +41,10 @@ file(GLOB PROJECT_SOURCES_POSTPROCESS_OPENGL src/Graphics/Opengl/Postprocess/*.c
                                       src/Graphics/Opengl/Postprocess/*.hpp)
 source_group("src\\Opengl\\PostProcess" FILES ${PROJECT_SOURCES_POSTPROCESS_OPENGL})
 
+file(GLOB PROJECT_SOURCES_RENDERPASS_OPENGL src/Graphics/Opengl/RenderPass/*.cpp
+                                      src/Graphics/Opengl/RenderPass/*.hpp)
+source_group("src\\Opengl\\RenderPass" FILES ${PROJECT_SOURCES_RENDERPASS_OPENGL})
+
 include_directories(src/
                     ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/assimp/include/
                     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/assimp/include/
@@ -53,9 +57,10 @@ include_directories(src/
                     thirdparty/imgui
                     thirdparty/renderdoc)
 
-                    add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_GRAPHIC} 
-                                                                ${PROJECT_SOURCES_GRAPHIC_OPENGL} 
-                                                                ${PROJECT_SOURCES_POSTPROCESS_OPENGL})
+add_nightengine2_target(${proj_name} OBJECT ${PROJECT_SOURCES_GRAPHIC} 
+                                            ${PROJECT_SOURCES_GRAPHIC_OPENGL} 
+                                            ${PROJECT_SOURCES_POSTPROCESS_OPENGL}
+                                            ${PROJECT_SOURCES_RENDERPASS_OPENGL})
 
 set_target_properties(${proj_name} PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${PROJECT_NAME})

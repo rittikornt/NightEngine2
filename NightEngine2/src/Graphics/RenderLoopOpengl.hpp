@@ -18,14 +18,17 @@
 #include "Graphics/Opengl/Material.hpp"
 #include "Graphics/Opengl/Cubemap.hpp"
 #include "Graphics/Opengl/UniformBufferObject.hpp"
-#include "Graphics/Opengl/GBuffer.hpp"
 #include "Graphics/Opengl/IBL.hpp"
+
+//Render Passes
+#include "Graphics/Opengl/RenderPass/DepthPrepass.hpp"
+#include "Graphics/Opengl/RenderPass/GBuffer.hpp"
 
 //Postprocess
 #include "Graphics/Opengl/Postprocess/SSAO.hpp"
 #include "Graphics/Opengl/Postprocess/Bloom.hpp"
 #include "Graphics/Opengl/Postprocess/FXAA.hpp"
-#include "Graphics/Opengl/Postprocess/CameraMotionVector.hpp"
+#include "Graphics/Opengl/RenderPass/CameraMotionVector.hpp"
 
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
@@ -52,7 +55,7 @@ namespace Rendering
   protected:
     void Render(void);
 
-    void DrawScene(bool debugNormal);
+    void DrawScene(void);
 
     void DrawDebugIcons(void);
 
@@ -86,16 +89,17 @@ namespace Rendering
     glm::vec2           m_initResolution{1.0f};
 
     //Scene FrameBuffer
-    GBuffer             m_gbuffer;
     FrameBufferObject   m_sceneFbo;
     Texture             m_sceneTexture;
     RenderBufferObject  m_sceneRbo;
 
+    //Render Passes
+    DepthPrepass        m_depthPrepass;
+    GBuffer             m_gbuffer;
+    Rendering::Prepass::CameraMotionVector m_cameraMotionVector;
+
     //PostProcess
     Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
-
-    //Prepass
-    Rendering::Prepass::CameraMotionVector m_cameraMotionVector;
 
     //FullScreen Postfx
     VertexArrayObject                  m_screenTriangleVAO;
@@ -110,7 +114,6 @@ namespace Rendering
     Material                           m_lightingMaterial;
 
     Material                           m_debugViewMaterial;
-    Material                           m_normalDebug;
 
     //Light
     NightEngine::EC::Handle<Material>  m_billboardMaterial;

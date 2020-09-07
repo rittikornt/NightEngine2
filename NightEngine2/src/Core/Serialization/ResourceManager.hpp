@@ -33,7 +33,7 @@ namespace NightEngine
     
     //! @brief Static Function for Load and Cache Texture
     static EC::Handle<Rendering::Texture> LoadTextureResource(const Container::String& filePath
-      , Rendering::Texture::Channel channel = Rendering::Texture::Channel::RGB
+      , Rendering::Texture::Format channel = Rendering::Texture::Format::RGB
       , Rendering::Texture::FilterMode filterMode = Rendering::Texture::FilterMode::LINEAR
       , Rendering::Texture::WrapMode wrapMode = Rendering::Texture::WrapMode::REPEAT
       , bool hdrImage = false);

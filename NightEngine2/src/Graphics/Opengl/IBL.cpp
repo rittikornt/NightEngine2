@@ -45,18 +45,18 @@ namespace Rendering
 
     //Cubemaps
     m_cubemap.Init(m_width, m_height, "skybox.vert"
-      , "skybox.frag", Texture::Channel::RGB16F);
+      , "skybox.frag", Texture::Format::RGB16F);
     camera.ApplyProjectionMatrix(m_cubemap.GetShader());
 
     m_irradianceCubemap.Init(g_irrandianceMapResolution.x, g_irrandianceMapResolution.y
       , "skybox.vert", "skybox.frag"
-      , Texture::Channel::RGB16F);
+      , Texture::Format::RGB16F);
     camera.ApplyProjectionMatrix(m_irradianceCubemap.GetShader());
 
     //Specular Cubemap
     m_prefilterMap.Init(g_prefilteredMapResolution.x, g_prefilteredMapResolution.y
       , "IBL/cubemap_debug.vert", "IBL/cubemap_debug.frag"
-      , Texture::Channel::RGB16F
+      , Texture::Format::RGB16F
       , Texture::FilterMode::TRILINEAR, Texture::FilterMode::LINEAR
       , true);
     camera.ApplyProjectionMatrix(m_prefilterMap.GetShader());
@@ -102,7 +102,7 @@ namespace Rendering
   {
     //Texture
     m_hdriTexture = Texture(FileSystem::GetFilePath(fileName, FileSystem::DirectoryType::Cubemaps)
-      , Texture::Channel::RGB16F
+      , Texture::Format::RGB16F
       , Texture::FilterMode::LINEAR
       , Texture::WrapMode::CLAMP_TO_EDGE, true);
 
@@ -239,14 +239,14 @@ namespace Rendering
   void IBL::BakeBRDFLUT(glm::ivec2 resolution
     , VertexArrayObject& screenVAO)
   {
-    m_brdfLUT = Texture::GenerateNullTexture(512, 512
-      , Texture::Channel::RG16F, Texture::Channel::RG
+    m_brdfLUT = Texture::GenerateRenderTexture(512, 512
+      , Texture::Format::RG16F, Texture::Format::RG
       , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
     m_captureRBO.SetBuffer(resolution.x, resolution.y
       , RenderBufferObject::Format::DEPTH24);
     //Render Target
-    m_captureFBO.AttachTexture(m_brdfLUT, 0);
+    m_captureFBO.AttachColorTexture(m_brdfLUT, 0);
 
     glViewport(0, 0, resolution.x, resolution.y);
     m_captureFBO.Bind();

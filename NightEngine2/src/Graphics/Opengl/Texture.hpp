@@ -46,7 +46,7 @@ namespace Rendering
       TEXTURE_2D = GL_TEXTURE_2D,
       TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE
     };
-		enum class Channel : GLenum
+		enum class Format : GLenum
 		{
 			RED = GL_RED,
       RG = GL_RG,
@@ -61,6 +61,9 @@ namespace Rendering
       RGBA16F = GL_RGBA16F,
       RGBA32F = GL_RGBA32F,
       RGBA12 = GL_RGBA12,
+
+      DepthDefault = GL_DEPTH_COMPONENT, //May be 16 or 24 bits
+      Depth24Stencil8 = GL_DEPTH24_STENCIL8,
       INVALID = GL_INVALID_ENUM
 		};
 		enum class TextureUnit : GLenum
@@ -123,7 +126,7 @@ namespace Rendering
     Texture(unsigned int id, const std::string& name);
 
     //! @brief Constructor to load from path
-		Texture(const std::string& filePath, Channel channel = Channel::RGB
+		Texture(const std::string& filePath, Format channel = Format::RGB
 		, FilterMode filterMode = FilterMode::LINEAR
     , WrapMode wrapMode = WrapMode::REPEAT
     , bool hdrImage = false);
@@ -153,7 +156,7 @@ namespace Rendering
     void SetName(const char* name);
 
     //! @brief Get Internal Format
-    Channel GetInternalFormat(void) { return m_internalFormat; }
+    Format GetInternalFormat(void) const { return m_internalFormat; }
 
     //! @brief Get Opengl Generated ID
 		GLuint GetID(void) const { return m_textureID; }
@@ -174,29 +177,29 @@ namespace Rendering
     // Static Method
     //*****************************************************
     //! @brief Constructor to load from path
-    static NightEngine::EC::Handle<Rendering::Texture> LoadTextureHandle(const std::string& filePath, Channel channel = Channel::RGB
+    static NightEngine::EC::Handle<Rendering::Texture> LoadTextureHandle(const std::string& filePath, Format channel = Format::RGB
       , FilterMode filterMode = FilterMode::LINEAR
       , WrapMode wrapMode = WrapMode::REPEAT
       , bool hdrImage = false);
 
     //! @brief Load file and Generate Texture
-    static TextureIdentifier LoadTexture(const std::string& filePath, Channel internalFormat = Channel::RGB
+    static TextureIdentifier LoadTexture(const std::string& filePath, Format internalFormat = Format::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);
 
     //! @brief Load file and Generate Texture
-    static TextureIdentifier LoadHDRTexture(const std::string& filePath, Channel internalFormat = Channel::RGB
+    static TextureIdentifier LoadHDRTexture(const std::string& filePath, Format internalFormat = Format::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);
 
     //! @brief Generate Null texture for FrameBuffer Attachment
-    static TextureIdentifier GenerateNullTexture(int width, int height
-      , Channel internalformat = Channel::RGB
-      , Channel format = Channel::RGB
+    static TextureIdentifier GenerateRenderTexture(int width, int height
+      , Format internalformat = Format::RGB
+      , Format format = Format::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);
 
     //! @brief Generate Texture from imgData
     static TextureIdentifier GenerateTextureData(void* imgData
       , int width, int height
-      , Channel internalFormat, Channel format
+      , Format internalFormat, Format format
       , FilterMode filterMode, WrapMode wrapMode);
 
     //! @brief Set opengl blend mode
@@ -209,7 +212,7 @@ namespace Rendering
     std::string m_name;
     std::string m_filePath; //path to be serialize/deserialize
 
-    Channel     m_internalFormat = Channel::RGB;
+    Format     m_internalFormat = Format::RGB;
     FilterMode  m_filterMode = FilterMode::TRINEAREST;
 	};
 } // Rendering

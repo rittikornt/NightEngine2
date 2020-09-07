@@ -105,7 +105,7 @@ namespace Editor
     g_dirty = true;
   }
 
-  static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Channel channel)
+  static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Format channel)
   {
     const char* k_none = "None";
     static int s_currentItem = 0;
@@ -278,7 +278,7 @@ namespace Editor
 
       for (auto& pair : textureMap)
       {
-        auto channel = Texture::Channel::RGB;
+        auto channel = Texture::Format::RGB;
         if (pair.second.IsValid() && pair.second->IsValid())
         {
           channel = pair.second->GetInternalFormat();

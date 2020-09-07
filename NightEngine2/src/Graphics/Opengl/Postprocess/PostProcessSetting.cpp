@@ -9,7 +9,7 @@
 #include "Graphics/Opengl/Texture.hpp"
 
 #include "Graphics/Opengl/CameraObject.hpp"
-#include "Graphics/Opengl/GBuffer.hpp"
+#include "Graphics/Opengl/RenderPass/GBuffer.hpp"
 
 #include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 #include "Graphics/Opengl/DebugMarker.hpp"

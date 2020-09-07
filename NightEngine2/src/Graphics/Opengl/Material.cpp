@@ -77,42 +77,42 @@ namespace Rendering
     if (diffuseTextureFile.size() > 0)
     {
       auto diffuseTexture = Texture::LoadTextureHandle(diffuseTextureFile
-      , Texture::Channel::SRGB, Texture::FilterMode::TRILINEAR);
+      , Texture::Format::SRGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[DIFFUSE_TEXUNIT_INDEX] = diffuseTexture;
     }
 
     if (normalTextureFile.size() > 0)
     {
       auto normalTexture = Texture::LoadTextureHandle(normalTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
+        , Texture::Format::RGB, Texture::FilterMode::TRINEAREST);
       m_textureMap[NORMAL_TEXUNIT_INDEX] = normalTexture;
     }
 
     if (roughnessTextureFile.size() > 0)
     {
       auto roughnessTexture = Texture::LoadTextureHandle(roughnessTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
+        , Texture::Format::RGB, Texture::FilterMode::TRINEAREST);
       m_textureMap[ROUGHNESS_TEXUNIT_INDEX] = roughnessTexture;
     }
 
     if (metallicTextureFile.size() > 0)
     {
       auto metallicTexture = Texture::LoadTextureHandle(metallicTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRINEAREST);
+        , Texture::Format::RGB, Texture::FilterMode::TRINEAREST);
       m_textureMap[METALLIC_TEXUNIT_INDEX] = metallicTexture;
     }
 
     if (emissiveTextureFile.size() > 0)
     {
       auto emissiveTexture = Texture::LoadTextureHandle(emissiveTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
+        , Texture::Format::RGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[EMISSIVE_TEXUNIT_INDEX] = emissiveTexture;
     }
 
     if (opacityTextureFile.size() > 0)
     {
       auto opacityTexture = Texture::LoadTextureHandle(opacityTextureFile
-        , Texture::Channel::RGB, Texture::FilterMode::TRILINEAR);
+        , Texture::Format::RGB, Texture::FilterMode::TRILINEAR);
       m_textureMap[OPACITYMASK_TEXUNIT_INDEX] = opacityTexture;
     }
 

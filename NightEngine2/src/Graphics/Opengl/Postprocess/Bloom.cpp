@@ -29,23 +29,23 @@ namespace Rendering
         g_bloomResolutions[i] = renderSize;
 
         {
-          m_bloomDownscaleTexture[i] = Texture::GenerateNullTexture(renderSize.x, renderSize.y
-            , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+          m_bloomDownscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
+            , Texture::Format::RGBA16F, Texture::Format::RGBA
             , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
           m_bloomDownscaleFbo[i].Init();
-          m_bloomDownscaleFbo[i].AttachTexture(m_bloomDownscaleTexture[i]);
+          m_bloomDownscaleFbo[i].AttachColorTexture(m_bloomDownscaleTexture[i]);
           m_bloomDownscaleFbo[i].Bind();
           m_bloomDownscaleFbo[i].Unbind();
         }
 
         {
-          m_bloomUpscaleTexture[i] = Texture::GenerateNullTexture(renderSize.x, renderSize.y
-            , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+          m_bloomUpscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
+            , Texture::Format::RGBA16F, Texture::Format::RGBA
             , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
           m_bloomUpscaleFbo[i].Init();
-          m_bloomUpscaleFbo[i].AttachTexture(m_bloomUpscaleTexture[i]);
+          m_bloomUpscaleFbo[i].AttachColorTexture(m_bloomUpscaleTexture[i]);
           m_bloomUpscaleFbo[i].Bind();
           m_bloomUpscaleFbo[i].Unbind();
         }
@@ -55,12 +55,12 @@ namespace Rendering
 
       //FBO Target
       {
-        m_targetTexture = Texture::GenerateNullTexture(m_resolution.x, m_resolution.y
-          , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+        m_targetTexture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
+          , Texture::Format::RGBA16F, Texture::Format::RGBA
           , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
         m_targetFbo.Init();
-        m_targetFbo.AttachTexture(m_targetTexture);
+        m_targetFbo.AttachColorTexture(m_targetTexture);
         m_targetFbo.Bind();
         m_targetFbo.Unbind();
       }

@@ -103,7 +103,7 @@ namespace Rendering
     //Unbind();
   }
 
-  void FrameBufferObject::AttachTexture(Texture& texture, int textureIndex)
+  void FrameBufferObject::AttachColorTexture(const Texture& texture, int textureIndex)
   {
     m_renderTarget.emplace_back(GL_COLOR_ATTACHMENT0 + textureIndex);
 
@@ -111,6 +111,18 @@ namespace Rendering
 
     glFramebufferTexture2D(GL_FRAMEBUFFER
       , GL_COLOR_ATTACHMENT0 + textureIndex, GL_TEXTURE_2D, texture.GetID(), 0);
+
+    Unbind();
+  }
+
+  void FrameBufferObject::AttachDepthTexture(const Texture& texture)
+  {
+    BindUnsafe();
+
+    GLenum attachment = texture.GetInternalFormat() == Texture::Format::Depth24Stencil8 ?
+      GL_DEPTH_STENCIL_ATTACHMENT : GL_DEPTH_ATTACHMENT;
+    glFramebufferTexture2D(GL_FRAMEBUFFER
+      , attachment, GL_TEXTURE_2D, texture.GetID(), 0);
 
     Unbind();
   }
@@ -138,7 +150,7 @@ namespace Rendering
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
     Unbind();
 
-    return TextureIdentifier{ textureID, "Depth24Stencil8" };
+    return TextureIdentifier{ textureID, "Depth24Stencil8", "", GL_DEPTH24_STENCIL8 , GL_NEAREST };
   }
 
   TextureIdentifier FrameBufferObject::CreateAndAttachDepthTexture(int width, int height)
@@ -166,7 +178,7 @@ namespace Rendering
       glReadBuffer(GL_NONE);
     Unbind();
 
-    return TextureIdentifier{ textureID, "Depth24" };
+    return TextureIdentifier{ textureID, "Depth24", "", GL_DEPTH_COMPONENT , GL_NEAREST };
   }
 
   void FrameBufferObject::AttachRenderBuffer(RenderBufferObject& rbo)

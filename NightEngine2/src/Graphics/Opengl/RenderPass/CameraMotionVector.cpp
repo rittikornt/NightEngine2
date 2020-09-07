@@ -3,12 +3,12 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of FXAA
 */
-#include "Graphics/Opengl/Postprocess/CameraMotionVector.hpp"
+#include "Graphics/Opengl/RenderPass/CameraMotionVector.hpp"
 
 #include "Graphics/Opengl/Texture.hpp"
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 
-#include "Graphics/Opengl/GBuffer.hpp"
+#include "Graphics/Opengl/RenderPass//GBuffer.hpp"
 #include "Graphics/Opengl/CameraObject.hpp"
 
 namespace Rendering
@@ -28,7 +28,7 @@ namespace Rendering
 
       //FBO
       m_fbo.Init();
-      m_fbo.AttachTexture(gbuffer.GetTexture(4));
+      m_fbo.AttachColorTexture(gbuffer.GetTexture(4));
       m_fbo.Bind();
       m_fbo.Unbind();
 

@@ -5,7 +5,7 @@
   @brief Contain the Implementation of GBuffer
 */
 
-#include "Graphics/Opengl/GBuffer.hpp"
+#include "Graphics/Opengl/RenderPass/GBuffer.hpp"
 
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
@@ -25,48 +25,50 @@ namespace Rendering
 
     //Depth Buffer
     m_depthTexture = m_fbo.CreateAndAttachDepthStencilTexture(width, height);
+    m_depthTexture.SetName("DepthPrepass RT");
     CHECKGL_ERROR();
 
     // TODO: Replace posWS with Depth texture (viewpos reconstruction instead)
     // (0) vec4(pos.xyz, n.x)
-    m_textures[0] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+    m_textures[0] = Texture::GenerateRenderTexture(width, height
+      , Texture::Format::RGBA16F, Texture::Format::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[0].SetName("GBuffer0 (Pos.xyz, N.x)");
-    m_fbo.AttachTexture(m_textures[0], 0);
+    m_fbo.AttachColorTexture(m_textures[0], 0);
 
     //(1) vec4(albedo.xyz, metallic)
-    m_textures[1] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::SRGB8_ALPHA8, Texture::Channel::RGBA
+    m_textures[1] = Texture::GenerateRenderTexture(width, height
+      , Texture::Format::SRGB8_ALPHA8, Texture::Format::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[1].SetName("GBuffer1 (albedo.xyz, metallic)");
-    m_fbo.AttachTexture(m_textures[1], 1);
+    m_fbo.AttachColorTexture(m_textures[1], 1);
 
     //(2) vec4(lightSpacePos, n.y)
-    m_textures[2] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+    m_textures[2] = Texture::GenerateRenderTexture(width, height
+      , Texture::Format::RGBA16F, Texture::Format::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[2].SetName("GBuffer2 (lightSpacePos, n.y)");
-    m_fbo.AttachTexture(m_textures[2], 2);
+    m_fbo.AttachColorTexture(m_textures[2], 2);
 
     //(3) vec4(emissive.xyz, roughness)
-    m_textures[3] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGBA12, Texture::Channel::RGBA
+    m_textures[3] = Texture::GenerateRenderTexture(width, height
+      , Texture::Format::RGBA12, Texture::Format::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[3].SetName("GBuffer3 (emissive.xyz, roughness)");
-    m_fbo.AttachTexture(m_textures[3], 3);
+    m_fbo.AttachColorTexture(m_textures[3], 3);
 
     // (4) vec2(motionvector.xy);
-    m_textures[4] = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RG16F, Texture::Channel::RGBA
+    m_textures[4] = Texture::GenerateRenderTexture(width, height
+      , Texture::Format::RG16F, Texture::Format::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[4].SetName("GBuffer4 (motionvector.xy)");
-    m_fbo.AttachTexture(m_textures[4], 4);
+    m_fbo.AttachColorTexture(m_textures[4], 4);
 
     //Setup multiple render target
     m_fbo.SetupMultipleRenderTarget();
 
     m_fbo.Bind();
+    m_fbo.Unbind();
   }
 
   void GBuffer::Bind(void)

@@ -46,8 +46,11 @@ namespace Rendering
         , int textureIndex = 0, int cubemapIndex = 0
         , int mipmapLevel = 0);
 
-      //! @brief Attach texture to framebuffer
-      void AttachTexture(Texture& texture, int textureIndex = 0);
+      //! @brief Attach color texture to framebuffer
+      void AttachColorTexture(const Texture& texture, int textureIndex = 0);
+
+      //! @brief Attach depth texture to framebuffer
+      void AttachDepthTexture(const Texture& texture);
 
       //! @brief Attach depth/stencil texture to framebuffer
       TextureIdentifier CreateAndAttachDepthStencilTexture(float width, float height);

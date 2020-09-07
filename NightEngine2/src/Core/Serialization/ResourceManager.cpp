@@ -114,7 +114,7 @@ namespace NightEngine
   static EC::Handle<Rendering::Texture>  g_whiteTexture;
 
   EC::Handle<Rendering::Texture> ResourceManager::LoadTextureResource(const Container::String& filePath
-    , Texture::Channel channel, Texture::FilterMode filterMode
+    , Texture::Format channel, Texture::FilterMode filterMode
     , Texture::WrapMode wrapMode, bool hdrImage)
   {
     Container::Hashmap<U64, EC::Handle<Rendering::Texture>>& hashmap = GetContainer<EC::Handle<Rendering::Texture>>();
@@ -156,7 +156,7 @@ namespace NightEngine
     if (!g_blackTexture.IsValid())
     {
       g_blackTexture = Texture::LoadTextureHandle(FileSystem::GetFilePath("Blank/000.png", FileSystem::DirectoryType::Textures)
-        , Texture::Channel::RGB);
+        , Texture::Format::RGB);
     }
     return g_blackTexture;
   }
@@ -166,7 +166,7 @@ namespace NightEngine
     if (!g_whiteTexture.IsValid())
     {
       g_whiteTexture = Texture::LoadTextureHandle(FileSystem::GetFilePath("Blank/100.png", FileSystem::DirectoryType::Textures)
-        , Texture::Channel::RGB);
+        , Texture::Format::RGB);
     }
     return g_whiteTexture;
   }

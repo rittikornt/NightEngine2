@@ -58,7 +58,7 @@ namespace Rendering
     : m_textureID(textureIdentifier.m_textureID)
     , m_name(textureIdentifier.m_name)
     , m_filePath(textureIdentifier.m_filePath)
-    , m_internalFormat((Channel)textureIdentifier.m_internalFormat)
+    , m_internalFormat((Format)textureIdentifier.m_internalFormat)
     , m_filterMode((FilterMode)textureIdentifier.m_filterMode)
   {
   }
@@ -68,7 +68,7 @@ namespace Rendering
   {
   }
 
-  Texture::Texture(const std::string& filePath, Channel channel
+  Texture::Texture(const std::string& filePath, Format channel
 		, FilterMode filterMode, WrapMode wrapMode
     , bool hdrImage)
     : m_filePath(filePath)
@@ -149,7 +149,7 @@ namespace Rendering
   // Static Method
   //*****************************************************
   NightEngine::EC::Handle<Rendering::Texture> Texture::LoadTextureHandle(const std::string& filePath
-    , Channel channel, FilterMode filterMode, WrapMode wrapMode, bool hdrImage)
+    , Format channel, FilterMode filterMode, WrapMode wrapMode, bool hdrImage)
   {
     auto handle = ResourceManager::LoadTextureResource(filePath
       , channel, filterMode, wrapMode, hdrImage);
@@ -165,7 +165,7 @@ namespace Rendering
   }
 
   TextureIdentifier Texture::LoadTexture(const std::string& filePath
-    , Channel internalFormat
+    , Format internalFormat
     , FilterMode filterMode, WrapMode wrapMode)
   {
     Debug::Log << Logger::MessageType::INFO
@@ -175,18 +175,18 @@ namespace Rendering
     int width, height, channels;
 
     //TODO: detect Alpha channel from file extension
-    unsigned loadChannel = (internalFormat == Channel::RGB
-      || internalFormat == Channel::SRGB
-      || internalFormat == Channel::RGB16F
-      || internalFormat == Channel::RGB32F) ? STBI_rgb : STBI_rgb_alpha;
+    unsigned loadChannel = (internalFormat == Format::RGB
+      || internalFormat == Format::SRGB
+      || internalFormat == Format::RGB16F
+      || internalFormat == Format::RGB32F) ? STBI_rgb : STBI_rgb_alpha;
 
     //Flip Img vertically 
     stbi_set_flip_vertically_on_load(true);
     unsigned char* imgData = stbi_load(filePath.c_str()
       , &width, &height, &channels, loadChannel);
 
-    Channel format = loadChannel == STBI_rgb ?
-      Channel::RGB : Channel::RGBA;
+    Format format = loadChannel == STBI_rgb ?
+      Format::RGB : Format::RGBA;
 
     //Generate Actual Texture Data based on the loaded file
     TextureIdentifier t = GenerateTextureData(imgData, width, height
@@ -199,7 +199,7 @@ namespace Rendering
   }
 
   TextureIdentifier Texture::LoadHDRTexture(const std::string & filePath
-    , Channel internalFormat, FilterMode filterMode, WrapMode wrapMode)
+    , Format internalFormat, FilterMode filterMode, WrapMode wrapMode)
   {
     Debug::Log << Logger::MessageType::INFO
       << "Texture(HDR) Loading: " << filePath << '\n';
@@ -216,7 +216,7 @@ namespace Rendering
 
     //Generate Actual Texture Data based on the loaded file
     TextureIdentifier t = GenerateTextureData(imgData, width, height
-      , internalFormat, Channel::RGB
+      , internalFormat, Format::RGB
       , filterMode, wrapMode);
 
     stbi_image_free(imgData);
@@ -224,9 +224,9 @@ namespace Rendering
     return t;
   }
 
-  TextureIdentifier Texture::GenerateNullTexture(int width, int height
-    , Channel internalformat
-    , Channel format 
+  TextureIdentifier Texture::GenerateRenderTexture(int width, int height
+    , Format internalformat
+    , Format format 
     , FilterMode filterMode, WrapMode wrapMode)
   {
     Debug::Log << Logger::MessageType::INFO
@@ -239,12 +239,12 @@ namespace Rendering
     glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
 
     //Choose target based on channel
-    GLenum pixelTarget = internalformat == Channel::RGB16F
-      || internalformat == Channel::RGB32F
-      || internalformat == Channel::RGBA16F
-      || internalformat == Channel::RGBA32F
-      || internalformat == Channel::RG16F
-      || internalformat == Channel::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
+    GLenum pixelTarget = internalformat == Format::RGB16F
+      || internalformat == Format::RGB32F
+      || internalformat == Format::RGBA16F
+      || internalformat == Format::RGBA32F
+      || internalformat == Format::RG16F
+      || internalformat == Format::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
     //https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalformat)
@@ -263,7 +263,7 @@ namespace Rendering
       , static_cast<GLint>(GetMagFilterMode(filterMode)));
 
     CHECKGL_ERROR();
-    texture.m_name = "NullTexture";
+    texture.m_name = "GeneratedRT";
     texture.m_internalFormat = (GLenum)internalformat;
     texture.m_filterMode = (GLenum)filterMode;
     return texture;
@@ -271,7 +271,7 @@ namespace Rendering
 
   TextureIdentifier Texture::GenerateTextureData(void* imgData
     , int width, int height
-    , Channel internalFormat, Channel format
+    , Format internalFormat, Format format
     , FilterMode filterMode, WrapMode wrapMode)
   {
     TextureIdentifier texture;
@@ -297,12 +297,12 @@ namespace Rendering
     if (imgData != nullptr)
     {
       //Choose target based on channel
-      GLenum pixelTarget = internalFormat == Channel::RGB16F
-        || internalFormat == Channel::RGB32F
-        || internalFormat == Channel::RGBA16F
-        || internalFormat == Channel::RGBA32F
-        || internalFormat == Channel::RG16F
-        || internalFormat == Channel::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
+      GLenum pixelTarget = internalFormat == Format::RGB16F
+        || internalFormat == Format::RGB32F
+        || internalFormat == Format::RGBA16F
+        || internalFormat == Format::RGBA32F
+        || internalFormat == Format::RG16F
+        || internalFormat == Format::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
       //Choose channel based on channel
       glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalFormat)

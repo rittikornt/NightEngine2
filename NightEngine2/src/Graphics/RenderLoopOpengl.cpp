@@ -197,17 +197,18 @@ namespace Rendering
 
     //GBuffer
     m_gbuffer.Init(width, height);
+    m_depthPrepass.Init(width, height, m_gbuffer.m_depthTexture);
 
     //Scene Texture
-    m_sceneTexture = Texture::GenerateNullTexture(width, height
-      , Texture::Channel::RGBA16F, Texture::Channel::RGBA
+    m_sceneTexture = Texture::GenerateRenderTexture(width, height
+      , Texture::Format::RGBA16F, Texture::Format::RGBA
       , Texture::FilterMode::LINEAR
       , Texture::WrapMode::CLAMP_TO_EDGE);
     m_sceneRbo.Init(width, height);
 
     //Scene FBO
     m_sceneFbo.Init();
-    m_sceneFbo.AttachTexture(m_sceneTexture);
+    m_sceneFbo.AttachColorTexture(m_sceneTexture);
     m_sceneFbo.AttachRenderBuffer(m_sceneRbo);
     m_sceneFbo.Bind();
 
@@ -256,14 +257,6 @@ namespace Rendering
     m_debugViewMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Utility/pbr_debug_view.frag");
     SetDeferredLightingPassUniforms(m_debugViewMaterial);
-    
-    //Normal Debugger
-    m_normalDebug.InitShader("Debugger/debug_vertex.vert"
-      , "Debugger/debug_fragment.frag", "Debugger/debug_normal_geometry.geom");
-
-    m_normalDebug.Bind(false);
-    m_normalDebug.GetShader().SetUniform("u_color", glm::vec3(1.0f));
-    m_normalDebug.Unbind();
 
     //Debug material
     m_billboardMaterial = (SceneManager::GetBillBoardMaterial());
@@ -276,7 +269,7 @@ namespace Rendering
     m_billboardMaterial->Unbind();
 
     m_lightTexture = Texture(FileSystem::GetFilePath("Icon_Light.png", FileSystem::DirectoryType::Textures)
-      , Texture::Channel::RGBA);
+      , Texture::Format::RGBA);
 
     Material::PreLoadAllMaterials();
 
@@ -308,7 +301,6 @@ namespace Rendering
     //Set Projection Matrix once
     //g_camera.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
     g_camera.ApplyProjectionMatrix(m_billboardMaterial->GetShader());
-    g_camera.ApplyProjectionMatrix(m_normalDebug.GetShader());
   }
 
   void RenderLoopOpengl::Terminate(void)
@@ -429,6 +421,34 @@ namespace Rendering
       , clear_color, clear_color);
     float pointShadowFarPlane = g_camera.m_far;
 
+    //*************************************************
+    // Depth Prepass
+    //*************************************************
+    glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
+    DebugMarker::PushDebugGroup("Depth Prepass");
+    m_depthPrepass.Bind();
+    {
+      glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+      //Set Uniform
+      m_defaultMaterial->Bind();
+      {
+        Shader& shader = m_defaultMaterial->GetShader();
+        shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
+      }
+      m_defaultMaterial->Unbind();
+
+      //Draw Scene
+      DrawScene();
+    }
+    m_depthPrepass.Unbind();
+    DebugMarker::PopDebugGroup();
+
+    //*************************************************
+    // ShadowCaster Prepass
+    //*************************************************
+    //TODO: Make into its own ShadowCasterPass struct/class
     DebugMarker::PushDebugGroup("ShadowCaster Pass");
     {
       //*************************************************
@@ -523,8 +543,7 @@ namespace Rendering
     m_gbuffer.Bind();
     {
       //Clear Buffer
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
-        | GL_STENCIL_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT);
 
       //Set Uniform
       m_defaultMaterial->Bind();
@@ -535,7 +554,7 @@ namespace Rendering
       m_defaultMaterial->Unbind();
 
       //Draw Scene
-      DrawScene(false);
+      DrawScene();
     }
     m_gbuffer.Unbind();
     DebugMarker::PopDebugGroup();
@@ -553,8 +572,10 @@ namespace Rendering
     //*************************************************
     // Lighting Pass
     //*************************************************
+    //Use depth test when rendering skybox and compositing light icons
     m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
 
+    //TODO: Move into a separate Lighting Pass struct/class
     DebugMarker::PushDebugGroup("Deferred Lighting Pass");
     m_sceneFbo.Bind();
     {
@@ -720,10 +741,9 @@ namespace Rendering
     DebugMarker::PopDebugGroup();
   }
 
-  void RenderLoopOpengl::DrawScene(bool debugNormal)
+  void RenderLoopOpengl::DrawScene()
   {
     //g_camera.ApplyViewMatrix(g_defaultMaterial.GetShader());
-    g_camera.ApplyViewMatrix(m_normalDebug.GetShader());
 
     //Bind Shader
     m_defaultMaterial->Bind();
@@ -745,16 +765,6 @@ namespace Rendering
         });
     }
     m_defaultMaterial->Unbind();
-
-    //For debugging normal
-    if (debugNormal)
-    {
-      m_normalDebug.Bind(false);
-      {
-        Drawer::DrawWithoutBind(m_normalDebug.GetShader());
-      }
-      m_normalDebug.Unbind();
-    }
   }
 
   void RenderLoopOpengl::DrawDebugIcons()

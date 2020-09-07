@@ -106,7 +106,7 @@ namespace Rendering
   }
 
   void Cubemap::Init(std::vector<std::string>& fileNames,const std::string& vertexShader
-  , const std::string& fragmentShader, Texture::Channel channel
+  , const std::string& fragmentShader, Texture::Format channel
   , bool generateMipmap)
   {
     //Init Texures
@@ -124,8 +124,8 @@ namespace Rendering
         Debug::Log << Logger::MessageType::INFO
           << "Loading Texture: " << filePath << '\n';
 
-        unsigned loadChannel = (channel == Texture::Channel::RGB
-          || channel == Texture::Channel::SRGB) ? STBI_rgb : STBI_rgb_alpha;
+        unsigned loadChannel = (channel == Texture::Format::RGB
+          || channel == Texture::Format::SRGB) ? STBI_rgb : STBI_rgb_alpha;
 
         //Default loading image
         stbi_set_flip_vertically_on_load(false);
@@ -179,7 +179,7 @@ namespace Rendering
 
   void Cubemap::Init(int width, int height
     , const std::string & vertexShader, const std::string & fragmentShader
-    , Texture::Channel internalFormat
+    , Texture::Format internalFormat
     , Texture::FilterMode minFilter
     , Texture::FilterMode magFilter
     , bool generateMipmap)
@@ -190,11 +190,11 @@ namespace Rendering
     Bind();
     {
       //Choose target based on channel
-      GLenum pixelTarget = internalFormat == Texture::Channel::RGB16F
-        || internalFormat == Texture::Channel::RGB32F
-        || internalFormat == Texture::Channel::RGBA16F
-        || internalFormat == Texture::Channel::RGBA32F
-        || internalFormat == Texture::Channel::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
+      GLenum pixelTarget = internalFormat == Texture::Format::RGB16F
+        || internalFormat == Texture::Format::RGB32F
+        || internalFormat == Texture::Format::RGBA16F
+        || internalFormat == Texture::Format::RGBA32F
+        || internalFormat == Texture::Format::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
       //Init right, left, top, bottom, front, back in order
       for (unsigned int i = 0; i < 6; i++)

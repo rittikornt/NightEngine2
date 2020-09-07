@@ -6,6 +6,7 @@
 #include "RenderDocManager.hpp"
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
+#include "EngineConfigs.hpp"
 
 #include "renderdoc/renderdoc_app.h"
 
@@ -23,7 +24,7 @@ namespace Rendering
     bool ShouldInitAtStartup()
     {
       //NOTE: Modify this to Attach RenderDoc at startup or not
-      return false;
+      return STARTUP_RENDERDOC_ATTACHMENT;
     }
 
     //Only working in Windows debug mode

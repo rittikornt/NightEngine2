@@ -55,7 +55,7 @@ namespace Rendering
 
     //Specular Cubemap
     m_prefilterMap.Init(g_prefilteredMapResolution.x, g_prefilteredMapResolution.y
-      , "IBL/cubemap_debug.vert", "IBL/cubemap_debug.frag"
+      , "RenderPass/IBL/cubemap_debug.vert", "RenderPass/IBL/cubemap_debug.frag"
       , Texture::Format::RGB16F
       , Texture::FilterMode::TRILINEAR, Texture::FilterMode::LINEAR
       , true);
@@ -63,25 +63,25 @@ namespace Rendering
 
     //Specular Shader
     m_prefilterShader.Create();
-    m_prefilterShader.AttachShaderFile("IBL/cubemap_prefilteredmap.vert");
-    m_prefilterShader.AttachShaderFile("IBL/cubemap_prefilteredmap.frag");
+    m_prefilterShader.AttachShaderFile("RenderPass/IBL/cubemap_prefilteredmap.vert");
+    m_prefilterShader.AttachShaderFile("RenderPass/IBL/cubemap_prefilteredmap.frag");
     m_prefilterShader.Link();
 
     m_brdfShader.Create();
     m_brdfShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-    m_brdfShader.AttachShaderFile("IBL/precompute_brdflut.frag");
+    m_brdfShader.AttachShaderFile("RenderPass/IBL/precompute_brdflut.frag");
     m_brdfShader.Link();
     
     //HDR to Cubemap Shader
     m_cubeConversionShader.Create();
-    m_cubeConversionShader.AttachShaderFile("IBL/equirectangular_to_cubemap.vert");
-    m_cubeConversionShader.AttachShaderFile("IBL/equirectangular_to_cubemap.frag");
+    m_cubeConversionShader.AttachShaderFile("RenderPass/IBL/equirectangular_to_cubemap.vert");
+    m_cubeConversionShader.AttachShaderFile("RenderPass/IBL/equirectangular_to_cubemap.frag");
     m_cubeConversionShader.Link();
 
     //Irradiancemap Shader
     m_irradianceShader.Create();
-    m_irradianceShader.AttachShaderFile("IBL/cubemap_irradiancemap.vert");
-    m_irradianceShader.AttachShaderFile("IBL/cubemap_irradiancemap.frag");
+    m_irradianceShader.AttachShaderFile("RenderPass/IBL/cubemap_irradiancemap.vert");
+    m_irradianceShader.AttachShaderFile("RenderPass/IBL/cubemap_irradiancemap.frag");
     m_irradianceShader.Link();
 
     //Capture FBO

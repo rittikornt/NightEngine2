@@ -6,7 +6,7 @@ layout (location = 1) out vec4 o_gbuffer1;	//(1) vec4(albedo.xyz, metallic.x)
 layout (location = 2) out vec4 o_gbuffer2;	//(2) vec4(lightSpacePos, n.y)
 layout (location = 3) out vec4 o_gbuffer3;	//(3) vec4(emissive.xyz, roughness.x)
 
-#include "Library/common.glsl"
+#include "ShaderLibrary/common.glsl"
 
 in VS_OUT
 {

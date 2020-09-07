@@ -44,12 +44,12 @@ namespace Rendering
       , Cube::cubeIndices, Cube::info);
 
     //Cubemaps
-    m_cubemap.Init(m_width, m_height, "skybox.vert"
-      , "skybox.frag", Texture::Format::RGB16F);
+    m_cubemap.Init(m_width, m_height, "RenderPass/skybox.vert"
+      , "RenderPass/skybox.frag", Texture::Format::RGB16F);
     camera.ApplyProjectionMatrix(m_cubemap.GetShader());
 
     m_irradianceCubemap.Init(g_irrandianceMapResolution.x, g_irrandianceMapResolution.y
-      , "skybox.vert", "skybox.frag"
+      , "RenderPass/skybox.vert", "RenderPass/skybox.frag"
       , Texture::Format::RGB16F);
     camera.ApplyProjectionMatrix(m_irradianceCubemap.GetShader());
 

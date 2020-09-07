@@ -180,8 +180,8 @@ namespace Rendering
     m_depthDirShadowFBO.Init();
     m_shadowMapDirShadowTexture = m_depthDirShadowFBO.CreateAndAttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
 
-    m_depthDirShadowMaterial.InitShader("Shadow/depth_directional.vert"
-      , "Shadow/depth_directional.frag");
+    m_depthDirShadowMaterial.InitShader("RenderPass/Shadows/depth_directional.vert"
+      , "RenderPass/Shadows/depth_directional.frag");
 
     //Depth FBO for point shadow
     for (int i = 0; i < POINTLIGHT_AMOUNT; ++i)
@@ -192,8 +192,8 @@ namespace Rendering
       m_depthPointShadowFBO[i].AttachCubemap(m_shadowMapPointShadow[i]);
     }
 
-    m_depthPointShadowMaterial.InitShader("Shadow/depth_point.vert"
-      , "Shadow/depth_point.frag", "Shadow/depth_point.geom");
+    m_depthPointShadowMaterial.InitShader("RenderPass/Shadows/depth_point.vert"
+      , "RenderPass/Shadows/depth_point.frag", "RenderPass/Shadows/depth_point.geom");
 
     //GBuffer
     m_gbuffer.Init(width, height);
@@ -251,17 +251,17 @@ namespace Rendering
       , false, "");
 
     m_lightingMaterial.InitShader("Utility/fullscreenTriangle.vert"
-      , "Rendering/deferred_lighting_pbr_pass.frag");
+      , "Lighting/deferred_lighting_pbr_pass.frag");
     SetDeferredLightingPassUniforms(m_lightingMaterial);
 
     m_debugViewMaterial.InitShader("Utility/fullscreenTriangle.vert"
-      , "Utility/pbr_debug_view.frag");
+      , "Lighting/deferred_pbr_debug_view.frag");
     SetDeferredLightingPassUniforms(m_debugViewMaterial);
 
     //Debug material
     m_billboardMaterial = (SceneManager::GetBillBoardMaterial());
-    m_billboardMaterial->InitShader("Debugger/debug_billboard.vert"
-      , "Debugger/debug_fragment.frag");
+    m_billboardMaterial->InitShader("ShaderPass/Debug/debug_billboard.vert"
+      , "ShaderPass/Debug/debug_fragment.frag");
     m_billboardMaterial->SetName("BillboardMaterial");
 
     m_billboardMaterial->Bind(false);

@@ -23,7 +23,7 @@ namespace Rendering
 
       m_cmvShader.Create();
       m_cmvShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_cmvShader.AttachShaderFile("Prepass/camera_motion_vector.frag");
+      m_cmvShader.AttachShaderFile("RenderPass/Prepass/camera_motion_vector.frag");
       m_cmvShader.Link();
 
       //FBO

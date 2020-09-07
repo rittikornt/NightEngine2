@@ -1,6 +1,6 @@
 #define FLT_EPSILON     1.192092896e-07 // Smallest positive number, such that 1.0 + FLT_EPSILON != 1.0
 
-#include "Library/common.glsl"
+#include "ShaderLibrary/common.glsl"
 
 //***************************************
 // Uniforms

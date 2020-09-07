@@ -47,8 +47,8 @@ namespace Physics
 
     //Shader
     m_shader.Create();
-    m_shader.AttachShaderFile("Debugger/debug_draw.vert");
-    m_shader.AttachShaderFile("Debugger/debug_draw.frag");
+    m_shader.AttachShaderFile("ShaderPass/Debug/debug_draw.vert");
+    m_shader.AttachShaderFile("ShaderPass/Debug/debug_draw.frag");
     m_shader.Link();
   }
 

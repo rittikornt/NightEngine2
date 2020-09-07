@@ -6,8 +6,8 @@
 #pragma once
 #include "Core/Reflection/RemoveQualifier.hpp"
 
-#define DEFAULT_VERTEX_SHADER_PBR "Rendering/gbuffer_pass.vert"
-#define DEFAULT_FRAG_SHADER_PBR "Rendering/gbuffer_pass.frag"
+#define DEFAULT_VERTEX_SHADER_PBR "ShaderPass/gbuffer_pass.vert"
+#define DEFAULT_FRAG_SHADER_PBR "ShaderPass/gbuffer_pass.frag"
 
 #define DIFFUSE_TEXUNIT_INDEX 0
 #define NORMAL_TEXUNIT_INDEX 1

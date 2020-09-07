@@ -1,8 +1,8 @@
 {
   "Material": {
     "Shaders": [
-      "Rendering/gbuffer_pass.vert",
-      "Rendering/gbuffer_pass.frag"
+      "ShaderPass/gbuffer_pass.vert",
+      "ShaderPass/gbuffer_pass.frag"
     ],
     "m_floatMap": {
       "u_material.m_emissiveStrength": 15.0,

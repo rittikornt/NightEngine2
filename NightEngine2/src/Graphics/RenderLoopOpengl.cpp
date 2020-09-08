@@ -294,14 +294,14 @@ namespace Rendering
     m_defaultMaterial->GetShader().SetUniformBlockBindingPoint("u_matrices", bindingPoint);
     m_uniformBufferObject.Init(sizeof(glm::mat4) * 2, bindingPoint);
     m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
-      , glm::value_ptr(g_camera.GetProjectionMatrix()));
+      , glm::value_ptr(g_camera.GetUnjitteredProjectionMatrix()));
 
     //************************************************
     // Init Projection Matrix
     //************************************************
     //Set Projection Matrix once
     //g_camera.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
-    g_camera.ApplyUnJitteredProjectionMatrix(m_billboardMaterial->GetShader());
+    //g_camera.ApplyUnJitteredProjectionMatrix(m_billboardMaterial->GetShader());
   }
 
   void RenderLoopOpengl::Terminate(void)
@@ -803,6 +803,10 @@ namespace Rendering
         m_billboardMaterial->Bind(false);
         {
           Shader& shader = m_billboardMaterial->GetShader();
+
+          shader.SetUniform("u_projection", g_camera.m_projection);
+          shader.SetUniform("u_color", glm::vec3(1.0f, 1.0f, 1.0f));
+
           shader.SetUniform("u_texture", 0);
           m_lightTexture.BindToTextureUnit(0);
 

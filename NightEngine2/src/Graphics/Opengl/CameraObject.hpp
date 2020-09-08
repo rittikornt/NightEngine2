@@ -92,7 +92,7 @@ namespace Rendering
 
     //////////////////////////////////////////////////////////
 
-    glm::mat4& GetProjectionMatrix(void);
+    glm::mat4& GetUnjitteredProjectionMatrix(void);
 
     glm::mat4& GetViewMatix(void);
 

@@ -98,11 +98,14 @@ namespace Rendering
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        camera.ApplyViewMatrix(m_ssaoShader);
-        camera.ApplyUnJitteredProjectionMatrix(m_ssaoShader);
+        //camera.ApplyViewMatrix(m_ssaoShader);
+        //camera.ApplyUnJitteredProjectionMatrix(m_ssaoShader);
 
         m_ssaoShader.Bind();
         {
+          m_ssaoShader.SetUniform("u_view", camera.m_view);
+          m_ssaoShader.SetUniform("u_projection", camera.m_projection);
+
           gbuffer.GetTexture(0).BindToTextureUnit(0);
           gbuffer.GetTexture(2).BindToTextureUnit(1);
 

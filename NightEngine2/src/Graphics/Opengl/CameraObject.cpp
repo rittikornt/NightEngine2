@@ -135,19 +135,12 @@ namespace Rendering
   void CameraObject::ApplyUnJitteredProjectionMatrix(Shader& shader)
   {
     //Projection
-    m_projection = CalculateProjectionMatrix(m_projectionType
+    m_unjitteredProjection = CalculateProjectionMatrix(m_projectionType
       , m_camSize.m_fov, SCREEN_ASPECT_RATIO
       , m_near, m_far);
 
-    //TODO: Jitter projection matrix
-    /*m_projection = m_bJitterProjectionMatrix ?
-      CalculateJitteredProjectionMatrix(m_projectionType) : 
-      CalculateProjectionMatrix(m_projectionType
-        , m_camSize.m_fov, SCREEN_ASPECT_RATIO
-        , m_near, m_far);*/
-
     shader.Bind();
-    shader.SetUniform("u_projection", m_projection);
+    shader.SetUniform("u_projection", m_unjitteredProjection);
     shader.Unbind();
   }
 
@@ -205,15 +198,15 @@ namespace Rendering
 
   //////////////////////////////////////////////////////////
 
-  glm::mat4& CameraObject::GetProjectionMatrix(void)
+  glm::mat4& CameraObject::GetUnjitteredProjectionMatrix(void)
   {
     //TODO: Dirty flag for projection/view matrix, only calculate once per frame
     //Projection
-    m_projection = CalculateProjectionMatrix(m_projectionType
+    m_unjitteredProjection = CalculateProjectionMatrix(m_projectionType
       , m_camSize.m_fov, SCREEN_ASPECT_RATIO
       , m_near, m_far);
 
-    return m_projection;
+    return m_unjitteredProjection;
   }
 
   glm::mat4& CameraObject::GetViewMatix(void)

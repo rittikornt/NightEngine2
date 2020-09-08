@@ -18,8 +18,8 @@ uniform vec4 u_TAAFrameInfo;               // { taaSharpenStrength, taaFrameInde
 // Macros
 //***************************************
 #define RADIUS              0.75
-#define FEEDBACK_MIN        0.96
-#define FEEDBACK_MAX        0.91
+#define FEEDBACK_MIN        0.91
+#define FEEDBACK_MAX        0.96
 
 #define CLAMP_MAX           65472.0 // HALF_MAX minus one (2 - 2^-9) * 2^15
 

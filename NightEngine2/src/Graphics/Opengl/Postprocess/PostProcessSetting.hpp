@@ -17,6 +17,7 @@
 #include "Graphics/Opengl/Postprocess/SSAO.hpp"
 #include "Graphics/Opengl/Postprocess/Bloom.hpp"
 #include "Graphics/Opengl/Postprocess/FXAA.hpp"
+#include "Graphics/Opengl/Postprocess/TAA.hpp"
 
 #include "Core/Reflection/ReflectionMacros.hpp"
 
@@ -55,6 +56,7 @@ namespace Rendering
       Postprocess::Bloom  m_bloomPP;
       Postprocess::SSAO   m_ssaoPP;
       Postprocess::FXAA   m_fxaaPP;
+      Postprocess::TAA    m_taaPP;
 
       //Meta datas
       std::vector<PostProcessEffect*> m_postProcessEffects;

@@ -204,6 +204,7 @@ namespace Rendering
       , Texture::Format::RGBA16F, Texture::Format::RGBA
       , Texture::FilterMode::LINEAR
       , Texture::WrapMode::CLAMP_TO_EDGE);
+    m_sceneTexture.SetName("SceneColorRT");
     m_sceneRbo.Init(width, height);
 
     //Scene FBO
@@ -300,7 +301,7 @@ namespace Rendering
     //************************************************
     //Set Projection Matrix once
     //g_camera.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
-    g_camera.ApplyProjectionMatrix(m_billboardMaterial->GetShader());
+    g_camera.ApplyUnJitteredProjectionMatrix(m_billboardMaterial->GetShader());
   }
 
   void RenderLoopOpengl::Terminate(void)
@@ -352,13 +353,14 @@ namespace Rendering
     CameraObject::ProcessCameraInput(g_camera, dt);
 
     //Update the new Projection Matrix
+    g_camera.m_bJitterProjectionMatrix = m_postProcessSetting->m_taaPP.m_enable;
     g_camera.m_camSize.m_fov = cameraFOV;
     g_camera.m_far = cameraFarPlane;
     g_camera.OnStartFrame();
 
     //Update View/Projection matrix to Shader
     m_uniformBufferObject.FillBuffer(0, sizeof(glm::mat4)
-      , glm::value_ptr(g_camera.m_unjitteredVP));
+      , glm::value_ptr(g_camera.m_VP));
     m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
       , glm::value_ptr(g_camera.m_projection));
 
@@ -442,6 +444,7 @@ namespace Rendering
           //Draw Loop by traversing Containers
           Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
 
+          //TODO: Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
           //Draw Custom Pass
           Drawer::DrawWithoutBind(shader, Drawer::DrawPass::CUSTOM);
         }
@@ -724,12 +727,25 @@ namespace Rendering
     DebugMarker::PushDebugGroup("Final Draw");
     {
       //TODO: TAA here
+      DebugMarker::PushDebugGroup("TAA");
+      {
+        if (g_enablePostprocess && m_postProcessSetting->m_taaPP.m_enable)
+        {
+          m_postProcessSetting->m_taaPP.Apply(m_screenTriangleVAO
+            , m_gbuffer, m_sceneTexture, m_sceneFbo, g_camera);
+        }
+      }
+      DebugMarker::PopDebugGroup();
 
       //FXAA
       if (g_enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
       {
-        m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO
-          , m_sceneTexture);
+        DebugMarker::PushDebugGroup("FXAA");
+        {
+          m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO
+            , m_sceneTexture);
+        }
+        DebugMarker::PopDebugGroup();
       }
       else
       {

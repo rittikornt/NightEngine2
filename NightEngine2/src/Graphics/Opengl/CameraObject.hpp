@@ -41,8 +41,15 @@ namespace Rendering
 		//Matrix
 		glm::mat4 m_view;
 		glm::mat4 m_projection;
+    glm::mat4 m_VP;
 
-    glm::mat4 m_jitteredVP;
+    //TAA
+    bool m_bJitterProjectionMatrix = false;  //Use when TAA is enabled
+    int m_taaFrameIndex = 0;
+    glm::vec2 m_activeJitteredUV;
+
+    //Use in CameraMotionVector
+    glm::mat4 m_unjitteredProjection;
     glm::mat4 m_unjitteredVP;
     glm::mat4 m_prevUnjitteredVP;
 
@@ -71,7 +78,7 @@ namespace Rendering
 
     void ApplyCameraInfo(Shader& shader);
 
-    void ApplyProjectionMatrix(Shader& shader);
+    void ApplyUnJitteredProjectionMatrix(Shader& shader);
 
     void ApplyViewMatrix(Shader& shader);
 
@@ -107,6 +114,8 @@ namespace Rendering
 
     static glm::mat4 CalculateProjectionMatrix(CameraType camtype
       , float size, float aspect, float near_, float far_);
+
+    static glm::mat4 CalculateJitteredProjectionMatrix(const CameraObject& cam, glm::vec2& jitteredUV);
 
     static void ProcessCameraInput(CameraObject& camera, float dt);
 

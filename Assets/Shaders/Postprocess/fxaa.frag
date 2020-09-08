@@ -7,10 +7,10 @@ uniform sampler2D u_screenTexture;
 float Luminance(vec3 linearRgb)
 {
     //Digital ITU BT.601
-    //return dot(linearRgb, vec3(0.2126729, 0.7151522, 0.0721750));
+    return dot(linearRgb, vec3(0.2126729, 0.7151522, 0.0721750));
 
     //Photometric/digital ITU BT.709:
-    return dot(linearRgb, vec3(0.299, 0.587, 0.114));
+    //return dot(linearRgb, vec3(0.299, 0.587, 0.114));
 }
 
 vec3 Fetch(vec2 coords, vec2 offset)

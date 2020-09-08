@@ -33,9 +33,13 @@ namespace Rendering
       //FXAA
       m_fxaaPP.Init(width, height);
 
+      //TAA
+      m_taaPP.Init(width, height);
+
       m_postProcessEffects.emplace_back(&m_bloomPP);
       m_postProcessEffects.emplace_back(&m_ssaoPP);
       m_postProcessEffects.emplace_back(&m_fxaaPP);
+      m_postProcessEffects.emplace_back(&m_taaPP);
     }
 
     void PostProcessSetting::Apply(const PostProcessContext& context)
@@ -85,6 +89,7 @@ namespace Rendering
       m_bloomPP.RefreshTextureUniforms();
       m_ssaoPP.RefreshTextureUniforms();
       m_fxaaPP.RefreshTextureUniforms();
+      m_taaPP.RefreshTextureUniforms();
     }
   }
 }

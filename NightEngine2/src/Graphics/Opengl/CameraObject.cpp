@@ -16,6 +16,89 @@
 
 namespace Rendering
 {
+  struct FrustumJitter
+  {
+    static float GetHaltonSequence(int index, int radix)
+    {
+      float result = 0.0f;
+      float fraction = 1.0f / radix;
+
+      while (index > 0)
+      {
+        result += (index % radix) * fraction;
+
+        index /= radix;
+        fraction /= radix;
+      }
+
+      return result;
+    }
+
+    static glm::vec4 GetProjectionExtends(const CameraObject& camera
+      , float texelOffsetX, float texelOffsetY, float pixelWidth, float pixelHeight)
+    {
+      float k_deg2Rad = 0.01745329251f; // (PI * 2) / 360
+      float aspect = SCREEN_ASPECT_RATIO; //This is only for perspective for now
+
+      float oneExtentY = camera.m_projectionType == CameraObject::CameraType::ORTHOGRAPHIC ? 
+        camera.m_camSize.m_size : tanf(0.5f * k_deg2Rad * camera.m_camSize.m_fov);
+      float oneExtentX = oneExtentY * aspect;
+      float texelSizeX = oneExtentX / (0.5f * pixelWidth);
+      float texelSizeY = oneExtentY / (0.5f * pixelHeight);
+      float oneJitterX = texelSizeX * texelOffsetX;
+      float oneJitterY = texelSizeY * texelOffsetY;
+
+      // xy = frustum extents at distance 1, zw = jitter at distance 1
+      return glm::vec4(oneExtentX, oneExtentY, oneJitterX, oneJitterY);
+    }
+
+    static glm::mat4 GetPerspectiveProjection(float left, float right
+      , float bottom, float top, float near_, float far_)
+    {
+      //minwindef.h has macros near/far defined, seriously microsoft?
+      float x = (2.0f * near_) / (right - left);
+      float y = (2.0f * near_) / (top - bottom);
+      float a = (right + left) / (right - left);
+      float b = (top + bottom) / (top - bottom);
+      float c = -(far_ + near_) / (far_ - near_);
+      float d = -(2.0f * far_ * near_) / (far_ - near_);
+      float e = -1.0f;
+
+      glm::mat4 m;
+      m[0][0] = x; m[0][1] = 0; m[0][2] = 0; m[0][3] = 0;
+      m[1][0] = 0; m[1][1] = y; m[1][2] = 0; m[1][3] = 0;
+      m[2][0] = a; m[2][1] = b; m[2][2] = c; m[2][3] = e;
+      m[3][0] = 0; m[3][1] = 0; m[3][2] = d; m[3][3] = 0;
+      return m;
+    }
+
+    static glm::mat4 GetJitteredProjection(const CameraObject& camera, glm::vec2& jitteredUV)
+    {
+      int taaFrameIndex = camera.m_taaFrameIndex;
+      float texelOffsetX = GetHaltonSequence((taaFrameIndex & 1023) + 1, 2) - 0.5f;
+      float texelOffsetY = GetHaltonSequence((taaFrameIndex & 1023) + 1, 3) - 0.5f;
+      
+      float pixelWidth = Window::GetWidth();
+      float pixelHeight = Window::GetHeight();
+      jitteredUV.x = texelOffsetX / pixelWidth;
+      jitteredUV.y = texelOffsetX / pixelHeight;
+
+      glm::vec4 extents = GetProjectionExtends(camera
+        , texelOffsetX, texelOffsetY, pixelWidth, pixelHeight);
+
+      float cf = camera.m_far;
+      float cn = camera.m_near;
+
+      float xm = extents.z - extents.x;
+      float xp = extents.z + extents.x;
+      float ym = extents.w - extents.y;
+      float yp = extents.w + extents.y;
+
+      //TODO: Jitter for Orthographic Projection
+      return GetPerspectiveProjection(xm * cn, xp * cn, ym * cn, yp * cn, cn, cf);
+    }
+  };
+
   static void Print(char* label, glm::vec3 toPrint)
   {
     NightEngine::Debug::Log << label << toPrint.x << ", " << toPrint.y
@@ -49,12 +132,19 @@ namespace Rendering
     //shader.SetUniform("u_cameraInfo.m_lookDir", m_dirForward);
   }
 
-  void CameraObject::ApplyProjectionMatrix(Shader& shader)
+  void CameraObject::ApplyUnJitteredProjectionMatrix(Shader& shader)
   {
     //Projection
     m_projection = CalculateProjectionMatrix(m_projectionType
       , m_camSize.m_fov, SCREEN_ASPECT_RATIO
       , m_near, m_far);
+
+    //TODO: Jitter projection matrix
+    /*m_projection = m_bJitterProjectionMatrix ?
+      CalculateJitteredProjectionMatrix(m_projectionType) : 
+      CalculateProjectionMatrix(m_projectionType
+        , m_camSize.m_fov, SCREEN_ASPECT_RATIO
+        , m_near, m_far);*/
 
     shader.Bind();
     shader.SetUniform("u_projection", m_projection);
@@ -84,15 +174,28 @@ namespace Rendering
 
   void CameraObject::OnStartFrame(void)
   {
-    m_projection = CalculateProjectionMatrix(m_projectionType
-      , m_camSize.m_fov, SCREEN_ASPECT_RATIO
-      , m_near, m_far);
     m_view = CalculateViewMatrix(m_position, m_dirForward, WORLD_UP);
 
-    m_unjitteredVP = m_projection * m_view;
+    m_unjitteredProjection = CalculateProjectionMatrix(m_projectionType
+      , m_camSize.m_fov, SCREEN_ASPECT_RATIO
+      , m_near, m_far);
 
-    //TODO: Calculate jittered VP matrix
-    m_jitteredVP = m_unjitteredVP;
+    m_projection = m_bJitterProjectionMatrix? 
+      CalculateJitteredProjectionMatrix(*this, m_activeJitteredUV) : m_unjitteredProjection;
+    
+    //VP
+    m_unjitteredVP = m_unjitteredProjection * m_view;
+    m_VP = m_projection * m_view; //this could be jittered
+
+    //Update TAAframeIndex
+    if (m_bJitterProjectionMatrix)
+    {
+      const int k_maxSampleCount = 8;
+      if (++m_taaFrameIndex >= k_maxSampleCount)
+      {
+        m_taaFrameIndex = 0;
+      }
+    }
   }
 
   void CameraObject::OnEndFrame(void)
@@ -187,7 +290,7 @@ namespace Rendering
       }
       case CameraType::ORTHOGRAPHIC:
       {
-        float aspect = 1.0f / (static_cast<float>(Window::GetWidth() / Window::GetHeight()) * 0.5f);
+        //float aspect = 1.0f / ((static_cast<float>(Window::GetWidth() / Window::GetHeight()) * 0.5f);
         projection = glm::ortho(-size * aspect
           , size * aspect
           , -size
@@ -198,6 +301,11 @@ namespace Rendering
     }
 
     return projection;
+  }
+
+  glm::mat4 CameraObject::CalculateJitteredProjectionMatrix(const CameraObject& cam, glm::vec2& jitteredUV)
+  {
+    return FrustumJitter::GetJitteredProjection(cam, jitteredUV);
   }
 
   void CameraObject::ProcessCameraInput(CameraObject& camera, float dt)

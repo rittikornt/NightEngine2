@@ -8,7 +8,7 @@
 #include "Graphics/Opengl/Texture.hpp"
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 
-#include "Graphics/Opengl/RenderPass//GBuffer.hpp"
+#include "Graphics/Opengl/RenderPass/GBuffer.hpp"
 #include "Graphics/Opengl/CameraObject.hpp"
 
 namespace Rendering
@@ -40,7 +40,7 @@ namespace Rendering
     void CameraMotionVector::Render(VertexArrayObject& screenVAO
       , GBuffer& gbuffer, CameraObject& cam)
     {
-      auto& unjitteredVP = cam.m_unjitteredVP;
+      const auto& unjitteredVP = cam.m_unjitteredVP;
       auto& prevUnjitteredVP = cam.m_prevUnjitteredVP;
       if (m_isFirstFrame)
       {

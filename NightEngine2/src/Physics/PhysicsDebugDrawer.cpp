@@ -98,7 +98,7 @@ namespace Physics
       m_vao.Build(BufferMode::Dynamic, linePtr
         , m_lines.size() * sizeof(Line));
 
-      cam.ApplyProjectionMatrix(m_shader);
+      cam.ApplyUnJitteredProjectionMatrix(m_shader);
       cam.ApplyViewMatrix(m_shader);
 
       //Draw the Colliders

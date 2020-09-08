@@ -46,12 +46,12 @@ namespace Rendering
     //Cubemaps
     m_cubemap.Init(m_width, m_height, "RenderPass/skybox.vert"
       , "RenderPass/skybox.frag", Texture::Format::RGB16F);
-    camera.ApplyProjectionMatrix(m_cubemap.GetShader());
+    camera.ApplyUnJitteredProjectionMatrix(m_cubemap.GetShader());
 
     m_irradianceCubemap.Init(g_irrandianceMapResolution.x, g_irrandianceMapResolution.y
       , "RenderPass/skybox.vert", "RenderPass/skybox.frag"
       , Texture::Format::RGB16F);
-    camera.ApplyProjectionMatrix(m_irradianceCubemap.GetShader());
+    camera.ApplyUnJitteredProjectionMatrix(m_irradianceCubemap.GetShader());
 
     //Specular Cubemap
     m_prefilterMap.Init(g_prefilteredMapResolution.x, g_prefilteredMapResolution.y
@@ -59,7 +59,7 @@ namespace Rendering
       , Texture::Format::RGB16F
       , Texture::FilterMode::TRILINEAR, Texture::FilterMode::LINEAR
       , true);
-    camera.ApplyProjectionMatrix(m_prefilterMap.GetShader());
+    camera.ApplyUnJitteredProjectionMatrix(m_prefilterMap.GetShader());
 
     //Specular Shader
     m_prefilterShader.Create();
@@ -294,9 +294,9 @@ namespace Rendering
     m_irradianceCubemap.RefreshTextureUniforms();
     m_prefilterMap.RefreshTextureUniforms();
 
-    camera.ApplyProjectionMatrix(m_cubemap.GetShader());
-    camera.ApplyProjectionMatrix(m_irradianceCubemap.GetShader());
-    camera.ApplyProjectionMatrix(m_prefilterMap.GetShader());
+    camera.ApplyUnJitteredProjectionMatrix(m_cubemap.GetShader());
+    camera.ApplyUnJitteredProjectionMatrix(m_irradianceCubemap.GetShader());
+    camera.ApplyUnJitteredProjectionMatrix(m_prefilterMap.GetShader());
   }
 }
 

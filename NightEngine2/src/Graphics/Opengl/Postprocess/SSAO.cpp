@@ -99,7 +99,7 @@ namespace Rendering
         glClear(GL_COLOR_BUFFER_BIT);
 
         camera.ApplyViewMatrix(m_ssaoShader);
-        camera.ApplyProjectionMatrix(m_ssaoShader);
+        camera.ApplyUnJitteredProjectionMatrix(m_ssaoShader);
 
         m_ssaoShader.Bind();
         {

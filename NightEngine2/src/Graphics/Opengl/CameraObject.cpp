@@ -167,6 +167,7 @@ namespace Rendering
 
   void CameraObject::OnStartFrame(void)
   {
+    //Matrix
     m_view = CalculateViewMatrix(m_position, m_dirForward, WORLD_UP);
 
     m_unjitteredProjection = CalculateProjectionMatrix(m_projectionType
@@ -176,12 +177,13 @@ namespace Rendering
     m_projection = m_bJitterProjectionMatrix? 
       CalculateJitteredProjectionMatrix(*this, m_activeJitteredUV) : m_unjitteredProjection;
 
-    m_invView = glm::inverse(m_view);
-    m_invProjection = glm::inverse(m_projection);
-    
-    //VP
     m_unjitteredVP = m_unjitteredProjection * m_view;
     m_VP = m_projection * m_view; //this could be jittered
+
+    //Inverse Matrix
+    m_invView = glm::inverse(m_view);
+    m_invProjection = glm::inverse(m_projection);
+    m_invVP = glm::inverse(m_VP);
 
     //Update TAAframeIndex
     if (m_bJitterProjectionMatrix)

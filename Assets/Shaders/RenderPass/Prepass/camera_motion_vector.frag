@@ -6,21 +6,18 @@ in vec2 OurTexCoords;
 uniform mat4    u_prevUnJitteredVP;
 uniform mat4    u_unjitteredVP;
 
-uniform mat4    u_invView;
-uniform mat4    u_invProjection;
+uniform mat4    u_invVP;
 
 layout(binding=0) uniform sampler2D gbuffer0;
 layout(binding=1) uniform sampler2D u_depthTexture;
 
 vec3 DepthToWorldSpacePosition(float normalizedDepth, vec2 uv) 
 {
-    float z = normalizedDepth * 2.0 - 1.0;
-
+    float z = normalizedDepth * 2.0 - 1.0; //[-1, 1]
     vec4 positionCS = vec4(uv.xy * 2.0 - 1.0, z, 1.0);
-    vec4 positionVS = u_invProjection * positionCS;
-    positionVS.xyz /= positionVS.w;
 
-    vec4 positionWS = u_invView * positionVS;
+    vec4 positionWS = u_invVP * positionCS;
+    positionWS.xyz /= positionWS.w;
     return positionWS.xyz;
 }
 

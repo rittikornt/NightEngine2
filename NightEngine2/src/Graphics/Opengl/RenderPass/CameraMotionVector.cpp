@@ -58,8 +58,7 @@ namespace Rendering
           m_cmvShader.SetUniform("u_prevUnJitteredVP", prevUnjitteredVP);
           m_cmvShader.SetUniform("u_unjitteredVP", unjitteredVP);
 
-          m_cmvShader.SetUniform("u_invView", cam.m_invView);
-          m_cmvShader.SetUniform("u_invProjection", cam.m_invProjection);
+          m_cmvShader.SetUniform("u_invVP", cam.m_invVP);
 
           //Draw Quad
           screenVAO.Draw();

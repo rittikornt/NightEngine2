@@ -105,12 +105,14 @@ namespace Rendering
         {
           m_ssaoShader.SetUniform("u_view", camera.m_view);
           m_ssaoShader.SetUniform("u_projection", camera.m_projection);
+          m_ssaoShader.SetUniform("u_invProjection", camera.m_invProjection);
 
           gbuffer.GetTexture(0).BindToTextureUnit(0);
           gbuffer.GetTexture(2).BindToTextureUnit(1);
+          gbuffer.m_depthTexture.BindToTextureUnit(2);
 
           //Noise and sample kernel
-          m_noiseTexture.BindToTextureUnit(2);
+          m_noiseTexture.BindToTextureUnit(3);
           for (int i = 0; i < m_sampleAmount; ++i)
           {
             m_ssaoShader.SetUniform(m_sampleKernelString[i], m_sampleKernel[i]);
@@ -127,19 +129,6 @@ namespace Rendering
         m_ssaoShader.Unbind();
       }
       m_fbo.Unbind();
-
-      //Blur the AO
-      /*m_fbo.Bind();
-      {
-        m_simpleBlur.Bind();
-        {
-          m_ssaoTexture.BindToTextureUnit(0);
-
-          screenVAO.Draw();
-        }
-        m_simpleBlur.Unbind();
-      }
-      m_fbo.Unbind();*/
 
       glm::vec4 clearColor = glm::vec4{ 1.0f,1.0f,1.0f,1.0f };
       ppUtility.BlurTarget(clearColor, m_ssaoTexture, screenVAO
@@ -162,9 +151,10 @@ namespace Rendering
       //Set Uniform
       m_ssaoShader.Bind();
       {
-        m_ssaoShader.SetUniform("u_gbuffer.gbuffer0", 0);
-        m_ssaoShader.SetUniform("u_gbuffer.gbuffer2", 1);
-        m_ssaoShader.SetUniform("u_noiseTexture", 2);
+        m_ssaoShader.SetUniform("gbuffer0", 0);
+        m_ssaoShader.SetUniform("gbuffer2", 1);
+        m_ssaoShader.SetUniform("u_depthTexture", 2);
+        m_ssaoShader.SetUniform("u_noiseTexture", 3);
       }
       m_ssaoShader.Unbind();
 

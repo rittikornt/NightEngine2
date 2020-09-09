@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 out vec4 FragColor;
   
 in vec2 OurTexCoords;
@@ -10,21 +10,20 @@ const float noiseSize = 4.0;
 const vec2  g_noiseScale = vec2(1366.0/noiseSize, 768.0/noiseSize);
 
 const int   kernelSize = 64;
+
 //***************************************
 // Uniforms
 //***************************************
-struct GBufferResult
-{
-	sampler2D gbuffer0;
-	sampler2D gbuffer2;
-};
-uniform GBufferResult u_gbuffer;
+layout(binding=0) uniform sampler2D gbuffer0;
+layout(binding=1) uniform sampler2D gbuffer2;
+layout(binding=2) uniform sampler2D u_depthTexture;
 
-uniform sampler2D u_noiseTexture;
+layout(binding=3) uniform sampler2D u_noiseTexture;
 uniform vec3      u_sampleKernel[kernelSize];
 
 uniform mat4      u_view;
 uniform mat4      u_projection;
+uniform mat4      u_invProjection;
 
 //***************************************
 // Exposed Parameter
@@ -43,14 +42,25 @@ void UnpackNormalFromRG(inout vec3 normal)
 	normal.z = sqrt(1 - (normal.r * normal.r) - (normal.g * normal.g));
 }
 
+vec3 GetViewSpacePositionFromDepth(vec2 uv)
+{
+  float normalizedDepth = texture(u_depthTexture, uv).r;
+  float z = normalizedDepth * 2.0 - 1.0; //[-1, 1]
+  vec4 positionCS = vec4(uv.xy * 2.0 - 1.0, z, 1.0);
+
+  vec4 positionVS = u_invProjection * positionCS;
+  positionVS.xyz /= positionVS.w;
+  return positionVS.xyz;
+}
+
 void main()
 { 
   //FragPos in view space
-  vec4 fragPosNormalX = texture(u_gbuffer.gbuffer0, OurTexCoords);
-  vec3 fragPos = (u_view * vec4(fragPosNormalX.xyz, 1.0)).xyz;
+  vec4 fragPosNormalX = texture(gbuffer0, OurTexCoords);
+  vec3 positionVS = GetViewSpacePositionFromDepth(OurTexCoords);//(u_view * vec4(fragPosNormalX.xyz, 1.0)).xyz;
 
   //Normal in view space
-  vec4 posLSAndNormalY = texture(u_gbuffer.gbuffer2, OurTexCoords);
+  vec4 posLSAndNormalY = texture(gbuffer2, OurTexCoords);
 	vec3 normal = vec3(0.0);
 	normal.x = fragPosNormalX.a;
 	normal.y = posLSAndNormalY.a;
@@ -76,29 +86,25 @@ void main()
   for(int i=0; i < kernelSize; ++i)
   {
     //Offset vector in view space (from tangent space)
-    vec3 samplePos = TBN * u_sampleKernel[i];
-
     //Sampled Position in view space
-    samplePos = fragPos + (samplePos * u_sampleRadius);
+    vec3 samplePosVS = positionVS + ((TBN * u_sampleKernel[i]) * u_sampleRadius);
 
     //Transform sampled position to clip-space
-    vec4 clipPos = vec4(samplePos, 1.0);
-    clipPos = u_projection * clipPos;       //View to clip-space
-    clipPos.xyz /= clipPos.w;               //Perspective division to NDC
-    clipPos.xyz = clipPos.xyz * 0.5 + 0.5;  //Remap to Screen space [0.0,1.0]
+    vec4 positionNDC = vec4(samplePosVS, 1.0);
+    positionNDC = u_projection * positionNDC;       //View to clip-space
+    positionNDC.xyz /= positionNDC.w;               //Perspective division to NDC
+    positionNDC.xyz = positionNDC.xyz * 0.5 + 0.5;  //Remap to Screen space [0.0,1.0]
 
     //Sample depth from world position
-    float closestDepth = (u_view * vec4(texture(u_gbuffer.gbuffer0, clipPos.xy).xyz, 1.0) ).z;
+    float closestDepth = GetViewSpacePositionFromDepth(positionNDC.xy).z;
 
     //Rangecheck scale
-    float depthDiff = abs(fragPos.z - closestDepth);
+    float depthDiff = abs(positionVS.z - closestDepth);
     float rangeCheck = smoothstep(0.0, 1.0, u_sampleRadius/depthDiff );
 
     //Check if the sampled fragment is not visible to screen
-    occlusionFactor += (closestDepth >= samplePos.z + u_bias? 1.0: 0.0) * rangeCheck;
+    occlusionFactor += (closestDepth >= samplePosVS.z + u_bias? 1.0: 0.0) * rangeCheck;
   }
-  //occlusionFactor = (1 - (occlusionFactor/ kernelSize) );
-  //occlusionFactor = pow(occlusionFactor, u_power);
 
   occlusionFactor = (occlusionFactor/ kernelSize);
   occlusionFactor *= u_intensity;

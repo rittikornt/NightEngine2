@@ -47,7 +47,7 @@ namespace Rendering
     m_textures[2] = Texture::GenerateRenderTexture(width, height
       , Texture::Format::RGBA16F, Texture::Format::RGBA
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[2].SetName("GBuffer2 (lightSpacePos, n.y)");
+    m_textures[2].SetName("GBuffer2 (lightSpacePos, N.y)");
     m_fbo.AttachColorTexture(m_textures[2], 2);
 
     //(3) vec4(emissive.xyz, roughness)

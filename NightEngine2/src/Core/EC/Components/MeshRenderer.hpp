@@ -96,6 +96,9 @@ namespace NightEngine
           //! @brief Draw mesh without binding material
           void DrawWithoutBind(bool useTexture, Rendering::Shader& shader);
 
+          //! @brief Draw mesh without binding material
+          void DrawWithoutBindDepthPass(bool useTexture, Rendering::Shader& shader);
+
           //! @brief Draw mesh based on mode
           void DrawWithMode(bool useTexture, Rendering::Shader& shader);
 
@@ -111,11 +114,15 @@ namespace NightEngine
 
           //! @brief Load Material from file
           void LoadMaterial(std::string fileName);
+
+          //! @brief Check if this mesh is opaque
+          bool IsOpaque(void);
         private:
           EC::Handle<Rendering::Material> m_material;
 
           std::vector <EC::Handle<Rendering::Material>> m_materials;
           bool                            m_useModelLoadedMaterials = false;
+          bool                            m_isOpaque = true;
 
           std::vector<Rendering::Mesh>    m_meshes; //All the submeshes
           unsigned                        m_submeshCount = 0;

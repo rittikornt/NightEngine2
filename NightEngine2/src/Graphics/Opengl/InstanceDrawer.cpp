@@ -112,6 +112,18 @@ namespace Rendering
         }
       }
     }
+
+    void DrawDepthWithoutBind(Shader& shader
+      , DrawPass drawPass)
+    {
+      auto& container = GetDrawContainer(drawPass);
+
+      //Profiled, this loop is as fast as direct Slotmap lookup
+      for (auto& mesh : container)
+      {
+        mesh.Get<MeshRenderer>()->DrawWithoutBindDepthPass(false, shader);
+      }
+    }
   }
 
   /////////////////////////////////////////////////////////////

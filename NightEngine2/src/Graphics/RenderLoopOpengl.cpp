@@ -447,7 +447,7 @@ namespace Rendering
 
           //TODO: Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
           //Draw Custom Pass
-          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::CUSTOM);
+          Drawer::DrawDepthWithoutBind(shader, Drawer::DrawPass::OPAQUE_PASS);
         }
         shader.Unbind();
       }
@@ -491,7 +491,7 @@ namespace Rendering
             Drawer::DrawShadowWithoutBind(m_depthDirShadowMaterial.GetShader()
               , Drawer::DrawPass::BATCH);
             Drawer::DrawShadowWithoutBind(m_depthDirShadowMaterial.GetShader()
-              , Drawer::DrawPass::CUSTOM);
+              , Drawer::DrawPass::OPAQUE_PASS);
           }
           m_depthDirShadowMaterial.Unbind();
         }
@@ -534,7 +534,7 @@ namespace Rendering
               Drawer::DrawShadowWithoutBind(m_depthPointShadowMaterial.GetShader()
                 , Drawer::DrawPass::BATCH);
               Drawer::DrawShadowWithoutBind(m_depthPointShadowMaterial.GetShader()
-                , Drawer::DrawPass::CUSTOM);
+                , Drawer::DrawPass::OPAQUE_PASS);
             }
             m_depthPointShadowMaterial.Unbind();
           }
@@ -783,7 +783,7 @@ namespace Rendering
     m_defaultMaterial->Unbind();
 
     //Draw Custom Pass
-    Drawer::Draw(Drawer::DrawPass::CUSTOM
+    Drawer::Draw(Drawer::DrawPass::OPAQUE_PASS
       , [](Shader& shader)
       {
         shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);

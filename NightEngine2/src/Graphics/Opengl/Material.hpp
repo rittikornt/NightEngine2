@@ -105,6 +105,9 @@ namespace Rendering
       //! @brief Set Material Property
       inline void SetMaterialProperty(const MaterialProperty* mp) { m_materialProperty = mp; }
 
+      //! @brief Check if this is opaque shader
+      inline bool IsOpaque() { return m_intMap[MP_PBRMetallic::u_useOpacityMap] == 0; }
+
       //////////////////////////////////////////////////////////////
 
       inline TEXTURE_TABLE(NightEngine::EC::Handle<Texture>)& GetTextureMap(void) { return m_textureMap; }

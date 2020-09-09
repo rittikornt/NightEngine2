@@ -106,8 +106,8 @@ namespace NightEngine
         }
         case DrawMode::CUSTOM:
         {
-          Drawer::RegisterMeshRenderer(*this
-            , Drawer::DrawPass::CUSTOM);
+          auto dp = Drawer::DrawPass::OPAQUE_PASS;
+          Drawer::RegisterMeshRenderer(*this, dp);
           break;
         }
         case DrawMode::OUTLINE:
@@ -147,8 +147,8 @@ namespace NightEngine
         }
         case DrawMode::CUSTOM:
         {
-          Drawer::UnregisterMeshRenderer(*this
-            , Drawer::DrawPass::CUSTOM);
+          auto dp = Drawer::DrawPass::OPAQUE_PASS;
+          Drawer::UnregisterMeshRenderer(*this, dp);
           break;
         }
         case DrawMode::OUTLINE:
@@ -256,6 +256,43 @@ namespace NightEngine
 
         //Draw
         DrawMeshes();
+      }
+
+      void MeshRenderer::DrawWithoutBindDepthPass(bool useTexture, Rendering::Shader& shader)
+      {
+        //SetUniform Modelmatrix
+        auto t = m_gameObject->GetTransform();
+        ASSERT_TRUE(t != nullptr);
+        shader.SetUniform("u_model", t->CalculateModelMatrix());
+
+        //Skip Transparent Material in Depth Prepass
+        //Draw meshes
+        if (m_useModelLoadedMaterials)
+        {
+          for (size_t i = 0; i < m_meshes.size(); ++i)
+          {
+            bool isTransparent = i < m_materials.size()
+              && m_materials[i].IsValid() && !m_materials[i]->IsOpaque();
+            
+            if(!isTransparent)
+            {
+              m_meshes[i].Draw();
+            }
+          }
+        }
+        else
+        {
+          bool isTransparent = m_material.IsValid() 
+            && !m_material->IsOpaque();
+
+          if (!isTransparent)
+          {
+            for (size_t i = 0; i < m_meshes.size(); ++i)
+            {
+              m_meshes[i].Draw();
+            }
+          }
+        }
       }
 
       void MeshRenderer::DrawWithMode(bool useTexture, Rendering::Shader& shader)
@@ -406,6 +443,25 @@ namespace NightEngine
       {
         //Load Material
         m_material = Material::LoadMaterial(fileName);
+      }
+
+      bool MeshRenderer::IsOpaque(void)
+      {
+        if (m_material.IsValid()
+          && !m_material->IsOpaque())
+        {
+          return false;
+        }
+
+        for (int i = 0; i < m_materials.size(); ++i)
+        {
+          if (m_materials[i].IsValid()
+            && !m_materials[i]->IsOpaque())
+          {
+            return false;
+          }
+        }
+        return true;
       }
     }
   }

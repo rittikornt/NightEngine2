@@ -39,7 +39,7 @@ namespace Rendering
     enum class DrawPass: unsigned
     {
       BATCH = 0,
-      CUSTOM,
+      OPAQUE_PASS,
       OUTLINE,
       DEBUG
     };
@@ -65,6 +65,10 @@ namespace Rendering
 
     //! @brief Draw pass for Shadow
     void DrawShadowWithoutBind(Shader& shader
+      , DrawPass drawPass = DrawPass::BATCH);
+
+    //! @brief Draw pass for Shadow
+    void DrawDepthWithoutBind(Shader& shader
       , DrawPass drawPass = DrawPass::BATCH);
   }
 

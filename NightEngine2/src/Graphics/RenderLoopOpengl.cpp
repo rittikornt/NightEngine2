@@ -806,7 +806,7 @@ namespace Rendering
         {
           Shader& shader = m_billboardMaterial->GetShader();
 
-          shader.SetUniform("u_projection", g_camera.m_projection);
+          shader.SetUniform("u_projection", g_camera.m_unjitteredProjection);
           shader.SetUniform("u_color", glm::vec3(1.0f, 1.0f, 1.0f));
 
           shader.SetUniform("u_texture", 0);

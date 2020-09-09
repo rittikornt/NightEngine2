@@ -42,7 +42,7 @@ namespace Rendering
 
       //! @brief Apply FXAA to the screen directly
       void ApplyToScreen(VertexArrayObject& screenVAO
-        , Texture& screenTexture);
+        , Texture& screenTexture, float zoomScale = 1.0f);
 
       //! @brief Refresh Texture Uniforms binding unit
       void RefreshTextureUniforms(void);

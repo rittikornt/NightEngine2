@@ -45,10 +45,13 @@ namespace Rendering
       sceneFbo.Unbind();
     }
 
-    void FXAA::ApplyToScreen(VertexArrayObject & screenVAO, Texture & screenTexture)
+    void FXAA::ApplyToScreen(VertexArrayObject& screenVAO
+      , Texture& screenTexture, float zoomScale)
     {
       m_fxaaShader.Bind();
       {
+        m_fxaaShader.SetUniform("u_scale", zoomScale);
+
         screenTexture.BindToTextureUnit(0);
 
         //Draw Quad

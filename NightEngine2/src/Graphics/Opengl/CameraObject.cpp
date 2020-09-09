@@ -74,9 +74,9 @@ namespace Rendering
 
     static glm::mat4 GetJitteredProjection(const CameraObject& camera, glm::vec2& jitteredUV)
     {
-      int taaFrameIndex = camera.m_taaFrameIndex;
-      float texelOffsetX = GetHaltonSequence((taaFrameIndex & 1023) + 1, 2) - 0.5f;
-      float texelOffsetY = GetHaltonSequence((taaFrameIndex & 1023) + 1, 3) - 0.5f;
+      int index = camera.m_taaFrameIndex + 1;
+      float texelOffsetX = GetHaltonSequence(index, 2) - 0.5f;
+      float texelOffsetY = GetHaltonSequence(index, 3) - 0.5f;
       
       float pixelWidth = Window::GetWidth();
       float pixelHeight = Window::GetHeight();
@@ -188,8 +188,8 @@ namespace Rendering
     //Update TAAframeIndex
     if (m_bJitterProjectionMatrix)
     {
-      const int k_maxSampleCount = 8;
-      if (++m_taaFrameIndex >= k_maxSampleCount)
+      const int k_maxSampleCount = 7;
+      if (++m_taaFrameIndex > k_maxSampleCount)
       {
         m_taaFrameIndex = 0;
       }

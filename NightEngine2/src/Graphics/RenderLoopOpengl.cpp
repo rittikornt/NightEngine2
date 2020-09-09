@@ -722,7 +722,7 @@ namespace Rendering
     //*************************************************
     DebugMarker::PushDebugGroup("Final Draw");
     {
-      //TODO: TAA here
+      //TODO: Do TAA before postfx to fix bloom flickering + use fast invertable tonemap in the calculation
       DebugMarker::PushDebugGroup("TAA");
       {
         if (g_enablePostprocess && m_postProcessSetting->m_taaPP.m_enable)
@@ -739,7 +739,7 @@ namespace Rendering
         DebugMarker::PushDebugGroup("FXAA");
         {
           m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO
-            , m_sceneTexture);
+            , m_sceneTexture, screenZoomScale);
         }
         DebugMarker::PopDebugGroup();
       }
@@ -747,6 +747,8 @@ namespace Rendering
       {
         m_blitCopyMaterial.Bind(false);
         {
+          m_blitCopyMaterial.GetShader().SetUniform("u_scale", screenZoomScale);
+          
           m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
           m_sceneTexture.BindToTextureUnit(0);
 

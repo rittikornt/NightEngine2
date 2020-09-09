@@ -157,6 +157,15 @@ namespace Editor
               changed |= ImGui::Combo("Shadow Debug View", &s_debugShadowViewEnum
                 , k_debugShadowViewStr, (int)Rendering::DebugShadowView::COUNT);
 
+              static float s_zoom = 1.0f;
+              if (ImGui::SliderFloat("Zoom", &s_zoom, 1.0f, 10.0f))
+              {
+                if (rlgl != nullptr)
+                {
+                  rlgl->screenZoomScale = s_zoom;
+                }
+              }
+
               if (changed)
               {
                 Rendering::DebugView dv = (Rendering::DebugView)s_debugViewEnum;

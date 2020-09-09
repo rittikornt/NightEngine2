@@ -62,6 +62,8 @@ namespace Rendering
     void SetDeferredLightingPassUniforms(Material& material);
 
   public:
+    float screenZoomScale = 1.0f;
+
     float ambientStrength = 0.3f;
     float cameraFOV = 100.0f;
     float cameraFarPlane = 100.0f;

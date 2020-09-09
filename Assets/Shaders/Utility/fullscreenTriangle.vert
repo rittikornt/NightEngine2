@@ -2,6 +2,7 @@
 layout (location = 0) in vec2 inPos;
 
 out vec2 OurTexCoords;
+uniform float u_scale = 1.0f;
 
 vec2 TriangleVertexPosToUV(vec2 vertexPos)
 {
@@ -22,6 +23,6 @@ vec2 TriangleVertexPosToScreenPos(vec2 vertexPos)
 
 void main()
 {
-    gl_Position = vec4(TriangleVertexPosToScreenPos(inPos.xy).xy, 0.0, 1.0); 
+    gl_Position = vec4(TriangleVertexPosToScreenPos(inPos.xy).xy * u_scale, 0.0, 1.0); 
     OurTexCoords = TriangleVertexPosToUV(inPos.xy);
 }  

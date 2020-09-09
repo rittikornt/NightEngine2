@@ -6,11 +6,29 @@ in vec2 OurTexCoords;
 uniform mat4    u_prevUnJitteredVP;
 uniform mat4    u_unjitteredVP;
 
+uniform mat4    u_invView;
+uniform mat4    u_invProjection;
+
 layout(binding=0) uniform sampler2D gbuffer0;
+layout(binding=1) uniform sampler2D u_depthTexture;
+
+vec3 DepthToWorldSpacePosition(float normalizedDepth, vec2 uv) 
+{
+    float z = normalizedDepth * 2.0 - 1.0;
+
+    vec4 positionCS = vec4(uv.xy * 2.0 - 1.0, z, 1.0);
+    vec4 positionVS = u_invProjection * positionCS;
+    positionVS.xyz /= positionVS.w;
+
+    vec4 positionWS = u_invView * positionVS;
+    return positionWS.xyz;
+}
 
 void main()
 {
-  vec4 positionWS = vec4(textureLod(gbuffer0, OurTexCoords, 0.0f).rgb, 1.0);
+  //vec4 positionWS = vec4(textureLod(gbuffer0, OurTexCoords, 0.0f).rgb, 1.0);
+  float depth = textureLod(u_depthTexture, OurTexCoords, 0.0f).r;
+  vec4 positionWS = vec4(DepthToWorldSpacePosition(depth, OurTexCoords).xyz,1.0);
 
   //[-1, 1] Clip Space position
   vec4 positionCS = u_unjitteredVP * positionWS;

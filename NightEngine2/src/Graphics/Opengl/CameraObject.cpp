@@ -175,6 +175,9 @@ namespace Rendering
 
     m_projection = m_bJitterProjectionMatrix? 
       CalculateJitteredProjectionMatrix(*this, m_activeJitteredUV) : m_unjitteredProjection;
+
+    m_invView = glm::inverse(m_view);
+    m_invProjection = glm::inverse(m_projection);
     
     //VP
     m_unjitteredVP = m_unjitteredProjection * m_view;

@@ -427,6 +427,7 @@ namespace Rendering
     // Depth Prepass
     //*************************************************
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
     glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
     DebugMarker::PushDebugGroup("Depth Prepass");
     m_depthPrepass.Bind();
@@ -711,11 +712,6 @@ namespace Rendering
           m_screenTriangleVAO.Draw();
         }
         m_uberPostMaterial.Unbind();
-
-        //*************************************************
-        // Draw Debug Icons
-        //*************************************************
-        DrawDebugIcons();
       }
       m_sceneFbo.Unbind();
     }
@@ -761,6 +757,11 @@ namespace Rendering
       }
     }
     DebugMarker::PopDebugGroup();
+
+    //*************************************************
+    // Draw Debug Icons
+    //*************************************************
+    DrawDebugIcons();
   }
 
   void RenderLoopOpengl::DrawScene()
@@ -797,6 +798,7 @@ namespace Rendering
       if (g_showLight)
       {
         glEnable(GL_DEPTH_TEST);
+
         Texture::SetBlendMode(true);
         //Draw Light Icons Billboard
         g_camera.ApplyViewMatrix(m_billboardMaterial->GetShader());
@@ -815,6 +817,7 @@ namespace Rendering
         }
         m_billboardMaterial->Unbind();
         Texture::SetBlendMode(false);
+
       }
 
       // Physics Debug Draw

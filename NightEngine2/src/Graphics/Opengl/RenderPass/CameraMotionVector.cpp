@@ -53,9 +53,13 @@ namespace Rendering
         m_cmvShader.Bind();
         {
           gbuffer.GetTexture(GBufferTarget::PositionAndNormalX).BindToTextureUnit(0);
+          gbuffer.m_depthTexture.BindToTextureUnit(1);
 
           m_cmvShader.SetUniform("u_prevUnJitteredVP", prevUnjitteredVP);
           m_cmvShader.SetUniform("u_unjitteredVP", unjitteredVP);
+
+          m_cmvShader.SetUniform("u_invView", cam.m_invView);
+          m_cmvShader.SetUniform("u_invProjection", cam.m_invProjection);
 
           //Draw Quad
           screenVAO.Draw();
@@ -70,6 +74,7 @@ namespace Rendering
       m_cmvShader.Bind();
       {
         m_cmvShader.SetUniform("gbuffer0", 0);
+        m_cmvShader.SetUniform("u_depthTexture", 1);
       }
       m_cmvShader.Unbind();
     }

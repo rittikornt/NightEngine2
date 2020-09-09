@@ -41,6 +41,8 @@ namespace Rendering
 		//Matrix
 		glm::mat4 m_view;
 		glm::mat4 m_projection;
+    glm::mat4 m_invView;
+    glm::mat4 m_invProjection;
     glm::mat4 m_VP;
 
     //TAA
@@ -48,7 +50,7 @@ namespace Rendering
     int m_taaFrameIndex = 0;
     glm::vec2 m_activeJitteredUV;
 
-    //Use in CameraMotionVector
+    //CameraMotionVector
     glm::mat4 m_unjitteredProjection;
     glm::mat4 m_unjitteredVP;
     glm::mat4 m_prevUnjitteredVP;

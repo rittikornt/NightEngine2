@@ -29,7 +29,7 @@ vec3 Load(vec2 positionSS, int offsetX, int offsetY, vec2 texelSize)
 #define FXAA_REDUCE_MUL         (1.0 / 8.0)
 #define FXAA_REDUCE_MIN         (1.0 / 128.0)
 
-#define rcp(x) 1.0 / (x)
+#define rcp(x) (1.0 / (x))
 #define VEC2(x) vec2(x, x)
 #define saturate(x) clamp(x, 0.0, 1.0)
 

@@ -445,7 +445,8 @@ namespace Rendering
           //Draw Loop by traversing Containers
           Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
 
-          //TODO: Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
+          //TODO: Do per object motion vector here too
+          //Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
           //Draw Custom Pass
           Drawer::DrawDepthWithoutBind(shader, Drawer::DrawPass::OPAQUE_PASS);
         }
@@ -665,6 +666,19 @@ namespace Rendering
           m_postProcessSetting->Clear();
         }
       }
+
+      //Do TAA before postfx to fix bloom flickering + use fast invertable tonemap in the calculation
+      DebugMarker::PushDebugGroup("TAA");
+      {
+        if (g_enablePostprocess && m_postProcessSetting->m_taaPP.m_enable)
+        {
+          m_postProcessSetting->m_taaPP.Apply(m_screenTriangleVAO
+            , m_gbuffer, m_sceneTexture, m_sceneFbo, g_camera);
+        }
+      }
+      DebugMarker::PopDebugGroup();
+
+      //Postfx
       if (g_enablePostprocess)
       {
         m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
@@ -722,17 +736,6 @@ namespace Rendering
     //*************************************************
     DebugMarker::PushDebugGroup("Final Draw");
     {
-      //TODO: Do TAA before postfx to fix bloom flickering + use fast invertable tonemap in the calculation
-      DebugMarker::PushDebugGroup("TAA");
-      {
-        if (g_enablePostprocess && m_postProcessSetting->m_taaPP.m_enable)
-        {
-          m_postProcessSetting->m_taaPP.Apply(m_screenTriangleVAO
-            , m_gbuffer, m_sceneTexture, m_sceneFbo, g_camera);
-        }
-      }
-      DebugMarker::PopDebugGroup();
-
       //FXAA
       if (g_enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
       {

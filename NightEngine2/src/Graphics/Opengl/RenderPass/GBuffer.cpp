@@ -60,7 +60,7 @@ namespace Rendering
     // (4) vec2(motionvector.xy);
     m_textures[4] = Texture::GenerateRenderTexture(width, height
       , Texture::Format::RG16F, Texture::Format::RGBA
-      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[4].SetName("GBuffer4 (motionvector.xy)");
     m_fbo.AttachColorTexture(m_textures[4], 4);
 

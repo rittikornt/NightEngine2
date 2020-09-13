@@ -205,6 +205,7 @@ namespace Rendering
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_id);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboId);
 
+    //bitField: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT and GL_STENCIL_BUFFER_BIT
     glBlitFramebuffer(0, 0, width, height, 0, 0
       , targetWidth, targetHeight, bitField, GL_NEAREST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

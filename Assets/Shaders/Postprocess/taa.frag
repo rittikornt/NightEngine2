@@ -26,7 +26,7 @@ uniform vec4 u_TAAFrameInfo; // { taaSharpenStrength, taaFrameIndex, jitterUV.x,
 #define COMPARE_DEPTH(a, b) step(a, b) // a <= b? 1.0 : 0.0
 #define Min3(x, y, z) min(min(x, y), z)
 #define Max3(x, y, z) max(max(x, y), z)
-#define rcp(x) 1.0 / (x)
+#define rcp(x) (1.0 / (x))
 #define saturate(x) clamp(x, 0.0, 1.0)
 #define lerp(a,b,t) mix(a, b, t)
 
@@ -131,13 +131,14 @@ vec3 ClipToAABB(vec3 color, vec3 minColor, vec3 maxColor)
     // note: only clips towards aabb center (but fast!)
     vec3 center  = 0.5 * (maxColor + minColor);
     vec3 extents = 0.5 * (maxColor - minColor);
-
-    // This is actually `distance`, however the keyword is reserved
-    vec3 offset = color - center;
     
-    vec3 ts = abs(extents) / max(abs(offset), 1e-4);
-    float t = saturate(Min3(ts.x, ts.y,  ts.z));
-    return center + offset * t;
+    // This is actually `distance`, however the keyword is reserved
+    vec3 dist = (color - center);
+    vec3 mul = 1.0/max(abs(dist), 1e-4);
+    
+    vec3 ts = abs(extents) * mul;
+    float t = clamp(Min3(ts.x, ts.y, ts.z), 0.0, 1.0);
+    return center + (dist * t);
 }
 
 vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
@@ -155,31 +156,43 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     //Sample Screen texture using unjittered uv
     vec2 uv = screenUV - uvJitterAmount;
     vec3 botLeft = FetchCurrTexture(uv, -NEIGHBOR_TEXEL_OFFSET, -NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
+    vec3 topRight = FetchCurrTexture(uv, NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
     vec3 botRight = FetchCurrTexture(uv, NEIGHBOR_TEXEL_OFFSET, -NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
     vec3 topLeft = FetchCurrTexture(uv, -NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
-    vec3 topRight = FetchCurrTexture(uv, NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
+    
     vec3 currColor = FetchCurrTexture(uv, 0, 0, texelSize).xyz;
+    //currColor.xyz = clamp(currColor.xyz, 0.0, CLAMP_MAX);
 
-    //All pixels should be executing the same branch, so it should be fine
+    //Tonemapping HDR value (to avoid big outlier)
+    botLeft = FastTonemap(botLeft);
+    topRight = FastTonemap(topRight);
+    botRight = FastTonemap(botRight);
+    topLeft = FastTonemap(topLeft);
+    historyColor = FastTonemap(historyColor);
+    currColor = FastTonemap(currColor);
+
+    //Sharpen filter
     if(sharpenStrength > 0.0)
     {
         vec3 blur = (botLeft + botRight + topLeft + topRight) * 0.25;
         currColor += (currColor - blur) * sharpenStrength;
     }
 
-    currColor.xyz = clamp(currColor.xyz, 0.0, CLAMP_MAX);
-    float currColorLuma = Luminance(currColor.xyz);
+    vec3 corners = 4.0 * (botLeft + topRight) - 2.0 * currColor;
+    vec3 average = ((corners.xyz + currColor.xyz) * 0.14285714285);
+    //vec3 average =  (botLeft + botRight + topLeft + topRight + currColor) * 0.2;
 
     //AABB Clipping
-    vec3 average =  (botLeft + botRight + topLeft + topRight + currColor) * 0.2;
+    float currColorLuma = Luminance(currColor.xyz);
     float averageLuma = Luminance(average.xyz);
     float nudge = lerp(4.0, 0.25, saturate(motionVectorLength * 100.0)) * abs(averageLuma - currColorLuma);
     
-    //Clamp reprojected prev frame to current Neighborhood to ignore the false projection
+    //Clamp reprojected prev frame to current Neighborhood to reject false reprojection
     vec3 minColor = min(topRight, botLeft) - nudge;
     vec3 maxColor = max(botLeft, topRight) + nudge;
-    historyColor = ClipToAABB(historyColor, minColor, maxColor);
-
+    //historyColor = ClipToAABB(historyColor, minColor, maxColor);
+    historyColor = clamp(historyColor, minColor, maxColor);
+    
     // Blend Color
     // Timothy Lottes (weighing by unbiased luminance diff; 
     // http://www.youtube.com/watch?v=WzpLWzGvFK4&t=18m)
@@ -188,8 +201,8 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     float weight = 1.0 - diff;
     float feedback = lerp(FEEDBACK_MIN, FEEDBACK_MAX, weight * weight);
 
-    currColor = lerp(currColor.xyz, historyColor.xyz, feedback);
-    currColor = clamp(currColor.xyz, 0.0, CLAMP_MAX);
+    currColor = FastTonemapInvert(lerp(currColor.xyz, historyColor.xyz, feedback));
+    //currColor = clamp(currColor.xyz, 0.0, CLAMP_MAX);
     return currColor;
 }
 

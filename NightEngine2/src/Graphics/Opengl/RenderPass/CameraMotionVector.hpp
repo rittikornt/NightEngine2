@@ -6,11 +6,10 @@
 
 #pragma once
 #include "Graphics/Opengl/Shader.hpp"
-#include <glm/vec2.hpp>
-
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 #include "Graphics/Opengl/FrameBufferObject.hpp"
+#include <glm/vec2.hpp>
 
 namespace Rendering
 {

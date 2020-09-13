@@ -6,11 +6,11 @@
 
 #pragma once
 #include "Graphics/Opengl/Shader.hpp"
-#include <glm/vec2.hpp>
-
 #include "Graphics/Opengl/Texture.hpp"
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
+#include "Graphics/Opengl/FrameBufferObject.hpp"
+#include <glm/vec2.hpp>
 
 namespace Rendering
 {
@@ -36,6 +36,7 @@ namespace Rendering
 
       Shader    m_TAAShader;
       Texture   m_historyRT;
+      FrameBufferObject m_copyHistoryFBO;
 
       float m_sharpness = 1.0f;
       int m_width = 1;

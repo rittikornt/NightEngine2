@@ -34,6 +34,12 @@ namespace Rendering
         , Texture::WrapMode::CLAMP_TO_EDGE);
       m_historyRT.SetName("SceneHistoryColorRT");
 
+      //FBO
+      m_copyHistoryFBO.Init();
+      m_copyHistoryFBO.AttachColorTexture(m_historyRT);
+      m_copyHistoryFBO.Bind();
+      m_copyHistoryFBO.Unbind();
+
       RefreshTextureUniforms();
     }
 
@@ -61,8 +67,11 @@ namespace Rendering
       sceneFbo.Unbind();
 
       //Save history buffer
-      sceneFbo.CopyToTexture(m_historyRT
-        , m_width, m_height);
+      //sceneFbo.CopyToTexture(m_historyRT
+      //  , m_width, m_height);
+
+      sceneFbo.CopyBufferToTarget(m_width, m_height, m_width, m_height
+        , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT);
     }
 
     void TAA::ApplyToScreen(VertexArrayObject& screenVAO

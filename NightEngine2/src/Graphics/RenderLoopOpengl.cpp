@@ -227,8 +227,6 @@ namespace Rendering
     m_screenTriangleVAO.Build(BufferMode::Static, Triangle::vertices
       , Triangle::indices, Triangle::info);
     
-    m_uberPostMaterial.InitShader("Utility/fullscreenTriangle.vert"
-      , "Postprocess/uberpost.frag");
     m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
       , "Utility/blitCopy.frag");
 
@@ -667,69 +665,21 @@ namespace Rendering
         }
       }
 
-      //Do TAA before postfx to fix bloom flickering + use fast invertable tonemap in the calculation
-      DebugMarker::PushDebugGroup("TAA");
-      {
-        if (g_enablePostprocess && m_postProcessSetting->m_taaPP.m_enable)
-        {
-          m_postProcessSetting->m_taaPP.Apply(m_screenTriangleVAO
-            , m_gbuffer, m_sceneTexture, m_sceneFbo, g_camera);
-        }
-      }
-      DebugMarker::PopDebugGroup();
-
       //Postfx
       if (g_enablePostprocess)
       {
         m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
-          , &m_screenTriangleVAO, &m_sceneTexture });
+          , &m_sceneFbo, &m_screenTriangleVAO, &m_sceneTexture
+          , g_time});
       }
     }
     DebugMarker::PopDebugGroup();
-
-    //*************************************************
-    // Final Pass to the screen
-    //*************************************************
 
     //Debugging View
     if (Input::GetKeyDown(Input::KeyCode::KEY_7))
     {
       g_showLight = !g_showLight;
     }
-
-    DebugMarker::PushDebugGroup("UberPostProcess");
-    {
-      glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
-      glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      glDisable(GL_DEPTH_TEST);
-
-      //Draw Screen
-      m_sceneFbo.Bind();
-      {
-        m_uberPostMaterial.Bind(false);
-        {
-          Shader& shader = m_uberPostMaterial.GetShader();
-          shader.SetUniform("u_screenTexture", 0);
-          shader.SetUniform("u_bloomTexture", 1);
-          shader.SetUniform("u_ssaoTexture", 2);
-          shader.SetUniform("u_exposure", 1.0f);
-          shader.SetUniform("u_time", g_time);
-
-          //PP Texture
-          {
-            m_sceneTexture.BindToTextureUnit(0);
-            m_postProcessSetting->m_bloomPP.m_targetTexture.BindToTextureUnit(1);
-            m_postProcessSetting->m_ssaoPP.m_ssaoTexture.BindToTextureUnit(2);
-          }
-
-          m_screenTriangleVAO.Draw();
-        }
-        m_uberPostMaterial.Unbind();
-      }
-      m_sceneFbo.Unbind();
-    }
-    DebugMarker::PopDebugGroup();
 
     //*************************************************
     // AA at the end, Directly onto the screen

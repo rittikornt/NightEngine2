@@ -35,7 +35,11 @@ namespace Rendering
       }
 
       Shader    m_TAAShader;
+
+      Texture   m_currRT;
       Texture   m_historyRT;
+
+      FrameBufferObject m_taaFBO;
       FrameBufferObject m_copyHistoryFBO;
 
       float m_sharpness = 1.0f;

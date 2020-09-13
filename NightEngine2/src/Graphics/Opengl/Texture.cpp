@@ -294,6 +294,11 @@ namespace Rendering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER
       , static_cast<GLint>(GetMagFilterMode(filterMode)));
 
+    //Default max anisotropy setting
+    GLfloat value = 1.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
+
     if (imgData != nullptr)
     {
       //Choose target based on channel

@@ -124,5 +124,7 @@ namespace Rendering
     static void ProcessCameraInput(CameraObject& camera, float dt);
 
     static float GetScreenAspectRatio(void);
+
+    static glm::i32vec2 GetScreenSize(void);
 	};
 }

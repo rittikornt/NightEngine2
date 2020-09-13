@@ -107,6 +107,9 @@ namespace Rendering
           m_ssaoShader.SetUniform("u_projection", camera.m_projection);
           m_ssaoShader.SetUniform("u_invProjection", camera.m_invProjection);
 
+          //m_ssaoShader.SetUniform("u_TAAJitter"
+          //  , glm::vec2(camera.m_activeJitteredUV.x, camera.m_activeJitteredUV.y));
+
           gbuffer.GetTexture(0).BindToTextureUnit(0);
           gbuffer.GetTexture(2).BindToTextureUnit(1);
           gbuffer.m_depthTexture.BindToTextureUnit(2);

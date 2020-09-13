@@ -385,4 +385,9 @@ namespace Rendering
   {
     return SCREEN_ASPECT_RATIO;
   }
+
+  glm::i32vec2 CameraObject::GetScreenSize(void)
+  {
+    return glm::i32vec2(Window::GetWidth(), Window::GetHeight());
+  }
 }

@@ -55,12 +55,14 @@ vec3 GetViewSpacePositionFromDepth(vec2 uv)
 
 void main()
 { 
+  vec2 uv = OurTexCoords;
+
   //FragPos in view space
-  vec4 fragPosNormalX = texture(gbuffer0, OurTexCoords);
-  vec3 positionVS = GetViewSpacePositionFromDepth(OurTexCoords);//(u_view * vec4(fragPosNormalX.xyz, 1.0)).xyz;
+  vec4 fragPosNormalX = texture(gbuffer0, uv);
+  vec3 positionVS = GetViewSpacePositionFromDepth(uv);//(u_view * vec4(fragPosNormalX.xyz, 1.0)).xyz;
 
   //Normal in view space
-  vec4 posLSAndNormalY = texture(gbuffer2, OurTexCoords);
+  vec4 posLSAndNormalY = texture(gbuffer2, uv);
 	vec3 normal = vec3(0.0);
 	normal.x = fragPosNormalX.a;
 	normal.y = posLSAndNormalY.a;
@@ -74,7 +76,7 @@ void main()
   normal = (u_view * vec4(normal, 0.0)).rgb;
 
   //Sample noise
-  vec3 randomVector = texture(u_noiseTexture, OurTexCoords * g_noiseScale).xyz;
+  vec3 randomVector = texture(u_noiseTexture, uv * g_noiseScale).xyz;
 
   //TBN from noise vector to simulate random rotation
   vec3 tangent = normalize(randomVector - normal * dot(randomVector, normal));

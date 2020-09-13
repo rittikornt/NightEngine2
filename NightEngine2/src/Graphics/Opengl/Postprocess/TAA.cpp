@@ -27,7 +27,13 @@ namespace Rendering
       m_TAAShader.AttachShaderFile("Postprocess/taa.frag");
       m_TAAShader.Link();
 
-      //History RT
+      //RT
+      m_currRT = Texture::GenerateRenderTexture(width, height
+        , Texture::Format::RGBA16F, Texture::Format::RGBA
+        , Texture::FilterMode::LINEAR
+        , Texture::WrapMode::CLAMP_TO_EDGE);
+      m_currRT.SetName("SceneTAAColorRT");
+
       m_historyRT = Texture::GenerateRenderTexture(width, height
         , Texture::Format::RGBA16F, Texture::Format::RGBA
         , Texture::FilterMode::LINEAR
@@ -35,6 +41,11 @@ namespace Rendering
       m_historyRT.SetName("SceneHistoryColorRT");
 
       //FBO
+      m_taaFBO.Init();
+      m_taaFBO.AttachColorTexture(m_currRT);
+      m_taaFBO.Bind();
+      m_taaFBO.Unbind();
+
       m_copyHistoryFBO.Init();
       m_copyHistoryFBO.AttachColorTexture(m_historyRT);
       m_copyHistoryFBO.Bind();
@@ -47,7 +58,7 @@ namespace Rendering
       , GBuffer& gbuffer, Texture& screenTexture
       , FrameBufferObject& sceneFbo, const CameraObject& cam)
     {
-      sceneFbo.Bind();
+      m_taaFBO.Bind();
       {
         m_TAAShader.Bind();
         {
@@ -64,13 +75,13 @@ namespace Rendering
         }
         m_TAAShader.Unbind();
       }
-      sceneFbo.Unbind();
+      m_taaFBO.Unbind();
 
       //Save history buffer
       //sceneFbo.CopyToTexture(m_historyRT
       //  , m_width, m_height);
 
-      sceneFbo.CopyBufferToTarget(m_width, m_height, m_width, m_height
+      m_taaFBO.CopyBufferToTarget(m_width, m_height, m_width, m_height
         , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT);
     }
 

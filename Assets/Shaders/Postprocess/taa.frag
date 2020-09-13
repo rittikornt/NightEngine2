@@ -17,7 +17,7 @@ uniform vec4 u_TAAFrameInfo; // { taaSharpenStrength, taaFrameIndex, jitterUV.x,
 //***************************************
 // Macros
 //***************************************
-#define NEIGHBOR_TEXEL_OFFSET  0.75
+#define NEIGHBOR_TEXEL_OFFSET  1.0
 #define FEEDBACK_MIN           0.91
 #define FEEDBACK_MAX           0.96
 
@@ -46,12 +46,12 @@ float Luminance(vec3 linearRgb)
 // http://gpuopen.com/optimized-reversible-tonemapper-for-resolve/
 vec3 FastTonemap(vec3 c)
 {
-    return c * rcp(Max3(c.r, c.g, c.b) + 1.0);
+    return c * (rcp(Max3(c.r, c.g, c.b) + 1.0));
 }
 
 vec3 FastTonemapInvert(vec3 c)
 {
-    return c * rcp(1.0 - Max3(c.r, c.g, c.b));
+    return c * (rcp(1.0 - Max3(c.r, c.g, c.b)));
 }
 
 //https://software.intel.com/content/www/us/en/develop/documentation/ipp-dev-reference/top/volume-2-image-processing/image-color-conversion/color-models.html
@@ -93,9 +93,9 @@ vec3 FetchPrevTexture(vec2 uv, float offsetX, float offsetY, vec2 texelSize)
     return texture(u_prevTexture, uv).xyz;
 }
 
-float LoadCameraDepth(vec2 positionSS, int offsetX, int offsetY, vec2 texelSize)
+float LoadCameraDepth(vec2 positionSS, float offsetX, float offsetY, vec2 texelSize)
 {
-    vec2 uv = (positionSS + ivec2(offsetX, offsetY)) * texelSize.xy;
+    vec2 uv = positionSS + (vec2(offsetX, offsetY) * texelSize.xy);
     return texture(u_depthTexture, uv).x;
 }
 
@@ -107,21 +107,23 @@ vec2 LoadMotionVector(vec2 positionSS, vec2 texelSize)
 
 vec2 GetClosestNeighborPositionSS(vec2 positionSS, vec2 texelSize)
 {
+    const float offset = NEIGHBOR_TEXEL_OFFSET;
+
     //Neighbor Depth
     float center  = LoadCameraDepth(positionSS, 0, 0, texelSize);
-    float sw = LoadCameraDepth(positionSS, -1, -1, texelSize);
-    float se = LoadCameraDepth(positionSS, 1, -1, texelSize);
-    float nw = LoadCameraDepth(positionSS, -1, 1, texelSize);
-    float ne = LoadCameraDepth(positionSS, 1, 1, texelSize);
+    float sw = LoadCameraDepth(positionSS, -offset, -offset, texelSize);
+    float se = LoadCameraDepth(positionSS, offset, -offset, texelSize);
+    float nw = LoadCameraDepth(positionSS, -offset, offset, texelSize);
+    float ne = LoadCameraDepth(positionSS, offset, offset, texelSize);
 
     vec4 neighborhood = vec4(sw, se, nw, ne);
 
     //Find closest depth
     vec3 closest = vec3(0.0, 0.0, center);
-    closest = lerp(closest, vec3(-1.0, -1.0, neighborhood.x), COMPARE_DEPTH(neighborhood.x, closest.z));
-    closest = lerp(closest, vec3( 1.0, -1.0, neighborhood.y), COMPARE_DEPTH(neighborhood.y, closest.z));
-    closest = lerp(closest, vec3(-1.0,  1.0, neighborhood.z), COMPARE_DEPTH(neighborhood.z, closest.z));
-    closest = lerp(closest, vec3( 1.0,  1.0, neighborhood.w), COMPARE_DEPTH(neighborhood.w, closest.z));
+    closest = lerp(closest, vec3(-offset, -offset, neighborhood.x), COMPARE_DEPTH(neighborhood.x, closest.z));
+    closest = lerp(closest, vec3( offset, -offset, neighborhood.y), COMPARE_DEPTH(neighborhood.y, closest.z));
+    closest = lerp(closest, vec3(-offset,  offset, neighborhood.z), COMPARE_DEPTH(neighborhood.z, closest.z));
+    closest = lerp(closest, vec3( offset,  offset, neighborhood.w), COMPARE_DEPTH(neighborhood.w, closest.z));
 
     return positionSS + closest.xy;
 }
@@ -134,9 +136,8 @@ vec3 ClipToAABB(vec3 color, vec3 minColor, vec3 maxColor)
     
     // This is actually `distance`, however the keyword is reserved
     vec3 dist = (color - center);
-    vec3 mul = 1.0/max(abs(dist), 1e-4);
-    
-    vec3 ts = abs(extents) * mul;
+
+    vec3 ts = abs(extents) / max(abs(dist), 1e-4);
     float t = clamp(Min3(ts.x, ts.y, ts.z), 0.0, 1.0);
     return center + (dist * t);
 }
@@ -161,7 +162,7 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     vec3 topLeft = FetchCurrTexture(uv, -NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
     
     vec3 currColor = FetchCurrTexture(uv, 0, 0, texelSize).xyz;
-    //currColor.xyz = clamp(currColor.xyz, 0.0, CLAMP_MAX);
+    currColor.xyz = clamp(currColor.xyz, 0.0, CLAMP_MAX);
 
     //Tonemapping HDR value (to avoid big outlier)
     botLeft = FastTonemap(botLeft);
@@ -190,8 +191,8 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     //Clamp reprojected prev frame to current Neighborhood to reject false reprojection
     vec3 minColor = min(topRight, botLeft) - nudge;
     vec3 maxColor = max(botLeft, topRight) + nudge;
-    //historyColor = ClipToAABB(historyColor, minColor, maxColor);
-    historyColor = clamp(historyColor, minColor, maxColor);
+    historyColor = ClipToAABB(historyColor, minColor, maxColor);
+    //historyColor = clamp(historyColor, minColor, maxColor);
     
     // Blend Color
     // Timothy Lottes (weighing by unbiased luminance diff; 
@@ -202,7 +203,7 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     float feedback = lerp(FEEDBACK_MIN, FEEDBACK_MAX, weight * weight);
 
     currColor = FastTonemapInvert(lerp(currColor.xyz, historyColor.xyz, feedback));
-    //currColor = clamp(currColor.xyz, 0.0, CLAMP_MAX);
+    currColor = clamp(currColor.xyz, 0.0, CLAMP_MAX);
     return currColor;
 }
 

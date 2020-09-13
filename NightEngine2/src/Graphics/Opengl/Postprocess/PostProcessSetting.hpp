@@ -8,6 +8,7 @@
 #include "Graphics/Opengl/Shader.hpp"
 #include "Graphics/Opengl/Texture.hpp"
 #include "Graphics/Opengl/FrameBufferObject.hpp"
+#include "Graphics/Opengl/Material.hpp"
 
 #include <glm/vec2.hpp>
 #include <vector>
@@ -24,6 +25,7 @@
 namespace Rendering
 {
   class VertexArrayObject;
+  class FrameBufferObject;
 
   namespace Postprocess
   {
@@ -32,8 +34,11 @@ namespace Rendering
       CameraObject*      camera;
       GBuffer*           gbuffer;
 
+      FrameBufferObject* sceneFBO;
       VertexArrayObject* screenVAO;
       Texture*           screenTexture;
+
+      float               time = 0.0f;
     };
 
     //! @brief PostProcessSetting struct
@@ -50,6 +55,8 @@ namespace Rendering
       }
 
       glm::ivec2        m_resolution = glm::ivec2(1);
+
+      Material            m_uberPostMaterial;
 
       //PostProcess
       Postprocess::PostProcessUtility   m_ppUtility;

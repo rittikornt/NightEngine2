@@ -39,6 +39,7 @@ namespace Rendering
       Texture*           screenTexture;
 
       float               time = 0.0f;
+      float               screenZoomScale = 1.0f;
     };
 
     //! @brief PostProcessSetting struct
@@ -57,6 +58,7 @@ namespace Rendering
       glm::ivec2        m_resolution = glm::ivec2(1);
 
       Material            m_uberPostMaterial;
+      Material            m_blitCopyMaterial;
 
       //PostProcess
       Postprocess::PostProcessUtility   m_ppUtility;

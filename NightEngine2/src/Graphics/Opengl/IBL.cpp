@@ -45,7 +45,9 @@ namespace Rendering
 
     //Cubemaps
     m_cubemap.Init(m_width, m_height, "RenderPass/skybox.vert"
-      , "RenderPass/skybox.frag", Texture::Format::RGB16F);
+      , "RenderPass/skybox.frag", Texture::Format::RGB16F
+      , Texture::FilterMode::LINEAR, Texture::FilterMode::LINEAR
+      , true);
     camera.ApplyUnJitteredProjectionMatrix(m_cubemap.GetShader());
 
     m_irradianceCubemap.Init(g_irrandianceMapResolution.x, g_irrandianceMapResolution.y

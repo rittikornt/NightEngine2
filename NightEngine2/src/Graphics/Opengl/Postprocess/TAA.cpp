@@ -52,12 +52,21 @@ namespace Rendering
       m_copyHistoryFBO.Unbind();
 
       RefreshTextureUniforms();
+
+      m_isFirstFrame = true;
     }
 
     void TAA::Apply(VertexArrayObject& screenVAO
       , GBuffer& gbuffer, Texture& screenTexture
       , FrameBufferObject& sceneFbo, const CameraObject& cam)
     {
+      if (m_isFirstFrame)
+      {
+        sceneFbo.CopyBufferToTarget(m_width, m_height, m_width, m_height
+          , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT);
+        m_isFirstFrame = false;
+      }
+
       m_taaFBO.Bind();
       {
         m_TAAShader.Bind();

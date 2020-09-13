@@ -31,7 +31,8 @@ namespace Rendering
           , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(TAA, m_TAAShader, true)
-          .MR_ADD_MEMBER_PROTECTED(TAA, m_sharpness, true);
+          .MR_ADD_MEMBER_PROTECTED(TAA, m_sharpness, true)
+          .MR_ADD_MEMBER_PROTECTED(TAA, m_beforeTonemapping, true);
       }
 
       Shader    m_TAAShader;
@@ -42,7 +43,9 @@ namespace Rendering
       FrameBufferObject m_taaFBO;
       FrameBufferObject m_copyHistoryFBO;
 
-      float m_sharpness = 1.0f;
+      bool m_beforeTonemapping = true;
+      bool m_isFirstFrame = true;
+      float m_sharpness = 0.6f;
       int m_width = 1;
       int m_height = 1;
 

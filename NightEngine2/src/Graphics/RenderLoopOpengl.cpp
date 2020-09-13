@@ -226,9 +226,6 @@ namespace Rendering
     m_screenTriangleVAO.Init();
     m_screenTriangleVAO.Build(BufferMode::Static, Triangle::vertices
       , Triangle::indices, Triangle::info);
-    
-    m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
-      , "Utility/blitCopy.frag");
 
     //************************************************
     // Cubemap
@@ -670,7 +667,7 @@ namespace Rendering
       {
         m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
           , &m_sceneFbo, &m_screenTriangleVAO, &m_sceneTexture
-          , g_time});
+          , g_time, screenZoomScale});
       }
     }
     DebugMarker::PopDebugGroup();
@@ -680,38 +677,6 @@ namespace Rendering
     {
       g_showLight = !g_showLight;
     }
-
-    //*************************************************
-    // AA at the end, Directly onto the screen
-    //*************************************************
-    DebugMarker::PushDebugGroup("Final Draw");
-    {
-      //FXAA
-      if (g_enablePostprocess && m_postProcessSetting->m_fxaaPP.m_enable)
-      {
-        DebugMarker::PushDebugGroup("FXAA");
-        {
-          m_postProcessSetting->m_fxaaPP.ApplyToScreen(m_screenTriangleVAO
-            , m_sceneTexture, screenZoomScale);
-        }
-        DebugMarker::PopDebugGroup();
-      }
-      else
-      {
-        m_blitCopyMaterial.Bind(false);
-        {
-          m_blitCopyMaterial.GetShader().SetUniform("u_scale", screenZoomScale);
-          
-          m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
-          m_sceneTexture.BindToTextureUnit(0);
-
-          //Draw Quad
-          m_screenTriangleVAO.Draw();
-        }
-        m_blitCopyMaterial.Unbind();
-      }
-    }
-    DebugMarker::PopDebugGroup();
 
     //*************************************************
     // Draw Debug Icons
@@ -772,7 +737,6 @@ namespace Rendering
         }
         m_billboardMaterial->Unbind();
         Texture::SetBlendMode(false);
-
       }
 
       // Physics Debug Draw

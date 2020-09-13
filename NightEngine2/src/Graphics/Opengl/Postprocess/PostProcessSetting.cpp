@@ -27,6 +27,9 @@ namespace Rendering
       m_uberPostMaterial.InitShader("Utility/fullscreenTriangle.vert"
         , "Postprocess/uberpost.frag");
 
+      m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
+        , "Utility/blitCopy.frag");
+
       //Postfx
       m_ppUtility.Init(width, height);
 
@@ -52,6 +55,7 @@ namespace Rendering
     {
       CameraObject* camera = context.camera;
       auto screenSize = camera->GetScreenSize();
+      float screenZoomScale = context.screenZoomScale;
 
       GBuffer* gbuffer = context.gbuffer;
       FrameBufferObject* sceneFBO = context.sceneFBO;
@@ -74,7 +78,7 @@ namespace Rendering
       }
 
       //TAA
-      if (m_taaPP.m_enable)
+      if (m_taaPP.m_enable && m_taaPP.m_beforeTonemapping)
       {
         DebugMarker::PushDebugGroup("TAA");
         {
@@ -91,7 +95,8 @@ namespace Rendering
         DebugMarker::PushDebugGroup("Bloom Pass");
         {
           m_bloomPP.Apply(*screenVAO
-            , m_taaPP.m_enable? m_taaPP.m_currRT: *(context.screenTexture)
+            , m_taaPP.m_enable && m_taaPP.m_beforeTonemapping? 
+            m_taaPP.m_currRT: *(context.screenTexture)
             , m_ppUtility);
         }
         DebugMarker::PopDebugGroup();
@@ -126,7 +131,7 @@ namespace Rendering
 
             //PP Texture
             {
-              if (m_taaPP.m_enable)
+              if (m_taaPP.m_enable && m_taaPP.m_beforeTonemapping)
               {
                 m_taaPP.m_currRT.BindToTextureUnit(0);
               }
@@ -143,6 +148,61 @@ namespace Rendering
           m_uberPostMaterial.Unbind();
         }
         sceneFBO->Unbind();
+      }
+      DebugMarker::PopDebugGroup();
+
+      //TAA
+      if (m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping)
+      {
+        DebugMarker::PushDebugGroup("TAA");
+        {
+          m_taaPP.Apply(*screenVAO
+            , *gbuffer, *screenTexture
+            , *sceneFBO, *camera);
+        }
+        DebugMarker::PopDebugGroup();
+      }
+
+      //*************************************************
+      // Final Draw pass
+      //*************************************************
+      DebugMarker::PushDebugGroup("Final Draw");
+      {
+        //FXAA
+        if (m_fxaaPP.m_enable)
+        {
+          DebugMarker::PushDebugGroup("FXAA");
+          {
+            m_fxaaPP.ApplyToScreen(*screenVAO
+              , m_taaPP.m_enable && m_taaPP.m_beforeTonemapping ?
+               *(context.screenTexture) : m_taaPP.m_currRT
+              , screenZoomScale);
+          }
+          DebugMarker::PopDebugGroup();
+        }
+        else
+        {
+          m_blitCopyMaterial.Bind(false);
+          {
+            m_blitCopyMaterial.GetShader().SetUniform("u_scale", screenZoomScale);
+
+            m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
+
+            //Use TAA result if its after tonemapping
+            if (m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping)
+            {
+              m_taaPP.m_currRT.BindToTextureUnit(0);
+            }
+            else
+            {
+              screenTexture->BindToTextureUnit(0);
+            }
+
+            //Draw Quad
+            screenVAO->Draw();
+          }
+          m_blitCopyMaterial.Unbind();
+        }
       }
       DebugMarker::PopDebugGroup();
     }

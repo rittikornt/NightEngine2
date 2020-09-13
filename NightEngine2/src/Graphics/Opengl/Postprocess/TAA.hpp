@@ -30,11 +30,14 @@ namespace Rendering
         META_REGISTERER_WITHBASE(TAA, PostProcessEffect
           , NightEngine::Reflection::BaseClass::InheritType::PUBLIC, true
           , nullptr, nullptr)
-          .MR_ADD_MEMBER_PROTECTED(TAA, m_TAAShader, true);
+          .MR_ADD_MEMBER_PROTECTED(TAA, m_TAAShader, true)
+          .MR_ADD_MEMBER_PROTECTED(TAA, m_sharpness, true);
       }
 
       Shader    m_TAAShader;
       Texture   m_historyRT;
+
+      float m_sharpness = 1.0f;
       int m_width = 1;
       int m_height = 1;
 

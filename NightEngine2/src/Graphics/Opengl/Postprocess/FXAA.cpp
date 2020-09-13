@@ -26,6 +26,7 @@ namespace Rendering
       m_fxaaShader.Link();
 
       RefreshTextureUniforms();
+      m_enable = false; //disable by default
     }
 
     void FXAA::Apply(VertexArrayObject& screenVAO

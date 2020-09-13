@@ -12,16 +12,16 @@ layout(binding=2) uniform sampler2D u_depthTexture;
 layout(binding=3) uniform sampler2D u_motionVectorTexture;
 
 // TAA Frame Index ranges from 0 to 7.
-uniform vec4 u_TAAFrameInfo;               // { taaSharpenStrength, taaFrameIndex, jitterUV.x, jitterUV.y }
+uniform vec4 u_TAAFrameInfo; // { taaSharpenStrength, taaFrameIndex, jitterUV.x, jitterUV.y }
 
 //***************************************
 // Macros
 //***************************************
-#define RADIUS              0.75
-#define FEEDBACK_MIN        0.91
-#define FEEDBACK_MAX        0.96
+#define NEIGHBOR_TEXEL_OFFSET  0.75
+#define FEEDBACK_MIN           0.91
+#define FEEDBACK_MAX           0.96
 
-#define CLAMP_MAX           65472.0 // HALF_MAX minus one (2 - 2^-9) * 2^15
+#define CLAMP_MAX              65472.0 // HALF_MAX minus one (2 - 2^-9) * 2^15
 
 #define COMPARE_DEPTH(a, b) step(a, b) // a <= b? 1.0 : 0.0
 #define Min3(x, y, z) min(min(x, y), z)
@@ -31,7 +31,7 @@ uniform vec4 u_TAAFrameInfo;               // { taaSharpenStrength, taaFrameInde
 #define lerp(a,b,t) mix(a, b, t)
 
 //***************************************
-// Helper Functions
+// Color Functions
 //***************************************
 float Luminance(vec3 linearRgb)
 {
@@ -54,6 +54,33 @@ vec3 FastTonemapInvert(vec3 c)
     return c * rcp(1.0 - Max3(c.r, c.g, c.b));
 }
 
+//https://software.intel.com/content/www/us/en/develop/documentation/ipp-dev-reference/top/volume-2-image-processing/image-color-conversion/color-models.html
+vec3 RGB_YCoCg(vec3 c)
+{
+    // Y = R/4 + G/2 + B/4
+    // Co = R/2 - B/2
+    // Cg = -R/4 + G/2 - B/4
+    return vec3(
+            c.x/4.0 + c.y/2.0 + c.z/4.0,
+            c.x/2.0 - c.z/2.0,
+        -c.x/4.0 + c.y/2.0 - c.z/4.0
+    );
+}
+
+vec3 YCoCg_RGB(vec3 c)
+{
+    // R = Y + Co - Cg
+    // G = Y + Cg
+    // B = Y - Co - Cg
+    return vec3(
+        saturate(c.x + c.y - c.z),
+        saturate(c.x + c.z),
+        saturate(c.x - c.y - c.z));
+}
+
+//***************************************
+// Helper Functions
+//***************************************
 vec3 FetchCurrTexture(vec2 uv, float offsetX, float offsetY, vec2 texelSize)
 {
     uv += (vec2(offsetX, offsetY) * texelSize.xy);
@@ -113,7 +140,7 @@ vec3 ClipToAABB(vec3 color, vec3 minColor, vec3 maxColor)
     return center + offset * t;
 }
 
-vec3 TAA(in vec2 texelSize, in vec2 positionSS)
+vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
 {
     float sharpenStrength = u_TAAFrameInfo.x;
     vec2 uvJitterAmount = u_TAAFrameInfo.zw;
@@ -123,35 +150,34 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS)
     vec2 closestNeighborPosSS = GetClosestNeighborPositionSS(positionSS, texelSize);
     vec2 motionVector = LoadMotionVector(closestNeighborPosSS, texelSize);
     float motionVectorLength = length(motionVector);
-    vec3 historyColor = FetchPrevTexture(OurTexCoords - motionVector, 0, 0, texelSize).xyz;
+    vec3 historyColor = FetchPrevTexture(screenUV - motionVector, 0, 0, texelSize).xyz;
 
     //Sample Screen texture using unjittered uv
-    vec2 uv = OurTexCoords - uvJitterAmount;
+    vec2 uv = screenUV - uvJitterAmount;
+    vec3 botLeft = FetchCurrTexture(uv, -NEIGHBOR_TEXEL_OFFSET, -NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
+    vec3 botRight = FetchCurrTexture(uv, NEIGHBOR_TEXEL_OFFSET, -NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
+    vec3 topLeft = FetchCurrTexture(uv, -NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
+    vec3 topRight = FetchCurrTexture(uv, NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
     vec3 currColor = FetchCurrTexture(uv, 0, 0, texelSize).xyz;
-    vec3 topLeft = FetchCurrTexture(uv, -RADIUS, -RADIUS, texelSize).xyz;
-    vec3 bottomRight = FetchCurrTexture(uv, RADIUS, RADIUS, texelSize).xyz;
-
-    vec3 corners = 4.0 * (topLeft + bottomRight) - (2.0 * currColor);
 
     //All pixels should be executing the same branch, so it should be fine
     if(sharpenStrength > 0.0)
     {
-        vec3 topRight = FetchCurrTexture(uv, RADIUS, -RADIUS, texelSize).xyz;
-        vec3 bottomLeft = FetchCurrTexture(uv, -RADIUS, RADIUS, texelSize).xyz;
-        vec3 blur = (topLeft + topRight + bottomLeft + bottomRight) * 0.25;
+        vec3 blur = (botLeft + botRight + topLeft + topRight) * 0.25;
         currColor += (currColor - blur) * sharpenStrength;
     }
 
-    //AABB Clipping
     currColor.xyz = clamp(currColor.xyz, 0.0, CLAMP_MAX);
-    vec3 average = (corners.xyz + currColor.xyz) * 0.14285714285;
-
     float currColorLuma = Luminance(currColor.xyz);
+
+    //AABB Clipping
+    vec3 average =  (botLeft + botRight + topLeft + topRight + currColor) * 0.2;
     float averageLuma = Luminance(average.xyz);
     float nudge = lerp(4.0, 0.25, saturate(motionVectorLength * 100.0)) * abs(averageLuma - currColorLuma);
     
-    vec3 minColor = min(bottomRight, topLeft) - nudge;
-    vec3 maxColor = max(topLeft, bottomRight) + nudge;
+    //Clamp reprojected prev frame to current Neighborhood to ignore the false projection
+    vec3 minColor = min(topRight, botLeft) - nudge;
+    vec3 maxColor = max(botLeft, topRight) + nudge;
     historyColor = ClipToAABB(historyColor, minColor, maxColor);
 
     // Blend Color
@@ -176,6 +202,6 @@ void main()
     vec2 texelSize = vec2(1.0 / res.x, 1.0 / res.y);
     vec2 positionSS = OurTexCoords * res; 
     
-    vec3 color = TAA(texelSize, positionSS);
+    vec3 color = TAA(texelSize, positionSS, OurTexCoords);
     o_FragColor = vec4(color.xyz, 1.0);
 }

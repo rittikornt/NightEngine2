@@ -38,13 +38,15 @@ namespace Rendering
       , float texelOffsetX, float texelOffsetY, float pixelWidth, float pixelHeight)
     {
       float k_deg2Rad = 0.01745329251f; // (PI * 2) / 360
-      float aspect = SCREEN_ASPECT_RATIO; //This is only for perspective for now
+      float aspect = pixelWidth/ pixelHeight; //This is only for perspective for now
 
       float oneExtentY = camera.m_projectionType == CameraObject::CameraType::ORTHOGRAPHIC ? 
         camera.m_camSize.m_size : tanf(0.5f * k_deg2Rad * camera.m_camSize.m_fov);
       float oneExtentX = oneExtentY * aspect;
+
       float texelSizeX = oneExtentX / (0.5f * pixelWidth);
       float texelSizeY = oneExtentY / (0.5f * pixelHeight);
+
       float oneJitterX = texelSizeX * texelOffsetX;
       float oneJitterY = texelSizeY * texelOffsetY;
 
@@ -77,11 +79,12 @@ namespace Rendering
       int index = camera.m_taaFrameIndex + 1;
       float texelOffsetX = GetHaltonSequence(index, 2) - 0.5f;
       float texelOffsetY = GetHaltonSequence(index, 3) - 0.5f;
-      
+
       float pixelWidth = Window::GetWidth();
       float pixelHeight = Window::GetHeight();
+
       jitteredUV.x = texelOffsetX / pixelWidth;
-      jitteredUV.y = texelOffsetX / pixelHeight;
+      jitteredUV.y = texelOffsetY / pixelHeight;
 
       glm::vec4 extents = GetProjectionExtends(camera
         , texelOffsetX, texelOffsetY, pixelWidth, pixelHeight);

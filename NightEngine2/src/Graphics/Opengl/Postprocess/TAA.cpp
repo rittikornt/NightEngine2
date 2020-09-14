@@ -74,7 +74,7 @@ namespace Rendering
           screenTexture.BindToTextureUnit(0);
           m_historyRT.BindToTextureUnit(1);
           gbuffer.m_depthTexture.BindToTextureUnit(2);
-          gbuffer.GetTexture(GBufferTarget::MotionVector).BindToTextureUnit(3);
+          gbuffer.m_motionVector.BindToTextureUnit(3);
 
           m_TAAShader.SetUniform("u_TAAFrameInfo", glm::vec4(m_sharpness, cam.m_taaFrameIndex
             , cam.m_activeJitteredUV.x, cam.m_activeJitteredUV.y));

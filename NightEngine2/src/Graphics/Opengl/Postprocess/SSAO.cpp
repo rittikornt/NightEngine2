@@ -29,6 +29,7 @@ namespace Rendering
         width, height, Texture::Format::RGB
         , Texture::Format::RGB, Texture::FilterMode::NEAREST
         , Texture::WrapMode::CLAMP_TO_EDGE);
+      m_ssaoTexture.SetName("SSAO RT");
       
       //FBO
       m_fbo.Init();
@@ -86,6 +87,7 @@ namespace Rendering
       m_noiseTexture = Texture::GenerateTextureData(&ssaoNoise[0]
         , 4, 4, Texture::Format::RGB16F, Texture::Format::RGB
         , Texture::FilterMode::NEAREST, Texture::WrapMode::REPEAT);
+      m_noiseTexture.SetName("SSAO Noise RT");
     }
 
     void SSAO::Apply(VertexArrayObject& screenVAO

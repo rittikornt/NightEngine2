@@ -74,9 +74,25 @@ namespace NightEngine
         auto scene = CreateEmptyScene("Empty_Scene");
       }
 
-      void Update(void)
+      void Update(float dt)
       {
         //Debug::Log << "SceneManager::Update\n";
+
+        //TODO: This is kind of ghetto, should traverse registered component from the Slotmap directly
+        for (int i = 0; i < g_openedScenes.size(); ++i)
+        {
+          auto& gameObjects = g_openedScenes[i]->GetAllGameObjects();
+          for (auto go : gameObjects)
+          {
+            auto gameObject = go.Get();
+            auto& components = gameObject->GetAllComponents();
+
+            for (auto c : components)
+            {
+              c.Get<ComponentLogic>()->OnUpdate(dt);
+            }
+          }
+        }
       }
 
       void FixedUpdate(void)

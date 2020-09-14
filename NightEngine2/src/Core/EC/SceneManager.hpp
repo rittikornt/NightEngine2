@@ -45,7 +45,7 @@ namespace NightEngine
       void Initialize(void);
 
       //!breif Update SceneManager
-      void Update(void);
+      void Update(float dt);
 
       //!breif FixedUpdate SceneManager
       void FixedUpdate(void);

@@ -19,6 +19,7 @@
 
 #include "Graphics/Opengl/Postprocess/PostProcessSetting.hpp"
 #include "Graphics/Opengl/DebugMarker.hpp"
+#include "Graphics/Opengl/RenderState.hpp"
 
 //GameObject
 #include "Core/EC/Components/MeshRenderer.hpp"
@@ -210,7 +211,8 @@ namespace Rendering
     //Scene FBO
     m_sceneFbo.Init();
     m_sceneFbo.AttachColorTexture(m_sceneTexture);
-    m_sceneFbo.AttachRenderBuffer(m_sceneRbo);
+    m_sceneFbo.AttachDepthTexture(m_gbuffer.m_depthTexture);
+    //m_sceneFbo.AttachRenderBuffer(m_sceneRbo);
     m_sceneFbo.Bind();
 
     //************************************************
@@ -418,9 +420,11 @@ namespace Rendering
 
   void RenderLoopOpengl::Render(void)
   {
-    //Clear BG first
+    //Clear BackBuffer Color and Depth
     const float clear_color = 0.0f;
     glClearColor(clear_color, clear_color, clear_color, clear_color);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     float pointShadowFarPlane = g_camera.m_far;
 
     //*************************************************
@@ -522,6 +526,12 @@ namespace Rendering
     // Geometry Pass
     //*************************************************
     glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+
+    glEnable(GL_STENCIL_TEST);
+    RenderSetup::WriteStencilAlways(RenderFeature::GBUFFER_MASK);
+
     DebugMarker::PushDebugGroup("GBuffer Pass");
     m_gbuffer.Bind();
     {
@@ -556,7 +566,13 @@ namespace Rendering
     // Lighting Pass
     //*************************************************
     //Use depth test when rendering skybox and compositing light icons
-    m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
+    //m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
+
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+
+    glEnable(GL_STENCIL_TEST);
+    RenderSetup::PassStencilIfBitSet(RenderFeature::GBUFFER_MASK);
 
     //TODO: Move into a separate Lighting Pass struct/class
     DebugMarker::PushDebugGroup("Deferred Lighting Pass");
@@ -564,8 +580,6 @@ namespace Rendering
     {
       //Clear Buffer
       glClear(GL_COLOR_BUFFER_BIT);
-      glDisable(GL_DEPTH_TEST);
-      glDepthMask(GL_FALSE);
 
       //Set Material Uniform
       bool debugView = IsDebugView();
@@ -583,7 +597,7 @@ namespace Rendering
           shader.SetUniform("u_debugShadowViewIndex", (int)m_debugShadowView);
           
           shader.SetUniform("u_motionVector", 4);
-          m_gbuffer.GetTexture(GBufferTarget::MotionVector).BindToTextureUnit(4);
+          m_gbuffer.m_motionVector.BindToTextureUnit(4);
         }
 
         //Shadow 2D texture
@@ -615,10 +629,13 @@ namespace Rendering
       }
       lightingPassMat.Unbind();
 
+      glDisable(GL_STENCIL_TEST);
+
       //Draw Cubemap
       if (m_debugView != DebugView::MAIN_SHADOW_DEPTH)
       {
         glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
         m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
       }
     }

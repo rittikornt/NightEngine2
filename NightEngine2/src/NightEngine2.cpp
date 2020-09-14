@@ -219,7 +219,7 @@ namespace NightEngine
 
     //Update Systems
     Input::OnUpdate();
-    SceneManager::Update();
+    SceneManager::Update(dt);
 
     //TODO: Update all the Components
   }

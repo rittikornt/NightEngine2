@@ -38,8 +38,8 @@ void main()
 	vs_out.ourTexCoord = inTexCoord;
 
 	//No motion vector for GPU instancing for now
-	vs_out.positionCS = u_instanceRendering? vec4(0.0): u_unjitteredVP * worldPos;
-	vs_out.prevPositionCS = u_instanceRendering? vec4(0.0): u_prevUnjitteredVP * worldPos;
+	vs_out.positionCS = u_instanceRendering? vec4(0.0, 0.0, 0.0, 1.0): u_unjitteredVP * worldPos;
+	vs_out.prevPositionCS = u_instanceRendering? vec4(0.0, 0.0, 0.0, 1.0): u_prevUnjitteredVP * worldPos;
 
 	gl_Position = u_vp * worldPos;
 }

@@ -268,7 +268,7 @@ namespace NightEngine
       }
 
       //Test Components
-      REGISTER_METATYPE_WITHBASE(Controller, ComponentLogic
+      /*REGISTER_METATYPE_WITHBASE(Controller, ComponentLogic
         , InheritType::PUBLIC);
       REGISTER_METATYPE_WITHBASE(CharacterInfo, ComponentLogic
         , InheritType::PUBLIC);
@@ -278,7 +278,7 @@ namespace NightEngine
         ADD_MEMBER_PRIVATE(CharacterInfo, m_maxHealth);
       }
       REGISTER_METATYPE_WITHBASE(CTimer, ComponentLogic
-        , InheritType::PUBLIC);
+        , InheritType::PUBLIC);*/
 
 			//***********************************************
 			//	Unit Test

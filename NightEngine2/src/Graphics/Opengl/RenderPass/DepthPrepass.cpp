@@ -16,6 +16,7 @@
 
 #include "Graphics/Opengl/DebugMarker.hpp"
 #include "Graphics/Opengl/InstanceDrawer.hpp"
+#include "Graphics/Opengl/RenderState.hpp"
 
 #include <glad/glad.h>
 
@@ -34,7 +35,7 @@ namespace Rendering
     //FBO
     m_fbo.Init();
     m_fbo.AttachDepthTexture(gbuffer.m_depthTexture);
-    m_fbo.AttachColorTexture(gbuffer.GetTexture(GBufferTarget::MotionVector));
+    m_fbo.AttachColorTexture(gbuffer.m_motionVector);
     CHECKGL_ERROR();
 
     m_fbo.Bind();
@@ -51,10 +52,20 @@ namespace Rendering
     auto resolution = camera.GetScreenSize();
     glViewport(0, 0, (GLsizei)resolution.x, (GLsizei)resolution.y);
 
+    glEnable(GL_STENCIL_TEST);
+
     DebugMarker::PushDebugGroup("Depth Prepass and Object Motion Vector");
     m_fbo.Bind();
     {
+      //Clear Depth to 1.0 and clear stencil
+      glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+      glStencilMask(0xFF);
       glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      RenderSetup::WriteStencilAlways(RenderFeature::OBJECT_VELOCITY);
 
       //Draw Depth prepass
       {
@@ -80,6 +91,8 @@ namespace Rendering
     }
     m_fbo.Unbind();
     DebugMarker::PopDebugGroup();
+
+    glDisable(GL_STENCIL_TEST);
   }
 
   void DepthPrepass::RefreshTextureUniforms()

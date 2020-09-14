@@ -10,6 +10,7 @@
 
 #include "Graphics/Opengl/RenderPass/GBuffer.hpp"
 #include "Graphics/Opengl/CameraObject.hpp"
+#include "Graphics/Opengl/RenderState.hpp"
 
 namespace Rendering
 {
@@ -28,7 +29,8 @@ namespace Rendering
 
       //FBO
       m_fbo.Init();
-      m_fbo.AttachColorTexture(gbuffer.GetTexture(4));
+      m_fbo.AttachDepthTexture(gbuffer.m_depthTexture);
+      m_fbo.AttachColorTexture(gbuffer.m_motionVector);
       m_fbo.Bind();
       m_fbo.Unbind();
 
@@ -48,6 +50,13 @@ namespace Rendering
         m_isFirstFrame = false;
       }
 
+      glDepthMask(GL_FALSE);
+      glDisable(GL_DEPTH_TEST);
+
+      // Don't draw over existing object velocity
+      glEnable(GL_STENCIL_TEST);
+      RenderSetup::PassStencilIfBitNotSet(RenderFeature::OBJECT_VELOCITY);
+
       m_fbo.Bind();
       {
         m_cmvShader.Bind();
@@ -66,6 +75,8 @@ namespace Rendering
         m_cmvShader.Unbind();
       }
       m_fbo.Unbind();
+
+      glDisable(GL_STENCIL_TEST);
     }
 
     void CameraMotionVector::RefreshTextureUniforms(void)

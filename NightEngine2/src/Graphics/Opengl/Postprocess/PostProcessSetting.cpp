@@ -112,9 +112,8 @@ namespace Rendering
       DebugMarker::PushDebugGroup("UberPostProcess");
       {
         glViewport(0, 0, screenSize.x, screenSize.y);
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
 
         //Draw Screen
         auto time = context.time;

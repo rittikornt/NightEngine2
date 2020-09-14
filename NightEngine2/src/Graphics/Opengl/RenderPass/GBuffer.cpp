@@ -23,6 +23,12 @@ namespace Rendering
 
     m_fbo.Init();
 
+    // Motion vector
+    m_motionVector = Texture::GenerateRenderTexture(width, height
+      , Texture::Format::RG16F, Texture::Format::RGBA
+      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_motionVector.SetName("MotionVector (RG16F)");
+
     //Depth Buffer
     m_depthTexture = m_fbo.CreateAndAttachDepthStencilTexture(width, height
       , GL_LINEAR, GL_LINEAR);
@@ -57,13 +63,6 @@ namespace Rendering
       , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[3].SetName("GBuffer3 (emissive.xyz, roughness)");
     m_fbo.AttachColorTexture(m_textures[3], 3);
-
-    // (4) vec2(motionvector.xy);
-    m_textures[4] = Texture::GenerateRenderTexture(width, height
-      , Texture::Format::RG16F, Texture::Format::RGBA
-      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[4].SetName("GBuffer4 (motionvector.xy)");
-    m_fbo.AttachColorTexture(m_textures[4], 4);
 
     //Setup multiple render target
     m_fbo.SetupMultipleRenderTarget();

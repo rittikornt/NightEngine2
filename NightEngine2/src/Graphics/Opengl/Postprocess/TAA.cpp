@@ -79,6 +79,8 @@ namespace Rendering
           m_TAAShader.SetUniform("u_TAAFrameInfo", glm::vec4(m_sharpness, cam.m_taaFrameIndex
             , cam.m_activeJitteredUV.x, cam.m_activeJitteredUV.y));
 
+          m_TAAShader.SetUniform("u_beforeTonemapping", m_beforeTonemapping);
+          
           //Draw Quad
           screenVAO.Draw();
         }

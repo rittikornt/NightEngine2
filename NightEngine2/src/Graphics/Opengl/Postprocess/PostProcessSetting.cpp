@@ -77,7 +77,7 @@ namespace Rendering
         m_ssaoPP.Clear();
       }
 
-      //TAA
+      //TAA before tonemapping
       if (m_taaPP.m_enable && m_taaPP.m_beforeTonemapping)
       {
         DebugMarker::PushDebugGroup("TAA");
@@ -151,7 +151,7 @@ namespace Rendering
       }
       DebugMarker::PopDebugGroup();
 
-      //TAA
+      //TAA after tonemapping
       if (m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping)
       {
         DebugMarker::PushDebugGroup("TAA");

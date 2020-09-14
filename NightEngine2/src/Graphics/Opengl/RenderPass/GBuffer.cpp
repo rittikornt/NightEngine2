@@ -24,7 +24,8 @@ namespace Rendering
     m_fbo.Init();
 
     //Depth Buffer
-    m_depthTexture = m_fbo.CreateAndAttachDepthStencilTexture(width, height);
+    m_depthTexture = m_fbo.CreateAndAttachDepthStencilTexture(width, height
+      , GL_LINEAR, GL_LINEAR);
     m_depthTexture.SetName("DepthPrepass RT");
     CHECKGL_ERROR();
 

@@ -53,7 +53,8 @@ namespace Rendering
       void AttachDepthTexture(const Texture& texture);
 
       //! @brief Attach depth/stencil texture to framebuffer
-      TextureIdentifier CreateAndAttachDepthStencilTexture(float width, float height);
+      TextureIdentifier CreateAndAttachDepthStencilTexture(float width, float height
+        , int minFilter, int maxFilter);
 
       //! @brief Attach depth texture to framebuffer
       TextureIdentifier CreateAndAttachDepthTexture(int width, int height);

@@ -197,7 +197,7 @@ namespace Rendering
 
     //GBuffer
     m_gbuffer.Init(width, height);
-    m_depthPrepass.Init(width, height, m_gbuffer.m_depthTexture);
+    m_depthPrepass.Init(width, height, m_gbuffer);
 
     //Scene Texture
     m_sceneTexture = Texture::GenerateRenderTexture(width, height
@@ -351,7 +351,11 @@ namespace Rendering
     g_camera.m_bJitterProjectionMatrix = m_postProcessSetting->m_taaPP.m_enable;
     g_camera.m_camSize.m_fov = cameraFOV;
     g_camera.m_far = cameraFarPlane;
+
     g_camera.OnStartFrame();
+    Drawer::OnStartFrame(Drawer::DrawPass::BATCH);
+    Drawer::OnStartFrame(Drawer::DrawPass::OPAQUE_PASS);
+    Drawer::OnStartFrame(Drawer::DrawPass::DEBUG);
 
     //Update View/Projection matrix to Shader
     m_uniformBufferObject.FillBuffer(0, sizeof(glm::mat4)
@@ -389,6 +393,8 @@ namespace Rendering
     }
 
     g_camera.OnEndFrame();
+    Drawer::OnEndFrame(Drawer::DrawPass::OPAQUE_PASS);
+    Drawer::OnEndFrame(Drawer::DrawPass::BATCH);
   }
 
   void RenderLoopOpengl::OnRecompiledShader(void)
@@ -414,42 +420,13 @@ namespace Rendering
   {
     //Clear BG first
     const float clear_color = 0.0f;
-    glClearColor(clear_color, clear_color
-      , clear_color, clear_color);
+    glClearColor(clear_color, clear_color, clear_color, clear_color);
     float pointShadowFarPlane = g_camera.m_far;
 
     //*************************************************
     // Depth Prepass
     //*************************************************
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-    glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
-    DebugMarker::PushDebugGroup("Depth Prepass");
-    m_depthPrepass.Bind();
-    {
-      glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-      //Draw Depth prepass
-      {
-        auto& shader = m_depthPrepass.m_depthPrepassMaterial.GetShader();
-        shader.Bind();
-        {
-          //Draw Static Instances
-          GPUInstancedDrawer::DrawInstances(shader);
-
-          //Draw Loop by traversing Containers
-          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
-
-          //TODO: Do per object motion vector here too
-          //Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
-          //Draw Custom Pass
-          Drawer::DrawDepthWithoutBind(shader, Drawer::DrawPass::OPAQUE_PASS);
-        }
-        shader.Unbind();
-      }
-    }
-    m_depthPrepass.Unbind();
-    DebugMarker::PopDebugGroup();
+    m_depthPrepass.Execute(g_camera);
 
     //*************************************************
     // ShadowCaster Prepass

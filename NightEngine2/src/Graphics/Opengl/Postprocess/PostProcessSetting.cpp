@@ -174,8 +174,8 @@ namespace Rendering
           DebugMarker::PushDebugGroup("FXAA");
           {
             m_fxaaPP.ApplyToScreen(*screenVAO
-              , m_taaPP.m_enable && m_taaPP.m_beforeTonemapping ?
-               *(context.screenTexture) : m_taaPP.m_currRT
+              , m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping ?
+                m_taaPP.m_currRT : *(context.screenTexture)
               , screenZoomScale);
           }
           DebugMarker::PopDebugGroup();

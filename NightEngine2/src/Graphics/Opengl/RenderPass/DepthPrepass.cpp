@@ -12,6 +12,10 @@
 
 #include "Graphics/Opengl/Shader.hpp"
 #include "Graphics/Opengl/Texture.hpp"
+#include "Graphics/Opengl/CameraObject.hpp"
+
+#include "Graphics/Opengl/DebugMarker.hpp"
+#include "Graphics/Opengl/InstanceDrawer.hpp"
 
 #include <glad/glad.h>
 
@@ -19,7 +23,7 @@ using namespace NightEngine;
 
 namespace Rendering
 {
-  void DepthPrepass::Init(int width, int height, const Texture& depthTexture)
+  void DepthPrepass::Init(int width, int height, GBuffer& gbuffer)
   {
     m_width = width, m_height = height;
 
@@ -29,7 +33,8 @@ namespace Rendering
 
     //FBO
     m_fbo.Init();
-    m_fbo.AttachDepthTexture(depthTexture);
+    m_fbo.AttachDepthTexture(gbuffer.m_depthTexture);
+    m_fbo.AttachColorTexture(gbuffer.GetTexture(GBufferTarget::MotionVector));
     CHECKGL_ERROR();
 
     m_fbo.Bind();
@@ -38,14 +43,43 @@ namespace Rendering
     RefreshTextureUniforms();
   }
 
-  void DepthPrepass::Bind(void)
+  void DepthPrepass::Execute(CameraObject& camera)
   {
-    m_fbo.Bind();
-  }
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 
-  void DepthPrepass::Unbind(void)
-  {
+    auto resolution = camera.GetScreenSize();
+    glViewport(0, 0, (GLsizei)resolution.x, (GLsizei)resolution.y);
+
+    DebugMarker::PushDebugGroup("Depth Prepass and Object Motion Vector");
+    m_fbo.Bind();
+    {
+      glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+      //Draw Depth prepass
+      {
+        auto& shader = m_depthPrepassMaterial.GetShader();
+        shader.Bind();
+        {
+          shader.SetUniform("u_unjitteredVP", camera.m_unjitteredVP);
+          shader.SetUniform("u_prevUnjitteredVP", camera.m_prevUnjitteredVP);
+
+          //Draw Static Instances
+          GPUInstancedDrawer::DrawInstances(shader);
+
+          //Draw Loop by traversing Containers
+          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
+
+          //TODO: Do per object motion vector here too
+          //Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
+          //Draw Custom Pass
+          Drawer::DrawDepthWithoutBind(shader, Drawer::DrawPass::OPAQUE_PASS);
+        }
+        shader.Unbind();
+      }
+    }
     m_fbo.Unbind();
+    DebugMarker::PopDebugGroup();
   }
 
   void DepthPrepass::RefreshTextureUniforms()

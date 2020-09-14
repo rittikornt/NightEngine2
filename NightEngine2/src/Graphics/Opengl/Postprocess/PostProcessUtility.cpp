@@ -18,6 +18,7 @@ namespace Rendering
       m_target1Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
         , Texture::Format::RGBA16F, Texture::Format::RGBA
         , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+      m_target1Texture.SetName("TempRT1");
 
       m_temp1Fbo.Init();
       m_temp1Fbo.AttachColorTexture(m_target1Texture);
@@ -28,6 +29,7 @@ namespace Rendering
       m_target2Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
         , Texture::Format::RGBA16F, Texture::Format::RGBA
         , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+      m_target1Texture.SetName("TempRT2");
 
       m_temp2Fbo.Init();
       m_temp2Fbo.AttachColorTexture(m_target2Texture);
@@ -123,7 +125,8 @@ namespace Rendering
         , resolution.x, resolution.y);
     }
 
-    void PostProcessUtility::BlurTarget(glm::vec4 clearColor, FrameBufferObject& targetFbo, Texture& target, VertexArrayObject& screenVAO, glm::ivec2 resolution, int iteration, bool useKawase)
+    void PostProcessUtility::BlurTarget(glm::vec4 clearColor, FrameBufferObject& targetFbo, Texture& target
+      , VertexArrayObject& screenVAO, glm::ivec2 resolution, int iteration, bool useKawase)
     {
       //Render Resolution and clear color
       glViewport(0, 0, m_resolution.x, m_resolution.y);

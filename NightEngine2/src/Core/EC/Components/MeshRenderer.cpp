@@ -195,7 +195,7 @@ namespace NightEngine
               //SetUniform Modelmatrix
               auto t = m_gameObject->GetTransform();
               ASSERT_TRUE(t != nullptr);
-              currMat->GetShader().SetUniform("u_model", t->CalculateModelMatrix());
+              currMat->GetShader().SetUniform("u_model", t->GetModelMatrix());
               
               if (fn != nullptr)
               {
@@ -221,7 +221,7 @@ namespace NightEngine
             //SetUniform Modelmatrix
             auto t = m_gameObject->GetTransform();
             ASSERT_TRUE(t != nullptr);
-            m_material->GetShader().SetUniform("u_model", t->CalculateModelMatrix());
+            m_material->GetShader().SetUniform("u_model", t->GetModelMatrix());
 
             if (fn != nullptr)
             {
@@ -252,7 +252,7 @@ namespace NightEngine
         //SetUniform Modelmatrix
         auto t = m_gameObject->GetTransform();
         ASSERT_TRUE(t != nullptr);
-        shader.SetUniform("u_model", t->CalculateModelMatrix());
+        shader.SetUniform("u_model", t->GetModelMatrix());
 
         //Draw
         DrawMeshes();
@@ -263,7 +263,8 @@ namespace NightEngine
         //SetUniform Modelmatrix
         auto t = m_gameObject->GetTransform();
         ASSERT_TRUE(t != nullptr);
-        shader.SetUniform("u_model", t->CalculateModelMatrix());
+        shader.SetUniform("u_model", t->GetModelMatrix());
+        shader.SetUniform("u_prevModel", t->GetPrevModelMatrix());
 
         //Skip Transparent Material in Depth Prepass
         //Draw meshes
@@ -306,7 +307,7 @@ namespace NightEngine
           //SetUniform Modelmatrix
           auto t = m_gameObject->GetTransform();
           ASSERT_TRUE(t != nullptr);
-          shader.SetUniform("u_model", t->CalculateModelMatrix());
+          shader.SetUniform("u_model", t->GetModelMatrix());
 
           //Draw
           DrawMeshes();
@@ -336,7 +337,7 @@ namespace NightEngine
             //Draw Normally
             //SetUniform Modelmatrix
             ASSERT_TRUE(t != nullptr);
-            shader.SetUniform("u_model", t->CalculateModelMatrix());
+            shader.SetUniform("u_model", t->GetModelMatrix());
 
             //Draw
             DrawMeshes();
@@ -462,6 +463,20 @@ namespace NightEngine
           }
         }
         return true;
+      }
+
+      ///////////////////////////////////////////////////////
+
+      void MeshRenderer::OnStartFrame(void)
+      {
+        auto t = m_gameObject->GetTransform();
+        t->CalculateModelMatrix();
+      }
+
+      void MeshRenderer::OnEndFrame(void)
+      {
+        auto t = m_gameObject->GetTransform();
+        t->SavePreviousModelMatrix();
       }
     }
   }

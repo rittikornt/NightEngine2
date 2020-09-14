@@ -117,6 +117,15 @@ namespace NightEngine
 
           //! @brief Check if this mesh is opaque
           bool IsOpaque(void);
+
+          ///////////////////////////////////////////////////////
+
+          //! @brief Start Rendering frame
+          void OnStartFrame(void);
+
+          //! @brief End Rendering frame
+          void OnEndFrame(void);
+
         private:
           EC::Handle<Rendering::Material> m_material;
 

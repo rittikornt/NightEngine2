@@ -124,6 +124,26 @@ namespace Rendering
         mesh.Get<MeshRenderer>()->DrawWithoutBindDepthPass(false, shader);
       }
     }
+
+    /////////////////////////////////////////////////////////////
+
+    void OnStartFrame(DrawPass drawPass)
+    {
+      auto& container = GetDrawContainer(drawPass);
+      for (auto& mesh : container)
+      {
+        mesh.Get<MeshRenderer>()->OnStartFrame();
+      }
+    }
+
+    void OnEndFrame(DrawPass drawPass)
+    {
+      auto& container = GetDrawContainer(drawPass);
+      for (auto& mesh : container)
+      {
+        mesh.Get<MeshRenderer>()->OnEndFrame();
+      }
+    }
   }
 
   /////////////////////////////////////////////////////////////

@@ -35,13 +35,26 @@ namespace NightEngine
         }
       public:
         //! @brief Default Constructor
-        Transform(void);
+        Transform(void) : m_position(0.0f), m_scale(1.0f), m_angle(0.0f)
+          , m_rotation(), m_modelMatrix(1.0f), m_prevModelMatrix(1.0f), m_dirty(false)
+        {
+        }
 
         //! @brief On Awake
         virtual void OnAwake(void) override;
-        
+
+        //! @brief Get Model Matrix
+        inline const glm::mat4& GetModelMatrix(void) const { return m_modelMatrix; };
+
+        //! @brief Get Previous frame's Model Matrix
+        inline const glm::mat4& GetPrevModelMatrix(void) const { return m_prevModelMatrix; };
+
         //! @brief Calculate Model Matrix
         const glm::mat4& CalculateModelMatrix(void);
+
+        //! @brief Save Previous Model Matrix (for calculating motion vector)
+        const glm::mat4& SavePreviousModelMatrix(void);
+
         //*************************************************
         // Handle Message
         //*************************************************
@@ -118,7 +131,8 @@ namespace NightEngine
         glm::vec3 m_angle;
         glm::quat m_rotation;
 
-        glm::mat4 m_modelMatrix;
+        glm::mat4 m_modelMatrix = glm::mat4(1.0f);
+        glm::mat4 m_prevModelMatrix = glm::mat4(1.0f);
 
         bool m_dirty = false;
       };

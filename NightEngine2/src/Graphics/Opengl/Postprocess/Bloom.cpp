@@ -24,14 +24,18 @@ namespace Rendering
 
       //FBO for 5 down scaled version
       glm::ivec2 renderSize{ m_resolution};
+      std::string name = "";
       for (int i = 0; i < k_bloomPyramidCount +1; ++i)
       {
         g_bloomResolutions[i] = renderSize;
 
         {
+          name = "BloomDownScale (" + std::to_string(g_bloomResolutions[i].x)
+            + "x" + std::to_string(g_bloomResolutions[i].y) +")";
           m_bloomDownscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
-            , Texture::Format::RGBA16F, Texture::Format::RGBA
+            , Texture::Format::RGB16F, Texture::Format::RGBA
             , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+          m_bloomDownscaleTexture[i].SetName(name.c_str());
 
           m_bloomDownscaleFbo[i].Init();
           m_bloomDownscaleFbo[i].AttachColorTexture(m_bloomDownscaleTexture[i]);
@@ -40,9 +44,12 @@ namespace Rendering
         }
 
         {
+          name = "BloomUpScale (" + std::to_string(g_bloomResolutions[i].x)
+            + "x" + std::to_string(g_bloomResolutions[i].y) + ")";
           m_bloomUpscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
-            , Texture::Format::RGBA16F, Texture::Format::RGBA
+            , Texture::Format::RGB16F, Texture::Format::RGBA
             , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+          m_bloomUpscaleTexture[i].SetName(name.c_str());
 
           m_bloomUpscaleFbo[i].Init();
           m_bloomUpscaleFbo[i].AttachColorTexture(m_bloomUpscaleTexture[i]);
@@ -58,6 +65,7 @@ namespace Rendering
         m_targetTexture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
           , Texture::Format::RGBA16F, Texture::Format::RGBA
           , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        m_targetTexture.SetName("BloomResult");
 
         m_targetFbo.Init();
         m_targetFbo.AttachColorTexture(m_targetTexture);

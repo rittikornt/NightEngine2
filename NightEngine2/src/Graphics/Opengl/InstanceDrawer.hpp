@@ -70,6 +70,14 @@ namespace Rendering
     //! @brief Draw pass for Shadow
     void DrawDepthWithoutBind(Shader& shader
       , DrawPass drawPass = DrawPass::BATCH);
+
+    /////////////////////////////////////////////////////////////
+
+    //! @brief On Start Rendering Frame
+    void OnStartFrame(DrawPass drawPass = DrawPass::BATCH);
+
+    //! @brief On End Rendering Frame
+    void OnEndFrame(DrawPass drawPass = DrawPass::BATCH);
   }
 
   namespace GPUInstancedDrawer

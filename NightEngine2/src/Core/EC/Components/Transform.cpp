@@ -20,12 +20,6 @@ namespace NightEngine
     {
       INIT_REFLECTION_FOR(Transform)
 
-      Transform::Transform(void)
-        : m_position(0.0f), m_scale(1.0f), m_angle(0.0f)
-        , m_rotation(), m_modelMatrix(1.0f), m_dirty(false)
-      {
-      }
-
       void Transform::OnAwake(void)
       {
         Subscribe("MSG_TRANSFORMMESSAGE");
@@ -36,6 +30,13 @@ namespace NightEngine
         m_modelMatrix = CalculateModelMatrix(*this);
         return m_modelMatrix;
       }
+
+      const glm::mat4& Transform::SavePreviousModelMatrix(void)
+      {
+        m_prevModelMatrix = m_modelMatrix;
+        return m_prevModelMatrix;
+      }
+
       //*************************************************
       // Handle Message
       //*************************************************

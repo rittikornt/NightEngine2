@@ -8,6 +8,8 @@ layout (location = 4) in mat4 inInstanceModel;
 out VS_OUT
 {
 	vec2 ourTexCoord;
+	vec4 positionCS;
+	vec4 prevPositionCS;
 } vs_out;
 
 //***************************************
@@ -20,6 +22,11 @@ layout (std140) uniform u_matrices
 };
 
 uniform mat4 u_model;
+uniform mat4 u_prevModel;
+
+uniform mat4 u_unjitteredVP;
+uniform mat4 u_prevUnjitteredVP;
+
 //TODO: consider a separate shader/variant for this bool, since it probably will branch
 uniform bool u_instanceRendering = false;
 
@@ -27,6 +34,12 @@ void main()
 {
 	mat4 model = u_instanceRendering? inInstanceModel:u_model;
 
+	vec4 worldPos = model * vec4(inPos, 1.0f);
 	vs_out.ourTexCoord = inTexCoord;
-	gl_Position = u_vp * model * vec4(inPos, 1.0f);
+
+	//No motion vector for GPU instancing for now
+	vs_out.positionCS = u_instanceRendering? vec4(0.0): u_unjitteredVP * worldPos;
+	vs_out.prevPositionCS = u_instanceRendering? vec4(0.0): u_prevUnjitteredVP * worldPos;
+
+	gl_Position = u_vp * worldPos;
 }

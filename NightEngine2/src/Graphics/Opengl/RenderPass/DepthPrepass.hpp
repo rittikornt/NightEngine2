@@ -10,6 +10,8 @@
 namespace Rendering
 {
   class Texture;
+  class GBuffer;
+  class CameraObject;
 
   //! @brief DepthPrepass struct
   struct DepthPrepass
@@ -20,13 +22,10 @@ namespace Rendering
     int                 m_height = 1;
 
     //! @brief Initialize DepthPrepass
-    void Init(int width, int height, const Texture& depthTexture);
+    void Init(int width, int height, GBuffer& gbuffer);
 
     //! @brief Bind to fbo
-    void Bind(void);
-
-    //! @brief Unbind fbo
-    void Unbind(void);
+    void Execute(CameraObject& camera);
 
     //! @brief Set the Texture binding units
     void RefreshTextureUniforms();

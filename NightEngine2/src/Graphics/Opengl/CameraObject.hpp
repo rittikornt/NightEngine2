@@ -52,7 +52,7 @@ namespace Rendering
     int m_taaFrameIndex = 0;
     glm::vec2 m_activeJitteredUV;
 
-    //CameraMotionVector
+    //MotionVector
     glm::mat4 m_unjitteredProjection;
     glm::mat4 m_unjitteredVP;
     glm::mat4 m_prevUnjitteredVP;

@@ -32,6 +32,7 @@ namespace Rendering
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(TAA, m_TAAShader, true)
           .MR_ADD_MEMBER_PROTECTED(TAA, m_sharpness, true)
+          .MR_ADD_MEMBER_PROTECTED(TAA, m_frustumJitterStrength, true)
           .MR_ADD_MEMBER_PROTECTED(TAA, m_beforeTonemapping, true);
       }
 
@@ -43,9 +44,11 @@ namespace Rendering
       FrameBufferObject m_taaFBO;
       FrameBufferObject m_copyHistoryFBO;
 
-      bool m_beforeTonemapping = true;
-      bool m_isFirstFrame = true;
       float m_sharpness = 0.6f;
+      bool m_beforeTonemapping = true;
+      float m_frustumJitterStrength = 0.5f;
+
+      bool m_isFirstFrame = true;
       int m_width = 1;
       int m_height = 1;
 

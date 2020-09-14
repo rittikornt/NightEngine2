@@ -8,9 +8,13 @@
 #include "Graphics/Opengl/RenderBufferObject.hpp"
 #include "Graphics/Opengl/Texture.hpp"
 
+#include "Core/EC/Handle.hpp"
+#include "Graphics/Opengl/Material.hpp"
+
 namespace Rendering
 {
   class Shader;
+  class CameraObject;
 
   enum class GBufferTarget: size_t
   {
@@ -25,6 +29,8 @@ namespace Rendering
   //! @brief GBuffer struct
   struct GBuffer
   {
+    using DrawOpaqueFn = void(*)(NightEngine::EC::Handle<Material>&);
+
     FrameBufferObject   m_fbo;
     Texture             m_textures[static_cast<size_t>(GBufferTarget::Count)];
 
@@ -35,6 +41,10 @@ namespace Rendering
 
     //! @brief Initialize G buffer
     void Init(int width, int height);
+
+    //! @brief Draw GBuffer pass
+    void Execute(NightEngine::EC::Handle<Material>& defaultMaterial
+      , DrawOpaqueFn drawOpaquePassFn);
 
     //! @brief Bind to fbo
     void Bind(void);

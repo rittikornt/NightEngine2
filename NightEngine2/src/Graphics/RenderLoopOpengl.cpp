@@ -206,13 +206,11 @@ namespace Rendering
       , Texture::FilterMode::LINEAR
       , Texture::WrapMode::CLAMP_TO_EDGE);
     m_sceneTexture.SetName("SceneColorRT");
-    m_sceneRbo.Init(width, height);
 
     //Scene FBO
     m_sceneFbo.Init();
     m_sceneFbo.AttachColorTexture(m_sceneTexture);
     m_sceneFbo.AttachDepthTexture(m_gbuffer.m_depthTexture);
-    //m_sceneFbo.AttachRenderBuffer(m_sceneRbo);
     m_sceneFbo.Bind();
 
     //************************************************
@@ -292,13 +290,6 @@ namespace Rendering
     m_uniformBufferObject.Init(sizeof(glm::mat4) * 2, bindingPoint);
     m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
       , glm::value_ptr(g_camera.GetUnjitteredProjectionMatrix()));
-
-    //************************************************
-    // Init Projection Matrix
-    //************************************************
-    //Set Projection Matrix once
-    //g_camera.ApplyProjectionMatrix(g_defaultMaterial.GetShader());
-    //g_camera.ApplyUnJitteredProjectionMatrix(m_billboardMaterial->GetShader());
   }
 
   void RenderLoopOpengl::Terminate(void)
@@ -353,6 +344,7 @@ namespace Rendering
     g_camera.m_bJitterProjectionMatrix = m_postProcessSetting->m_taaPP.m_enable;
     g_camera.m_camSize.m_fov = cameraFOV;
     g_camera.m_far = cameraFarPlane;
+    g_camera.m_jitterStrength = m_postProcessSetting->m_taaPP.m_frustumJitterStrength;
 
     g_camera.OnStartFrame();
     Drawer::OnStartFrame(Drawer::DrawPass::BATCH);
@@ -526,31 +518,34 @@ namespace Rendering
     // Geometry Pass
     //*************************************************
     glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
 
-    glEnable(GL_STENCIL_TEST);
-    RenderSetup::WriteStencilAlways(RenderFeature::GBUFFER_MASK);
-
-    DebugMarker::PushDebugGroup("GBuffer Pass");
-    m_gbuffer.Bind();
-    {
-      //Clear Buffer
-      glClear(GL_COLOR_BUFFER_BIT);
-
-      //Set Uniform
-      m_defaultMaterial->Bind();
+    // This got weird real fast lol
+    m_gbuffer.Execute(m_defaultMaterial
+      , [](NightEngine::EC::Handle<Material>& defaultMaterial)
       {
-        Shader& shader = m_defaultMaterial->GetShader();
-        shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
-      }
-      m_defaultMaterial->Unbind();
+        //Set Uniform
+        defaultMaterial->Bind();
+        {
+          Shader& shader = defaultMaterial->GetShader();
+          shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
 
-      //Draw Scene
-      DrawScene();
-    }
-    m_gbuffer.Unbind();
-    DebugMarker::PopDebugGroup();
+          //Draw Static Instances
+          GPUInstancedDrawer::DrawInstances(shader);
+
+          //Draw Loop by traversing Containers
+          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
+        }
+        defaultMaterial->Unbind();
+
+        //Draw Custom Pass
+        Drawer::Draw(Drawer::DrawPass::OPAQUE_PASS
+          , [](Shader& shader)
+          {
+            shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
+            shader.SetUniformNoErrorCheck("u_cameraPosWS", g_camera.m_position);
+          });
+      });
+
 
     //*************************************************
     // Camera Motion Vector Pass
@@ -565,9 +560,6 @@ namespace Rendering
     //*************************************************
     // Lighting Pass
     //*************************************************
-    //Use depth test when rendering skybox and compositing light icons
-    //m_gbuffer.CopyDepthBufferTo(m_sceneFbo.GetID());
-
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
 
@@ -676,33 +668,6 @@ namespace Rendering
     // Draw Debug Icons
     //*************************************************
     DrawDebugIcons();
-  }
-
-  void RenderLoopOpengl::DrawScene()
-  {
-    //This is technically DrawGBuffer, should be inside GBuffer pass
-    //g_camera.ApplyViewMatrix(g_defaultMaterial.GetShader());
-
-    //Bind Shader
-    m_defaultMaterial->Bind();
-    {
-      Shader& shader = m_defaultMaterial->GetShader();
-
-      //Draw Static Instances
-      GPUInstancedDrawer::DrawInstances(shader);
-
-      //Draw Loop by traversing Containers
-      Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
-    }
-    m_defaultMaterial->Unbind();
-
-    //Draw Custom Pass
-    Drawer::Draw(Drawer::DrawPass::OPAQUE_PASS
-      , [](Shader& shader)
-      {
-        shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
-        shader.SetUniformNoErrorCheck("u_cameraPosWS", g_camera.m_position);
-      });
   }
 
   void RenderLoopOpengl::DrawDebugIcons()

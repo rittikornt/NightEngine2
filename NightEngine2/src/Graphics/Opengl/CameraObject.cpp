@@ -74,11 +74,12 @@ namespace Rendering
       return m;
     }
 
-    static glm::mat4 GetJitteredProjection(const CameraObject& camera, glm::vec2& jitteredUV)
+    static glm::mat4 GetJitteredProjection(const CameraObject& camera
+      , glm::vec2& jitteredUV, float jitterStrength)
     {
       int index = camera.m_taaFrameIndex + 1;
-      float texelOffsetX = GetHaltonSequence(index, 2) - 0.5f;
-      float texelOffsetY = GetHaltonSequence(index, 3) - 0.5f;
+      float texelOffsetX = (GetHaltonSequence(index, 2) * jitterStrength) - 0.5f;
+      float texelOffsetY = (GetHaltonSequence(index, 3) * jitterStrength) - 0.5f;
 
       float pixelWidth = Window::GetWidth();
       float pixelHeight = Window::GetHeight();
@@ -178,7 +179,7 @@ namespace Rendering
       , m_near, m_far);
 
     m_projection = m_bJitterProjectionMatrix? 
-      CalculateJitteredProjectionMatrix(*this, m_activeJitteredUV) : m_unjitteredProjection;
+      CalculateJitteredProjectionMatrix(*this, m_activeJitteredUV, m_jitterStrength) : m_unjitteredProjection;
 
     m_unjitteredVP = m_unjitteredProjection * m_view;
     m_VP = m_projection * m_view; //this could be jittered
@@ -304,9 +305,9 @@ namespace Rendering
     return projection;
   }
 
-  glm::mat4 CameraObject::CalculateJitteredProjectionMatrix(const CameraObject& cam, glm::vec2& jitteredUV)
+  glm::mat4 CameraObject::CalculateJitteredProjectionMatrix(const CameraObject& cam, glm::vec2& jitteredUV, float jitterStrength)
   {
-    return FrustumJitter::GetJitteredProjection(cam, jitteredUV);
+    return FrustumJitter::GetJitteredProjection(cam, jitteredUV, jitterStrength);
   }
 
   void CameraObject::ProcessCameraInput(CameraObject& camera, float dt)

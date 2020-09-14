@@ -93,7 +93,6 @@ namespace Rendering
     //Scene FrameBuffer
     FrameBufferObject   m_sceneFbo;
     Texture             m_sceneTexture;
-    RenderBufferObject  m_sceneRbo;
 
     //Render Passes
     DepthPrepass        m_depthPrepass;

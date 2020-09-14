@@ -50,6 +50,7 @@ namespace Rendering
     //TAA
     bool m_bJitterProjectionMatrix = false;  //Use when TAA is enabled
     int m_taaFrameIndex = 0;
+    float m_jitterStrength = 0.5f;
     glm::vec2 m_activeJitteredUV;
 
     //MotionVector
@@ -119,7 +120,8 @@ namespace Rendering
     static glm::mat4 CalculateProjectionMatrix(CameraType camtype
       , float size, float aspect, float near_, float far_);
 
-    static glm::mat4 CalculateJitteredProjectionMatrix(const CameraObject& cam, glm::vec2& jitteredUV);
+    static glm::mat4 CalculateJitteredProjectionMatrix(const CameraObject& cam
+      , glm::vec2& jitteredUV, float jitterStrength);
 
     static void ProcessCameraInput(CameraObject& camera, float dt);
 

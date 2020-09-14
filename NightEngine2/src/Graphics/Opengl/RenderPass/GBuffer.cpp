@@ -9,7 +9,13 @@
 
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
+
 #include "Graphics/Opengl/Shader.hpp"
+#include "Graphics/Opengl/RenderState.hpp"
+#include "Graphics/Opengl/DebugMarker.hpp"
+
+#include "Graphics/Opengl/CameraObject.hpp"
+#include "Graphics/Opengl/InstanceDrawer.hpp"
 
 #include <glad/glad.h>
 
@@ -69,6 +75,27 @@ namespace Rendering
 
     m_fbo.Bind();
     m_fbo.Unbind();
+  }
+
+  void GBuffer::Execute(NightEngine::EC::Handle<Material>& defaultMaterial
+    , DrawOpaqueFn drawOpaquePassFn)
+  {
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+
+    glEnable(GL_STENCIL_TEST);
+    RenderSetup::WriteStencilAlways(RenderFeature::GBUFFER_MASK);
+
+    DebugMarker::PushDebugGroup("GBuffer Pass");
+    m_fbo.Bind();
+    {
+      //Clear Buffer
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      drawOpaquePassFn(defaultMaterial);
+    }
+    m_fbo.Unbind();
+    DebugMarker::PopDebugGroup();
   }
 
   void GBuffer::Bind(void)

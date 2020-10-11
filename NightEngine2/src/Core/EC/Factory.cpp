@@ -36,49 +36,23 @@ namespace NightEngine
 
 		//Creator Definition
 		FACTORY_FUNC_IMPLEMENTATION(GameObject);
-
-    //Components
-    FACTORY_FUNC_IMPLEMENTATION(Light);
-    FACTORY_FUNC_IMPLEMENTATION(Transform);
-    FACTORY_FUNC_IMPLEMENTATION(Rigidbody);
-    FACTORY_FUNC_IMPLEMENTATION(MeshRenderer);
-		FACTORY_FUNC_IMPLEMENTATION(Controller);
-		FACTORY_FUNC_IMPLEMENTATION(CharacterInfo);
-		FACTORY_FUNC_IMPLEMENTATION(CTimer);
-
-		FACTORY_FUNC_IMPLEMENTATION(Material);
 		FACTORY_FUNC_IMPLEMENTATION(Texture);
 		FACTORY_FUNC_IMPLEMENTATION(Model);
 
 		//**********************************************************
     // Definition
 		//**********************************************************
-
 		void Initialize(void)
 		{
 			Debug::Log << "Factory::Initialize\n";
 
 			//Creator Registration
-			NightEngine::Factory::g_factory.Register("GameObject",
-			NightEngine::Factory::HandleObjectFactory::InfoFN{ FactoryCreateGameObject,FactoryLookupGameObject, FactoryDestroyGameObject });
-			NightEngine::Factory::GetTypeContainer<GameObject>().Reserve(5000, 5000);
-      //FACTORY_REGISTER_TYPE_WITHPARAM(GameObject, 5000, 5000);
-
-      //Components
-      FACTORY_REGISTER_TYPE_WITHPARAM(Transform, 5000, 5000);
-      FACTORY_REGISTER_TYPE_WITHPARAM(MeshRenderer, 5000, 5000);
-      FACTORY_REGISTER_TYPE(Light);
-      FACTORY_REGISTER_TYPE_WITHPARAM(Rigidbody,200, 200);
-
-			FACTORY_REGISTER_TYPE(Controller);
-			FACTORY_REGISTER_TYPE(CharacterInfo);
-			FACTORY_REGISTER_TYPE(CTimer);
-
-			FACTORY_REGISTER_TYPE_WITHPARAM(Material, 100, 100);
+			//NightEngine::Factory::g_factory.Register("GameObject",
+			//NightEngine::Factory::HandleObjectFactory::InfoFN{ FactoryCreateGameObject,FactoryLookupGameObject, FactoryDestroyGameObject });
+			//NightEngine::Factory::GetTypeContainer<GameObject>().Reserve(5000, 5000);
+      FACTORY_REGISTER_TYPE_WITHPARAM(GameObject, 2000, 1000);
 			FACTORY_REGISTER_TYPE(Texture);
 			FACTORY_REGISTER_TYPE(Model);
-
-      //TODO: Get the reflection registerer to init this creator
 		}
 
 		HandleObject Create(const char* typeName)
@@ -89,6 +63,7 @@ namespace NightEngine
 		void Terminate(void)
 		{
 			Debug::Log << "Factory::Terminate\n";
+			g_factory.Clear();
 		}
 	}
 }

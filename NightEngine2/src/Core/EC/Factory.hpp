@@ -82,17 +82,19 @@ namespace NightEngine
       };
 
 			//! @brief Register typename into Factory
-      void	            Register(const char* name, InfoFN infoFn);//Creator<T>* creator);
+      void	            Register(const char* name, InfoFN infoFn);
 
       //! @brief Create object from typename
       EC::HandleObject	Create(const char* typeName);
 
       //! @brief Get function info for specific type
       InfoFN	          GetFunctionInfo(const char* typeName);
+
+      void              Clear(void) { m_handleMap.clear(); }
 		private:
 
 			using HandleInfoMap = Container::Hashmap<std::string, InfoFN>;
-      HandleInfoMap m_creatorMap;	//Map of name to Creator
+      HandleInfoMap m_handleMap;	//Map of name to Creator
 		};
 
 		//Global Variable
@@ -112,21 +114,21 @@ namespace NightEngine
     //**********************************************
     inline void HandleObjectFactory::Register(const char* name, InfoFN infoFn)
     {
-      m_creatorMap.insert( {name, infoFn} );
+      m_handleMap.insert( {name, infoFn} );
     }
 
     inline EC::HandleObject HandleObjectFactory::Create(const char* typeName)
     {
-      ASSERT_MSG(m_creatorMap.find(typeName) != m_creatorMap.end()
+      ASSERT_MSG(m_handleMap.find(typeName) != m_handleMap.end()
         , "Trying to Create an unregistered typeName");
-      return m_creatorMap[typeName].m_createFn();
+      return m_handleMap[typeName].m_createFn();
     }
 
     inline HandleObjectFactory::HandleObjectFactory::InfoFN HandleObjectFactory::GetFunctionInfo(const char* typeName)
     {
-      ASSERT_MSG(m_creatorMap.find(typeName) != m_creatorMap.end()
+      ASSERT_MSG(m_handleMap.find(typeName) != m_handleMap.end()
         , "Trying to Lookup an unregistered typeName");
-      return m_creatorMap[typeName];
+      return m_handleMap[typeName];
     }
 
     //**********************************************

@@ -12,9 +12,11 @@ namespace NightEngine
   {
     namespace Components
     {
-      INIT_REFLECTION_FOR(Controller)
-      INIT_REFLECTION_FOR(CharacterInfo)
-      INIT_REFLECTION_FOR(CTimer)
+      INIT_REFLECTION_AND_FACTORY(Controller, 10, 5)
+
+      INIT_REFLECTION_AND_FACTORY(CharacterInfo, 10, 5)
+
+      INIT_REFLECTION_AND_FACTORY(CTimer, 10, 5)
     }
   }
 }

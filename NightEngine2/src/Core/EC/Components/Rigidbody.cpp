@@ -24,7 +24,7 @@ namespace NightEngine
   {
     namespace Components
     {
-      INIT_REFLECTION_FOR(Rigidbody)
+      INIT_REFLECTION_AND_FACTORY(Rigidbody, 10, 10)
 
       void Rigidbody::OnAwake(void)
       {

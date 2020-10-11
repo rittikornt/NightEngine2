@@ -15,7 +15,8 @@ using namespace NightEngine;
 
 namespace Rendering
 {
-  INIT_REFLECTION_FOR(Light)
+  INIT_REFLECTION_AND_FACTORY(Light, 10, 10)
+
   static const std::string g_pointLightStr[] =
   { "u_pointLightInfo[0]", "u_pointLightInfo[1]", "u_pointLightInfo[2]"
    , "u_pointLightInfo[3]", "u_pointLightInfo[4]" };

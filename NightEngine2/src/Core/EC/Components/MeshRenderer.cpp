@@ -23,7 +23,7 @@ namespace NightEngine
   {
     namespace Components
     {
-      INIT_REFLECTION_FOR(MeshRenderer)
+      INIT_REFLECTION_AND_FACTORY(MeshRenderer, 2000, 1000)
 
         void MeshRenderer::InitMesh(const std::vector<Rendering::Vertex>& vertices
           , const std::vector<unsigned>& indices

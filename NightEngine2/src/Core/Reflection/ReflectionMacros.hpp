@@ -144,6 +144,12 @@ ReflectionManager::RegisterType<RawType<TYPE>>(#TYPE, MURMURHASH2(TYPE)\
 //! @brief Register reflection init function to the global class to be called at init time, must be in .cpp file
 #define INIT_REFLECTION_FOR(TYPE) \
     static NightEngine::Reflection::ReflectionInitFunctionsRegisterer<TYPE> g_registerer##TYPE; \
+
+//! @brief Register reflection init function to the global class to be called at init time, must be in .cpp file
+#define INIT_REFLECTION_AND_FACTORY(TYPE, RESERVE_INT, EXPAND_RATE) \
+    FACTORY_FUNC_IMPLEMENTATION(TYPE); \
+    static void RegisterFactory##TYPE(){ FACTORY_REGISTER_TYPE(TYPE, RESERVE_INT, EXPAND_RATE); }\
+    static NightEngine::Reflection::ReflectionInitFunctionsRegisterer<TYPE> g_registerer##TYPE{ RegisterFactory##TYPE }; \
 //************************************************************
 // Getter Macros
 //************************************************************

@@ -18,7 +18,7 @@ namespace NightEngine
   {
     namespace Components
     {
-      INIT_REFLECTION_FOR(Transform)
+      INIT_REFLECTION_AND_FACTORY(Transform, 2000, 1000)
 
       void Transform::OnAwake(void)
       {

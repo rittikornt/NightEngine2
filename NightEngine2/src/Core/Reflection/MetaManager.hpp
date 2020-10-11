@@ -123,6 +123,12 @@ namespace NightEngine
       {
         ReflectionInitFunctions::Add(&TYPE::ReflectionInit);
       }
+
+      ReflectionInitFunctionsRegisterer(ReflectionInitFunctions::ReflectionInitFn func)
+      {
+        ReflectionInitFunctions::Add(&TYPE::ReflectionInit);
+        ReflectionInitFunctions::Add(func);
+      }
     };
 
     /*!
@@ -142,7 +148,7 @@ namespace NightEngine
           , sizeof(TYPE), baseClass
           , serializeFn, deserializeFn, shouldSerialized);
 
-        ReflectionInitFunctions::Add(TYPE::ReflectionInit);
+        //ReflectionInitFunctions::Add(TYPE::ReflectionInit);
         return *this;
       }
 

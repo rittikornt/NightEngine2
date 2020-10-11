@@ -10,11 +10,13 @@
 #include "Core/Serialization/SerializeFunction.hpp"
 #include "Core/Serialization/ResourceManager.hpp"
 
+#include "Core/EC/Factory.hpp"
+
 using namespace NightEngine;
 
 namespace Rendering
 {
-  INIT_REFLECTION_FOR(Material)
+  INIT_REFLECTION_AND_FACTORY(Material, 100, 100)
 
   Material::Material(const Material& rhs)
   {

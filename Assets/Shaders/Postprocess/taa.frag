@@ -62,6 +62,7 @@ vec3 FastTonemapInvert(vec3 c)
 //https://software.intel.com/content/www/us/en/develop/documentation/ipp-dev-reference/top/volume-2-image-processing/image-color-conversion/color-models.html
 vec3 RGB_YCoCg(vec3 c)
 {
+    // YCoCg([0,1], [-0.5,0.5], [-0.5,0.5])
     // Y = R/4 + G/2 + B/4
     // Co = R/2 - B/2
     // Cg = -R/4 + G/2 - B/4
@@ -157,8 +158,7 @@ vec3 ClipToAABB2(vec3 q, vec3 aabb_min, vec3 aabb_max)
     vec3 dist = q - vec3(center);
     vec3 unitDir = abs(dist.xyz / extents);
     float maxAxisLength = max(unitDir.x, max(unitDir.y, unitDir.z));
-
-    return (maxAxisLength > 1.0)? (vec3(center) + dist / maxAxisLength) : q;
+    return (maxAxisLength > 1.0)? (center + dist / maxAxisLength) : q;
 }
 
 vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
@@ -212,14 +212,14 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     currColor = RGB_YCoCg(currColor);
 
     //Adjust min/max in RGB
-    vec3 corners = 4.0 * (botLeft + topRight) - 2.0 * currColor;
-    vec3 averageColor = ((corners.xyz + currColor.xyz) * 0.14285714285);
+    //vec3 corners = 4.0 * (botLeft + topRight) - 2.0 * currColor;
+    //vec3 averageColor = ((corners.xyz + currColor.xyz) * 0.14285714285);
     //vec3 averageColor =  (botLeft + botRight + topLeft + topRight + currColor) * 0.2;
 
     //R is the luminance in YCoCg
     float currColorLuma = currColor.r; //Luminance(currColor.xyz);
     float historyLuma = historyColor.r; //Luminance(historyColor.xyz);
-    float averageLuma = averageColor.r; //Luminance(averageColor.xyz);
+    //float averageLuma = averageColor.r; //Luminance(averageColor.xyz);
     vec3 minColor = min(topRight, botLeft);
     vec3 maxColor = max(botLeft, topRight);
     
@@ -228,7 +228,7 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     vec2 chroma_center = currColor.gb;
     minColor.yz = chroma_center - chroma_extent;
     maxColor.yz = chroma_center + chroma_extent;
-    averageColor.yz = chroma_center;
+    //averageColor.yz = chroma_center;
 
     //Clamp reprojected prev frame to current Neighborhood to reject false reprojection
     historyColor = ClipToAABB2(historyColor, minColor, maxColor);
@@ -249,7 +249,8 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     //Revert tonemapping back to HDR range
     if(u_beforeTonemapping)
     {
-        currColor = UNMAP(currColor);
+        //force [0, 0.999] range so it doesn't goes to infinity when UNMAP
+        currColor = UNMAP(currColor * 0.999);
     }
 
     currColor = clamp(currColor.xyz, 0.0, CLAMP_MAX);

@@ -45,6 +45,7 @@ uniform vec4	 u_diffuseColor = vec4(1.0f);
 //***************************************
 uniform bool        u_useNormalmap = false;
 uniform bool        u_useOpacityMap = false;
+const float			k_lodBias = -1;	//add more detail to compensate for taa
 
 void main()
 {
@@ -52,7 +53,7 @@ void main()
 
 	if(u_useOpacityMap)
 	{
-		float opacity = texture(u_material.m_opacityMap, uv).r;
+		float opacity = texture(u_material.m_opacityMap, uv, k_lodBias).r;
 		if(opacity < u_material.m_cutOffValue)
 		{
 			discard;
@@ -63,7 +64,7 @@ void main()
 	vec3 normal = fs_in.ourFragNormal;
 	if(u_useNormalmap)
 	{
-		normal = (texture(u_material.m_normalMap, uv).rgb);
+		normal = (texture(u_material.m_normalMap, uv, k_lodBias).rgb);
 
 		//Remap to range [-1,1]
 		normal = normalize(normal * 2.0 - 1.0);
@@ -75,11 +76,11 @@ void main()
 	}
 
 	//Roughness, Metallic
-	float roughness = texture(u_material.m_roughnessMap, uv).r
+	float roughness = texture(u_material.m_roughnessMap, uv, k_lodBias).r
 								* u_material.m_roughnessValue;
 	roughness = clamp(roughness, 0.01, 1.0);
 
-	float metallic = texture(u_material.m_metallicMap, uv).r
+	float metallic = texture(u_material.m_metallicMap, uv, k_lodBias).r
 								* u_material.m_metallicValue;
 
 	/////////////////////////////////////////////
@@ -89,7 +90,7 @@ void main()
 	o_gbuffer0.w = normal.x;
 
 	//(1) vec4(albedo.xyz, n.y)
-	o_gbuffer1.rgb = texture(u_material.m_diffuseMap, uv).rgb
+	o_gbuffer1.rgb = texture(u_material.m_diffuseMap, uv, k_lodBias).rgb
 								* u_diffuseColor.rgb;
 	o_gbuffer1.a = metallic;
 
@@ -99,7 +100,7 @@ void main()
 	o_gbuffer2.w = normal.y;
 
 	//(3) vec4(emissive.xyz, roughness.x)
-	o_gbuffer3.rgb = EncodeQuantization(texture(u_material.m_emissiveMap, uv).rgb
+	o_gbuffer3.rgb = EncodeQuantization(texture(u_material.m_emissiveMap, uv, k_lodBias).rgb
 								* u_material.m_emissiveStrength, 12);
 	o_gbuffer3.a = roughness;
 }

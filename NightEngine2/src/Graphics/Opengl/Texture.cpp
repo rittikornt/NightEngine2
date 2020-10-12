@@ -37,9 +37,9 @@ namespace Rendering
     switch (filterMode)
     {
     case Texture::FilterMode::TRILINEAR:
-      return Texture::FilterMode::NEAREST;
-    case Texture::FilterMode::TRINEAREST:
       return Texture::FilterMode::LINEAR;
+    case Texture::FilterMode::TRINEAREST:
+      return Texture::FilterMode::NEAREST;
     }
     return filterMode;
   }
@@ -261,6 +261,11 @@ namespace Rendering
       , static_cast<GLint>(filterMode));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER
       , static_cast<GLint>(GetMagFilterMode(filterMode)));
+
+    //Default max anisotropy setting
+    GLfloat value = 1.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
 
     CHECKGL_ERROR();
     texture.m_name = "GeneratedRT";

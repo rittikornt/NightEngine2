@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 out vec4 FragColor;
   
 in vec2 OurTexCoords;
@@ -6,12 +6,13 @@ in vec2 OurTexCoords;
 //***************************************
 // Uniforms
 //***************************************
-uniform sampler2D u_screenTexture;
-uniform sampler2D u_bloomTexture;
-uniform sampler2D u_ssaoTexture;
+layout(binding=0) uniform sampler2D u_screenTexture;
+layout(binding=1) uniform sampler2D u_bloomTexture;
+layout(binding=2) uniform sampler2D u_ssaoTexture;
 
 uniform float     u_exposure;
 uniform float     u_time;
+uniform bool      u_useSSAO = false;
 
 vec4 GammaCorrection(vec3 color, float gammaValue)
 {
@@ -59,7 +60,10 @@ void main()
     vec3 ssao = texture(u_ssaoTexture, OurTexCoords).rgb;
 
     //Multiply with ssao
-    screenColor *= ssao;
+    if(u_useSSAO)
+    {
+        screenColor *= ssao;
+    }
 
     //Addictive Blend
     screenColor += bloomColor;

@@ -26,9 +26,12 @@ namespace Rendering
       //Resources
       m_uberPostMaterial.InitShader("Utility/fullscreenTriangle.vert"
         , "Postprocess/uberpost.frag");
-
+      
       m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
         , "Utility/blitCopy.frag");
+
+      m_ssaoComposite.InitShader("Utility/fullscreenTriangle.vert"
+        , "Postprocess/ssao_composite.frag");
 
       //Postfx
       m_ppUtility.Init(width, height);
@@ -63,12 +66,38 @@ namespace Rendering
       Texture* screenTexture = context.screenTexture;
 
       //SSAO
+      bool shouldCompositeSSAOToSceneRT = false;// m_taaPP.m_enable&& m_taaPP.m_beforeTonemapping;
       if (m_ssaoPP.m_enable)
       {
         DebugMarker::PushDebugGroup("SSAO Pass");
         {
           m_ssaoPP.Apply(*screenVAO, *camera
             , *gbuffer, m_ppUtility);
+
+          //Turn off for now as this will overwrite the emissive
+          if (shouldCompositeSSAOToSceneRT)
+          {
+            //Combine ssao to scene texture
+            sceneFBO->Bind();
+            {
+              m_ssaoComposite.Bind(false);
+              {
+                Shader& shader = m_ssaoComposite.GetShader();
+                shader.SetUniform("u_screenTexture", 0);
+                shader.SetUniform("u_ssaoTexture", 1);
+
+                //PP Texture
+                {
+                  screenTexture->BindToTextureUnit(0);
+                  m_ssaoPP.m_ssaoTexture.BindToTextureUnit(1);
+                }
+
+                screenVAO->Draw();
+              }
+              m_ssaoComposite.Unbind();
+            }
+            sceneFBO->Unbind();
+          }
         }
         DebugMarker::PopDebugGroup();
       }
@@ -127,6 +156,7 @@ namespace Rendering
             shader.SetUniform("u_ssaoTexture", 2);
             shader.SetUniform("u_exposure", 1.0f);
             shader.SetUniform("u_time", time);
+            shader.SetUniform("u_useSSAO", !shouldCompositeSSAOToSceneRT);
 
             //PP Texture
             {

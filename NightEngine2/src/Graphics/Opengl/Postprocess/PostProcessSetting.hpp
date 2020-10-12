@@ -59,6 +59,7 @@ namespace Rendering
 
       Material            m_uberPostMaterial;
       Material            m_blitCopyMaterial;
+      Material            m_ssaoComposite;
 
       //PostProcess
       Postprocess::PostProcessUtility   m_ppUtility;

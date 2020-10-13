@@ -81,7 +81,6 @@ namespace NightEngine::Rendering::Opengl
           //Draw Loop by traversing Containers
           Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
 
-          //TODO: Do per object motion vector here too
           //Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
           //Draw Custom Pass
           Drawer::DrawDepthWithoutBind(shader, Drawer::DrawPass::OPAQUE_PASS);

@@ -102,7 +102,10 @@ namespace NightEngine::Rendering::Opengl
     glm::mat4& GetViewMatix(void);
 
     //! @brief Translate camera based on its world direction
-    void Move(glm::vec3 amount);
+    void TranslateLocal(glm::vec3 localAxes);
+
+    //! @brief Translate camera based on its world direction
+    void TranslateLocal(glm::vec3& pos, glm::vec3 localAxes);
 
     //! @brief Translate camera with absolute position
     void Translate(glm::vec3 pos);

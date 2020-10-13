@@ -12,6 +12,9 @@
 #include "Core/Logger.hpp"
 #include "Input/Input.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/compatibility.hpp>
+
 #define SCREEN_ASPECT_RATIO static_cast<float>((float)Window::GetWidth() / (float)Window::GetHeight())
 
 namespace NightEngine::Rendering::Opengl
@@ -227,11 +230,18 @@ namespace NightEngine::Rendering::Opengl
 
   //////////////////////////////////////////////////////////
 
-  void CameraObject::Move(glm::vec3 amount)
+  void CameraObject::TranslateLocal(glm::vec3 localAxes)
   {
-    m_position += amount.x * m_dirRight;
-    m_position += amount.y * m_dirUp;
-    m_position += amount.z * m_dirForward;
+    m_position += localAxes.x * m_dirRight;
+    m_position += localAxes.y * m_dirUp;
+    m_position += localAxes.z * m_dirForward;
+  }
+
+  void CameraObject::TranslateLocal(glm::vec3& pos, glm::vec3 localAxes)
+  {
+    pos += localAxes.x * m_dirRight;
+    pos += localAxes.y * m_dirUp;
+    pos += localAxes.z * m_dirForward;
   }
 
   void CameraObject::Translate(glm::vec3 pos)
@@ -313,48 +323,58 @@ namespace NightEngine::Rendering::Opengl
   void CameraObject::ProcessCameraInput(CameraObject& camera, float dt)
   {
     using namespace Input;
-    static float moveSpeed = 4.0f;
-    static const float walkSpeed = 4.0f;
-    static const float runSpeed = 10.0f;
+    static float moveSpeed = 10.0f;
+    static const float moveSpeedArr[] = {10.0f,30.0f,60.0f, 100.0f};
+    static int moveSpeedIndex = 0;
 
     static float mouseSpeed = 10.0f;
     static float rotateSpeed = 50.0f;
 
+    static glm::vec3 targetCameraPosition = DEFAULT_CAM_POS;
+
     if (Input::GetMouseHold(MouseKeyCode::MOUSE_BUTTON_RIGHT))
     {
+      //Move Speed Settings
+      if (Input::GetMouseDown(MouseKeyCode::MOUSE_BUTTON_MIDDLE))
+      {
+        moveSpeedIndex = (moveSpeedIndex + 1) % 4;
+      }
       if (Input::GetKeyHold(KeyCode::KEY_LEFT_SHIFT))
       {
-        moveSpeed = runSpeed;
+        moveSpeed = moveSpeedArr[moveSpeedIndex] * 2.0f;
       }
       else
       {
-        moveSpeed = walkSpeed;
+        moveSpeed = moveSpeedArr[moveSpeedIndex];
       }
+
+      //Movement
       if (Input::GetKeyHold(KeyCode::KEY_W))
       {
-        camera.Move(glm::vec3(0.0f, 0.0f, moveSpeed * dt));
+        camera.TranslateLocal(targetCameraPosition, glm::vec3(0.0f, 0.0f, moveSpeed * dt));
       }
       if (Input::GetKeyHold(KeyCode::KEY_S))
       {
-        camera.Move(glm::vec3(0.0f, 0.0f, -moveSpeed * dt));
+        camera.TranslateLocal(targetCameraPosition, glm::vec3(0.0f, 0.0f, -moveSpeed * dt));
       }
       if (Input::GetKeyHold(KeyCode::KEY_D))
       {
-        camera.Move(glm::vec3(moveSpeed * dt, 0.0f, 0.0f));
+        camera.TranslateLocal(targetCameraPosition, glm::vec3(moveSpeed * dt, 0.0f, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_A))
       {
-        camera.Move(glm::vec3(-moveSpeed * dt, 0.0f, 0.0f));
+        camera.TranslateLocal(targetCameraPosition, glm::vec3(-moveSpeed * dt, 0.0f, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_Q))
       {
-        camera.Move(glm::vec3(0.0f, -moveSpeed * dt, 0.0f));
+        camera.TranslateLocal(targetCameraPosition, glm::vec3(0.0f, -moveSpeed * dt, 0.0f));
       }
       if (Input::GetKeyHold(KeyCode::KEY_E))
       {
-        camera.Move(glm::vec3(0.0f, moveSpeed * dt, 0.0f));
+        camera.TranslateLocal(targetCameraPosition, glm::vec3(0.0f, moveSpeed * dt, 0.0f));
       }
 
+      //Rotation
       if (Input::GetKeyHold(KeyCode::KEY_LEFT))
       {
         camera.Rotate(glm::vec3(0.0f, -rotateSpeed * dt, 0.0f));
@@ -372,13 +392,20 @@ namespace NightEngine::Rendering::Opengl
         camera.Rotate(glm::vec3(-rotateSpeed * dt, 0.0f, 0.0f));
       }
 
+      //Update Rotation
       {
         glm::vec2 offset = Input::GetMouseOffset();
         float pitch = -offset.y * mouseSpeed * dt;
         float yaw = offset.x * mouseSpeed * dt;
-        camera.Rotate(glm::vec3(pitch
-          , yaw, 0.0f));
+        camera.Rotate(glm::vec3(pitch, yaw, 0.0f));
       }
+    }
+
+    //Update Smooth Position
+    {
+      const float k_smoothSpeed = 15.0f;
+      camera.m_position = glm::lerp(camera.m_position, targetCameraPosition, dt * k_smoothSpeed);
+      //Print("Pos: ", camera.m_position);
     }
   }
 

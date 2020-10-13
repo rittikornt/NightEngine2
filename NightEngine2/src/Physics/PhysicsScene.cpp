@@ -16,9 +16,11 @@
 
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Components/Transform.hpp"
+#include "Graphics/Opengl/CameraObject.hpp"
 
 using namespace NightEngine::EC::Components;
 using namespace NightEngine;
+using namespace NightEngine::Rendering::Opengl;
 
 namespace Physics
 {
@@ -211,7 +213,7 @@ namespace Physics
     m_world->debugDrawWorld();
   }
 
-  void PhysicsScene::DebugDraw(Rendering::CameraObject& cam)
+  void PhysicsScene::DebugDraw(CameraObject& cam)
   {
     if (m_debugDrawer == nullptr)
     {

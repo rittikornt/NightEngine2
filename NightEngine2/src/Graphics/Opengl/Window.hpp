@@ -8,7 +8,7 @@
 //Forward declaration
 struct GLFWwindow;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
 	namespace Window
 	{

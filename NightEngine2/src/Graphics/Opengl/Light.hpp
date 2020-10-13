@@ -12,7 +12,7 @@
 #include <glm/mat4x4.hpp>
 
 //TODO: maybe this class shouldn't be in Rendering namespace?
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   struct CameraObject;
 

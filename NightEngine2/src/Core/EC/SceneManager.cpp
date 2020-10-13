@@ -9,7 +9,7 @@
 
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/ComponentLogic.hpp"
-#include "Core/EC/Components/MeshRenderer.hpp"
+#include "Graphics/Opengl/MeshRenderer.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Graphics/Opengl/Light.hpp"
 
@@ -31,7 +31,7 @@
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
 
-using namespace Rendering;
+using namespace NightEngine::Rendering::Opengl;
 using namespace NightEngine::EC::Components;
 
 namespace NightEngine
@@ -175,7 +175,7 @@ namespace NightEngine
         //************************************************
         // Build InstanceDrawer
         //************************************************
-        Rendering::GPUInstancedDrawer::BuildAllDrawer();
+        NightEngine::Rendering::Opengl::GPUInstancedDrawer::BuildAllDrawer();
       }
 
       Handle<Scene> CreateEmptyScene(Container::String sceneName)
@@ -683,7 +683,7 @@ namespace NightEngine
         return found;
       }
 
-      Handle<Rendering::Material> GetDefaultMaterial(void)
+      Handle<NightEngine::Rendering::Opengl::Material> GetDefaultMaterial(void)
       {
         if (!g_defaultMaterial.IsValid())
         {
@@ -692,7 +692,7 @@ namespace NightEngine
         return g_defaultMaterial;
       }
 
-      Handle<Rendering::Material> GetBillBoardMaterial(void)
+      Handle<NightEngine::Rendering::Opengl::Material> GetBillBoardMaterial(void)
       {
         if (!g_billboardMaterial.IsValid())
         {
@@ -701,7 +701,7 @@ namespace NightEngine
         return g_billboardMaterial;
       }
 
-      Handle<Rendering::Material> GetErrorMaterial(void)
+      Handle<NightEngine::Rendering::Opengl::Material> GetErrorMaterial(void)
       {
         if (!g_errorMaterial.IsValid())
         {
@@ -712,11 +712,11 @@ namespace NightEngine
 
       /////////////////////////////////////////
 
-      Rendering::Postprocess::PostProcessSetting& GetPostProcessSetting(void)
+      NightEngine::Rendering::Opengl::Postprocess::PostProcessSetting& GetPostProcessSetting(void)
       {
         if (g_postProcessSetting == nullptr)
         {
-          g_postProcessSetting = new Rendering::Postprocess::PostProcessSetting();
+          g_postProcessSetting = new NightEngine::Rendering::Opengl::Postprocess::PostProcessSetting();
         }
 
         return *g_postProcessSetting;

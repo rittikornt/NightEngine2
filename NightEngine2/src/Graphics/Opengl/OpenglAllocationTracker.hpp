@@ -28,7 +28,7 @@
 #define REGISTER_DEALLOCATION_FUNC(TYPENAME, FUNC)	\
   static GLDeallocationFunctions TYPENAME##Registration{STR_INNER(TYPENAME),FUNC};\
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   using DeallcateFunc = void (*)(unsigned int);
   class Shader;

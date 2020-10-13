@@ -15,7 +15,7 @@
 #include "Core/EC/GameObject.hpp"
 
 using namespace NightEngine;
-using namespace Rendering;
+using namespace NightEngine::Rendering::Opengl;
 using namespace NightEngine::EC;
 
 namespace Editor

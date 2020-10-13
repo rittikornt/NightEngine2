@@ -15,7 +15,7 @@
 #include <vector>
 #include <unordered_map>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Model
   {
@@ -34,7 +34,7 @@ namespace Rendering
       inline std::vector<Mesh>& GetMeshes(void) { return m_meshes; }
 
       //! @brief Get loaded materials
-      inline std::vector<NightEngine::EC::Handle<Rendering::Material>>& GetMaterials(void) { return m_materials; }
+      inline std::vector<NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>& GetMaterials(void) { return m_materials; }
 
       //! @brief Check if some of the loaded materials is valid or not
       inline bool IsValidMaterials(void) { return m_validMaterialCount > 0; }
@@ -47,13 +47,13 @@ namespace Rendering
         , std::vector<Vertex>& vertices, std::vector<unsigned>& indices);
 
       bool AddMaterial(int index, const aiScene* scene
-        , std::unordered_map<int, NightEngine::EC::Handle<Rendering::Material>>& handleMap);
+        , std::unordered_map<int, NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>& handleMap);
 
       bool GetTextures(std::vector<std::string>& textures
         , aiMaterial* mat, aiTextureType type);
 
       std::vector<Mesh> m_meshes;
-      std::vector <NightEngine::EC::Handle<Rendering::Material>> m_materials;
+      std::vector <NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>> m_materials;
       unsigned              m_validMaterialCount = 0;
 
       std::string       m_directory;

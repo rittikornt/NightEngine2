@@ -6,7 +6,7 @@
 // Local Headers
 #include "Graphics/Opengl/Shader.hpp"
 #include "Graphics/Opengl/OpenglAllocationTracker.hpp"
-#include "Graphics/ShaderTracker.hpp"
+#include "Graphics/Opengl/ShaderTracker.hpp"
 
 #include "Core/Macros.hpp"
 #include "Core/Logger.hpp"
@@ -22,7 +22,7 @@
 using namespace NightEngine;
 #define SHADER_INVALID_UNIFORM_ERROR_LOG false
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseShaderID(GLuint shaderID)
   {

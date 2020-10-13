@@ -15,8 +15,8 @@
 
 using namespace NightEngine;
 using namespace NightEngine::EC::Components;
-using namespace Rendering;
-using namespace Rendering::PrimitiveShape;
+using namespace NightEngine::Rendering::Opengl;
+using namespace NightEngine::Rendering::Opengl::PrimitiveShape;
 
 namespace Physics
 {
@@ -83,7 +83,7 @@ namespace Physics
 
   }
 
-  void PhysicsDebugDrawer::Draw(Rendering::CameraObject& cam)
+  void PhysicsDebugDrawer::Draw(CameraObject& cam)
   {
     if (!m_enable)
     {

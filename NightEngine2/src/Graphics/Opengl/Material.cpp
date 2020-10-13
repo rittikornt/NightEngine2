@@ -14,7 +14,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   INIT_REFLECTION_AND_FACTORY(Material, 100, 100)
 

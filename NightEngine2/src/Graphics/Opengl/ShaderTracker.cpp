@@ -3,7 +3,7 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of OpenglAllocationTracker
 */
-#include "Graphics/ShaderTracker.hpp"
+#include "Graphics/Opengl/ShaderTracker.hpp"
 #include "Graphics/Opengl/Shader.hpp"
 
 #include "Core/Logger.hpp"
@@ -11,7 +11,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   // Store <ProgramID, Shader*>, so that we can recompile the Shader and assign the new ProgramID
   std::unordered_map<unsigned, std::unordered_set<Shader*>>& ShaderTracker::GetShaderMap()

@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   //! @brief Info for describing Attribute
   struct AttributePointerInfo

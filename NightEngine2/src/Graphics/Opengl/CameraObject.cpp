@@ -14,7 +14,7 @@
 
 #define SCREEN_ASPECT_RATIO static_cast<float>((float)Window::GetWidth() / (float)Window::GetHeight())
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   struct FrustumJitter
   {

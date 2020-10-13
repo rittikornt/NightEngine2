@@ -12,7 +12,7 @@
 #include "Graphics/Opengl/CameraObject.hpp"
 #include "Graphics/Opengl/RenderState.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace Prepass
   {

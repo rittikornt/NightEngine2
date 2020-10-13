@@ -10,7 +10,7 @@
 #include "Core/EC/Handle.hpp"
 #include "Core/EC/ComponentLogic.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Material;
 
@@ -104,15 +104,15 @@ namespace NightEngine
 
       bool GetLights(SceneLights& sceneLights);
 
-      Handle<Rendering::Material> GetDefaultMaterial(void);
+      Handle<NightEngine::Rendering::Opengl::Material> GetDefaultMaterial(void);
 
-      Handle<Rendering::Material> GetBillBoardMaterial(void);
+      Handle<NightEngine::Rendering::Opengl::Material> GetBillBoardMaterial(void);
 
-      Handle<Rendering::Material> GetErrorMaterial(void);
+      Handle<NightEngine::Rendering::Opengl::Material> GetErrorMaterial(void);
 
       /////////////////////////////////////////
 
-      Rendering::Postprocess::PostProcessSetting& GetPostProcessSetting(void);
+      NightEngine::Rendering::Opengl::Postprocess::PostProcessSetting& GetPostProcessSetting(void);
 
       void DeletePostProcessSetting(void);
     }

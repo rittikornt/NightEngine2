@@ -11,7 +11,7 @@
 #include "Core/EC/Handle.hpp"
 #include "Graphics/Opengl/Material.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Shader;
   class CameraObject;

@@ -26,7 +26,7 @@ JsonValue DefaultSerializer<TYPE>(Reflection::Variable& variable)
 template <> \
 void DefaultDeserializer<TYPE>(ValueObject& valueObject, Reflection::Variable& variable)
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Material;
 }
@@ -92,10 +92,10 @@ namespace NightEngine
     JsonValue DefaultSerializer<NightEngine::EC::GameObject&>(Reflection::Variable& variable);
 
     template <>
-    JsonValue DefaultSerializer<Rendering::Material&>(Reflection::Variable& variable);
+    JsonValue DefaultSerializer<NightEngine::Rendering::Opengl::Material&>(Reflection::Variable& variable);
     
     template <>
-    JsonValue DefaultSerializer<NightEngine::EC::Handle<Rendering::Material>>(Reflection::Variable& variable);
+    JsonValue DefaultSerializer<NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>(Reflection::Variable& variable);
 
 		//***********************************************************************
 		// Deserialize
@@ -157,9 +157,9 @@ namespace NightEngine
     void DefaultDeserializer<NightEngine::EC::GameObject&>(ValueObject& valueObject, Reflection::Variable& variable);
 
     template <>
-    void DefaultDeserializer<Rendering::Material&>(ValueObject& valueObject, Reflection::Variable& variable);
+    void DefaultDeserializer<NightEngine::Rendering::Opengl::Material&>(ValueObject& valueObject, Reflection::Variable& variable);
 
     template <>
-    void DefaultDeserializer<NightEngine::EC::Handle<Rendering::Material>>(ValueObject& valueObject, Reflection::Variable& variable);
+    void DefaultDeserializer<NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>(ValueObject& valueObject, Reflection::Variable& variable);
 	}
 }

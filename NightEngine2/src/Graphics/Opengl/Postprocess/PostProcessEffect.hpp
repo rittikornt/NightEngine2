@@ -8,7 +8,7 @@
 
 #define INIT_POSTPROCESSEFFECT() m_metaType = METATYPE_FROM_OBJECT(*this)
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace Postprocess
   {

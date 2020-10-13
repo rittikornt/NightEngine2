@@ -20,7 +20,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseTextureID(GLuint shaderID)
   {
@@ -148,7 +148,7 @@ namespace Rendering
   //*****************************************************
   // Static Method
   //*****************************************************
-  NightEngine::EC::Handle<Rendering::Texture> Texture::LoadTextureHandle(const std::string& filePath
+  NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Texture> Texture::LoadTextureHandle(const std::string& filePath
     , Format channel, FilterMode filterMode, WrapMode wrapMode, bool hdrImage)
   {
     auto handle = ResourceManager::LoadTextureResource(filePath

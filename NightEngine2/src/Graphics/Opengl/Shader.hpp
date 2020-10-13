@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
 	class Shader
 	{

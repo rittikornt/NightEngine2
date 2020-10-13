@@ -47,7 +47,8 @@
 
 using namespace NightEngine;
 using namespace NightEngine::Factory;
-using namespace Rendering;
+using namespace NightEngine::Rendering;
+using namespace NightEngine::Rendering::Opengl;
 using namespace NightEngine::EC;
 
 namespace Editor
@@ -519,7 +520,7 @@ namespace Editor
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
 
-    ImGui_ImplGlfw_InitForOpenGL(Rendering::Window::GetWindow(), true);
+    ImGui_ImplGlfw_InitForOpenGL(NightEngine::Rendering::Opengl::Window::GetWindow(), true);
     ImGui_ImplOpenGL3_Init();
 
     // Setup style
@@ -552,7 +553,7 @@ namespace Editor
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    glfwMakeContextCurrent(Rendering::Window::GetWindow());
+    glfwMakeContextCurrent(NightEngine::Rendering::Opengl::Window::GetWindow());
   }
 
   void Terminate(void)

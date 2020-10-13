@@ -16,7 +16,7 @@
 #define WORLD_UP (glm::vec3(0.0f, 1.0f, 0.0f))
 #define VEC3_ZERO (glm::vec3(0.0f, 0.0f, 0.0f))
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Shader;
   class Cubemap;

@@ -16,7 +16,7 @@
 using namespace NightEngine;
 using namespace NightEngine::EC;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   Model::Model(const std::string& path, bool allowPrint)
   {

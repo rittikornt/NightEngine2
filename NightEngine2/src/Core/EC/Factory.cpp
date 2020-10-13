@@ -15,7 +15,7 @@
 #include "Core/EC/Components/TestComponent.hpp"
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
-#include "Core/EC/Components/MeshRenderer.hpp"
+#include "Graphics/Opengl/MeshRenderer.hpp"
 
 #include "Graphics/Opengl/Material.hpp"
 #include "Graphics/Opengl/Texture.hpp"
@@ -24,7 +24,7 @@
 namespace NightEngine
 {
 	using namespace Container;
-  using namespace Rendering;
+  using namespace NightEngine::Rendering::Opengl;
 	using namespace EC;
   using namespace EC::Components;
 	namespace Factory

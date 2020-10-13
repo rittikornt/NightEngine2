@@ -13,7 +13,7 @@
 //"min" in std::min was override by Window Macros
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseVAOID(GLuint objID)
   {

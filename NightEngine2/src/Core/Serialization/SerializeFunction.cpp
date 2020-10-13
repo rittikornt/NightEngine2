@@ -48,7 +48,8 @@ using JsonValue = tao::json::value;
 using namespace NightEngine::EC;
 using namespace NightEngine::Reflection;
 
-using namespace Rendering;
+using namespace NightEngine::Rendering;
+using namespace NightEngine::Rendering::Opengl;
 
 namespace NightEngine
 {
@@ -169,11 +170,11 @@ namespace NightEngine
     }
 
     template<>
-    JsonValue DefaultSerializer<NightEngine::EC::Handle<Rendering::Material>>(Reflection::Variable& variable)
+    JsonValue DefaultSerializer<NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>(Reflection::Variable& variable)
     {
       ASSERT_TRUE(variable.GetMetaType() != nullptr);
       JsonValue value;
-      auto& matHandle = variable.GetValue<NightEngine::EC::Handle<Rendering::Material>>();
+      auto& matHandle = variable.GetValue<NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>();
 
       //File Path
       JsonValue filePathVal = matHandle->GetFilePath();
@@ -364,10 +365,10 @@ namespace NightEngine
     }
 
     template <>
-    void DefaultDeserializer<NightEngine::EC::Handle<Rendering::Material>>(ValueObject& valueObject
+    void DefaultDeserializer<NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>(ValueObject& valueObject
       , Reflection::Variable& variable)
     {
-      auto& matHandle = variable.GetValue<NightEngine::EC::Handle<Rendering::Material>>();
+      auto& matHandle = variable.GetValue<NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Material>>();
       auto& obj = valueObject.get_object();
 
       //File Path

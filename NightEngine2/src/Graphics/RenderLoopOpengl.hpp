@@ -33,9 +33,9 @@
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
 
-namespace Rendering
+namespace NightEngine::Rendering
 {
-  namespace Postprocess
+  namespace Opengl::Postprocess
   {
     class PostProcessSetting;
   }
@@ -55,11 +55,9 @@ namespace Rendering
   protected:
     void Render(void);
 
-    void DrawScene(void);
-
     void DrawDebugIcons(void);
 
-    void SetDeferredLightingPassUniforms(Material& material);
+    void SetDeferredLightingPassUniforms(Opengl::Material& material);
 
   public:
     float screenZoomScale = 1.0f;
@@ -76,47 +74,47 @@ namespace Rendering
 
   protected:
     //Uniform Buffer Object
-    UniformBufferObject m_uniformBufferObject;
+    Opengl::UniformBufferObject m_uniformBufferObject;
 
     //Depth FrameBuffer for Directional Shadow
-    FrameBufferObject   m_depthDirShadowFBO;
-    Texture             m_shadowMapDirShadowTexture;
-    Material            m_depthDirShadowMaterial;
+    Opengl::FrameBufferObject   m_depthDirShadowFBO;
+    Opengl::Texture             m_shadowMapDirShadowTexture;
+    Opengl::Material            m_depthDirShadowMaterial;
 
     //Depth FrameBuffer for Point Shadow
-    FrameBufferObject   m_depthPointShadowFBO[POINTLIGHT_AMOUNT];
-    Cubemap             m_shadowMapPointShadow[POINTLIGHT_AMOUNT];
-    Material            m_depthPointShadowMaterial;
+    Opengl::FrameBufferObject   m_depthPointShadowFBO[POINTLIGHT_AMOUNT];
+    Opengl::Cubemap             m_shadowMapPointShadow[POINTLIGHT_AMOUNT];
+    Opengl::Material            m_depthPointShadowMaterial;
 
     glm::vec2           m_initResolution{1.0f};
 
     //Scene FrameBuffer
-    FrameBufferObject   m_sceneFbo;
-    Texture             m_sceneTexture;
+    Opengl::FrameBufferObject   m_sceneFbo;
+    Opengl::Texture             m_sceneTexture;
 
     //Render Passes
-    DepthPrepass        m_depthPrepass;
-    GBuffer             m_gbuffer;
-    Rendering::Prepass::CameraMotionVector m_cameraMotionVector;
+    Opengl::DepthPrepass        m_depthPrepass;
+    Opengl::GBuffer             m_gbuffer;
+    NightEngine::Rendering::Opengl::Prepass::CameraMotionVector m_cameraMotionVector;
 
     //PostProcess
-    Rendering::Postprocess::PostProcessSetting* m_postProcessSetting;
+    NightEngine::Rendering::Opengl::Postprocess::PostProcessSetting* m_postProcessSetting;
 
     //FullScreen Postfx
-    VertexArrayObject                  m_screenTriangleVAO;
+    Opengl::VertexArrayObject                  m_screenTriangleVAO;
                                        
     //Cubemap IBL                      
-    IBL                                m_ibl;
+    Opengl::IBL                                m_ibl;
 
     //Material
-    NightEngine::EC::Handle<Material>  m_defaultMaterial;
-    Material                           m_lightingMaterial;
+    NightEngine::EC::Handle<Opengl::Material>  m_defaultMaterial;
+    Opengl::Material                           m_lightingMaterial;
 
-    Material                           m_debugViewMaterial;
+    Opengl::Material                           m_debugViewMaterial;
 
     //Light
-    NightEngine::EC::Handle<Material>  m_billboardMaterial;
-    Texture                            m_lightTexture;
+    NightEngine::EC::Handle<Opengl::Material>  m_billboardMaterial;
+    Opengl::Texture                            m_lightTexture;
   };
 } // Rendering
 

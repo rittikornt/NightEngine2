@@ -37,7 +37,7 @@
 #include "Core/EC/Components/TestComponent.hpp"
 #include "Core/EC/Components/Transform.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
-#include "Core/EC/Components/MeshRenderer.hpp"
+#include "Graphics/Opengl/MeshRenderer.hpp"
 #include "Physics/Collider.hpp"
 
 #include "Graphics/Opengl/Material.hpp"
@@ -70,7 +70,7 @@ namespace NightEngine
       REGISTER_METATYPE(std::string);
 
 			REGISTER_METATYPE_WITHNAME(std::vector<int>, "Vector<int>");
-			REGISTER_METATYPE_WITHNAME(std::vector<EC::Handle<Rendering::Material>>, "Vector<Handle<Material>>");
+			REGISTER_METATYPE_WITHNAME(std::vector<EC::Handle<NightEngine::Rendering::Opengl::Material>>, "Vector<Handle<Material>>");
 
       REGISTER_METATYPE_WITH_SERIALIZER(MetaType*, true
         , DefaultSerializer<int>, DefaultDeserializer<int>);
@@ -80,7 +80,7 @@ namespace NightEngine
       //***********************************************
       {
         using namespace glm;
-        using namespace Rendering;
+        using namespace NightEngine::Rendering;
         REGISTER_METATYPE(vec2);
         {
           ADD_MEMBER_PUBLIC(vec2, x);
@@ -126,7 +126,7 @@ namespace NightEngine
       //	Resources
       //***********************************************
       {
-        using namespace Rendering;
+        using namespace NightEngine::Rendering::Opengl;
         using namespace NightEngine::EC;
 
         REGISTER_METATYPE(Material*);
@@ -220,9 +220,9 @@ namespace NightEngine
       //***********************************************
       //	Rendering
       //***********************************************
-      using namespace Rendering;
+      using namespace NightEngine::Rendering::Opengl;
       {
-        using namespace Rendering::Postprocess;
+        using namespace NightEngine::Rendering::Opengl::Postprocess;
         REGISTER_METATYPE(PostProcessEffect);
         {
           ADD_MEMBER_PUBLIC(PostProcessEffect, m_metaType, false);

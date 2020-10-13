@@ -6,7 +6,7 @@
 #pragma once
 #include <vector>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   //Forward declaration
   class Texture;

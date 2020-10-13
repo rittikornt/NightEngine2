@@ -15,14 +15,14 @@
 #include "Graphics/Opengl/Model.hpp"
 #include "Graphics/Opengl/Light.hpp"
 #include "Graphics/Opengl/OpenglAllocationTracker.hpp"
-#include "Graphics/ShaderTracker.hpp"
+#include "Graphics/Opengl/ShaderTracker.hpp"
 
 #include "Graphics/Opengl/Postprocess/PostProcessSetting.hpp"
 #include "Graphics/Opengl/DebugMarker.hpp"
 #include "Graphics/Opengl/RenderState.hpp"
 
 //GameObject
-#include "Core/EC/Components/MeshRenderer.hpp"
+#include "Graphics/Opengl/MeshRenderer.hpp"
 #include "Core/EC/Components/Rigidbody.hpp"
 #include "Core/EC/Factory.hpp"
 #include "Core/EC/GameObject.hpp"
@@ -60,12 +60,11 @@ using namespace NightEngine::Factory;
 using namespace NightEngine::EC;
 using namespace NightEngine::EC::Components;
 
-using namespace Rendering::PrimitiveShape;
-using namespace Rendering::Postprocess;
+using namespace NightEngine::Rendering::Opengl::PrimitiveShape;
+using namespace NightEngine::Rendering::Opengl::Postprocess;
+using namespace NightEngine::Rendering::Opengl;
 
-//TODO: Remove bunch of nastiness away from this file
-// Got to start from properly serialize the Scene file (Save/Load)
-namespace Rendering
+namespace NightEngine::Rendering
 {
   const std::string   g_lightSpaceMatrices[]{
      "u_lightSpaceMatrices[0]","u_lightSpaceMatrices[1]"
@@ -73,7 +72,7 @@ namespace Rendering
     ,"u_lightSpaceMatrices[4]" ,"u_lightSpaceMatrices[5]" };
 
   //Camera
-  static CameraObject g_camera{ CameraObject::CameraType::PERSPECTIVE
+  static Opengl::CameraObject g_camera{ Opengl::CameraObject::CameraType::PERSPECTIVE
     ,100.0f };
 
   static SceneLights g_sceneLights;
@@ -146,7 +145,7 @@ namespace Rendering
   //*********************************************
   void RenderLoopOpengl::Initialize(void)
   {
-    Debug::Log << "Rendering::Initialize\n";
+    Debug::Log << "NightEngine::Rendering::Initialize\n";
 
     //************************************************
     // Opengl Setting
@@ -294,7 +293,7 @@ namespace Rendering
 
   void RenderLoopOpengl::Terminate(void)
   {
-    Debug::Log << "Rendering::Terminate\n";
+    Debug::Log << "NightEngine::Rendering::Terminate\n";
 
     g_sceneLights.Clear();
 
@@ -338,7 +337,7 @@ namespace Rendering
     g_time += dt;
     g_time = fmodf(g_time, FLT_MAX);
 
-    CameraObject::ProcessCameraInput(g_camera, dt);
+    Opengl::CameraObject::ProcessCameraInput(g_camera, dt);
 
     //Update the new Projection Matrix
     g_camera.m_bJitterProjectionMatrix = m_postProcessSetting->m_taaPP.m_enable;
@@ -709,7 +708,7 @@ namespace Rendering
     DebugMarker::PopDebugGroup();
   }
 
-  void RenderLoopOpengl::SetDeferredLightingPassUniforms(Material& material)
+  void RenderLoopOpengl::SetDeferredLightingPassUniforms(Opengl::Material& material)
   {
     material.Bind(false);
     {

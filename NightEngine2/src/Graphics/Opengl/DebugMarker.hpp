@@ -5,7 +5,7 @@
 */
 #pragma once
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace DebugMarker
   {

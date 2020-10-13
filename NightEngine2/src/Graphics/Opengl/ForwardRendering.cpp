@@ -55,10 +55,10 @@
 //using namespace NightEngine;
 //using namespace NightEngine::EC;
 //using namespace NightEngine::EC::Components;
-//using namespace Rendering::PrimitiveShape;
+//using namespace NightEngine::Rendering::Opengl::PrimitiveShape;
 //using namespace NightEngine::Factory;
 //
-//namespace Rendering
+//namespace NightEngine::Rendering::Opengl
 //{
 //  //Uniform Buffer Object
 //  UniformBufferObject g_ubo;

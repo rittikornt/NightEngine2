@@ -22,7 +22,7 @@
 
 namespace NightEngine
 {
-  using namespace Rendering;
+  using namespace NightEngine::Rendering::Opengl;
   using namespace Container;
 
   template<typename T>
@@ -38,12 +38,12 @@ namespace NightEngine
       << " ResourceManager:ClearAllData()\n";
 
     //TODO: CLear things
-    auto& hashmap = GetContainer<EC::Handle<Rendering::Material>>();
+    auto& hashmap = GetContainer<EC::Handle<NightEngine::Rendering::Opengl::Material>>();
     hashmap.clear();
     auto& container1 = Factory::GetTypeContainer<Material>();
     container1.Clear();
 
-    auto& hashmap2 = GetContainer<EC::Handle<Rendering::Texture>>();
+    auto& hashmap2 = GetContainer<EC::Handle<NightEngine::Rendering::Opengl::Texture>>();
     hashmap2.clear();
     auto& container2 = Factory::GetTypeContainer<Texture>();
     container2.Clear();
@@ -52,9 +52,9 @@ namespace NightEngine
     hashmap3.clear();
   }
 
-  EC::Handle<Rendering::Material> ResourceManager::LoadMaterialResource(const Container::String& fileName)
+  EC::Handle<Material> ResourceManager::LoadMaterialResource(const Container::String& fileName)
   {
-    Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetContainer< EC::Handle<Rendering::Material>>();
+    Container::Hashmap<U64, EC::Handle<Material>>& hashmap = GetContainer< EC::Handle<Material>>();
 
     //Generate unique key for each Material File
     Container::String newKeyStr{ fileName };
@@ -70,7 +70,7 @@ namespace NightEngine
     }
 
     //Generate new Material
-    EC::Handle<Rendering::Material> newHandle = Factory::Create<Material>("Material");
+    EC::Handle<Material> newHandle = Factory::Create<Material>("Material");
     hashmap.insert({ key, newHandle });
 
     //Deserialize the material file
@@ -92,7 +92,7 @@ namespace NightEngine
 
   void ResourceManager::RefreshMaterialTextureUniforms()
   {
-    /*Container::Hashmap<U64, EC::Handle<Rendering::Material>>& hashmap = GetContainer< EC::Handle<Rendering::Material>>();
+    /*Container::Hashmap<U64, EC::Handle<NightEngine::Rendering::Opengl::Material>>& hashmap = GetContainer< EC::Handle<Rendering::Material>>();
     for (auto& pair : hashmap)
     {
       pair.second.Get()->RefreshTextureUniforms();
@@ -110,14 +110,14 @@ namespace NightEngine
 
   /////////////////////////////////////////////////////////////////////////////
 
-  static EC::Handle<Rendering::Texture>  g_blackTexture;
-  static EC::Handle<Rendering::Texture>  g_whiteTexture;
+  static EC::Handle<NightEngine::Rendering::Opengl::Texture>  g_blackTexture;
+  static EC::Handle<NightEngine::Rendering::Opengl::Texture>  g_whiteTexture;
 
-  EC::Handle<Rendering::Texture> ResourceManager::LoadTextureResource(const Container::String& filePath
+  EC::Handle<NightEngine::Rendering::Opengl::Texture> ResourceManager::LoadTextureResource(const Container::String& filePath
     , Texture::Format channel, Texture::FilterMode filterMode
     , Texture::WrapMode wrapMode, bool hdrImage)
   {
-    Container::Hashmap<U64, EC::Handle<Rendering::Texture>>& hashmap = GetContainer<EC::Handle<Rendering::Texture>>();
+    Container::Hashmap<U64, EC::Handle<NightEngine::Rendering::Opengl::Texture>>& hashmap = GetContainer<EC::Handle<Rendering::Opengl::Texture>>();
 
     //Generate unique key for each Texture Setting
     Container::String newKeyStr{ filePath };
@@ -135,7 +135,7 @@ namespace NightEngine
     }
 
     //Generate new Texture
-    EC::Handle<Rendering::Texture> newHandle = Factory::Create<Texture>("Texture");
+    EC::Handle<NightEngine::Rendering::Opengl::Texture> newHandle = Factory::Create<Texture>("Texture");
     if (hdrImage)
     {
       *(newHandle.Get()) = Texture::LoadHDRTexture(filePath
@@ -151,7 +151,7 @@ namespace NightEngine
     return newHandle;
   }
 
-  EC::Handle<Rendering::Texture> ResourceManager::GetBlackTexture(void)
+  EC::Handle<NightEngine::Rendering::Opengl::Texture> ResourceManager::GetBlackTexture(void)
   {
     if (!g_blackTexture.IsValid())
     {
@@ -161,7 +161,7 @@ namespace NightEngine
     return g_blackTexture;
   }
 
-  EC::Handle<Rendering::Texture> ResourceManager::GetWhiteTexture(void)
+  EC::Handle<NightEngine::Rendering::Opengl::Texture> ResourceManager::GetWhiteTexture(void)
   {
     if (!g_whiteTexture.IsValid())
     {
@@ -173,7 +173,7 @@ namespace NightEngine
 
   /////////////////////////////////////////////////////////////////
 
-  Rendering::Model* ResourceManager::LoadModelResource(const Container::String& filePath)
+  NightEngine::Rendering::Opengl::Model* ResourceManager::LoadModelResource(const Container::String& filePath)
   {
     Container::Hashmap<U64, Model>& hashmap = GetContainer<Model>();
 

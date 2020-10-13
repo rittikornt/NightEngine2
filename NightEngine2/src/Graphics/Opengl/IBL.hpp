@@ -12,7 +12,7 @@
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 #include "Graphics/Opengl/Cubemap.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   struct CameraObject;
 

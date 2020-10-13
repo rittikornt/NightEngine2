@@ -14,7 +14,7 @@
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Core/EC/Handle.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class FrameBufferObject;
 
@@ -177,7 +177,7 @@ namespace Rendering
     // Static Method
     //*****************************************************
     //! @brief Constructor to load from path
-    static NightEngine::EC::Handle<Rendering::Texture> LoadTextureHandle(const std::string& filePath, Format channel = Format::RGB
+    static NightEngine::EC::Handle<NightEngine::Rendering::Opengl::Texture> LoadTextureHandle(const std::string& filePath, Format channel = Format::RGB
       , FilterMode filterMode = FilterMode::LINEAR
       , WrapMode wrapMode = WrapMode::REPEAT
       , bool hdrImage = false);

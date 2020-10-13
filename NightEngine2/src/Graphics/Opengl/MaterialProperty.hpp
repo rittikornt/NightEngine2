@@ -47,7 +47,7 @@ namespace NightEngine
   }
 }
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Shader;
   class Material;

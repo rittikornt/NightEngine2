@@ -27,7 +27,7 @@
 #include "Graphics/RenderLoopOpengl.hpp"
 #include "Graphics/Opengl/OpenglAllocationTracker.hpp"
 #include "Graphics/Opengl/Window.hpp"
-#include "Graphics/ShaderTracker.hpp"
+#include "Graphics/Opengl/ShaderTracker.hpp"
 
 #include "Graphics/RenderDoc/RenderDocManager.hpp"
 
@@ -35,7 +35,8 @@ using namespace NightEngine;
 using namespace NightEngine::Container;
 using namespace NightEngine::EC;
 
-using namespace Rendering;
+using namespace NightEngine::Rendering;
+using namespace NightEngine::Rendering::Opengl;
 using namespace Physics;
 
 namespace NightEngine

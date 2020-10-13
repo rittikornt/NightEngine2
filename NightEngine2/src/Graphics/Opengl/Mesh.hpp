@@ -11,7 +11,7 @@
 #include "Graphics/Opengl/Texture.hpp"
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Mesh
   {

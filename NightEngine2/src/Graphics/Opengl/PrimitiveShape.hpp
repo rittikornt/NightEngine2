@@ -7,7 +7,7 @@
 
 #include "Graphics/Opengl/Vertex.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   //! @brief Namespace for containing pre-defined vertices,indices
   namespace PrimitiveShape

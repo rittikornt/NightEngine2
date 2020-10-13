@@ -18,7 +18,7 @@
 #define TEXTURE_TABLE(TYPE) std::unordered_map<int, TYPE>
 #define PROPERTY_TABLE(TYPE) std::map<std::string, TYPE>  //use std::map for tao::json native serialization support
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Material
   {

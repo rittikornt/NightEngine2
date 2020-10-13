@@ -28,7 +28,7 @@ namespace NightEngine
   }
 }
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Material;
 
@@ -61,7 +61,7 @@ namespace Rendering
 
     //! @brief Draw all registered mesh without binding
     void Draw(DrawPass drawPass = DrawPass::BATCH
-      , Rendering::ShaderUniformsFn fn = nullptr);
+      , NightEngine::Rendering::Opengl::ShaderUniformsFn fn = nullptr);
 
     //! @brief Draw pass for Shadow
     void DrawShadowWithoutBind(Shader& shader

@@ -10,9 +10,10 @@
 #include "Core/EC/Handle.hpp"
 
 //Forward Declaration
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Model;
+  class Material;
 }
 
 namespace NightEngine
@@ -24,7 +25,7 @@ namespace NightEngine
     static void ClearAllData(void);
 
     //! @brief Static Function for Load and Cache Material File
-    static EC::Handle<Rendering::Material> LoadMaterialResource(const Container::String& fileName);
+    static EC::Handle<NightEngine::Rendering::Opengl::Material> LoadMaterialResource(const Container::String& fileName);
 
     //! @brief Static Function refreshing material texture binding unit
     static void RefreshMaterialTextureUniforms();
@@ -32,19 +33,19 @@ namespace NightEngine
     ////////////////////////////////////////////////////////////////
     
     //! @brief Static Function for Load and Cache Texture
-    static EC::Handle<Rendering::Texture> LoadTextureResource(const Container::String& filePath
-      , Rendering::Texture::Format channel = Rendering::Texture::Format::RGB
-      , Rendering::Texture::FilterMode filterMode = Rendering::Texture::FilterMode::LINEAR
-      , Rendering::Texture::WrapMode wrapMode = Rendering::Texture::WrapMode::REPEAT
+    static EC::Handle<NightEngine::Rendering::Opengl::Texture> LoadTextureResource(const Container::String& filePath
+      , NightEngine::Rendering::Opengl::Texture::Format channel = NightEngine::Rendering::Opengl::Texture::Format::RGB
+      , NightEngine::Rendering::Opengl::Texture::FilterMode filterMode = NightEngine::Rendering::Opengl::Texture::FilterMode::LINEAR
+      , NightEngine::Rendering::Opengl::Texture::WrapMode wrapMode = NightEngine::Rendering::Opengl::Texture::WrapMode::REPEAT
       , bool hdrImage = false);
 
-    static EC::Handle<Rendering::Texture>  GetBlackTexture(void);
+    static EC::Handle<NightEngine::Rendering::Opengl::Texture>  GetBlackTexture(void);
 
-    static EC::Handle<Rendering::Texture>  GetWhiteTexture(void);
+    static EC::Handle<NightEngine::Rendering::Opengl::Texture>  GetWhiteTexture(void);
     ////////////////////////////////////////////////////////////////
 
     //! @brief Static Function for Load and Cache Model
-    static Rendering::Model* LoadModelResource(const Container::String& filePath);
+    static NightEngine::Rendering::Opengl::Model* LoadModelResource(const Container::String& filePath);
     
     static void PreloadModelsResourceAsync(const Container::Vector<Container::String>& filePaths);
   };

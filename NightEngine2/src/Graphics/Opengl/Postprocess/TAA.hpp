@@ -12,7 +12,7 @@
 #include "Graphics/Opengl/FrameBufferObject.hpp"
 #include <glm/vec2.hpp>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class FrameBufferObject;
   class VertexArrayObject;

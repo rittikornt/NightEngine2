@@ -17,7 +17,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering
 {
   namespace RenderDocManager
   {

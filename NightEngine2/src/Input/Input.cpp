@@ -14,7 +14,7 @@
 
 using namespace std;
 using namespace NightEngine;
-using namespace Rendering;
+using namespace NightEngine::Rendering::Opengl;
 
 #define EPILSON 0.08f
 #define JOYSTICK_MAX 4
@@ -153,7 +153,7 @@ namespace Input
 		//Check previous and current state
 		int key = static_cast<int>(keyCode);
 		KeyState previousState = g_keyStateMap[keyCode];
-		bool press = Rendering::Window::GetKeyboardInput(key) == GLFW_PRESS;
+		bool press = Window::GetKeyboardInput(key) == GLFW_PRESS;
 
 		//Result Key State
 		KeyState state = KeyState::KEY_NONE;
@@ -185,7 +185,7 @@ namespace Input
 		//Check previous and current state
 		int key = static_cast<int>(keyCode);
 		KeyState previousState = g_mouseStateMap[keyCode];
-		bool press = Rendering::Window::GetMouseInput(key) == GLFW_PRESS;
+		bool press = Window::GetMouseInput(key) == GLFW_PRESS;
 
 		//Result Key State
 		KeyState state = KeyState::KEY_NONE;

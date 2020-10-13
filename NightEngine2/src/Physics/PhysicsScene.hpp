@@ -33,7 +33,7 @@ namespace NightEngine
 }
 
 //Forward Declaration
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   struct CameraObject;
 }
@@ -73,7 +73,7 @@ namespace Physics
       void Update(float dt);
 
       //! brief Draw the Debug Colliders
-      void DebugDraw(Rendering::CameraObject& cam);
+      void DebugDraw(NightEngine::Rendering::Opengl::CameraObject& cam);
 
       //! brief Destructor
       ~PhysicsScene(void);

@@ -7,7 +7,7 @@
 #include "Graphics/Opengl/FrameBufferObject.hpp"
 #include "Graphics/Opengl/Material.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Texture;
   class GBuffer;

@@ -5,7 +5,7 @@
 */
 #include "Graphics/IRenderLoop.hpp";
 
-namespace Rendering
+namespace NightEngine::Rendering
 {
   const ShadowsResolution k_shadowResEnum[4] = { ShadowsResolution::_512
     , ShadowsResolution::_1024, ShadowsResolution::_2048

@@ -9,7 +9,7 @@
 
 #include "Core/Macros.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseEBOID(GLuint shaderID)
   {

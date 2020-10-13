@@ -23,7 +23,7 @@ using namespace NightEngine::IMGUI;
 #define IF_EXIST(TABLE, PROPERTY) \
         (TABLE.find(PROPERTY) != TABLE.end())
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   const char* MP_PBRMetallic::k_textureNames[6] =
   { "DiffuseMap" , "NormalMap", "RoughnessMap", "MetallicMap", "EmissiveMap", "OpacityMap" };

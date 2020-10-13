@@ -2,7 +2,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace Rendering
+namespace NightEngine::Rendering
 {
   struct Color3
   {

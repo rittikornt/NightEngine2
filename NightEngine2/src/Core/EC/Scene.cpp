@@ -7,7 +7,7 @@
 
 #include "Core/EC/SceneManager.hpp"
 #include "Core/EC/ComponentLogic.hpp"
-#include "Core/EC/Components/MeshRenderer.hpp"
+#include "Graphics/Opengl/MeshRenderer.hpp"
 #include "Graphics/Opengl/Light.hpp"
 
 #include "Core/Reflection/ReflectionMacros.hpp"
@@ -17,7 +17,7 @@
 
 #include "Graphics/Opengl/InstanceDrawer.hpp"
 
-using namespace Rendering;
+using namespace NightEngine::Rendering;
 using namespace NightEngine::EC;
 using namespace NightEngine::EC::Components;
 

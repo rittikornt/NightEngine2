@@ -10,7 +10,7 @@
 #include "Graphics/Opengl/RenderPass/GBuffer.hpp"
 #include "Graphics/Opengl/CameraObject.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace Postprocess
   {

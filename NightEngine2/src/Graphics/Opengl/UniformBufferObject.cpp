@@ -11,7 +11,7 @@
 
 #include <glad/glad.h>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseShaderID(GLuint shaderID)
   {

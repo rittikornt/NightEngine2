@@ -7,7 +7,7 @@
 #include "Graphics/Opengl/RenderState.hpp"
 #include <glad/glad.h>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace RenderSetup
   {

@@ -8,7 +8,7 @@
 
 #include "Graphics/Opengl/Postprocess/PostProcessUtility.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace Postprocess
   {

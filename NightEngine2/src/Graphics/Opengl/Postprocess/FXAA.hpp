@@ -11,7 +11,7 @@
 #include "Core/Reflection/ReflectionMacros.hpp"
 #include "Graphics/Opengl/Postprocess/PostProcessEffect.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class FrameBufferObject;
   class VertexArrayObject;

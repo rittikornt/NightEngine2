@@ -21,7 +21,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   void GBuffer::Init(int width, int height)
   {

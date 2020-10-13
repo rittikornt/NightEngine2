@@ -10,7 +10,7 @@
 #include "Graphics/Opengl/Shader.hpp"
 
 #include "Core/Macros.hpp"
-#include "Core/EC/Components/MeshRenderer.hpp"
+#include "Graphics/Opengl/MeshRenderer.hpp"
 #include "Core/Utility/Utility.hpp"
 
 #include "Core/EC/Factory.hpp"
@@ -20,7 +20,7 @@ using namespace NightEngine;
 using namespace NightEngine::Container;
 using namespace NightEngine::EC::Components;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace Drawer
   {

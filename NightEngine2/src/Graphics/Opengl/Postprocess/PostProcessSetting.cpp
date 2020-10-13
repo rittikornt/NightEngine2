@@ -15,7 +15,7 @@
 #include "Graphics/Opengl/DebugMarker.hpp"
 #include "Graphics/Opengl/Material.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace Postprocess
   {

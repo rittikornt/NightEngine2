@@ -7,7 +7,7 @@
 #pragma once
 #include <cstddef>  //std::size_t for gcc
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class UniformBufferObject
   {

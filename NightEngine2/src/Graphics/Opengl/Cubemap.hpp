@@ -11,7 +11,7 @@
 #include "Graphics/Opengl/Texture.hpp"
 #include <vector>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Cubemap
   {

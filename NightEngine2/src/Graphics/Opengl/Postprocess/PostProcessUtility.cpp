@@ -6,7 +6,7 @@
 #include "Graphics/Opengl/Postprocess/PostProcessUtility.hpp"
 #include "Graphics/Opengl/VertexArrayObject.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace Postprocess
   {

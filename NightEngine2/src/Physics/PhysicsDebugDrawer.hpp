@@ -12,7 +12,7 @@
 #include <vector>
 
 //Forward Declaration
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   struct CameraObject;
 }
@@ -50,7 +50,7 @@ namespace Physics
 	   virtual int    getDebugMode(void) const { return m_debugMode; }
 	
      //!brief Debug Draw Loop
-     void           Draw(Rendering::CameraObject& cam);
+     void           Draw(NightEngine::Rendering::Opengl::CameraObject& cam);
 
      /////////////////////////////////////////
 
@@ -80,8 +80,8 @@ namespace Physics
 	   int                        m_debugMode;
      bool                       m_enable;
 	
-     Rendering::Shader            m_shader;
-     Rendering::VertexArrayObject m_vao;
+     NightEngine::Rendering::Opengl::Shader            m_shader;
+     NightEngine::Rendering::Opengl::VertexArrayObject m_vao;
      std::vector<Line>          m_lines;
 	};
 }

@@ -22,7 +22,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   void DepthPrepass::Init(int width, int height, GBuffer& gbuffer)
   {

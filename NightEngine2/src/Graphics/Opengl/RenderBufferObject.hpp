@@ -6,7 +6,7 @@
 #pragma once
 #include <glad/glad.h>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   //Forward declaration
   class Texture;

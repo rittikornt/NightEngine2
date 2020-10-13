@@ -7,7 +7,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class Shader;
 

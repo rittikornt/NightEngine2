@@ -11,7 +11,7 @@
 //Engine defines
 #include "EngineConfigs.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   namespace DebugMarker
   {

@@ -5,7 +5,7 @@
 */
 #pragma once
 
-namespace Rendering
+namespace NightEngine::Rendering
 {
   enum class DebugView;
   enum class DebugShadowView;
@@ -39,7 +39,7 @@ namespace NightEngine
 
     static Engine* GetInstance(){ return s_instance; }
 
-    Rendering::IRenderLoop* GetRenderLoop(void) { return m_renderloop; }
+    NightEngine::Rendering::IRenderLoop* GetRenderLoop(void) { return m_renderloop; }
 
   private:
     void FixedUpdate(float dt);
@@ -55,7 +55,7 @@ namespace NightEngine
     bool m_shouldAttachRenderDoc = false;
 
     GameTime*   m_gameTime = nullptr;
-    Rendering::IRenderLoop*   m_renderloop = nullptr;
+    NightEngine::Rendering::IRenderLoop*   m_renderloop = nullptr;
   };
 
 } // namespace NightEngine

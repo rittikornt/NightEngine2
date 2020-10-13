@@ -27,7 +27,8 @@
 
 using namespace NightEngine::EC;
 using namespace NightEngine;
-using namespace Rendering;
+using namespace NightEngine::Rendering;
+using namespace NightEngine::Rendering::Opengl;
 
 namespace NightEngine
 {
@@ -105,7 +106,7 @@ namespace Editor
     g_dirty = true;
   }
 
-  static bool DrawTextureComboBox(const char* text, Handle<Rendering::Texture>* handle, Texture::Format channel)
+  static bool DrawTextureComboBox(const char* text, Handle<NightEngine::Rendering::Opengl::Texture>* handle, Texture::Format channel)
   {
     const char* k_none = "None";
     static int s_currentItem = 0;
@@ -176,7 +177,7 @@ namespace Editor
     return changed;
   }
 
-  static bool DrawMaterialComboBox(const char* text, Handle<Rendering::Material>* handle)
+  static bool DrawMaterialComboBox(const char* text, Handle<NightEngine::Rendering::Opengl::Material>* handle)
   {
     static std::vector <std::string> s_items;
     static std::vector <const char*> s_itemsPtr;
@@ -228,7 +229,7 @@ namespace Editor
       //<None>
       if (currentIndex == 0)
       {
-        *(handle) = Handle<Rendering::Material>();
+        *(handle) = Handle<NightEngine::Rendering::Opengl::Material>();
         Debug::Log << "Selected Material: <None>\n";
       }
       //Valid Material

@@ -10,7 +10,7 @@
 
 #include "Core/Macros.hpp"
 
-using namespace Rendering;
+using namespace NightEngine::Rendering::Opengl;
 
 namespace Editor
 {

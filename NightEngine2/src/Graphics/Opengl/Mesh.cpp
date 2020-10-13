@@ -6,7 +6,7 @@
 
 #include "Graphics/Opengl/Mesh.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   Mesh::Mesh(const std::vector<Vertex>& vertices
     , const std::vector<unsigned>& indices, bool buildNow)

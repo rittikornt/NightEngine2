@@ -12,7 +12,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static std::unordered_map<std::string, std::unordered_set<unsigned int>> s_allocationTracker;
 

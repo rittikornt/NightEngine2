@@ -12,7 +12,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class VertexArrayObject;
 

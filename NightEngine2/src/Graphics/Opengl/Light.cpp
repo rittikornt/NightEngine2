@@ -13,7 +13,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   INIT_REFLECTION_AND_FACTORY(Light, 10, 10)
 

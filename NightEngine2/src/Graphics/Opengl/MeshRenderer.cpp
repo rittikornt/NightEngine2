@@ -3,7 +3,7 @@
   @author Rittikorn Tangtrongchit
   @brief Contain the Implementation of MeshRenderer
 */
-#include "Core/EC/Components/MeshRenderer.hpp"
+#include "Graphics/Opengl/MeshRenderer.hpp"
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/SceneManager.hpp"
 
@@ -15,7 +15,7 @@
 
 #include "Core/Serialization/ResourceManager.hpp"
 
-using namespace Rendering;
+using namespace NightEngine::Rendering::Opengl;
 
 namespace NightEngine
 {
@@ -25,7 +25,7 @@ namespace NightEngine
     {
       INIT_REFLECTION_AND_FACTORY(MeshRenderer, 2000, 1000)
 
-        void MeshRenderer::InitMesh(const std::vector<Rendering::Vertex>& vertices
+        void MeshRenderer::InitMesh(const std::vector<NightEngine::Rendering::Opengl::Vertex>& vertices
           , const std::vector<unsigned>& indices
           , bool castShadow, bool buildNow)
       {
@@ -247,7 +247,7 @@ namespace NightEngine
         }
       }
 
-      void MeshRenderer::DrawWithoutBind(bool useTexture, Rendering::Shader& shader)
+      void MeshRenderer::DrawWithoutBind(bool useTexture, NightEngine::Rendering::Opengl::Shader& shader)
       {
         //SetUniform Modelmatrix
         auto t = m_gameObject->GetTransform();
@@ -258,7 +258,7 @@ namespace NightEngine
         DrawMeshes();
       }
 
-      void MeshRenderer::DrawWithoutBindDepthPass(bool useTexture, Rendering::Shader& shader)
+      void MeshRenderer::DrawWithoutBindDepthPass(bool useTexture, NightEngine::Rendering::Opengl::Shader& shader)
       {
         //SetUniform Modelmatrix
         auto t = m_gameObject->GetTransform();
@@ -296,7 +296,7 @@ namespace NightEngine
         }
       }
 
-      void MeshRenderer::DrawWithMode(bool useTexture, Rendering::Shader& shader)
+      void MeshRenderer::DrawWithMode(bool useTexture, NightEngine::Rendering::Opengl::Shader& shader)
       {
         ASSERT_TRUE(m_drawMode != DrawMode::UNINITIALIZED);
 

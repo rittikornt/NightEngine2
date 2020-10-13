@@ -9,10 +9,10 @@
 #include "Core/Serialization/FileSystem.hpp"
 #include "Graphics/Opengl/CameraObject.hpp"
 
-using namespace Rendering::PrimitiveShape;
+using namespace NightEngine::Rendering::Opengl::PrimitiveShape;
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   //******************************************
   // Capture Projection, View Matrices

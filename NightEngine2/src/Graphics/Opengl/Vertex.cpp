@@ -6,7 +6,7 @@
 #include "Graphics/Opengl/Vertex.hpp"
 #include <glm/mat4x4.hpp>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   const AttributePointerInfo Vertex::s_attributePointerInfo
     = { 5

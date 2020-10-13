@@ -10,7 +10,7 @@
 #include "Graphics/Opengl/Vertex.hpp"
 #include "Core/Macros.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseVBOID(GLuint shaderID)
   {

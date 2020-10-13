@@ -22,7 +22,7 @@
 
 #include "Core/Reflection/ReflectionMacros.hpp"
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   class VertexArrayObject;
   class FrameBufferObject;

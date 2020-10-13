@@ -26,8 +26,9 @@
 
 using namespace NightEngine;
 using namespace NightEngine::EC;
-using namespace Rendering::Postprocess;
-using namespace Rendering;
+using namespace NightEngine::Rendering::Opengl::Postprocess;
+using namespace NightEngine::Rendering::Opengl;
+using namespace NightEngine::Rendering;
 using namespace Reflection;
 
 namespace Editor
@@ -152,10 +153,10 @@ namespace Editor
               static int s_debugShadowViewEnum = 0;
 
               bool changed = ImGui::Combo("Debug View", &s_debugViewEnum
-                , k_debugViewStr, (int)Rendering::DebugView::COUNT);
+                , k_debugViewStr, (int)NightEngine::Rendering::DebugView::COUNT);
 
               changed |= ImGui::Combo("Shadow Debug View", &s_debugShadowViewEnum
-                , k_debugShadowViewStr, (int)Rendering::DebugShadowView::COUNT);
+                , k_debugShadowViewStr, (int)NightEngine::Rendering::DebugShadowView::COUNT);
 
               static float s_zoom = 1.0f;
               if (ImGui::SliderFloat("Zoom", &s_zoom, 1.0f, 10.0f))
@@ -168,8 +169,8 @@ namespace Editor
 
               if (changed)
               {
-                Rendering::DebugView dv = (Rendering::DebugView)s_debugViewEnum;
-                Rendering::DebugShadowView dsv = (Rendering::DebugShadowView)s_debugShadowViewEnum;
+                NightEngine::Rendering::DebugView dv = (NightEngine::Rendering::DebugView)s_debugViewEnum;
+                NightEngine::Rendering::DebugShadowView dsv = (NightEngine::Rendering::DebugShadowView)s_debugShadowViewEnum;
                 engine->GetRenderLoop()->SetDebugViews(dv, dsv);
               }
             }

@@ -12,7 +12,7 @@
 #include <glad/glad.h>
 #include <vector>
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
 	//Forward declaration
 	struct Vertex;

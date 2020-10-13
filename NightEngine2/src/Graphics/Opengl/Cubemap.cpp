@@ -16,7 +16,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseCubemapID(GLuint shaderID)
   {

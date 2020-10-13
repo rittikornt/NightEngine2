@@ -11,7 +11,7 @@
 
 using namespace NightEngine;
 
-namespace Rendering
+namespace NightEngine::Rendering::Opengl
 {
   static void ReleaseRBOID(GLuint shaderID)
   {

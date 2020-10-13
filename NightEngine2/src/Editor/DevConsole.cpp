@@ -106,7 +106,7 @@ namespace Editor
 
   void DevConsole::Draw(const char *title, bool *p_open, bool focus)
   {
-    ImGui::SetNextWindowPos(ImVec2(5, Rendering::Window::GetHeight() - 305), ImGuiCond_Appearing);
+    ImGui::SetNextWindowPos(ImVec2(5, NightEngine::Rendering::Opengl::Window::GetHeight() - 305), ImGuiCond_Appearing);
     ImGui::SetNextWindowSize(ImVec2(520, 300), ImGuiCond_Appearing);
     if (!ImGui::Begin(title, p_open))
     {
@@ -450,7 +450,7 @@ namespace Editor
 
   void DevConsole::RenderDocCapture(void)
   {
-    using namespace Rendering;
+    using namespace NightEngine::Rendering;
    
     if (RenderDocManager::IsRenderDocAttached())
     {
@@ -466,7 +466,7 @@ namespace Editor
 
   void DevConsole::RestartWindow(void)
   {
-    using namespace Rendering;
+    using namespace NightEngine::Rendering;
 
     //TODO: in order for this to work, we need to reinit the window
     NightEngine::Engine::GetInstance()->SendPostRenderEvent(NightEngine::PostRenderEngineEvent::RestartWindow);
@@ -474,7 +474,7 @@ namespace Editor
 
   void DevConsole::RecompileShaders(void)
   {
-    using namespace Rendering;
+    using namespace NightEngine::Rendering;
 
     NightEngine::Engine::GetInstance()->SendPostRenderEvent(NightEngine::PostRenderEngineEvent::RecompileShader);
   }
@@ -490,7 +490,7 @@ namespace Editor
 
   void DevConsole::PrintGraphicsAllocationTracker(void)
   {
-    Rendering::OpenglAllocationTracker::PrintAllocationState();
+    NightEngine::Rendering::Opengl::OpenglAllocationTracker::PrintAllocationState();
   }
 
   void DevConsole::ShowHelp(void)

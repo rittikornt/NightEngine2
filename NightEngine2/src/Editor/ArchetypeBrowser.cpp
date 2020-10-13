@@ -21,7 +21,7 @@
 
 using namespace NightEngine;
 using namespace NightEngine::EC;
-using namespace Rendering;
+using namespace NightEngine::Rendering;
 using namespace Reflection;
 
 namespace Editor

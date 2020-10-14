@@ -13,6 +13,7 @@
 #include <random>
 
 #include "Graphics/Opengl/Postprocess/PostProcessUtility.hpp"
+#include "Graphics/Opengl/RenderState.hpp"
 
 namespace NightEngine::Rendering::Opengl
 {
@@ -20,7 +21,7 @@ namespace NightEngine::Rendering::Opengl
   {
     INIT_REFLECTION_FOR(SSAO)
 
-    void SSAO::Init(int width, int height)
+    void SSAO::Init(int width, int height, GBuffer& gbuffer)
     {
       INIT_POSTPROCESSEFFECT();
       m_resolution = glm::ivec2(width, height);
@@ -33,6 +34,7 @@ namespace NightEngine::Rendering::Opengl
       
       //FBO
       m_fbo.Init();
+      m_fbo.AttachDepthTexture(gbuffer.m_depthTexture);
       m_fbo.AttachColorTexture(m_ssaoTexture);
       m_fbo.Bind();
       m_fbo.Unbind();
@@ -93,6 +95,13 @@ namespace NightEngine::Rendering::Opengl
     void SSAO::Apply(VertexArrayObject& screenVAO
       , CameraObject& camera, GBuffer& gbuffer, PostProcessUtility& ppUtility)
     {
+      glDepthMask(GL_FALSE);
+      glDisable(GL_DEPTH_TEST);
+
+      // Don't draw over existing object velocity
+      glEnable(GL_STENCIL_TEST);
+      RenderSetup::PassStencilIfBitSet(RenderFeature::GBUFFER_MASK);
+
       //Generate AO
       m_fbo.Bind();
       {
@@ -134,6 +143,8 @@ namespace NightEngine::Rendering::Opengl
         m_ssaoShader.Unbind();
       }
       m_fbo.Unbind();
+
+      glDisable(GL_STENCIL_TEST);
 
       glm::vec4 clearColor = glm::vec4{ 1.0f,1.0f,1.0f,1.0f };
       ppUtility.BlurTarget(clearColor, m_ssaoTexture, screenVAO

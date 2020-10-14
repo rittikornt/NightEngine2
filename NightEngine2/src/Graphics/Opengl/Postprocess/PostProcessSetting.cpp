@@ -21,7 +21,7 @@ namespace NightEngine::Rendering::Opengl
   {
     INIT_REFLECTION_FOR(PostProcessSetting)
 
-    void PostProcessSetting::Init(int width, int height)
+    void PostProcessSetting::Init(int width, int height, GBuffer& gbuffer)
     {
       //Resources
       m_uberPostMaterial.InitShader("Utility/fullscreenTriangle.vert"
@@ -40,7 +40,7 @@ namespace NightEngine::Rendering::Opengl
       m_bloomPP.Init(width, height);
 
       //SSAO
-      m_ssaoPP.Init(width, height);
+      m_ssaoPP.Init(width, height , gbuffer);
 
       //FXAA
       m_fxaaPP.Init(width, height);

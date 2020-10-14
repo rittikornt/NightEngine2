@@ -15,8 +15,8 @@ namespace NightEngine::Rendering::Opengl
 {
   class VertexArrayObject;
   class Texture;
-  class GBuffer;
   class CameraObject;
+  struct GBuffer;
 
   namespace Prepass
   {

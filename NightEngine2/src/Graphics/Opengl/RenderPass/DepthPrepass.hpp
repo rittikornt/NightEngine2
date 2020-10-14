@@ -10,7 +10,7 @@
 namespace NightEngine::Rendering::Opengl
 {
   class Texture;
-  class GBuffer;
+  struct GBuffer;
   class CameraObject;
 
   //! @brief DepthPrepass struct

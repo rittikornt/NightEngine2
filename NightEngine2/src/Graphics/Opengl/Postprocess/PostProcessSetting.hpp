@@ -26,6 +26,7 @@ namespace NightEngine::Rendering::Opengl
 {
   class VertexArrayObject;
   class FrameBufferObject;
+  struct GBuffer;
 
   namespace Postprocess
   {
@@ -72,7 +73,7 @@ namespace NightEngine::Rendering::Opengl
       std::vector<PostProcessEffect*> m_postProcessEffects;
 
       //! @brief Initialization
-      void Init(int width, int height);
+      void Init(int width, int height, GBuffer& gbuffer);
 
       //! @brief Apply Postfx to the screen texture
       void Apply(const PostProcessContext& context);

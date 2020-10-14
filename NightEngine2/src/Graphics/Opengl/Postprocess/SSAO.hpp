@@ -18,7 +18,7 @@
 namespace NightEngine::Rendering::Opengl
 {
   class VertexArrayObject;
-  class GBuffer;
+  struct GBuffer;
   struct CameraObject;
 
   namespace Postprocess
@@ -65,7 +65,7 @@ namespace NightEngine::Rendering::Opengl
       Texture m_noiseTexture; //For rotating the sample kernel
 
       //! @brief Initialization
-      void Init(int width, int height);
+      void Init(int width, int height , GBuffer& gbuffer);
 
       //! @brief Apply SSAO to the screen texture
       void Apply(VertexArrayObject& screenVAO

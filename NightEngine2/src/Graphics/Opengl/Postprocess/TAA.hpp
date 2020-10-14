@@ -16,8 +16,7 @@ namespace NightEngine::Rendering::Opengl
 {
   class FrameBufferObject;
   class VertexArrayObject;
-  class Texture;
-  class GBuffer;
+  struct GBuffer;
   struct CameraObject;
 
   namespace Postprocess

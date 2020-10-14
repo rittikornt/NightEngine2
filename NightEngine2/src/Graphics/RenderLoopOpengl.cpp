@@ -216,7 +216,7 @@ namespace NightEngine::Rendering
     // Postprocess
     //************************************************
     m_postProcessSetting = &(SceneManager::GetPostProcessSetting());
-    m_postProcessSetting->Init(width, height);
+    m_postProcessSetting->Init(width, height , m_gbuffer);
 
     //Prepass
     m_cameraMotionVector.Init(width, height, m_gbuffer);
@@ -652,7 +652,7 @@ namespace NightEngine::Rendering
       {
         m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
           , &m_sceneFbo, &m_screenTriangleVAO, &m_sceneTexture
-          , g_time, screenZoomScale});
+          , g_time, screenZoomScale });
       }
     }
     DebugMarker::PopDebugGroup();

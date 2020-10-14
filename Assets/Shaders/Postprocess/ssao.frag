@@ -14,6 +14,7 @@ const int   kernelSize = 64;
 //***************************************
 // Uniforms
 //***************************************
+//TODO: SSAO only need reference to a single Normal GBuffer
 layout(binding=0) uniform sampler2D gbuffer0;
 layout(binding=1) uniform sampler2D gbuffer2;
 layout(binding=2) uniform sampler2D u_depthTexture;
@@ -67,10 +68,6 @@ void main()
 	normal.x = fragPosNormalX.a;
 	normal.y = posLSAndNormalY.a;
 
-	if(normal.xy == vec2(0.0, 0.0))
-	{
-		discard;
-	}
 	UnpackNormalFromRG(normal);
 	normal = normalize(normal);
   normal = (u_view * vec4(normal, 0.0)).rgb;

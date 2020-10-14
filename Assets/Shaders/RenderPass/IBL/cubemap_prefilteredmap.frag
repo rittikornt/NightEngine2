@@ -1,9 +1,8 @@
-
-#version 330 core
+#version 420 core
 out vec4 FragColor;
 in vec3 OurLocalPos;
 
-uniform samplerCube u_cubemap;
+layout(binding=0) uniform samplerCube u_cubemap;
 uniform float u_roughness;
 
 //****************************************************

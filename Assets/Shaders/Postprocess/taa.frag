@@ -220,8 +220,8 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     float currColorLuma = currColor.r; //Luminance(currColor.xyz);
     float historyLuma = historyColor.r; //Luminance(historyColor.xyz);
     //float averageLuma = averageColor.r; //Luminance(averageColor.xyz);
-    vec3 minColor = min(topRight, botLeft);
-    vec3 maxColor = max(botLeft, topRight);
+    vec3 minColor = min(min(min(botLeft, topRight), botRight), topLeft);
+    vec3 maxColor = max(max(max(botLeft, topRight), botRight), topLeft);
     
     // shrink chroma min-max (YCOCG)
     vec2 chroma_extent = vec2(0.25 * 0.5 * (maxColor.r - minColor.r));

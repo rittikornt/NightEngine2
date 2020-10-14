@@ -44,9 +44,9 @@ namespace NightEngine::Rendering::Opengl
       FrameBufferObject m_taaFBO;
       FrameBufferObject m_copyHistoryFBO;
 
-      float m_sharpness = 0.6f;
+      float m_sharpness = 1.0f;
       bool m_beforeTonemapping = true;
-      float m_frustumJitterStrength = 0.5f;
+      float m_frustumJitterStrength = 1.0f;
 
       bool m_isFirstFrame = true;
       int m_width = 1;

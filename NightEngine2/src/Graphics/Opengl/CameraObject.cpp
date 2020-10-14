@@ -81,8 +81,8 @@ namespace NightEngine::Rendering::Opengl
       , glm::vec2& jitteredUV, float jitterStrength)
     {
       int index = camera.m_taaFrameIndex + 1;
-      float texelOffsetX = (GetHaltonSequence(index, 2) * jitterStrength) - 0.5f;
-      float texelOffsetY = (GetHaltonSequence(index, 3) * jitterStrength) - 0.5f;
+      float texelOffsetX = (GetHaltonSequence(index, 2) * jitterStrength) - (jitterStrength * 0.5f);
+      float texelOffsetY = (GetHaltonSequence(index, 3) * jitterStrength) - (jitterStrength * 0.5f);
 
       float pixelWidth = Window::GetWidth();
       float pixelHeight = Window::GetHeight();

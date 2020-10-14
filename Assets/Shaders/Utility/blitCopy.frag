@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 out vec4 FragColor;
   
 in vec2 OurTexCoords;
@@ -6,7 +6,7 @@ in vec2 OurTexCoords;
 //***************************************
 // Uniforms
 //***************************************
-uniform sampler2D u_screenTexture;
+layout(binding=0) uniform sampler2D u_screenTexture;
 
 void main()
 { 

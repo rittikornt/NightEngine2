@@ -1,9 +1,8 @@
-
-#version 330 core
+#version 420 core
 out vec4 FragColor;
 in vec3 OurLocalPos;
 
-uniform sampler2D u_equirectangularMap;
+layout(binding=0) uniform sampler2D u_equirectangularMap;
 
 const vec2 invAtan = vec2(0.1591, 0.3183);
 vec2 SampleSphericalMap(vec3 v)

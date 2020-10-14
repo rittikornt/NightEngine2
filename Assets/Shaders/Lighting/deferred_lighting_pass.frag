@@ -31,11 +31,11 @@ uniform GBufferResult u_gbufferResult;
 struct LightInfo
 {
   vec3 	m_position;
-	vec3	m_direction;
+  vec3	m_direction;
   vec3 	m_color;
   float m_intensity;		//For directional/pointlight
-	float m_innerCutOff;	//For spotlight
-	float m_outerCutOff;
+  float m_innerCutOff;	//For spotlight
+  float m_outerCutOff;
 };
 
 #define POINTLIGHT_NUM 4

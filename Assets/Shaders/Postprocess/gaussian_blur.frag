@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 //http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
 //https://software.intel.com/en-us/blogs/2014/07/15/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms
 
@@ -6,7 +6,7 @@ out vec4 FragColor;
   
 in vec2 OurTexCoords;
 
-uniform sampler2D u_screenTexture;
+layout(binding=0) uniform sampler2D u_screenTexture;
 uniform vec2      u_dir;
 uniform vec2      u_uvScale = vec2(1.0, 1.0);
 

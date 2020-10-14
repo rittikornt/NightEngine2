@@ -1,8 +1,8 @@
-#version 330 core
+#version 420 core
 out vec4 FragColor;
 in vec2 OurTexCoords;
 
-uniform sampler2D u_screenTexture;
+layout(binding=0) uniform sampler2D u_screenTexture;
 uniform int       u_iteration = 0;
 uniform vec2      u_uvScale = vec2(1.0, 1.0);
 

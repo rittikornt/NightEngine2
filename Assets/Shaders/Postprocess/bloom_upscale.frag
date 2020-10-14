@@ -1,10 +1,10 @@
-#version 330 core
+#version 420 core
 out vec4 FragColor;
   
 in vec2 OurTexCoords;
 
-uniform sampler2D u_lowMipTexture;
-uniform sampler2D u_highMipTexture;
+layout(binding=0) uniform sampler2D u_lowMipTexture;
+layout(binding=1) uniform sampler2D u_highMipTexture;
 uniform float u_scattering = 0.5;
 
 void main()

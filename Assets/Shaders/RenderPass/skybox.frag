@@ -1,10 +1,10 @@
-#version 330 core
+#version 420 core
 
 out vec4 FragColor;
 
 in vec3 ourTexCoords;
 
-uniform samplerCube u_cubemap;
+layout(binding=0) uniform samplerCube u_cubemap;
 
 #define HALF_MAX 65504.0
 

@@ -16,10 +16,9 @@ const int   kernelSize = 64;
 //***************************************
 //TODO: SSAO only need reference to a single Normal GBuffer
 layout(binding=0) uniform sampler2D gbuffer0;
-layout(binding=1) uniform sampler2D gbuffer2;
-layout(binding=2) uniform sampler2D u_depthTexture;
+layout(binding=1) uniform sampler2D u_depthTexture;
 
-layout(binding=3) uniform sampler2D u_noiseTexture;
+layout(binding=2) uniform sampler2D u_noiseTexture;
 uniform vec3      u_sampleKernel[kernelSize];
 
 uniform mat4      u_view;
@@ -59,14 +58,12 @@ void main()
   vec2 uv = OurTexCoords;
 
   //FragPos in view space
-  vec4 fragPosNormalX = texture(gbuffer0, uv);
+  vec4 normalXY = texture(gbuffer0, uv);
   vec3 positionVS = GetViewSpacePositionFromDepth(uv);//(u_view * vec4(fragPosNormalX.xyz, 1.0)).xyz;
 
   //Normal in view space
-  vec4 posLSAndNormalY = texture(gbuffer2, uv);
 	vec3 normal = vec3(0.0);
-	normal.x = fragPosNormalX.a;
-	normal.y = posLSAndNormalY.a;
+	normal.xy = normalXY.xy;
 
 	UnpackNormalFromRG(normal);
 	normal = normalize(normal);

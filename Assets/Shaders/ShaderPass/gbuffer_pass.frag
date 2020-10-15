@@ -1,7 +1,7 @@
 #version 330 core
 
 // 4 4 4 4
-layout (location = 0) out vec4 o_gbuffer0;  //(0) vec4(pos.xyz, n.x)
+layout (location = 0) out vec4 o_gbuffer0;  //(0) vec4(n.xy)
 layout (location = 1) out vec4 o_gbuffer1;	//(1) vec4(albedo.xyz, metallic.x)
 layout (location = 2) out vec4 o_gbuffer2;	//(2) vec4(lightSpacePos, n.y)
 layout (location = 3) out vec4 o_gbuffer3;	//(3) vec4(emissive.xyz, roughness.x)
@@ -85,9 +85,8 @@ void main()
 
 	/////////////////////////////////////////////
 
-	// (0) vec4(pos.xyz, n.x)
-	o_gbuffer0.xyz = fs_in.ourFragPos.xyz;
-	o_gbuffer0.w = normal.x;
+	// (0) vec4(n.xy)
+	o_gbuffer0.xy = normal.xy;
 
 	//(1) vec4(albedo.xyz, n.y)
 	o_gbuffer1.rgb = texture(u_material.m_diffuseMap, uv, k_lodBias).rgb

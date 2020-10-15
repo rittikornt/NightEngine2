@@ -7,7 +7,7 @@
 //***************************************
 struct GBufferResult
 {
-	sampler2D gbuffer0;   //(0) vec4(pos.xyz, n.x)
+	sampler2D gbuffer0;   //(0) vec4(n.xy)
 	sampler2D gbuffer1;   //(1) vec4(albedo.xyz, metallic)
 	sampler2D gbuffer2;   //(2) vec4(lightSpacePos, n.y)
 	sampler2D gbuffer3;	  //(3) vec4(emissive.xyz, roughness.x)
@@ -65,7 +65,6 @@ void UnpackGBufferData(vec2 uv
 	vec4 gbuffer1 = texture(u_gbuffer.gbuffer1, uv);
 	matData.albedo = LinearToSRGB(gbuffer1.rgb);	//Need to convert back to SRGB, since SRGB8_ALPHA8 auto convert to linear on encode
 	
-	vec4 gbuffer0 = texture(u_gbuffer.gbuffer0, uv);
 	//matData.positionWS = gbuffer0.xyz;
   	float depth = textureLod(u_depthTexture, uv, 0.0f).r;
   	matData.positionWS = DepthToWorldSpacePosition(depth, uv, u_invVP).xyz;
@@ -73,9 +72,11 @@ void UnpackGBufferData(vec2 uv
 	vec4 gbuffer2 = texture(u_gbuffer.gbuffer2, uv);
 	
 	//Unpack normal
+	vec2 gbuffer0 = texture(u_gbuffer.gbuffer0, uv).xy;
 	vec3 normal = vec3(0.0);
-	normal.x = gbuffer0.a;
-	normal.y = gbuffer2.a;//gbuffer1.a;
+	normal.xy = gbuffer0.xy;
+	//normal.x = gbuffer0.a;
+	//normal.y = gbuffer2.a;//gbuffer1.a;
 
 	//Discard if normal is black
 	UnpackNormalFromRG(normal);

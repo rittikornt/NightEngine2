@@ -41,12 +41,11 @@ namespace NightEngine::Rendering::Opengl
     m_depthTexture.SetName("DepthPrepass RT");
     CHECKGL_ERROR();
 
-    // TODO: Replace posWS with Depth texture (viewpos reconstruction instead)
-    // (0) vec4(pos.xyz, n.x)
+    // (0) vec4(n.xy)
     m_textures[0] = Texture::GenerateRenderTexture(width, height
-      , Texture::Format::RGBA16F, Texture::Format::RGBA
-      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[0].SetName("GBuffer0 (Pos.xyz, N.x)");
+      , Texture::Format::RG16F, Texture::Format::RGBA
+      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_textures[0].SetName("GBuffer0 (N.xy)");
     m_fbo.AttachColorTexture(m_textures[0], 0);
 
     //(1) vec4(albedo.xyz, metallic)

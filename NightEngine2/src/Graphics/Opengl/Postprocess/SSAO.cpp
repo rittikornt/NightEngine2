@@ -122,11 +122,10 @@ namespace NightEngine::Rendering::Opengl
           //  , glm::vec2(camera.m_activeJitteredUV.x, camera.m_activeJitteredUV.y));
 
           gbuffer.GetTexture(0).BindToTextureUnit(0);
-          gbuffer.GetTexture(2).BindToTextureUnit(1);
-          gbuffer.m_depthTexture.BindToTextureUnit(2);
+          gbuffer.m_depthTexture.BindToTextureUnit(1);
 
           //Noise and sample kernel
-          m_noiseTexture.BindToTextureUnit(3);
+          m_noiseTexture.BindToTextureUnit(2);
           for (int i = 0; i < m_sampleAmount; ++i)
           {
             m_ssaoShader.SetUniform(m_sampleKernelString[i], m_sampleKernel[i]);
@@ -168,9 +167,8 @@ namespace NightEngine::Rendering::Opengl
       m_ssaoShader.Bind();
       {
         m_ssaoShader.SetUniform("gbuffer0", 0);
-        m_ssaoShader.SetUniform("gbuffer2", 1);
-        m_ssaoShader.SetUniform("u_depthTexture", 2);
-        m_ssaoShader.SetUniform("u_noiseTexture", 3);
+        m_ssaoShader.SetUniform("u_depthTexture", 1);
+        m_ssaoShader.SetUniform("u_noiseTexture", 2);
       }
       m_ssaoShader.Unbind();
 

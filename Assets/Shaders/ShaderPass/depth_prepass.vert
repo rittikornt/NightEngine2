@@ -35,11 +35,12 @@ void main()
 	mat4 model = u_instanceRendering? inInstanceModel:u_model;
 
 	vec4 worldPos = model * vec4(inPos, 1.0f);
+	vec4 prevWorldPos = u_instanceRendering? worldPos: (u_prevModel * vec4(inPos, 1.0f));
 	vs_out.ourTexCoord = inTexCoord;
 
 	//No motion vector for GPU instancing for now
 	vs_out.positionCS = u_instanceRendering? vec4(0.0, 0.0, 0.0, 1.0): u_unjitteredVP * worldPos;
-	vs_out.prevPositionCS = u_instanceRendering? vec4(0.0, 0.0, 0.0, 1.0): u_prevUnjitteredVP * worldPos;
+	vs_out.prevPositionCS = u_instanceRendering? vec4(0.0, 0.0, 0.0, 1.0): u_prevUnjitteredVP * prevWorldPos;
 
 	gl_Position = u_vp * worldPos;
 }

@@ -61,8 +61,7 @@ namespace NightEngine::Rendering::Opengl
       {
         m_cmvShader.Bind();
         {
-          gbuffer.GetTexture(GBufferTarget::PositionAndNormalX).BindToTextureUnit(0);
-          gbuffer.m_depthTexture.BindToTextureUnit(1);
+          gbuffer.m_depthTexture.BindToTextureUnit(0);
 
           m_cmvShader.SetUniform("u_prevUnJitteredVP", prevUnjitteredVP);
           m_cmvShader.SetUniform("u_unjitteredVP", unjitteredVP);
@@ -83,8 +82,7 @@ namespace NightEngine::Rendering::Opengl
     {
       m_cmvShader.Bind();
       {
-        m_cmvShader.SetUniform("gbuffer0", 0);
-        m_cmvShader.SetUniform("u_depthTexture", 1);
+        m_cmvShader.SetUniform("u_depthTexture", 0);
       }
       m_cmvShader.Unbind();
     }

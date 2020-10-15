@@ -14,6 +14,9 @@ struct GBufferResult
 };
 uniform GBufferResult u_gbuffer;
 
+layout(binding=13) uniform sampler2D   u_depthTexture;
+uniform mat4    u_invVP;
+
 struct MaterialData
 {
 	vec3 albedo;
@@ -63,7 +66,9 @@ void UnpackGBufferData(vec2 uv
 	matData.albedo = LinearToSRGB(gbuffer1.rgb);	//Need to convert back to SRGB, since SRGB8_ALPHA8 auto convert to linear on encode
 	
 	vec4 gbuffer0 = texture(u_gbuffer.gbuffer0, uv);
-	matData.positionWS = gbuffer0.xyz;
+	//matData.positionWS = gbuffer0.xyz;
+  	float depth = textureLod(u_depthTexture, uv, 0.0f).r;
+  	matData.positionWS = DepthToWorldSpacePosition(depth, uv, u_invVP).xyz;
 
 	vec4 gbuffer2 = texture(u_gbuffer.gbuffer2, uv);
 	

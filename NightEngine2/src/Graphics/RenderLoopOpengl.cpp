@@ -346,7 +346,7 @@ namespace NightEngine::Rendering
     g_camera.m_jitterStrength = m_postProcessSetting->m_taaPP.m_frustumJitterStrength;
 
     g_camera.OnStartFrame();
-    Drawer::OnStartFrame(Drawer::DrawPass::BATCH);
+    Drawer::OnStartFrame(Drawer::DrawPass::UNDEFINED);
     Drawer::OnStartFrame(Drawer::DrawPass::OPAQUE_PASS);
     Drawer::OnStartFrame(Drawer::DrawPass::DEBUG);
 
@@ -387,7 +387,7 @@ namespace NightEngine::Rendering
 
     g_camera.OnEndFrame();
     Drawer::OnEndFrame(Drawer::DrawPass::OPAQUE_PASS);
-    Drawer::OnEndFrame(Drawer::DrawPass::BATCH);
+    Drawer::OnEndFrame(Drawer::DrawPass::UNDEFINED);
   }
 
   void RenderLoopOpengl::OnRecompiledShader(void)
@@ -457,7 +457,7 @@ namespace NightEngine::Rendering
 
             //Draw all Mesh with depthMaterial
             Drawer::DrawShadowWithoutBind(m_depthDirShadowMaterial.GetShader()
-              , Drawer::DrawPass::BATCH);
+              , Drawer::DrawPass::UNDEFINED);
             Drawer::DrawShadowWithoutBind(m_depthDirShadowMaterial.GetShader()
               , Drawer::DrawPass::OPAQUE_PASS);
           }
@@ -500,7 +500,7 @@ namespace NightEngine::Rendering
 
               //Draw all Mesh with depthMaterial
               Drawer::DrawShadowWithoutBind(m_depthPointShadowMaterial.GetShader()
-                , Drawer::DrawPass::BATCH);
+                , Drawer::DrawPass::UNDEFINED);
               Drawer::DrawShadowWithoutBind(m_depthPointShadowMaterial.GetShader()
                 , Drawer::DrawPass::OPAQUE_PASS);
             }
@@ -532,7 +532,7 @@ namespace NightEngine::Rendering
           GPUInstancedDrawer::DrawInstances(shader);
 
           //Draw Loop by traversing Containers
-          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
+          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::UNDEFINED);
         }
         defaultMaterial->Unbind();
 
@@ -581,6 +581,7 @@ namespace NightEngine::Rendering
         Shader& shader = lightingPassMat.GetShader();
         shader.SetUniform("u_farPlane", pointShadowFarPlane);
         shader.SetUniform("u_ambientStrength", ambientStrength);
+        shader.SetUniform("u_invVP", g_camera.m_invVP);
 
         if (debugView)
         {
@@ -592,18 +593,19 @@ namespace NightEngine::Rendering
         }
 
         //Shadow 2D texture
-        m_shadowMapDirShadowTexture.BindToTextureUnit(6);
+        m_shadowMapDirShadowTexture.BindToTextureUnit(5);
 
         //Shadow Cubemap texture
         for (int j = 0; j < POINTLIGHT_AMOUNT; ++j)
         {
-          m_shadowMapPointShadow[j].BindToTextureUnit(7 + j);
+          m_shadowMapPointShadow[j].BindToTextureUnit(6 + j);
         }
 
         //IBL
-        m_ibl.m_irradianceCubemap.BindToTextureUnit(11);
-        m_ibl.m_prefilterMap.BindToTextureUnit(12);
-        m_ibl.m_brdfLUT.BindToTextureUnit(13);
+        m_ibl.m_irradianceCubemap.BindToTextureUnit(10);
+        m_ibl.m_prefilterMap.BindToTextureUnit(11);
+        m_ibl.m_brdfLUT.BindToTextureUnit(12);
+        m_gbuffer.m_depthTexture.BindToTextureUnit(13);
 
         //Bind Gbuffer Texture
         m_gbuffer.BindTextures();
@@ -715,19 +717,19 @@ namespace NightEngine::Rendering
       Shader& shader = material.GetShader();
 
       //Directional Shadow
-      shader.SetUniform("u_shadowMap2D", 6);
-      m_shadowMapDirShadowTexture.BindToTextureUnit(6);
+      shader.SetUniform("u_shadowMap2D", 5);
+      m_shadowMapDirShadowTexture.BindToTextureUnit(5);
 
       //Point Shadow
-      shader.SetUniform("u_shadowMap[0]", 7);
-      shader.SetUniform("u_shadowMap[1]", 8);
-      shader.SetUniform("u_shadowMap[2]", 9);
-      shader.SetUniform("u_shadowMap[3]", 10);
+      shader.SetUniform("u_shadowMap[0]", 6);
+      shader.SetUniform("u_shadowMap[1]", 7);
+      shader.SetUniform("u_shadowMap[2]", 8);
+      shader.SetUniform("u_shadowMap[3]", 9);
 
       //IBL
-      shader.SetUniform("u_irradianceMap", 11);
-      shader.SetUniform("u_prefilterMap", 12);
-      shader.SetUniform("u_brdfLUT", 13);
+      shader.SetUniform("u_irradianceMap", 10);
+      shader.SetUniform("u_prefilterMap", 11);
+      shader.SetUniform("u_brdfLUT", 12);
 
       //Gbuffer's texture
       m_gbuffer.RefreshTextureUniforms(shader);

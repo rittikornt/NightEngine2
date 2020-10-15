@@ -38,17 +38,17 @@ uniform LightInfo u_dirLightInfo;
 uniform LightInfo u_pointLightInfo[POINTLIGHT_NUM];
 uniform LightInfo u_spotLightInfo[SPOTLIGHT_NUM];
 
-uniform sampler2D   u_shadowMap2D;
-uniform samplerCube u_shadowMap[POINTLIGHT_NUM];
+uniform sampler2D   u_shadowMap2D;	//(5)
+uniform samplerCube u_shadowMap[POINTLIGHT_NUM]; //(6-9)
 uniform float       u_farPlane;
 
 //IBL
 uniform float			u_ambientStrength = 0.3f;
-uniform samplerCube 	u_irradianceMap;
+uniform samplerCube 	u_irradianceMap;  // (10)
 
 //Specular IBL
-uniform samplerCube 	u_prefilterMap;
-uniform sampler2D		u_brdfLUT;
+uniform samplerCube 	u_prefilterMap;	// (11)
+uniform sampler2D		u_brdfLUT;	// (12)
 
 vec3 g_sampleOffsetDirections[20] = vec3[]
 (

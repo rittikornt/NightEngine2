@@ -79,7 +79,7 @@ namespace NightEngine::Rendering::Opengl
           GPUInstancedDrawer::DrawInstances(shader);
 
           //Draw Loop by traversing Containers
-          Drawer::DrawWithoutBind(shader, Drawer::DrawPass::BATCH);
+          Drawer::DrawDepthWithoutBind(shader, Drawer::DrawPass::UNDEFINED);
 
           //Should skip meshRenderer that has u_useOpacityMap flag to handle alpha cutoff properly
           //Draw Custom Pass

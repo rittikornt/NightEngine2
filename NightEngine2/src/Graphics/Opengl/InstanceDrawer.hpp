@@ -38,7 +38,7 @@ namespace NightEngine::Rendering::Opengl
 
     enum class DrawPass: unsigned
     {
-      BATCH = 0,
+      UNDEFINED = 0,
       OPAQUE_PASS,
       OUTLINE,
       DEBUG
@@ -49,35 +49,35 @@ namespace NightEngine::Rendering::Opengl
 
     //! @brief Register the MeshRenderer to the Drawer
     void RegisterMeshRenderer(NightEngine::EC::Components::MeshRenderer& meshRenderer
-      , DrawPass drawPass = DrawPass::BATCH);
+      , DrawPass drawPass = DrawPass::UNDEFINED);
 
     //! @brief Unregister the MeshRenderer to the Drawer
     void UnregisterMeshRenderer(NightEngine::EC::Components::MeshRenderer& meshRenderer
-      , DrawPass drawPass = DrawPass::BATCH);
+      , DrawPass drawPass = DrawPass::UNDEFINED);
 
     //! @brief Draw all registered mesh without binding
     void DrawWithoutBind(Shader& shader
-      , DrawPass drawPass = DrawPass::BATCH);
+      , DrawPass drawPass = DrawPass::UNDEFINED);
 
     //! @brief Draw all registered mesh without binding
-    void Draw(DrawPass drawPass = DrawPass::BATCH
+    void Draw(DrawPass drawPass = DrawPass::UNDEFINED
       , NightEngine::Rendering::Opengl::ShaderUniformsFn fn = nullptr);
 
     //! @brief Draw pass for Shadow
     void DrawShadowWithoutBind(Shader& shader
-      , DrawPass drawPass = DrawPass::BATCH);
+      , DrawPass drawPass = DrawPass::UNDEFINED);
 
     //! @brief Draw pass for Shadow
     void DrawDepthWithoutBind(Shader& shader
-      , DrawPass drawPass = DrawPass::BATCH);
+      , DrawPass drawPass = DrawPass::UNDEFINED);
 
     /////////////////////////////////////////////////////////////
 
     //! @brief On Start Rendering Frame
-    void OnStartFrame(DrawPass drawPass = DrawPass::BATCH);
+    void OnStartFrame(DrawPass drawPass = DrawPass::UNDEFINED);
 
     //! @brief On End Rendering Frame
-    void OnEndFrame(DrawPass drawPass = DrawPass::BATCH);
+    void OnEndFrame(DrawPass drawPass = DrawPass::UNDEFINED);
   }
 
   namespace GPUInstancedDrawer

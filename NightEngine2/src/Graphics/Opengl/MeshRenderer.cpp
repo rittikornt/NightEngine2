@@ -101,7 +101,7 @@ namespace NightEngine
         case DrawMode::PREBIND:
         {
           Drawer::RegisterMeshRenderer(*this
-            , Drawer::DrawPass::BATCH);
+            , Drawer::DrawPass::UNDEFINED);
           break;
         }
         case DrawMode::CUSTOM:
@@ -142,7 +142,7 @@ namespace NightEngine
         case DrawMode::PREBIND:
         {
           Drawer::UnregisterMeshRenderer(*this
-            , Drawer::DrawPass::BATCH);
+            , Drawer::DrawPass::UNDEFINED);
           break;
         }
         case DrawMode::CUSTOM:

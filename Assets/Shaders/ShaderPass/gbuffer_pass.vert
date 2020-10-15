@@ -10,7 +10,6 @@ out VS_OUT
 	vec2 ourTexCoord;
 	vec3 ourFragPos;
 	vec3 ourFragNormal;
-	vec4 ourFragPosLightSpace;
 	mat3 ourTBNMatrix;
 } vs_out;
 
@@ -26,7 +25,6 @@ layout (std140) uniform u_matrices
 uniform mat4 u_model;
 uniform bool u_instanceRendering = false;
 
-uniform mat4 u_lightSpaceMatrix;
 uniform bool u_useNormalmap = false;
 
 void main()
@@ -38,8 +36,6 @@ void main()
 	//Fragment position in worldspace
 	vs_out.ourFragPos = (model * vec4(inPos, 1.0)).xyz;
 
-	vs_out.ourFragPosLightSpace = u_lightSpaceMatrix * vec4(vs_out.ourFragPos, 1.0);
-	
 	gl_Position = u_vp * model * vec4(inPos, 1.0f);
 	
 	// NormalOS to NormalWS

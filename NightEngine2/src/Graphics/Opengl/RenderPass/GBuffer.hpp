@@ -18,10 +18,9 @@ namespace NightEngine::Rendering::Opengl
 
   enum class GBufferTarget: size_t
   {
-    PositionAndNormalX = 0,        // (0) vec4(pos.xyz, n.x)
+    Normal = 0,                    // (0) vec4(n.xy)
     AlbedoAndMetallic,             // (1) vec4(albedo.xyz, metallic)
-    LightSpacePositionAndNormalY,  // (2) vec4(lightSpacePos, n.y)
-    EmissiveAndRoughness,          // (3) vec4(emissive.xyz, roughness)
+    EmissiveAndRoughness,          // (2) vec4(emissive.xyz, roughness)
     Count
   };
   //TODO: Calculate Position from Depth Buffer

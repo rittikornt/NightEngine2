@@ -172,10 +172,10 @@ namespace NightEngine::Rendering
     //************************************************
     // Frame Buffer Object
     //************************************************
-    int width = Window::GetWidth(), height = Window::GetHeight();
+    m_width = Window::GetWidth(); m_height = Window::GetHeight();
 
     //Depth FBO for shadow
-    m_initResolution.x = (float)width, m_initResolution.y = (float)height;
+    m_initResolution.x = (float)m_width, m_initResolution.y = (float)m_height;
 
     m_depthDirShadowFBO.Init();
     m_shadowMapDirShadowTexture = m_depthDirShadowFBO.CreateAndAttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
@@ -196,11 +196,11 @@ namespace NightEngine::Rendering
       , "RenderPass/Shadows/depth_point.frag", "RenderPass/Shadows/depth_point.geom");
 
     //GBuffer
-    m_gbuffer.Init(width, height);
-    m_depthPrepass.Init(width, height, m_gbuffer);
+    m_gbuffer.Init(m_width, m_height);
+    m_depthPrepass.Init(m_width, m_height, m_gbuffer);
 
     //Scene Texture
-    m_sceneTexture = Texture::GenerateRenderTexture(width, height
+    m_sceneTexture = Texture::GenerateRenderTexture(m_width, m_height
       , Texture::Format::RGBA16F, Texture::Format::RGBA
       , Texture::FilterMode::LINEAR
       , Texture::WrapMode::CLAMP_TO_EDGE);
@@ -216,10 +216,10 @@ namespace NightEngine::Rendering
     // Postprocess
     //************************************************
     m_postProcessSetting = &(SceneManager::GetPostProcessSetting());
-    m_postProcessSetting->Init(width, height , m_gbuffer);
+    m_postProcessSetting->Init(m_width, m_height , m_gbuffer);
 
     //Prepass
-    m_cameraMotionVector.Init(width, height, m_gbuffer);
+    m_cameraMotionVector.Init(m_width, m_height, m_gbuffer);
 
     //Screen Quad
     m_screenTriangleVAO.Init();
@@ -582,7 +582,8 @@ namespace NightEngine::Rendering
         shader.SetUniform("u_farPlane", pointShadowFarPlane);
         shader.SetUniform("u_ambientStrength", ambientStrength);
         shader.SetUniform("u_invVP", g_camera.m_invVP);
-
+        shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
+        
         if (debugView)
         {
           shader.SetUniform("u_debugViewIndex", (int)m_debugView);
@@ -638,26 +639,30 @@ namespace NightEngine::Rendering
     //*************************************************
     // PostProcess Pass
     //*************************************************
-    DebugMarker::PushDebugGroup("PostProcess");
+    if (Input::GetKeyDown(Input::KeyCode::KEY_8))
     {
-      if (Input::GetKeyDown(Input::KeyCode::KEY_8))
+      g_enablePostprocess = !g_enablePostprocess;
+      if (!g_enablePostprocess)
       {
-        g_enablePostprocess = !g_enablePostprocess;
-        if (!g_enablePostprocess)
-        {
-          m_postProcessSetting->Clear();
-        }
+        m_postProcessSetting->Clear();
       }
+    }
 
+    if (g_enablePostprocess)
+    {
+      DebugMarker::PushDebugGroup("PostProcess");
       //Postfx
-      if (g_enablePostprocess)
       {
         m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
           , &m_sceneFbo, &m_screenTriangleVAO, &m_sceneTexture
           , g_time, screenZoomScale });
       }
+      DebugMarker::PopDebugGroup();
     }
-    DebugMarker::PopDebugGroup();
+    else
+    { 
+      m_sceneFbo.CopyBufferToTarget(m_width, m_height, m_width, m_height, 0, GL_COLOR_BUFFER_BIT);
+    }
 
     //Debugging View
     if (Input::GetKeyDown(Input::KeyCode::KEY_7))

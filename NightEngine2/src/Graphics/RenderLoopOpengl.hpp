@@ -72,6 +72,9 @@ namespace NightEngine::Rendering
     ShadowsResolution mainShadowResolution = ShadowsResolution::_2048;
     ShadowsResolution pointShadowResolution = ShadowsResolution::_1024;
 
+    int m_width = 1;
+    int m_height = 1;
+
   protected:
     //Uniform Buffer Object
     Opengl::UniformBufferObject m_uniformBufferObject;

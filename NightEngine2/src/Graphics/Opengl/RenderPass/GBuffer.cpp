@@ -51,23 +51,16 @@ namespace NightEngine::Rendering::Opengl
     //(1) vec4(albedo.xyz, metallic)
     m_textures[1] = Texture::GenerateRenderTexture(width, height
       , Texture::Format::SRGB8_ALPHA8, Texture::Format::RGBA
-      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
+      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
     m_textures[1].SetName("GBuffer1 (albedo.xyz, metallic)");
     m_fbo.AttachColorTexture(m_textures[1], 1);
 
-    //(2) vec4(lightSpacePos, n.y)
+    //(2) vec4(emissive.xyz, roughness)
     m_textures[2] = Texture::GenerateRenderTexture(width, height
-      , Texture::Format::RGBA16F, Texture::Format::RGBA
-      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[2].SetName("GBuffer2 (lightSpacePos, N.y)");
-    m_fbo.AttachColorTexture(m_textures[2], 2);
-
-    //(3) vec4(emissive.xyz, roughness)
-    m_textures[3] = Texture::GenerateRenderTexture(width, height
       , Texture::Format::RGBA12, Texture::Format::RGBA
-      , Texture::FilterMode::NEAREST, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[3].SetName("GBuffer3 (emissive.xyz, roughness)");
-    m_fbo.AttachColorTexture(m_textures[3], 3);
+      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+    m_textures[2].SetName("GBuffer3 (emissive.xyz, roughness)");
+    m_fbo.AttachColorTexture(m_textures[2], 2);
 
     //Setup multiple render target
     m_fbo.SetupMultipleRenderTarget();
@@ -141,7 +134,5 @@ namespace NightEngine::Rendering::Opengl
       , 1);
     shader.SetUniform("u_gbuffer.gbuffer2"
       , 2);
-    shader.SetUniform("u_gbuffer.gbuffer3"
-      , 3);
   }
 }

@@ -9,13 +9,13 @@ struct GBufferResult
 {
 	sampler2D gbuffer0;   //(0) vec4(n.xy)
 	sampler2D gbuffer1;   //(1) vec4(albedo.xyz, metallic)
-	sampler2D gbuffer2;   //(2) vec4(lightSpacePos, n.y)
-	sampler2D gbuffer3;	  //(3) vec4(emissive.xyz, roughness.x)
+	sampler2D gbuffer2;	  //(3) vec4(emissive.xyz, roughness.x)
 };
 uniform GBufferResult u_gbuffer;
 
 layout(binding=13) uniform sampler2D   u_depthTexture;
 uniform mat4    u_invVP;
+uniform mat4    u_lightSpaceMatrix;
 
 struct MaterialData
 {
@@ -69,28 +69,23 @@ void UnpackGBufferData(vec2 uv
   	float depth = textureLod(u_depthTexture, uv, 0.0f).r;
   	matData.positionWS = DepthToWorldSpacePosition(depth, uv, u_invVP).xyz;
 
-	vec4 gbuffer2 = texture(u_gbuffer.gbuffer2, uv);
-	
 	//Unpack normal
 	vec2 gbuffer0 = texture(u_gbuffer.gbuffer0, uv).xy;
 	vec3 normal = vec3(0.0);
 	normal.xy = gbuffer0.xy;
-	//normal.x = gbuffer0.a;
-	//normal.y = gbuffer2.a;//gbuffer1.a;
 
 	//Discard if normal is black
 	UnpackNormalFromRG(normal);
 	normal = normalize(normal);
 
 	//Material data
-	//vec4 gbuffer2 = texture(u_gbuffer.gbuffer2, uv);
-	vec4 gbuffer3 = texture(u_gbuffer.gbuffer3, uv);
+	vec4 gbuffer2 = texture(u_gbuffer.gbuffer2, uv);
 	
-	matData.emissive = DecodeQuantization(gbuffer3.xyz, 12);
-	matData.positionLS = gbuffer2.xyz;
-
-	matData.roughness = GetFilteredRoughness(gbuffer3.a, normal);
-	matData.metallic = gbuffer1.a;//gbuffer2.a;
+	matData.emissive = DecodeQuantization(gbuffer2.xyz, 12);
+	matData.positionLS = (u_lightSpaceMatrix * vec4(matData.positionWS, 1.0)).xyz;
+	
+	matData.roughness = GetFilteredRoughness(gbuffer2.a, normal);
+	matData.metallic = gbuffer1.a;
 
 	/////////////////////////////////////////////////////////
 	surfaceData = GetSurfaceData(normal, matData.positionWS.xyz);

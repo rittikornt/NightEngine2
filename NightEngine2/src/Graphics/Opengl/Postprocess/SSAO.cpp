@@ -27,10 +27,12 @@ namespace NightEngine::Rendering::Opengl
       {
         INIT_POSTPROCESSEFFECT();
         m_resolution = glm::ivec2(width, height);
+        m_halfRes = m_resolution / 2;
+        auto& res = m_useHalfRes ? m_halfRes : m_resolution;
 
         m_ssaoTexture = Texture::GenerateRenderTexture(
-          width, height, Texture::Format::RGB
-          , Texture::Format::RGB, Texture::FilterMode::NEAREST
+          res.x, res.y, Texture::Format::RGB
+          , Texture::PixelFormat::RGB, Texture::FilterMode::LINEAR
           , Texture::WrapMode::CLAMP_TO_EDGE);
         m_ssaoTexture.SetName("SSAO RT");
 
@@ -89,16 +91,24 @@ namespace NightEngine::Rendering::Opengl
           ssaoNoise.emplace_back(noise);
         }
         m_noiseTexture = Texture::GenerateTextureData(&ssaoNoise[0]
-          , 4, 4, Texture::Format::RGB16F, Texture::Format::RGB
+          , 4, 4, Texture::Format::RGB16F, Texture::PixelFormat::RGB
           , Texture::FilterMode::NEAREST, Texture::WrapMode::REPEAT);
         m_noiseTexture.SetName("SSAO Noise RT");
+
+        m_prevUseHalfResFlag = m_useHalfRes;
       }
       else
       {
-        if (m_resolution.x != width || m_resolution.y != height)
+        bool dirty = (m_resolution.x != width || m_resolution.y != height)
+          || (m_useHalfRes != m_prevUseHalfResFlag);
+        if (dirty)
         {
           m_resolution.x = width, m_resolution.y = height;
-          m_ssaoTexture.Resize(width, height, Texture::PixelFormat::RGB);
+          m_halfRes = m_resolution / 2;
+          auto& res = m_useHalfRes ? m_halfRes : m_resolution;
+          m_ssaoTexture.Resize(res.x, res.y, Texture::PixelFormat::RGB);
+
+          m_prevUseHalfResFlag = m_useHalfRes;
         }
       }
     }
@@ -106,6 +116,10 @@ namespace NightEngine::Rendering::Opengl
     void SSAO::Apply(VertexArrayObject& screenVAO
       , CameraObject& camera, GBuffer& gbuffer, PostProcessUtility& ppUtility)
     {
+      //glm::ivec2 screenSize = camera.GetScreenSize();
+      auto& res = m_useHalfRes ? m_halfRes : m_resolution;
+      glViewport(0, 0, res.x, res.y);
+
       glDepthMask(GL_FALSE);
       glDisable(GL_DEPTH_TEST);
 
@@ -158,7 +172,11 @@ namespace NightEngine::Rendering::Opengl
 
       glm::vec4 clearColor = glm::vec4{ 1.0f,1.0f,1.0f,1.0f };
       ppUtility.BlurTarget(clearColor, m_ssaoTexture, screenVAO
-        , m_resolution, 4, true);
+        , res, 4, true);
+
+      /*m_fbo.CopyBufferToTarget(camera.m_scaledPixelResolution.x, camera.m_scaledPixelResolution.y
+        , camera.m_windowPixelResolution.x, camera.m_windowPixelResolution.y
+        , 0, GL_COLOR_BUFFER_BIT, GL_LINEAR);*/
     }
 
     void SSAO::Clear(void)

@@ -205,8 +205,8 @@ namespace NightEngine::Rendering::Opengl
     unsigned char* imgData = stbi_load(filePath.c_str()
       , &width, &height, &channels, loadChannel);
 
-    Format format = loadChannel == STBI_rgb ?
-      Format::RGB : Format::RGBA;
+    PixelFormat format = loadChannel == STBI_rgb ?
+      PixelFormat::RGB : PixelFormat::RGBA;
 
     //Generate Actual Texture Data based on the loaded file
     TextureIdentifier t = GenerateTextureData(imgData, width, height
@@ -236,7 +236,7 @@ namespace NightEngine::Rendering::Opengl
 
     //Generate Actual Texture Data based on the loaded file
     TextureIdentifier t = GenerateTextureData(imgData, width, height
-      , internalFormat, Format::RGB
+      , internalFormat, PixelFormat::RGB
       , filterMode, wrapMode);
 
     stbi_image_free(imgData);
@@ -246,7 +246,7 @@ namespace NightEngine::Rendering::Opengl
 
   TextureIdentifier Texture::GenerateRenderTexture(int width, int height
     , Format internalformat
-    , Format format 
+    , PixelFormat format
     , FilterMode filterMode, WrapMode wrapMode)
   {
     Debug::Log << Logger::MessageType::INFO
@@ -296,7 +296,7 @@ namespace NightEngine::Rendering::Opengl
 
   TextureIdentifier Texture::GenerateTextureData(void* imgData
     , int width, int height
-    , Format internalFormat, Format format
+    , Format internalFormat, PixelFormat format
     , FilterMode filterMode, WrapMode wrapMode)
   {
     TextureIdentifier texture;

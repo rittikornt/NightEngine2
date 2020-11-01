@@ -74,7 +74,7 @@ namespace NightEngine::Rendering::Opengl
       m_resolution.y = camera.m_scaledPixelResolution.y;
 
       m_sceneTexture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
-        , Texture::Format::RGBA16F, Texture::Format::RGBA
+        , Texture::Format::RGBA16F, Texture::PixelFormat::RGBA
         , Texture::FilterMode::LINEAR
         , Texture::WrapMode::CLAMP_TO_EDGE);
       m_sceneTexture.SetName("SceneColorRT");

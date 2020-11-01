@@ -31,13 +31,13 @@ namespace NightEngine::Rendering::Opengl
 
         //RT
         m_currRT = Texture::GenerateRenderTexture(width, height
-          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::Format::RGBA16F, Texture::PixelFormat::RGBA
           , Texture::FilterMode::LINEAR
           , Texture::WrapMode::CLAMP_TO_EDGE);
         m_currRT.SetName("SceneTAAColorRT");
 
         m_historyRT = Texture::GenerateRenderTexture(width, height
-          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::Format::RGBA16F, Texture::PixelFormat::RGBA
           , Texture::FilterMode::LINEAR
           , Texture::WrapMode::CLAMP_TO_EDGE);
         m_historyRT.SetName("SceneHistoryColorRT");
@@ -72,6 +72,9 @@ namespace NightEngine::Rendering::Opengl
       , GBuffer& gbuffer, Texture& screenTexture
       , FrameBufferObject& sceneFbo, const CameraObject& cam)
     {
+      glm::ivec2 screenSize = cam.GetScreenSize();
+      glViewport(0, 0, screenSize.x, screenSize.y);
+
       if (m_isFirstFrame)
       {
         sceneFbo.CopyBufferToTarget(m_resolution.x, m_resolution.y, m_resolution.x, m_resolution.y

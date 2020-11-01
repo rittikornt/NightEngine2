@@ -35,7 +35,7 @@ namespace NightEngine::Rendering::Opengl
             name = "BloomDownScale (" + std::to_string(g_bloomResolutions[i].x)
               + "x" + std::to_string(g_bloomResolutions[i].y) + ")";
             m_bloomDownscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
-              , Texture::Format::RGB16F, Texture::Format::RGBA
+              , Texture::Format::RGB16F, Texture::PixelFormat::RGBA
               , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
             m_bloomDownscaleTexture[i].SetName(name.c_str());
 
@@ -49,7 +49,7 @@ namespace NightEngine::Rendering::Opengl
             name = "BloomUpScale (" + std::to_string(g_bloomResolutions[i].x)
               + "x" + std::to_string(g_bloomResolutions[i].y) + ")";
             m_bloomUpscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
-              , Texture::Format::RGB16F, Texture::Format::RGBA
+              , Texture::Format::RGB16F, Texture::PixelFormat::RGBA
               , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
             m_bloomUpscaleTexture[i].SetName(name.c_str());
 
@@ -65,7 +65,7 @@ namespace NightEngine::Rendering::Opengl
         //FBO Target
         {
           m_targetTexture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
-            , Texture::Format::RGBA16F, Texture::Format::RGBA
+            , Texture::Format::RGBA16F, Texture::PixelFormat::RGBA
             , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
           m_targetTexture.SetName("BloomResult");
 

@@ -373,7 +373,6 @@ namespace Editor
       
       auto fps = NightEngine::GameTime::GetInstance().m_averageFps;
       ImGui::Text("%.1f (%.3f ms)", fps, 1000.0f / fps); ImGui::SameLine(0, 5);
-      
       //ImGui::Text("%.1f (%.3f ms)", ImGui::GetIO().Framerate,1000.0f / ImGui::GetIO().Framerate);
       ImGui::Separator();
       ShowHelpMarker("Average Frame Per Seconds");
@@ -419,7 +418,11 @@ namespace Editor
       ImGui::SetNextWindowBgAlpha(0.4f);
       ImGui::SetNextWindowSize(ImVec2(140, 200), ImGuiCond_Appearing);
       ImGui::SetNextWindowPos(ImVec2(200, 20), ImGuiCond_Appearing);
-      ImGui::Begin("Frame Information", &show_global_window
+
+      static std::string g_frameInfoHeaderName = "";
+      g_frameInfoHeaderName = "Frame Information ["
+        + std::to_string(Window::GetWidth()) +" x "+ std::to_string(Window::GetHeight()) +"]";
+      ImGui::Begin(g_frameInfoHeaderName.c_str(), &show_global_window
         , ImGuiWindowFlags_AlwaysAutoResize);
       {
         {

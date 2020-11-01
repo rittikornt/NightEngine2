@@ -33,7 +33,7 @@ namespace NightEngine::Rendering::Opengl
 
       // Motion vector
       m_motionVector = Texture::GenerateRenderTexture(m_width, m_height
-        , Texture::Format::RG16F, Texture::Format::RGBA
+        , Texture::Format::RG16F, Texture::PixelFormat::RGBA
         , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
       m_motionVector.SetName("MotionVector (RG16F)");
 
@@ -45,21 +45,21 @@ namespace NightEngine::Rendering::Opengl
 
       // (0) vec4(n.xy)
       m_textures[0] = Texture::GenerateRenderTexture(m_width, m_height
-        , Texture::Format::RG16F, Texture::Format::RGBA
+        , Texture::Format::RG16F, Texture::PixelFormat::RGBA
         , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
       m_textures[0].SetName("GBuffer0 (N.xy)");
       m_fbo.AttachColorTexture(m_textures[0], 0);
 
       //(1) vec4(albedo.xyz, metallic)
       m_textures[1] = Texture::GenerateRenderTexture(m_width, m_height
-        , Texture::Format::SRGB8_ALPHA8, Texture::Format::RGBA
+        , Texture::Format::SRGB8_ALPHA8, Texture::PixelFormat::RGBA
         , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
       m_textures[1].SetName("GBuffer1 (albedo.xyz, metallic)");
       m_fbo.AttachColorTexture(m_textures[1], 1);
 
       //(2) vec4(emissive.xyz, roughness)
       m_textures[2] = Texture::GenerateRenderTexture(m_width, m_height
-        , Texture::Format::RGBA12, Texture::Format::RGBA
+        , Texture::Format::RGBA12, Texture::PixelFormat::RGBA
         , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
       m_textures[2].SetName("GBuffer3 (emissive.xyz, roughness)");
       m_fbo.AttachColorTexture(m_textures[2], 2);

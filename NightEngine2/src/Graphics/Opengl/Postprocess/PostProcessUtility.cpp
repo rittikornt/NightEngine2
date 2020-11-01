@@ -18,7 +18,7 @@ namespace NightEngine::Rendering::Opengl
 
         //FBO Target 1
         m_target1Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
-          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::Format::RGBA16F, Texture::PixelFormat::RGBA
           , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
         m_target1Texture.SetName("TempRT1");
 
@@ -29,7 +29,7 @@ namespace NightEngine::Rendering::Opengl
 
         //FBO Target 2
         m_target2Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
-          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::Format::RGBA16F, Texture::PixelFormat::RGBA
           , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
         m_target2Texture.SetName("TempRT2");
 
@@ -133,8 +133,11 @@ namespace NightEngine::Rendering::Opengl
 
       //Copy back to target
       FrameBufferObject& fbo = (iteration - 1) % 2 == 0 ? m_temp1Fbo : m_temp2Fbo;
-      fbo.CopyToTexture(target
-        , resolution.x, resolution.y);
+      //fbo.CopyToTexture(target
+      //  , resolution.x, resolution.y);
+      fbo.CopyBufferToTarget(m_resolution.x, m_resolution.y
+        , resolution.x, resolution.y
+        , 0, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     }
 
     void PostProcessUtility::BlurTarget(glm::vec4 clearColor, FrameBufferObject& targetFbo, Texture& target

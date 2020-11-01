@@ -48,10 +48,16 @@ namespace NightEngine::Rendering::Opengl
 
       //Settings
       glm::ivec2        m_resolution = glm::ivec2(0);
+      glm::ivec2        m_halfRes = glm::ivec2(0);
+
       float             m_intensity = 2.0f;
       glm::vec3         m_color{1.0f};
       float             m_sampleRadius = 3.0f;
       float             m_bias = 0.025f;
+
+      //Note: doing half res will required downscale the stencil buffer, turned off for now
+      bool              m_useHalfRes = false;
+      bool              m_prevUseHalfResFlag = false;
 
       //Sample Kernel 
       std::vector<glm::vec3> m_sampleKernel;

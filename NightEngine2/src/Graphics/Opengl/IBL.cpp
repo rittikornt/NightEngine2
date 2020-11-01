@@ -240,7 +240,7 @@ namespace NightEngine::Rendering::Opengl
     , VertexArrayObject& screenVAO)
   {
     m_brdfLUT = Texture::GenerateRenderTexture(512, 512
-      , Texture::Format::RG16F, Texture::Format::RG
+      , Texture::Format::RG16F, Texture::PixelFormat::RG
       , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
 
     m_captureRBO.SetBuffer(resolution.x, resolution.y

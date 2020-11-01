@@ -206,13 +206,13 @@ namespace NightEngine::Rendering::Opengl
     //! @brief Generate Null texture for FrameBuffer Attachment
     static TextureIdentifier GenerateRenderTexture(int width, int height
       , Format internalformat = Format::RGB
-      , Format format = Format::RGB
+      , PixelFormat format = PixelFormat::RGB
       , FilterMode filterMode = FilterMode::LINEAR, WrapMode wrapMode = WrapMode::REPEAT);
 
     //! @brief Generate Texture from imgData
     static TextureIdentifier GenerateTextureData(void* imgData
       , int width, int height
-      , Format internalFormat, Format format
+      , Format internalFormat, PixelFormat format
       , FilterMode filterMode, WrapMode wrapMode);
 
     //! @brief Set opengl blend mode

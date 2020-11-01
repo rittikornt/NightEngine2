@@ -186,7 +186,13 @@ namespace Editor
                 static float s_ai_min = 0.0f;
                 static float s_ai_max = 1.0f;
                 ImGui::DragScalar("Ambient Intensity", ImGuiDataType_Float
-                  , &(rlgl->ambientStrength), 0.5f, &s_ai_min, &s_ai_max);
+                  , &(rlgl->ambientStrength), 0.1f, &s_ai_min, &s_ai_max);
+
+                static float s_rs_min = 0.1f;
+                static float s_rs_max = 2.0f;
+                ImGui::DragScalar("Render Scale", ImGuiDataType_Float
+                  , &(rlgl->m_camera.m_renderScale), 0.1f, &s_rs_min, &s_rs_max);
+                rlgl->m_camera.m_renderScale = max(rlgl->m_camera.m_renderScale, s_rs_min);
 
                 static float s_cfov_min = 10.0f;
                 static float s_cfov_max = 120.0f;

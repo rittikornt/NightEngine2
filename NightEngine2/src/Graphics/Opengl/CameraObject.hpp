@@ -30,7 +30,7 @@ namespace NightEngine::Rendering::Opengl
     };
     glm::ivec2 m_scaledPixelResolution = glm::ivec2(1, 1);
     glm::ivec2 m_windowPixelResolution = glm::ivec2(1, 1);
-    float m_scale = 1.0f;
+    float m_renderScale = 1.0f;
 
     CameraType m_projectionType = CameraType::PERSPECTIVE;
 		glm::vec3 m_position = DEFAULT_CAM_POS;
@@ -82,11 +82,13 @@ namespace NightEngine::Rendering::Opengl
     CameraObject(CameraType type, float size, glm::vec3 pos = DEFAULT_CAM_POS
       , float near_ = 0.3f, float far_ = 100.0f);
 
-    inline void SetResolution(int width, int height) { m_scaledPixelResolution.x = width * m_scale; m_scaledPixelResolution.y = height * m_scale; }
+    inline void SetResolution(int width, int height) { m_scaledPixelResolution.x = width * m_renderScale; m_scaledPixelResolution.y = height * m_renderScale; }
 
     inline float GetScreenAspectRatio(void) { static_cast<float>((float)m_scaledPixelResolution.x / (float)m_scaledPixelResolution.y); }
 
     inline glm::ivec2 GetScreenSize(void) const { return m_scaledPixelResolution; };
+    
+    inline glm::ivec2 GetWindowsSize(void) const { return m_windowPixelResolution; };
 
     //////////////////////////////////////////////////////////
 

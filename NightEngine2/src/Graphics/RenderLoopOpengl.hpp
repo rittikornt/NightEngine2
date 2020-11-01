@@ -19,6 +19,7 @@
 #include "Graphics/Opengl/Cubemap.hpp"
 #include "Graphics/Opengl/UniformBufferObject.hpp"
 #include "Graphics/Opengl/IBL.hpp"
+#include "Graphics/Opengl/CameraObject.hpp"
 
 //Render Passes
 #include "Graphics/Opengl/RenderPass/DepthPrepass.hpp"
@@ -85,8 +86,7 @@ namespace NightEngine::Rendering
     ShadowsResolution mainShadowResolution = ShadowsResolution::_2048;
     ShadowsResolution pointShadowResolution = ShadowsResolution::_1024;
 
-    //int m_width = 1;
-    //int m_height = 1;
+    Opengl::CameraObject m_camera{ Opengl::CameraObject::CameraType::PERSPECTIVE, 100.0f };
 
   protected:
     Opengl::SceneBuffer m_sceneBuffer;
@@ -103,8 +103,6 @@ namespace NightEngine::Rendering
     Opengl::FrameBufferObject   m_depthPointShadowFBO[POINTLIGHT_AMOUNT];
     Opengl::Cubemap             m_shadowMapPointShadow[POINTLIGHT_AMOUNT];
     Opengl::Material            m_depthPointShadowMaterial;
-
-    //glm::vec2           m_initResolution{1.0f};
 
     //Render Passes
     Opengl::DepthPrepass        m_depthPrepass;

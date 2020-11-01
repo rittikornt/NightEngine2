@@ -104,6 +104,7 @@ namespace NightEngine::Rendering::Opengl
       //sceneFbo.CopyToTexture(m_historyRT
       //  , m_width, m_height);
 
+      //TODO: Use MRT to output to both screenTexture and historyTexture in single pass
       m_taaFBO.CopyBufferToTarget(m_resolution.x, m_resolution.y, m_resolution.x, m_resolution.y
         , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
     }

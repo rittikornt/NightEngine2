@@ -177,8 +177,8 @@ namespace NightEngine::Rendering::Opengl
   {
     m_windowPixelResolution.x = Window::GetWidth();
     m_windowPixelResolution.y = Window::GetHeight();
-    m_scaledPixelResolution.x = (int)(m_windowPixelResolution.x * m_scale);
-    m_scaledPixelResolution.y = (int)(m_windowPixelResolution.y * m_scale);
+    m_scaledPixelResolution.x = (int)(m_windowPixelResolution.x * m_renderScale);
+    m_scaledPixelResolution.y = (int)(m_windowPixelResolution.y * m_renderScale);
 
     //Matrix
     m_view = CalculateViewMatrix(m_position, m_dirForward, WORLD_UP);

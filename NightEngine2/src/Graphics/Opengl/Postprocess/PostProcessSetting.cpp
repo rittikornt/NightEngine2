@@ -65,6 +65,7 @@ namespace NightEngine::Rendering::Opengl
     void PostProcessSetting::Apply(const PostProcessContext& context)
     {
       CameraObject* camera = context.camera;
+      bool additionalCompositePass = camera->m_renderScale != 1.0f;
       glm::ivec2 screenSize = camera->GetScreenSize();
       float screenZoomScale = context.screenZoomScale;
 
@@ -205,40 +206,54 @@ namespace NightEngine::Rendering::Opengl
       //*************************************************
       DebugMarker::PushDebugGroup("Final Draw");
       {
-        //FXAA
-        if (m_fxaaPP.m_enable)
+        //Required additional composite pass from abitrary RT resolution onto screen
+        if (additionalCompositePass)
         {
-          DebugMarker::PushDebugGroup("FXAA");
-          {
-            m_fxaaPP.ApplyToScreen(*screenVAO
-              , m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping ?
-                m_taaPP.m_currRT : *(context.screenTexture)
-              , screenZoomScale);
-          }
-          DebugMarker::PopDebugGroup();
+          sceneFBO->Bind();
         }
-        else
         {
-          m_blitCopyMaterial.Bind(false);
+          //FXAA
+          if (m_fxaaPP.m_enable)
           {
-            m_blitCopyMaterial.GetShader().SetUniform("u_scale", screenZoomScale);
-
-            m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
-
-            //Use TAA result if its after tonemapping
-            if (m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping)
+            DebugMarker::PushDebugGroup("FXAA");
             {
-              m_taaPP.m_currRT.BindToTextureUnit(0);
+              m_fxaaPP.ApplyToScreen(*screenVAO
+                , m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping ?
+                m_taaPP.m_currRT : *(context.screenTexture)
+                , screenZoomScale);
             }
-            else
-            {
-              screenTexture->BindToTextureUnit(0);
-            }
-
-            //Draw Quad
-            screenVAO->Draw();
+            DebugMarker::PopDebugGroup();
           }
-          m_blitCopyMaterial.Unbind();
+          else
+          {
+            m_blitCopyMaterial.Bind(false);
+            {
+              m_blitCopyMaterial.GetShader().SetUniform("u_scale", screenZoomScale);
+
+              m_blitCopyMaterial.GetShader().SetUniform("u_screenTexture", 0);
+
+              //Use TAA result if its after tonemapping
+              if (m_taaPP.m_enable && !m_taaPP.m_beforeTonemapping)
+              {
+                m_taaPP.m_currRT.BindToTextureUnit(0);
+              }
+              else
+              {
+                screenTexture->BindToTextureUnit(0);
+              }
+
+              //Draw Quad
+              screenVAO->Draw();
+            }
+            m_blitCopyMaterial.Unbind();
+          }
+        }
+        if (additionalCompositePass)
+        {
+          sceneFBO->Unbind();
+          sceneFBO->CopyBufferToTarget(camera->m_scaledPixelResolution.x, camera->m_scaledPixelResolution.y
+            , camera->m_windowPixelResolution.x, camera->m_windowPixelResolution.y
+            , 0, GL_COLOR_BUFFER_BIT, GL_LINEAR);
         }
       }
       DebugMarker::PopDebugGroup();

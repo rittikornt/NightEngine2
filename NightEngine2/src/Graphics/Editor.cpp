@@ -60,6 +60,8 @@ namespace Editor
   //Top Menu
   static bool show_top_menu = true;
 
+  static bool reenable_ui = false;
+
   //Custom editor
   static DevConsole g_devConsole;
   static RenderSettingEditor g_postprocessSetting;
@@ -147,7 +149,6 @@ namespace Editor
       Debug::Log << Logger::MessageType::INFO << "New Scene\n";
     }
 
-
     if (ImGui::MenuItem("Open", "Ctrl+O"))
     {
       static std::vector<std::string> s_paths;
@@ -194,13 +195,51 @@ namespace Editor
     //Option
     if (ImGui::BeginMenu("Options"))
     {
-      static bool enabled = true;
-      ImGui::MenuItem("Enabled", "", &enabled);
+      //static bool enabled = true;
+      //ImGui::MenuItem("Enabled", "", &enabled);
 
       //Toggle resolution
       if (ImGui::Button("Toggle Resolution"))
       {
         Window::ToggleWindowSize();
+
+        //Re-enable all the UI
+        reenable_ui = true;
+        {
+          bool& enabled = g_hierarchy.GetBool();
+          bool wasEnabled = enabled;
+          enabled = false;
+        }
+
+        {
+          bool& enabled = g_archetypeBrowser.GetBool();
+          bool wasEnabled = enabled;
+          enabled = false;
+        }
+
+        {
+          bool& enabled = g_materialEditor.GetBool();
+          bool wasEnabled = enabled;
+          enabled = false;
+        }
+
+        {
+          bool& enabled = g_inspector.GetBool();
+          bool wasEnabled = enabled;
+          enabled = false;
+        }
+
+        {
+          bool& enabled = g_devConsole.GetBool();
+          bool wasEnabled = enabled;
+          enabled = false;
+        }
+
+        {
+          bool& enabled = g_postprocessSetting.GetBool();
+          bool wasEnabled = enabled;
+          enabled = false;
+        }
       }
       ImGui::SameLine(0, 5);
       ImGui::Text("%d x %d", Window::GetWidth(), Window::GetHeight());
@@ -212,8 +251,7 @@ namespace Editor
       }
       ImGui::Separator();
 
-
-      ImGui::BeginChild("child", ImVec2(0, 60), true);
+      /*ImGui::BeginChild("child", ImVec2(0, 60), true);
         for (int i = 0; i < 10; i++)
           ImGui::Text("Scrolling Text %d", i);
       ImGui::EndChild();
@@ -224,7 +262,7 @@ namespace Editor
       ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
       ImGui::InputFloat("Input", &f, 0.1f);
       ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-      ImGui::Checkbox("Check", &b);
+      ImGui::Checkbox("Check", &b);*/
 
       ImGui::EndMenu();
     }
@@ -480,6 +518,13 @@ namespace Editor
     g_postprocessSetting.Update(g_memberSerializer);
 
     //Top Menu
+    if (reenable_ui)
+    {
+      g_hierarchy.GetBool() = true;
+      g_inspector.GetBool() = true;
+      g_postprocessSetting.GetBool() = true;
+      reenable_ui = false;
+    }
     if (show_top_menu)
     {
       DrawTopMainMenuBar();

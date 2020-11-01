@@ -117,12 +117,9 @@ namespace NightEngine::Rendering
     ,"u_lightSpaceMatrices[2]","u_lightSpaceMatrices[3]"
     ,"u_lightSpaceMatrices[4]" ,"u_lightSpaceMatrices[5]" };
 
-  //Camera
-  static Opengl::CameraObject g_camera{ Opengl::CameraObject::CameraType::PERSPECTIVE
-    ,100.0f };
-
   static SceneLights g_sceneLights;
   static float g_time = 0.0f;
+  static glm::vec3 g_cameraPosition = glm::vec3(0.0f);
 
   static bool g_enablePostprocess = true;
   static bool g_showLight = true;
@@ -219,9 +216,9 @@ namespace NightEngine::Rendering
     // Frame Buffer Object
     //************************************************
     //m_width = Window::GetWidth(); m_height = Window::GetHeight();
-    g_camera.SetResolution(Window::GetWidth(), Window::GetHeight());
-    int width = g_camera.m_scaledPixelResolution.x;
-    int height = g_camera.m_scaledPixelResolution.y;
+    m_camera.SetResolution(Window::GetWidth(), Window::GetHeight());
+    int width = m_camera.m_scaledPixelResolution.x;
+    int height = m_camera.m_scaledPixelResolution.y;
 
     //Depth FBO for shadow
     //m_initResolution.x = (float)m_width, m_initResolution.y = (float)m_height;
@@ -245,17 +242,17 @@ namespace NightEngine::Rendering
       , "RenderPass/Shadows/depth_point.frag", "RenderPass/Shadows/depth_point.geom");
 
     //GBuffer
-    m_gbuffer.LazyInit(g_camera);
+    m_gbuffer.LazyInit(m_camera);
     m_depthPrepass.Init(m_gbuffer);
 
     //Scene Texture
-    m_sceneBuffer.LazyInit(g_camera, m_gbuffer);
+    m_sceneBuffer.LazyInit(m_camera, m_gbuffer);
 
     //************************************************
     // Postprocess
     //************************************************
     m_postProcessSetting = &(SceneManager::GetPostProcessSetting());
-    m_postProcessSetting->LazyInit(g_camera, m_gbuffer);
+    m_postProcessSetting->LazyInit(m_camera, m_gbuffer);
 
     //Prepass
     m_cameraMotionVector.Init(m_gbuffer);
@@ -264,7 +261,7 @@ namespace NightEngine::Rendering
     // Cubemap
     //************************************************
     //IBL
-    m_ibl.Init(g_camera, m_sceneBuffer.m_screenTriangleVAO);
+    m_ibl.Init(m_camera, m_sceneBuffer.m_screenTriangleVAO);
 
     //************************************************
     // Material
@@ -322,7 +319,7 @@ namespace NightEngine::Rendering
     m_defaultMaterial->GetShader().SetUniformBlockBindingPoint("u_matrices", bindingPoint);
     m_uniformBufferObject.Init(sizeof(glm::mat4) * 2, bindingPoint);
     m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
-      , glm::value_ptr(g_camera.GetUnjitteredProjectionMatrix()));
+      , glm::value_ptr(m_camera.GetUnjitteredProjectionMatrix()));
   }
 
   void RenderLoopOpengl::Terminate(void)
@@ -371,31 +368,34 @@ namespace NightEngine::Rendering
     g_time += dt;
     g_time = fmodf(g_time, FLT_MAX);
 
-    Opengl::CameraObject::ProcessCameraInput(g_camera, dt);
+    Opengl::CameraObject::ProcessCameraInput(m_camera, dt);
 
     //Update the new Projection Matrix
-    g_camera.m_bJitterProjectionMatrix = m_postProcessSetting->m_taaPP.m_enable;
-    g_camera.m_camSize.m_fov = cameraFOV;
-    g_camera.m_far = cameraFarPlane;
-    g_camera.m_jitterStrength = m_postProcessSetting->m_taaPP.m_frustumJitterStrength;
+    m_camera.m_bJitterProjectionMatrix = m_postProcessSetting->m_taaPP.m_enable;
+    m_camera.m_camSize.m_fov = cameraFOV;
+    m_camera.m_far = cameraFarPlane;
+    m_camera.m_jitterStrength = m_postProcessSetting->m_taaPP.m_frustumJitterStrength;
 
-    g_camera.OnStartFrame();
+    m_camera.OnStartFrame();
     Drawer::OnStartFrame(Drawer::DrawPass::UNDEFINED);
     Drawer::OnStartFrame(Drawer::DrawPass::OPAQUE_PASS);
     Drawer::OnStartFrame(Drawer::DrawPass::DEBUG);
 
     //Update View/Projection matrix to Shader
     m_uniformBufferObject.FillBuffer(0, sizeof(glm::mat4)
-      , glm::value_ptr(g_camera.m_VP));
+      , glm::value_ptr(m_camera.m_VP));
     m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
-      , glm::value_ptr(g_camera.m_projection));
+      , glm::value_ptr(m_camera.m_projection));
 
     //Dynamically Resize Texture if needed
     {
-      m_sceneBuffer.LazyInit(g_camera, m_gbuffer);
-      m_gbuffer.LazyInit(g_camera);
-      m_postProcessSetting->LazyInit(g_camera, m_gbuffer);
+      m_sceneBuffer.LazyInit(m_camera, m_gbuffer);
+      m_gbuffer.LazyInit(m_camera);
+      m_postProcessSetting->LazyInit(m_camera, m_gbuffer);
     }
+
+    //Update global variable for lambda func
+    g_cameraPosition = m_camera.m_position;
 
     //*************************************************
     // Rendering Loop
@@ -427,7 +427,7 @@ namespace NightEngine::Rendering
       glfwPollEvents();
     }
 
-    g_camera.OnEndFrame();
+    m_camera.OnEndFrame();
     Drawer::OnEndFrame(Drawer::DrawPass::OPAQUE_PASS);
     Drawer::OnEndFrame(Drawer::DrawPass::UNDEFINED);
   }
@@ -443,7 +443,7 @@ namespace NightEngine::Rendering
     SetDeferredLightingPassUniforms(m_debugViewMaterial);
     
     //IBL
-    m_ibl.RefreshTextureUniforms(g_camera);
+    m_ibl.RefreshTextureUniforms(m_camera);
 
     //Postprocessing
     m_postProcessSetting->RefreshTextureUniforms();
@@ -458,12 +458,12 @@ namespace NightEngine::Rendering
     glClearColor(clear_color, clear_color, clear_color, clear_color);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float pointShadowFarPlane = g_camera.m_far;
+    float pointShadowFarPlane = m_camera.m_far;
 
     //*************************************************
     // Depth Prepass
     //*************************************************
-    m_depthPrepass.Execute(g_camera);
+    m_depthPrepass.Execute(m_camera);
 
     //*************************************************
     // ShadowCaster Prepass
@@ -486,7 +486,7 @@ namespace NightEngine::Rendering
       {
         auto lightComponent = g_sceneLights.dirLights[0]->GetComponent("Light");
         g_dirLightWorldToLightSpaceMatrix = lightComponent->Get<Light>()
-          ->CalculateDirLightWorldToLightSpaceMatrix(g_camera, mainShadowsSize, 0.3f, mainShadowsFarPlane);
+          ->CalculateDirLightWorldToLightSpaceMatrix(m_camera, mainShadowsSize, 0.3f, mainShadowsFarPlane);
 
         //Draw pass to FBO
         m_depthDirShadowFBO.Bind();
@@ -559,8 +559,8 @@ namespace NightEngine::Rendering
     // Geometry Pass
     //*************************************************
     //glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
-    glViewport(0, 0, g_camera.m_scaledPixelResolution.x, g_camera.m_scaledPixelResolution.y);
-
+    glViewport(0, 0, m_camera.m_scaledPixelResolution.x, m_camera.m_scaledPixelResolution.y);
+    
     // This got weird real fast lol
     m_gbuffer.Execute(m_defaultMaterial
       , [](NightEngine::EC::Handle<Material>& defaultMaterial)
@@ -584,7 +584,7 @@ namespace NightEngine::Rendering
           , [](Shader& shader)
           {
             shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
-            shader.SetUniformNoErrorCheck("u_cameraPosWS", g_camera.m_position);
+            //shader.SetUniformNoErrorCheck("u_cameraPosWS", g_cameraPosition);
           });
       });
 
@@ -594,7 +594,7 @@ namespace NightEngine::Rendering
     DebugMarker::PushDebugGroup("CameraMotionVector");
     {
       m_cameraMotionVector.Render(m_sceneBuffer.m_screenTriangleVAO
-        , m_gbuffer, g_camera);
+        , m_gbuffer, m_camera);
     }
     DebugMarker::PopDebugGroup();
 
@@ -623,7 +623,7 @@ namespace NightEngine::Rendering
         Shader& shader = lightingPassMat.GetShader();
         shader.SetUniform("u_farPlane", pointShadowFarPlane);
         shader.SetUniform("u_ambientStrength", ambientStrength);
-        shader.SetUniform("u_invVP", g_camera.m_invVP);
+        shader.SetUniform("u_invVP", m_camera.m_invVP);
         shader.SetUniform("u_lightSpaceMatrix", g_dirLightWorldToLightSpaceMatrix);
         
         if (debugView)
@@ -654,7 +654,7 @@ namespace NightEngine::Rendering
         m_gbuffer.BindTextures();
 
         //Camera Position
-        g_camera.ApplyCameraInfo(shader);
+        m_camera.ApplyCameraInfo(shader);
 
         //Apply Light information to the Shader
         ClearLightData(shader);
@@ -672,7 +672,7 @@ namespace NightEngine::Rendering
       {
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
-        m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
+        m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, m_camera);
       }
     }
     m_sceneBuffer.m_sceneFbo.Unbind();
@@ -695,7 +695,7 @@ namespace NightEngine::Rendering
       DebugMarker::PushDebugGroup("PostProcess");
       //Postfx
       {
-        m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
+        m_postProcessSetting->Apply(PostProcessContext{ &m_camera, &m_gbuffer
           , & m_sceneBuffer.m_sceneFbo, & m_sceneBuffer.m_screenTriangleVAO, & m_sceneBuffer.m_sceneTexture
           , g_time, screenZoomScale });
       }
@@ -704,8 +704,8 @@ namespace NightEngine::Rendering
     else
     { 
       //Blit to backbuffer
-      m_sceneBuffer.m_sceneFbo.CopyBufferToTarget(g_camera.m_scaledPixelResolution.x, g_camera.m_scaledPixelResolution.y
-        , g_camera.m_windowPixelResolution.x, g_camera.m_windowPixelResolution.y
+      m_sceneBuffer.m_sceneFbo.CopyBufferToTarget(m_camera.m_scaledPixelResolution.x, m_camera.m_scaledPixelResolution.y
+        , m_camera.m_windowPixelResolution.x, m_camera.m_windowPixelResolution.y
         , 0, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     }
 
@@ -725,18 +725,20 @@ namespace NightEngine::Rendering
   {
     DebugMarker::PushDebugGroup("Editor Icons");
     {
+      glViewport(0, 0, m_camera.m_windowPixelResolution.x
+        , m_camera.m_windowPixelResolution.y);
       if (g_showLight)
       {
         glEnable(GL_DEPTH_TEST);
 
         Texture::SetBlendMode(true);
         //Draw Light Icons Billboard
-        g_camera.ApplyViewMatrix(m_billboardMaterial->GetShader());
+        m_camera.ApplyViewMatrix(m_billboardMaterial->GetShader());
         m_billboardMaterial->Bind(false);
         {
           Shader& shader = m_billboardMaterial->GetShader();
 
-          shader.SetUniform("u_projection", g_camera.m_unjitteredProjection);
+          shader.SetUniform("u_projection", m_camera.m_unjitteredProjection);
           shader.SetUniform("u_color", glm::vec3(1.0f, 1.0f, 1.0f));
 
           shader.SetUniform("u_texture", 0);
@@ -754,7 +756,7 @@ namespace NightEngine::Rendering
       auto physicsScene = Physics::PhysicsScene::GetPhysicsScene(0);
       if (physicsScene != nullptr)
       {
-        physicsScene->DebugDraw(g_camera);
+        physicsScene->DebugDraw(m_camera);
       }
     }
     DebugMarker::PopDebugGroup();

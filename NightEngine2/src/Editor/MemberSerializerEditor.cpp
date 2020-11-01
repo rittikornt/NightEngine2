@@ -14,7 +14,7 @@
 #include "Core/EC/GameObject.hpp"
 #include "Core/EC/SceneManager.hpp"
 
-#include "Graphics/Opengl/Window.hpp"
+//#include "Graphics/Opengl/Window.hpp"
 
 #include "Graphics/Opengl/Material.hpp"
 #include "Graphics/Opengl/Texture.hpp"

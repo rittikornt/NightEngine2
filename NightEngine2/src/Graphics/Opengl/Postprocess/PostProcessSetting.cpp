@@ -21,43 +21,51 @@ namespace NightEngine::Rendering::Opengl
   {
     INIT_REFLECTION_FOR(PostProcessSetting)
 
-    void PostProcessSetting::Init(int width, int height, GBuffer& gbuffer)
+    void PostProcessSetting::LazyInit(CameraObject& camera, GBuffer& gbuffer)
     {
-      //Resources
-      m_uberPostMaterial.InitShader("Utility/fullscreenTriangle.vert"
-        , "Postprocess/uberpost.frag");
-      
-      m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
-        , "Utility/blitCopy.frag");
+      if (m_resolution.x == 0)
+      {
+        //Init Resources
+        m_uberPostMaterial.InitShader("Utility/fullscreenTriangle.vert"
+          , "Postprocess/uberpost.frag");
 
-      m_ssaoComposite.InitShader("Utility/fullscreenTriangle.vert"
-        , "Postprocess/ssao_composite.frag");
+        m_blitCopyMaterial.InitShader("Utility/fullscreenTriangle.vert"
+          , "Utility/blitCopy.frag");
 
-      //Postfx
-      m_ppUtility.Init(width, height);
+        m_ssaoComposite.InitShader("Utility/fullscreenTriangle.vert"
+          , "Postprocess/ssao_composite.frag");
 
-      //Bloom
-      m_bloomPP.Init(width, height);
+        //FXAA
+        m_fxaaPP.Init(m_resolution.x, m_resolution.y);
 
-      //SSAO
-      m_ssaoPP.Init(width, height , gbuffer);
+        m_postProcessEffects.emplace_back(&m_bloomPP);
+        m_postProcessEffects.emplace_back(&m_ssaoPP);
+        m_postProcessEffects.emplace_back(&m_fxaaPP);
+        m_postProcessEffects.emplace_back(&m_taaPP);
+      }
 
-      //FXAA
-      m_fxaaPP.Init(width, height);
+      {
+        m_resolution.x = camera.m_scaledPixelResolution.x;
+        m_resolution.y = camera.m_scaledPixelResolution.y;
 
-      //TAA
-      m_taaPP.Init(width, height);
+        //Postfx
+        m_ppUtility.LazyInit(m_resolution.x, m_resolution.y);
 
-      m_postProcessEffects.emplace_back(&m_bloomPP);
-      m_postProcessEffects.emplace_back(&m_ssaoPP);
-      m_postProcessEffects.emplace_back(&m_fxaaPP);
-      m_postProcessEffects.emplace_back(&m_taaPP);
+        //Bloom
+        m_bloomPP.LazyInit(m_resolution.x, m_resolution.y);
+
+        //SSAO
+        m_ssaoPP.LazyInit(m_resolution.x, m_resolution.y, gbuffer);
+
+        //TAA
+        m_taaPP.LazyInit(m_resolution.x, m_resolution.y);
+      }
     }
 
     void PostProcessSetting::Apply(const PostProcessContext& context)
     {
       CameraObject* camera = context.camera;
-      auto screenSize = camera->GetScreenSize();
+      glm::ivec2 screenSize = camera->GetScreenSize();
       float screenZoomScale = context.screenZoomScale;
 
       GBuffer* gbuffer = context.gbuffer;

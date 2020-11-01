@@ -48,11 +48,10 @@ namespace NightEngine::Rendering::Opengl
       float m_frustumJitterStrength = 1.0f;
 
       bool m_isFirstFrame = true;
-      int m_width = 1;
-      int m_height = 1;
+      glm::ivec2 m_resolution = glm::ivec2(0);
 
       //! @brief Initialization
-      void Init(int width, int height);
+      void LazyInit(int width, int height);
 
       //! @brief Apply TAA to the screen texture
       void Apply(VertexArrayObject& screenVAO

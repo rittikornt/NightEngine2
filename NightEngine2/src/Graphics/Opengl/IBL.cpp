@@ -30,8 +30,8 @@ namespace NightEngine::Rendering::Opengl
   };
 
   //Resolution
-  const glm::ivec2 g_irrandianceMapResolution{ 256,256 };
-  const glm::ivec2 g_prefilteredMapResolution{ 512,512 };
+  const glm::ivec2 g_irradianceMapResolution{ 256,256 };  //indirect diffuse
+  const glm::ivec2 g_prefilteredMapResolution{ 512,512 }; //indirect specular (reflection)
   const glm::ivec2 g_brdfLUTResolution{ 512, 512 };
 
   void IBL::Init(CameraObject& camera, VertexArrayObject& screenVAO)
@@ -48,7 +48,7 @@ namespace NightEngine::Rendering::Opengl
       , "RenderPass/skybox.frag", Texture::Format::RGB16F);
     camera.ApplyUnJitteredProjectionMatrix(m_cubemap.GetShader());
 
-    m_irradianceCubemap.Init(g_irrandianceMapResolution.x, g_irrandianceMapResolution.y
+    m_irradianceCubemap.Init(g_irradianceMapResolution.x, g_irradianceMapResolution.y
       , "RenderPass/skybox.vert", "RenderPass/skybox.frag"
       , Texture::Format::RGB16F);
     camera.ApplyUnJitteredProjectionMatrix(m_irradianceCubemap.GetShader());
@@ -93,7 +93,7 @@ namespace NightEngine::Rendering::Opengl
     //Baking IBL
     //ConvertHDRToCubemap("HDRI/Walk_Of_Fame/Mans_Outside_2k.hdr");
     ConvertHDRToCubemap("HDRI/approaching_storm_4k.hdr");
-    BakeIrradiancemap(g_irrandianceMapResolution);
+    BakeIrradiancemap(g_irradianceMapResolution);
     BakePrefilteredmap(g_prefilteredMapResolution);
     BakeBRDFLUT(g_brdfLUTResolution, screenVAO);
   }

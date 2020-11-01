@@ -23,7 +23,6 @@ namespace NightEngine::Rendering::Opengl
     EmissiveAndRoughness,          // (2) vec4(emissive.xyz, roughness)
     Count
   };
-  //TODO: Calculate Position from Depth Buffer
 
   //! @brief GBuffer struct
   struct GBuffer
@@ -35,11 +34,11 @@ namespace NightEngine::Rendering::Opengl
 
     Texture             m_depthTexture;
     Texture             m_motionVector;
-    int                 m_width  = 1;
-    int                 m_height = 1;
+    int                 m_width  = 0;
+    int                 m_height = 0;
 
     //! @brief Initialize G buffer
-    void Init(int width, int height);
+    void LazyInit(CameraObject& cameraObject);
 
     //! @brief Draw GBuffer pass
     void Execute(NightEngine::EC::Handle<Material>& defaultMaterial

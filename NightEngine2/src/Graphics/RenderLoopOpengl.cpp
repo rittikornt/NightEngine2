@@ -64,6 +64,52 @@ using namespace NightEngine::Rendering::Opengl::PrimitiveShape;
 using namespace NightEngine::Rendering::Opengl::Postprocess;
 using namespace NightEngine::Rendering::Opengl;
 
+namespace NightEngine::Rendering::Opengl
+{
+  void SceneBuffer::LazyInit(CameraObject& camera, GBuffer& gbuffer)
+  {
+    if (m_resolution.x == 0)
+    {
+      m_resolution.x = camera.m_scaledPixelResolution.x;
+      m_resolution.y = camera.m_scaledPixelResolution.y;
+
+      m_sceneTexture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
+        , Texture::Format::RGBA16F, Texture::Format::RGBA
+        , Texture::FilterMode::LINEAR
+        , Texture::WrapMode::CLAMP_TO_EDGE);
+      m_sceneTexture.SetName("SceneColorRT");
+
+      //Scene FBO
+      m_sceneFbo.Init();
+      m_sceneFbo.AttachColorTexture(m_sceneTexture);
+      m_sceneFbo.AttachDepthTexture(gbuffer.m_depthTexture);
+      m_sceneFbo.Bind();
+
+      //Fullscreen Mesh
+      m_screenTriangleVAO.Init();
+      m_screenTriangleVAO.Build(BufferMode::Static, Triangle::vertices
+        , Triangle::indices, Triangle::info);
+    }
+    else
+    {
+      int width = camera.m_scaledPixelResolution.x;
+      int height = camera.m_scaledPixelResolution.y;
+
+      // Check for resize
+      if (m_resolution.x != width || m_resolution.y != height)
+      {
+        m_resolution.x = width;
+        m_resolution.y = height;
+        m_sceneTexture.Resize(width, height, Texture::PixelFormat::RGBA);
+
+        /*glBindTexture(GL_TEXTURE_2D, m_sceneTexture.GetID());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);*/
+      }
+    }
+  }
+}
+
 namespace NightEngine::Rendering
 {
   const std::string   g_lightSpaceMatrices[]{
@@ -172,10 +218,13 @@ namespace NightEngine::Rendering
     //************************************************
     // Frame Buffer Object
     //************************************************
-    m_width = Window::GetWidth(); m_height = Window::GetHeight();
+    //m_width = Window::GetWidth(); m_height = Window::GetHeight();
+    g_camera.SetResolution(Window::GetWidth(), Window::GetHeight());
+    int width = g_camera.m_scaledPixelResolution.x;
+    int height = g_camera.m_scaledPixelResolution.y;
 
     //Depth FBO for shadow
-    m_initResolution.x = (float)m_width, m_initResolution.y = (float)m_height;
+    //m_initResolution.x = (float)m_width, m_initResolution.y = (float)m_height;
 
     m_depthDirShadowFBO.Init();
     m_shadowMapDirShadowTexture = m_depthDirShadowFBO.CreateAndAttachDepthTexture(g_dirLightResolution, g_dirLightResolution);
@@ -196,41 +245,26 @@ namespace NightEngine::Rendering
       , "RenderPass/Shadows/depth_point.frag", "RenderPass/Shadows/depth_point.geom");
 
     //GBuffer
-    m_gbuffer.Init(m_width, m_height);
-    m_depthPrepass.Init(m_width, m_height, m_gbuffer);
+    m_gbuffer.LazyInit(g_camera);
+    m_depthPrepass.Init(m_gbuffer);
 
     //Scene Texture
-    m_sceneTexture = Texture::GenerateRenderTexture(m_width, m_height
-      , Texture::Format::RGBA16F, Texture::Format::RGBA
-      , Texture::FilterMode::LINEAR
-      , Texture::WrapMode::CLAMP_TO_EDGE);
-    m_sceneTexture.SetName("SceneColorRT");
-
-    //Scene FBO
-    m_sceneFbo.Init();
-    m_sceneFbo.AttachColorTexture(m_sceneTexture);
-    m_sceneFbo.AttachDepthTexture(m_gbuffer.m_depthTexture);
-    m_sceneFbo.Bind();
+    m_sceneBuffer.LazyInit(g_camera, m_gbuffer);
 
     //************************************************
     // Postprocess
     //************************************************
     m_postProcessSetting = &(SceneManager::GetPostProcessSetting());
-    m_postProcessSetting->Init(m_width, m_height , m_gbuffer);
+    m_postProcessSetting->LazyInit(g_camera, m_gbuffer);
 
     //Prepass
-    m_cameraMotionVector.Init(m_width, m_height, m_gbuffer);
-
-    //Screen Quad
-    m_screenTriangleVAO.Init();
-    m_screenTriangleVAO.Build(BufferMode::Static, Triangle::vertices
-      , Triangle::indices, Triangle::info);
+    m_cameraMotionVector.Init(m_gbuffer);
 
     //************************************************
     // Cubemap
     //************************************************
     //IBL
-    m_ibl.Init(g_camera, m_screenTriangleVAO);
+    m_ibl.Init(g_camera, m_sceneBuffer.m_screenTriangleVAO);
 
     //************************************************
     // Material
@@ -356,6 +390,13 @@ namespace NightEngine::Rendering
     m_uniformBufferObject.FillBuffer(sizeof(glm::mat4), sizeof(glm::mat4)
       , glm::value_ptr(g_camera.m_projection));
 
+    //Dynamically Resize Texture if needed
+    {
+      m_sceneBuffer.LazyInit(g_camera, m_gbuffer);
+      m_gbuffer.LazyInit(g_camera);
+      m_postProcessSetting->LazyInit(g_camera, m_gbuffer);
+    }
+
     //*************************************************
     // Rendering Loop
     //*************************************************
@@ -375,12 +416,13 @@ namespace NightEngine::Rendering
         Editor::PostRender();
       }
       DebugMarker::PopDebugGroup();
+
+      DebugMarker::EndFrame();
 #else
       Render();
 #endif
 
       // Flip Buffers and Draw
-      DebugMarker::EndFrame();
       Window::SwapBuffer();
       glfwPollEvents();
     }
@@ -516,7 +558,8 @@ namespace NightEngine::Rendering
     //*************************************************
     // Geometry Pass
     //*************************************************
-    glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
+    //glViewport(0, 0, (GLsizei)m_initResolution.x, (GLsizei)m_initResolution.y);
+    glViewport(0, 0, g_camera.m_scaledPixelResolution.x, g_camera.m_scaledPixelResolution.y);
 
     // This got weird real fast lol
     m_gbuffer.Execute(m_defaultMaterial
@@ -545,13 +588,12 @@ namespace NightEngine::Rendering
           });
       });
 
-
     //*************************************************
     // Camera Motion Vector Pass
     //*************************************************
     DebugMarker::PushDebugGroup("CameraMotionVector");
     {
-      m_cameraMotionVector.Render(m_screenTriangleVAO
+      m_cameraMotionVector.Render(m_sceneBuffer.m_screenTriangleVAO
         , m_gbuffer, g_camera);
     }
     DebugMarker::PopDebugGroup();
@@ -567,7 +609,7 @@ namespace NightEngine::Rendering
 
     //TODO: Move into a separate Lighting Pass struct/class
     DebugMarker::PushDebugGroup("Deferred Lighting Pass");
-    m_sceneFbo.Bind();
+    m_sceneBuffer.m_sceneFbo.Bind();
     {
       //Clear Buffer
       glClear(GL_COLOR_BUFFER_BIT);
@@ -619,7 +661,7 @@ namespace NightEngine::Rendering
         ApplyLight(shader);
 
         //Draw Fullscreen Mesh
-        m_screenTriangleVAO.Draw();
+        m_sceneBuffer.m_screenTriangleVAO.Draw();
       }
       lightingPassMat.Unbind();
 
@@ -633,7 +675,7 @@ namespace NightEngine::Rendering
         m_ibl.DrawCubemap(IBL::CubemapType::SKYBOX, g_camera);
       }
     }
-    m_sceneFbo.Unbind();
+    m_sceneBuffer.m_sceneFbo.Unbind();
     DebugMarker::PopDebugGroup();
 
     //*************************************************
@@ -654,14 +696,17 @@ namespace NightEngine::Rendering
       //Postfx
       {
         m_postProcessSetting->Apply(PostProcessContext{ &g_camera, &m_gbuffer
-          , &m_sceneFbo, &m_screenTriangleVAO, &m_sceneTexture
+          , & m_sceneBuffer.m_sceneFbo, & m_sceneBuffer.m_screenTriangleVAO, & m_sceneBuffer.m_sceneTexture
           , g_time, screenZoomScale });
       }
       DebugMarker::PopDebugGroup();
     }
     else
     { 
-      m_sceneFbo.CopyBufferToTarget(m_width, m_height, m_width, m_height, 0, GL_COLOR_BUFFER_BIT);
+      //Blit to backbuffer
+      m_sceneBuffer.m_sceneFbo.CopyBufferToTarget(g_camera.m_scaledPixelResolution.x, g_camera.m_scaledPixelResolution.y
+        , g_camera.m_windowPixelResolution.x, g_camera.m_windowPixelResolution.y
+        , 0, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     }
 
     //Debugging View

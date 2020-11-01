@@ -24,10 +24,8 @@ using namespace NightEngine;
 
 namespace NightEngine::Rendering::Opengl
 {
-  void DepthPrepass::Init(int width, int height, GBuffer& gbuffer)
+  void DepthPrepass::Init(GBuffer& gbuffer)
   {
-    m_width = width, m_height = height;
-
     //Material
     m_depthPrepassMaterial.InitShader("ShaderPass/depth_prepass.vert"
       , "ShaderPass/depth_prepass.frag");
@@ -49,7 +47,7 @@ namespace NightEngine::Rendering::Opengl
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 
-    auto resolution = camera.GetScreenSize();
+    glm::ivec2 resolution = camera.GetScreenSize();
     glViewport(0, 0, (GLsizei)resolution.x, (GLsizei)resolution.y);
 
     glEnable(GL_STENCIL_TEST);

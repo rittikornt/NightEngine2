@@ -200,14 +200,15 @@ namespace NightEngine::Rendering::Opengl
 
   void FrameBufferObject::CopyBufferToTarget(int width,int height
     , int targetWidth, int targetHeight
-    , unsigned fboId, unsigned bitField)
+    , unsigned fboId, unsigned bitField, int filter)
   {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_id);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboId);
 
     //bitField: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT and GL_STENCIL_BUFFER_BIT
+    //filter: GL_NEAREST, GL_LINEAR
     glBlitFramebuffer(0, 0, width, height, 0, 0
-      , targetWidth, targetHeight, bitField, GL_NEAREST);
+      , targetWidth, targetHeight, bitField, filter);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 

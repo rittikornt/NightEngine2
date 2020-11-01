@@ -251,6 +251,7 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     {
         //force [0, 0.999] range so it doesn't goes to infinity when UNMAP
         currColor = UNMAP(currColor * 0.999);
+        //currColor = UNMAP(min(currColor, 0.999));
     }
 
     currColor = clamp(currColor.xyz, 0.0, CLAMP_MAX);

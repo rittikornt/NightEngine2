@@ -35,8 +35,6 @@ namespace NightEngine::Rendering::Opengl
           , nullptr, nullptr)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_resolution, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_intensity, true)
-          .MR_ADD_MEMBER_PROTECTED(SSAO, m_blurIteration, true)
-          .MR_ADD_MEMBER_PROTECTED(SSAO, m_useKawaseBlur, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_color, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_sampleRadius, true)
           .MR_ADD_MEMBER_PROTECTED(SSAO, m_bias, true)
@@ -49,10 +47,8 @@ namespace NightEngine::Rendering::Opengl
       Shader            m_simpleBlur;
 
       //Settings
-      glm::ivec2        m_resolution = glm::ivec2(1);
+      glm::ivec2        m_resolution = glm::ivec2(0);
       float             m_intensity = 2.0f;
-      int               m_blurIteration = 4;
-      bool              m_useKawaseBlur = false;
       glm::vec3         m_color{1.0f};
       float             m_sampleRadius = 3.0f;
       float             m_bias = 0.025f;
@@ -65,7 +61,7 @@ namespace NightEngine::Rendering::Opengl
       Texture m_noiseTexture; //For rotating the sample kernel
 
       //! @brief Initialization
-      void Init(int width, int height , GBuffer& gbuffer);
+      void LazyInit(int width, int height , GBuffer& gbuffer);
 
       //! @brief Apply SSAO to the screen texture
       void Apply(VertexArrayObject& screenVAO

@@ -51,7 +51,7 @@ namespace NightEngine::Rendering::Opengl
       FrameBufferObject m_bloomUpscaleFbo[k_bloomPyramidCount + 1];
       Texture           m_bloomUpscaleTexture[k_bloomPyramidCount + 1];
 
-      glm::ivec2        m_resolution = glm::ivec2(1);;
+      glm::ivec2        m_resolution = glm::ivec2(0);
 
       //Shader
       Shader            m_thresholdShader;
@@ -70,7 +70,7 @@ namespace NightEngine::Rendering::Opengl
       glm::vec2         m_blurDir = glm::vec2(0.0f);
 
       //! @brief Initialization
-      void Init(int width, int height);
+      void LazyInit(int width, int height);
 
       //! @brief Apply Bloom to the screen texture
       void Apply(VertexArrayObject& screenVAO

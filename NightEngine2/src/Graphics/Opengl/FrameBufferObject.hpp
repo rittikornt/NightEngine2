@@ -65,7 +65,7 @@ namespace NightEngine::Rendering::Opengl
       //! @brief Copy buffer to the target FBO
       void CopyBufferToTarget(int width, int height
         , int targetWidth, int targetHeight
-        , unsigned fboId, unsigned bitField);
+        , unsigned fboId, unsigned bitField, int filter);
 
       //! @brief Copy buffer to the target Texture
       void CopyToTexture(Texture& target

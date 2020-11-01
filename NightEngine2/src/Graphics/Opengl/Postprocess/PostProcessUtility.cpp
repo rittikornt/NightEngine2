@@ -10,50 +10,62 @@ namespace NightEngine::Rendering::Opengl
 {
   namespace Postprocess
   {
-    void PostProcessUtility::Init(int width, int height)
+    void PostProcessUtility::LazyInit(int width, int height)
     {
-      m_resolution.x = width, m_resolution.y = height;
+      if (m_resolution.x == 0)
+      {
+        m_resolution.x = width, m_resolution.y = height;
 
-      //FBO Target 1
-      m_target1Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
-        , Texture::Format::RGBA16F, Texture::Format::RGBA
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-      m_target1Texture.SetName("TempRT1");
+        //FBO Target 1
+        m_target1Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
+          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        m_target1Texture.SetName("TempRT1");
 
-      m_temp1Fbo.Init();
-      m_temp1Fbo.AttachColorTexture(m_target1Texture);
-      m_temp1Fbo.Bind();
-      m_temp1Fbo.Unbind();
+        m_temp1Fbo.Init();
+        m_temp1Fbo.AttachColorTexture(m_target1Texture);
+        m_temp1Fbo.Bind();
+        m_temp1Fbo.Unbind();
 
-      //FBO Target 2
-      m_target2Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
-        , Texture::Format::RGBA16F, Texture::Format::RGBA
-        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-      m_target1Texture.SetName("TempRT2");
+        //FBO Target 2
+        m_target2Texture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
+          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+        m_target2Texture.SetName("TempRT2");
 
-      m_temp2Fbo.Init();
-      m_temp2Fbo.AttachColorTexture(m_target2Texture);
-      m_temp2Fbo.Bind();
-      m_temp2Fbo.Unbind();
+        m_temp2Fbo.Init();
+        m_temp2Fbo.AttachColorTexture(m_target2Texture);
+        m_temp2Fbo.Bind();
+        m_temp2Fbo.Unbind();
 
-      //Shaders
-      m_blitCopyShader.Create();
-      m_blitCopyShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_blitCopyShader.AttachShaderFile("Utility/blitCopy.frag");
-      m_blitCopyShader.Link();
-      
-      m_blurShader.Create();
-      m_blurShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_blurShader.AttachShaderFile("Postprocess/gaussian_blur.frag");
-      m_blurShader.Link();
+        //Shaders
+        m_blitCopyShader.Create();
+        m_blitCopyShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_blitCopyShader.AttachShaderFile("Utility/blitCopy.frag");
+        m_blitCopyShader.Link();
 
-      m_kawaseBlurShader.Create();
-      m_kawaseBlurShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_kawaseBlurShader.AttachShaderFile("Postprocess/kawase_blur.frag");
-      m_kawaseBlurShader.Link();
+        m_blurShader.Create();
+        m_blurShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_blurShader.AttachShaderFile("Postprocess/gaussian_blur.frag");
+        m_blurShader.Link();
 
-      //Set Uniform
-      RefreshTextureUniforms();
+        m_kawaseBlurShader.Create();
+        m_kawaseBlurShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_kawaseBlurShader.AttachShaderFile("Postprocess/kawase_blur.frag");
+        m_kawaseBlurShader.Link();
+
+        //Set Uniform
+        RefreshTextureUniforms();
+      }
+      else
+      {
+        if (m_resolution.x != width || m_resolution.y != height)
+        {
+          m_resolution.x = width, m_resolution.y = height;
+          m_target1Texture.Resize(width, height, Texture::PixelFormat::RGBA);
+          m_target2Texture.Resize(width, height, Texture::PixelFormat::RGBA);
+        }
+      }
     }
 
     void PostProcessUtility::BlurTarget(glm::vec4 clearColor, Texture& target

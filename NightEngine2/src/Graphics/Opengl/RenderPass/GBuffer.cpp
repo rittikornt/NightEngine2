@@ -23,50 +23,69 @@ using namespace NightEngine;
 
 namespace NightEngine::Rendering::Opengl
 {
-  void GBuffer::Init(int width, int height)
+  void GBuffer::LazyInit(CameraObject& cameraObject)
   {
-    m_width = width, m_height = height;
+    if (m_width == 0)
+    {
+      m_width = cameraObject.m_scaledPixelResolution.x, m_height = cameraObject.m_scaledPixelResolution.y;
 
-    m_fbo.Init();
+      m_fbo.Init();
 
-    // Motion vector
-    m_motionVector = Texture::GenerateRenderTexture(width, height
-      , Texture::Format::RG16F, Texture::Format::RGBA
-      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_motionVector.SetName("MotionVector (RG16F)");
+      // Motion vector
+      m_motionVector = Texture::GenerateRenderTexture(m_width, m_height
+        , Texture::Format::RG16F, Texture::Format::RGBA
+        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+      m_motionVector.SetName("MotionVector (RG16F)");
 
-    //Depth Buffer
-    m_depthTexture = m_fbo.CreateAndAttachDepthStencilTexture(width, height
-      , GL_LINEAR, GL_LINEAR);
-    m_depthTexture.SetName("DepthPrepass RT");
-    CHECKGL_ERROR();
+      //Depth Buffer
+      m_depthTexture = m_fbo.CreateAndAttachDepthStencilTexture(m_width, m_height
+        , GL_LINEAR, GL_LINEAR);
+      m_depthTexture.SetName("DepthPrepass RT");
+      CHECKGL_ERROR();
 
-    // (0) vec4(n.xy)
-    m_textures[0] = Texture::GenerateRenderTexture(width, height
-      , Texture::Format::RG16F, Texture::Format::RGBA
-      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[0].SetName("GBuffer0 (N.xy)");
-    m_fbo.AttachColorTexture(m_textures[0], 0);
+      // (0) vec4(n.xy)
+      m_textures[0] = Texture::GenerateRenderTexture(m_width, m_height
+        , Texture::Format::RG16F, Texture::Format::RGBA
+        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+      m_textures[0].SetName("GBuffer0 (N.xy)");
+      m_fbo.AttachColorTexture(m_textures[0], 0);
 
-    //(1) vec4(albedo.xyz, metallic)
-    m_textures[1] = Texture::GenerateRenderTexture(width, height
-      , Texture::Format::SRGB8_ALPHA8, Texture::Format::RGBA
-      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[1].SetName("GBuffer1 (albedo.xyz, metallic)");
-    m_fbo.AttachColorTexture(m_textures[1], 1);
+      //(1) vec4(albedo.xyz, metallic)
+      m_textures[1] = Texture::GenerateRenderTexture(m_width, m_height
+        , Texture::Format::SRGB8_ALPHA8, Texture::Format::RGBA
+        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+      m_textures[1].SetName("GBuffer1 (albedo.xyz, metallic)");
+      m_fbo.AttachColorTexture(m_textures[1], 1);
 
-    //(2) vec4(emissive.xyz, roughness)
-    m_textures[2] = Texture::GenerateRenderTexture(width, height
-      , Texture::Format::RGBA12, Texture::Format::RGBA
-      , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-    m_textures[2].SetName("GBuffer3 (emissive.xyz, roughness)");
-    m_fbo.AttachColorTexture(m_textures[2], 2);
+      //(2) vec4(emissive.xyz, roughness)
+      m_textures[2] = Texture::GenerateRenderTexture(m_width, m_height
+        , Texture::Format::RGBA12, Texture::Format::RGBA
+        , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+      m_textures[2].SetName("GBuffer3 (emissive.xyz, roughness)");
+      m_fbo.AttachColorTexture(m_textures[2], 2);
 
-    //Setup multiple render target
-    m_fbo.SetupMultipleRenderTarget();
+      //Setup multiple render target
+      m_fbo.SetupMultipleRenderTarget();
 
-    m_fbo.Bind();
-    m_fbo.Unbind();
+      m_fbo.Bind();
+      m_fbo.Unbind();
+    }
+    else
+    {
+      //Check for Resize
+      float width = cameraObject.m_scaledPixelResolution.x, height = cameraObject.m_scaledPixelResolution.y;
+      if (width != m_width || height != m_height)
+      {
+        m_width = width, m_height = height;
+
+        m_motionVector.Resize(width, height, Texture::PixelFormat::RGBA);
+        m_depthTexture.Resize(width, height, Texture::PixelFormat::DepthStencil, GL_UNSIGNED_INT_24_8);
+
+        m_textures[0].Resize(width, height, Texture::PixelFormat::RGBA);
+        m_textures[1].Resize(width, height, Texture::PixelFormat::RGBA);
+        m_textures[2].Resize(width, height, Texture::PixelFormat::RGBA);
+      }
+    }
   }
 
   void GBuffer::Execute(NightEngine::EC::Handle<Material>& defaultMaterial
@@ -122,7 +141,7 @@ namespace NightEngine::Rendering::Opengl
   void GBuffer::CopyDepthBufferTo(unsigned fboId)
   {
     m_fbo.CopyBufferToTarget(m_width, m_height, m_width, m_height
-      , fboId, GL_DEPTH_BUFFER_BIT);
+      , fboId, GL_DEPTH_BUFFER_BIT, GL_LINEAR);
   }
 
   void GBuffer::RefreshTextureUniforms(Shader& shader)

@@ -56,7 +56,7 @@ namespace NightEngine::Rendering::Opengl
           .MR_ADD_MEMBER_PROTECTED(PostProcessSetting, m_fxaaPP, true);
       }
 
-      glm::ivec2        m_resolution = glm::ivec2(1);
+      glm::ivec2        m_resolution = glm::ivec2(0);
 
       Material            m_uberPostMaterial;
       Material            m_blitCopyMaterial;
@@ -73,7 +73,7 @@ namespace NightEngine::Rendering::Opengl
       std::vector<PostProcessEffect*> m_postProcessEffects;
 
       //! @brief Initialization
-      void Init(int width, int height, GBuffer& gbuffer);
+      void LazyInit(CameraObject& camera, GBuffer& gbuffer);
 
       //! @brief Apply Postfx to the screen texture
       void Apply(const PostProcessContext& context);

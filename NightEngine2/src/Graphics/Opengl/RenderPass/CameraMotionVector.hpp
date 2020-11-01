@@ -36,7 +36,7 @@ namespace NightEngine::Rendering::Opengl
       bool m_isFirstFrame = true;
 
       //! @brief Initialization
-      void Init(int width, int height, GBuffer& gbuffer);
+      void Init(GBuffer& gbuffer);
 
       //! @brief Render CameraMotionVector
       void Render(VertexArrayObject& screenVAO

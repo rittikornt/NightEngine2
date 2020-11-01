@@ -16,44 +16,56 @@ namespace NightEngine::Rendering::Opengl
   {
     INIT_REFLECTION_FOR(TAA)
 
-    void TAA::Init(int width, int height)
+    void TAA::LazyInit(int width, int height)
     {
-      m_width = width;
-      m_height = height;
+      if (m_resolution.x == 0)
+      {
+        m_resolution.x = width;
+        m_resolution.y = height;
 
-      INIT_POSTPROCESSEFFECT();
-      m_TAAShader.Create();
-      m_TAAShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_TAAShader.AttachShaderFile("Postprocess/taa.frag");
-      m_TAAShader.Link();
+        INIT_POSTPROCESSEFFECT();
+        m_TAAShader.Create();
+        m_TAAShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_TAAShader.AttachShaderFile("Postprocess/taa.frag");
+        m_TAAShader.Link();
 
-      //RT
-      m_currRT = Texture::GenerateRenderTexture(width, height
-        , Texture::Format::RGBA16F, Texture::Format::RGBA
-        , Texture::FilterMode::LINEAR
-        , Texture::WrapMode::CLAMP_TO_EDGE);
-      m_currRT.SetName("SceneTAAColorRT");
+        //RT
+        m_currRT = Texture::GenerateRenderTexture(width, height
+          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::FilterMode::LINEAR
+          , Texture::WrapMode::CLAMP_TO_EDGE);
+        m_currRT.SetName("SceneTAAColorRT");
 
-      m_historyRT = Texture::GenerateRenderTexture(width, height
-        , Texture::Format::RGBA16F, Texture::Format::RGBA
-        , Texture::FilterMode::LINEAR
-        , Texture::WrapMode::CLAMP_TO_EDGE);
-      m_historyRT.SetName("SceneHistoryColorRT");
+        m_historyRT = Texture::GenerateRenderTexture(width, height
+          , Texture::Format::RGBA16F, Texture::Format::RGBA
+          , Texture::FilterMode::LINEAR
+          , Texture::WrapMode::CLAMP_TO_EDGE);
+        m_historyRT.SetName("SceneHistoryColorRT");
 
-      //FBO
-      m_taaFBO.Init();
-      m_taaFBO.AttachColorTexture(m_currRT);
-      m_taaFBO.Bind();
-      m_taaFBO.Unbind();
+        //FBO
+        m_taaFBO.Init();
+        m_taaFBO.AttachColorTexture(m_currRT);
+        m_taaFBO.Bind();
+        m_taaFBO.Unbind();
 
-      m_copyHistoryFBO.Init();
-      m_copyHistoryFBO.AttachColorTexture(m_historyRT);
-      m_copyHistoryFBO.Bind();
-      m_copyHistoryFBO.Unbind();
+        m_copyHistoryFBO.Init();
+        m_copyHistoryFBO.AttachColorTexture(m_historyRT);
+        m_copyHistoryFBO.Bind();
+        m_copyHistoryFBO.Unbind();
 
-      RefreshTextureUniforms();
+        RefreshTextureUniforms();
 
-      m_isFirstFrame = true;
+        m_isFirstFrame = true;
+      }
+      else
+      {
+        if (m_resolution.x != width || m_resolution.y != height)
+        {
+          m_resolution.x = width, m_resolution.y = height;
+          m_currRT.Resize(width, height, Texture::PixelFormat::RGBA);
+          m_historyRT.Resize(width, height, Texture::PixelFormat::RGBA);
+        }
+      }
     }
 
     void TAA::Apply(VertexArrayObject& screenVAO
@@ -62,8 +74,8 @@ namespace NightEngine::Rendering::Opengl
     {
       if (m_isFirstFrame)
       {
-        sceneFbo.CopyBufferToTarget(m_width, m_height, m_width, m_height
-          , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT);
+        sceneFbo.CopyBufferToTarget(m_resolution.x, m_resolution.y, m_resolution.x, m_resolution.y
+          , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
         m_isFirstFrame = false;
       }
 
@@ -92,8 +104,8 @@ namespace NightEngine::Rendering::Opengl
       //sceneFbo.CopyToTexture(m_historyRT
       //  , m_width, m_height);
 
-      m_taaFBO.CopyBufferToTarget(m_width, m_height, m_width, m_height
-        , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT);
+      m_taaFBO.CopyBufferToTarget(m_resolution.x, m_resolution.y, m_resolution.x, m_resolution.y
+        , m_copyHistoryFBO.GetID(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
     }
 
     void TAA::ApplyToScreen(VertexArrayObject& screenVAO

@@ -18,7 +18,7 @@ namespace NightEngine::Rendering::Opengl
   {
     INIT_REFLECTION_FOR(CameraMotionVector)
 
-    void CameraMotionVector::Init(int width, int height, GBuffer& gbuffer)
+    void CameraMotionVector::Init(GBuffer& gbuffer)
     {
       INIT_POSTPROCESSEFFECT();
 

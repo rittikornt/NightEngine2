@@ -21,75 +21,86 @@ namespace NightEngine::Rendering::Opengl
   {
     INIT_REFLECTION_FOR(SSAO)
 
-    void SSAO::Init(int width, int height, GBuffer& gbuffer)
+    void SSAO::LazyInit(int width, int height, GBuffer& gbuffer)
     {
-      INIT_POSTPROCESSEFFECT();
-      m_resolution = glm::ivec2(width, height);
-
-      m_ssaoTexture = Texture::GenerateRenderTexture(
-        width, height, Texture::Format::RGB
-        , Texture::Format::RGB, Texture::FilterMode::NEAREST
-        , Texture::WrapMode::CLAMP_TO_EDGE);
-      m_ssaoTexture.SetName("SSAO RT");
-      
-      //FBO
-      m_fbo.Init();
-      m_fbo.AttachDepthTexture(gbuffer.m_depthTexture);
-      m_fbo.AttachColorTexture(m_ssaoTexture);
-      m_fbo.Bind();
-      m_fbo.Unbind();
-
-      //Shader
-      m_ssaoShader.Create();
-      m_ssaoShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_ssaoShader.AttachShaderFile("Postprocess/ssao.frag");
-      m_ssaoShader.Link();
-
-      m_simpleBlur.Create();
-      m_simpleBlur.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_simpleBlur.AttachShaderFile("Postprocess/simple_blur.frag");
-      m_simpleBlur.Link();
-
-      //Set Uniform
-      RefreshTextureUniforms();
-
-      //Sample kernel
-      std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
-      std::default_random_engine generator;
-      for (unsigned i = 0; i < m_sampleAmount; ++i)
+      if (m_resolution.x == 0)
       {
-        glm::vec3 sampleDir{
-          randomFloats(generator) * 2.0 - 1.0,
-          randomFloats(generator) * 2.0 - 1.0,
-          randomFloats(generator) };
+        INIT_POSTPROCESSEFFECT();
+        m_resolution = glm::ivec2(width, height);
 
-        //Random Hemisphere offset
-        sampleDir = glm::normalize(sampleDir);
-        float magnitude = randomFloats(generator);
+        m_ssaoTexture = Texture::GenerateRenderTexture(
+          width, height, Texture::Format::RGB
+          , Texture::Format::RGB, Texture::FilterMode::NEAREST
+          , Texture::WrapMode::CLAMP_TO_EDGE);
+        m_ssaoTexture.SetName("SSAO RT");
 
-        //Scale by magnitude
-        float scale = (float)i / 64.0;
-        scale = Lerp(0.1f, 1.0f, scale * scale);
-        magnitude *= scale;
+        //FBO
+        m_fbo.Init();
+        m_fbo.AttachDepthTexture(gbuffer.m_depthTexture);
+        m_fbo.AttachColorTexture(m_ssaoTexture);
+        m_fbo.Bind();
+        m_fbo.Unbind();
 
-        m_sampleKernel.emplace_back(sampleDir * magnitude);
-        m_sampleKernelString.emplace_back("u_sampleKernel["
-          + std::to_string(i) + "]");
+        //Shader
+        m_ssaoShader.Create();
+        m_ssaoShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_ssaoShader.AttachShaderFile("Postprocess/ssao.frag");
+        m_ssaoShader.Link();
+
+        m_simpleBlur.Create();
+        m_simpleBlur.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_simpleBlur.AttachShaderFile("Postprocess/simple_blur.frag");
+        m_simpleBlur.Link();
+
+        //Set Uniform
+        RefreshTextureUniforms();
+
+        //Sample kernel
+        std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
+        std::default_random_engine generator;
+        for (unsigned i = 0; i < m_sampleAmount; ++i)
+        {
+          glm::vec3 sampleDir{
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) };
+
+          //Random Hemisphere offset
+          sampleDir = glm::normalize(sampleDir);
+          float magnitude = randomFloats(generator);
+
+          //Scale by magnitude
+          float scale = (float)i / 64.0;
+          scale = Lerp(0.1f, 1.0f, scale * scale);
+          magnitude *= scale;
+
+          m_sampleKernel.emplace_back(sampleDir * magnitude);
+          m_sampleKernelString.emplace_back("u_sampleKernel["
+            + std::to_string(i) + "]");
+        }
+
+        //Noise texture
+        std::vector<glm::vec3> ssaoNoise;
+        for (unsigned i = 0; i < 16; ++i)
+        {
+          glm::vec3 noise{ randomFloats(generator)
+            , randomFloats(generator)
+            , 0.0f };
+          ssaoNoise.emplace_back(noise);
+        }
+        m_noiseTexture = Texture::GenerateTextureData(&ssaoNoise[0]
+          , 4, 4, Texture::Format::RGB16F, Texture::Format::RGB
+          , Texture::FilterMode::NEAREST, Texture::WrapMode::REPEAT);
+        m_noiseTexture.SetName("SSAO Noise RT");
       }
-
-      //Noise texture
-      std::vector<glm::vec3> ssaoNoise;
-      for (unsigned i = 0; i < 16; ++i)
+      else
       {
-        glm::vec3 noise{ randomFloats(generator)
-          , randomFloats(generator)
-          , 0.0f };
-        ssaoNoise.emplace_back(noise);
+        if (m_resolution.x != width || m_resolution.y != height)
+        {
+          m_resolution.x = width, m_resolution.y = height;
+          m_ssaoTexture.Resize(width, height, Texture::PixelFormat::RGB);
+        }
       }
-      m_noiseTexture = Texture::GenerateTextureData(&ssaoNoise[0]
-        , 4, 4, Texture::Format::RGB16F, Texture::Format::RGB
-        , Texture::FilterMode::NEAREST, Texture::WrapMode::REPEAT);
-      m_noiseTexture.SetName("SSAO Noise RT");
     }
 
     void SSAO::Apply(VertexArrayObject& screenVAO

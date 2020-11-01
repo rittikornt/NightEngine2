@@ -55,6 +55,7 @@ namespace NightEngine::Rendering::Opengl
       SRGB = GL_SRGB,
       SRGBA = GL_SRGB_ALPHA,
       SRGB8_ALPHA8 = GL_SRGB8_ALPHA8, //SRGB8 with linear Alpha
+
       RG16F = GL_RG16F,
       RGB16F = GL_RGB16F,
       RGB32F = GL_RGB32F,
@@ -66,6 +67,16 @@ namespace NightEngine::Rendering::Opengl
       Depth24Stencil8 = GL_DEPTH24_STENCIL8,
       INVALID = GL_INVALID_ENUM
 		};
+    enum class PixelFormat : GLenum
+    {
+      RED = GL_RED,
+      RG = GL_RG,
+      RGB = GL_RGB,
+      RGBA = GL_RGBA,
+      Depth = GL_DEPTH_COMPONENT,
+      Stencil = GL_STENCIL_INDEX,
+      DepthStencil = GL_DEPTH_STENCIL
+    };
 		enum class TextureUnit : GLenum
 		{
 			TEXTURE_0 = GL_TEXTURE0,
@@ -172,6 +183,8 @@ namespace NightEngine::Rendering::Opengl
 
     //! @brief Clear texture variables
     inline void Clear(void) { m_textureID = ~(0); m_name.clear(); m_filePath.clear(); }
+
+    void Resize(int width, int height, PixelFormat format, GLenum pixelTarget = ~(0));
 
     //*****************************************************
     // Static Method

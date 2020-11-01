@@ -17,85 +17,105 @@ namespace NightEngine::Rendering::Opengl
     static glm::ivec2 g_bloomResolutions[k_bloomPyramidCount + 1];
 
     //TODO: Better Bloom Falloff
-    void Bloom::Init(int width, int height)
+    void Bloom::LazyInit(int width, int height)
     {
-      INIT_POSTPROCESSEFFECT();
-      m_resolution.x = width, m_resolution.y = height;
-
-      //FBO for 5 down scaled version
-      glm::ivec2 renderSize{ m_resolution};
-      std::string name = "";
-      for (int i = 0; i < k_bloomPyramidCount +1; ++i)
+      if (m_resolution.x == 0)
       {
-        g_bloomResolutions[i] = renderSize;
+        INIT_POSTPROCESSEFFECT();
+        m_resolution.x = width, m_resolution.y = height;
 
+        //FBO for 5 down scaled version
+        glm::ivec2 renderSize{ m_resolution };
+        std::string name = "";
+        for (int i = 0; i < k_bloomPyramidCount + 1; ++i)
         {
-          name = "BloomDownScale (" + std::to_string(g_bloomResolutions[i].x)
-            + "x" + std::to_string(g_bloomResolutions[i].y) +")";
-          m_bloomDownscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
-            , Texture::Format::RGB16F, Texture::Format::RGBA
-            , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-          m_bloomDownscaleTexture[i].SetName(name.c_str());
+          g_bloomResolutions[i] = renderSize;
 
-          m_bloomDownscaleFbo[i].Init();
-          m_bloomDownscaleFbo[i].AttachColorTexture(m_bloomDownscaleTexture[i]);
-          m_bloomDownscaleFbo[i].Bind();
-          m_bloomDownscaleFbo[i].Unbind();
+          {
+            name = "BloomDownScale (" + std::to_string(g_bloomResolutions[i].x)
+              + "x" + std::to_string(g_bloomResolutions[i].y) + ")";
+            m_bloomDownscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
+              , Texture::Format::RGB16F, Texture::Format::RGBA
+              , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+            m_bloomDownscaleTexture[i].SetName(name.c_str());
+
+            m_bloomDownscaleFbo[i].Init();
+            m_bloomDownscaleFbo[i].AttachColorTexture(m_bloomDownscaleTexture[i]);
+            m_bloomDownscaleFbo[i].Bind();
+            m_bloomDownscaleFbo[i].Unbind();
+          }
+
+          {
+            name = "BloomUpScale (" + std::to_string(g_bloomResolutions[i].x)
+              + "x" + std::to_string(g_bloomResolutions[i].y) + ")";
+            m_bloomUpscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
+              , Texture::Format::RGB16F, Texture::Format::RGBA
+              , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
+            m_bloomUpscaleTexture[i].SetName(name.c_str());
+
+            m_bloomUpscaleFbo[i].Init();
+            m_bloomUpscaleFbo[i].AttachColorTexture(m_bloomUpscaleTexture[i]);
+            m_bloomUpscaleFbo[i].Bind();
+            m_bloomUpscaleFbo[i].Unbind();
+          }
+
+          renderSize /= 2;
         }
 
+        //FBO Target
         {
-          name = "BloomUpScale (" + std::to_string(g_bloomResolutions[i].x)
-            + "x" + std::to_string(g_bloomResolutions[i].y) + ")";
-          m_bloomUpscaleTexture[i] = Texture::GenerateRenderTexture(renderSize.x, renderSize.y
-            , Texture::Format::RGB16F, Texture::Format::RGBA
+          m_targetTexture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
+            , Texture::Format::RGBA16F, Texture::Format::RGBA
             , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-          m_bloomUpscaleTexture[i].SetName(name.c_str());
+          m_targetTexture.SetName("BloomResult");
 
-          m_bloomUpscaleFbo[i].Init();
-          m_bloomUpscaleFbo[i].AttachColorTexture(m_bloomUpscaleTexture[i]);
-          m_bloomUpscaleFbo[i].Bind();
-          m_bloomUpscaleFbo[i].Unbind();
+          m_targetFbo.Init();
+          m_targetFbo.AttachColorTexture(m_targetTexture);
+          m_targetFbo.Bind();
+          m_targetFbo.Unbind();
         }
 
-        renderSize /= 2;
-      }
+        //Shaders
+        m_thresholdShader.Create();
+        m_thresholdShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_thresholdShader.AttachShaderFile("Postprocess/brightness_threshold.frag");
+        m_thresholdShader.Link();
 
-      //FBO Target
+        m_upscalingShader.Create();
+        m_upscalingShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_upscalingShader.AttachShaderFile("Postprocess/bloom_upscale.frag");
+        m_upscalingShader.Link();
+
+        m_blitCopyShader.Create();
+        m_blitCopyShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_blitCopyShader.AttachShaderFile("Utility/blitCopy.frag");
+        m_blitCopyShader.Link();
+
+        m_bloomShader.Create();
+        m_bloomShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
+        m_bloomShader.AttachShaderFile("Postprocess/bloom.frag");
+        m_bloomShader.Link();
+
+        //Set Uniform
+        RefreshTextureUniforms();
+      }
+      else
       {
-        m_targetTexture = Texture::GenerateRenderTexture(m_resolution.x, m_resolution.y
-          , Texture::Format::RGBA16F, Texture::Format::RGBA
-          , Texture::FilterMode::LINEAR, Texture::WrapMode::CLAMP_TO_EDGE);
-        m_targetTexture.SetName("BloomResult");
+        if (m_resolution.x != width || m_resolution.y != height)
+        {
+          m_resolution.x = width, m_resolution.y = height;
 
-        m_targetFbo.Init();
-        m_targetFbo.AttachColorTexture(m_targetTexture);
-        m_targetFbo.Bind();
-        m_targetFbo.Unbind();
+          glm::ivec2 renderSize{ m_resolution };
+          for (int i = 0; i < k_bloomPyramidCount + 1; ++i)
+          {
+            g_bloomResolutions[i] = renderSize;
+            m_bloomDownscaleTexture[i].Resize(renderSize.x, renderSize.y, Texture::PixelFormat::RGBA);
+            m_bloomUpscaleTexture[i].Resize(renderSize.x, renderSize.y, Texture::PixelFormat::RGBA);
+            renderSize /= 2;
+          }
+          m_targetTexture.Resize(width, height, Texture::PixelFormat::RGBA);
+        }
       }
-
-      //Shaders
-      m_thresholdShader.Create();
-      m_thresholdShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_thresholdShader.AttachShaderFile("Postprocess/brightness_threshold.frag");
-      m_thresholdShader.Link();
-      
-      m_upscalingShader.Create();
-      m_upscalingShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_upscalingShader.AttachShaderFile("Postprocess/bloom_upscale.frag");
-      m_upscalingShader.Link();
-
-      m_blitCopyShader.Create();
-      m_blitCopyShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_blitCopyShader.AttachShaderFile("Utility/blitCopy.frag");
-      m_blitCopyShader.Link();
-      
-      m_bloomShader.Create();
-      m_bloomShader.AttachShaderFile("Utility/fullscreenTriangle.vert");
-      m_bloomShader.AttachShaderFile("Postprocess/bloom.frag");
-      m_bloomShader.Link();
-
-      //Set Uniform
-      RefreshTextureUniforms();
     }
 
     void Bloom::Apply(VertexArrayObject& screenVAO

@@ -33,6 +33,19 @@
 #define POINTLIGHT_AMOUNT 4
 #define SPOTLIGHT_AMOUNT 4
 
+namespace NightEngine::Rendering::Opengl
+{
+  struct SceneBuffer
+  {
+    Opengl::FrameBufferObject   m_sceneFbo;
+    Opengl::Texture             m_sceneTexture;
+    Opengl::VertexArrayObject   m_screenTriangleVAO;
+    glm::ivec2 m_resolution = glm::ivec2(0, 0);
+
+    void LazyInit(CameraObject& camera, GBuffer& gbuffer);
+  };
+}
+
 namespace NightEngine::Rendering
 {
   namespace Opengl::Postprocess
@@ -72,10 +85,12 @@ namespace NightEngine::Rendering
     ShadowsResolution mainShadowResolution = ShadowsResolution::_2048;
     ShadowsResolution pointShadowResolution = ShadowsResolution::_1024;
 
-    int m_width = 1;
-    int m_height = 1;
+    //int m_width = 1;
+    //int m_height = 1;
 
   protected:
+    Opengl::SceneBuffer m_sceneBuffer;
+
     //Uniform Buffer Object
     Opengl::UniformBufferObject m_uniformBufferObject;
 
@@ -89,11 +104,7 @@ namespace NightEngine::Rendering
     Opengl::Cubemap             m_shadowMapPointShadow[POINTLIGHT_AMOUNT];
     Opengl::Material            m_depthPointShadowMaterial;
 
-    glm::vec2           m_initResolution{1.0f};
-
-    //Scene FrameBuffer
-    Opengl::FrameBufferObject   m_sceneFbo;
-    Opengl::Texture             m_sceneTexture;
+    //glm::vec2           m_initResolution{1.0f};
 
     //Render Passes
     Opengl::DepthPrepass        m_depthPrepass;
@@ -103,9 +114,6 @@ namespace NightEngine::Rendering
     //PostProcess
     NightEngine::Rendering::Opengl::Postprocess::PostProcessSetting* m_postProcessSetting;
 
-    //FullScreen Postfx
-    Opengl::VertexArrayObject                  m_screenTriangleVAO;
-                                       
     //Cubemap IBL                      
     Opengl::IBL                                m_ibl;
 

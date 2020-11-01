@@ -22,7 +22,7 @@ namespace NightEngine::Rendering::Opengl
     int                 m_height = 1;
 
     //! @brief Initialize DepthPrepass
-    void Init(int width, int height, GBuffer& gbuffer);
+    void Init(GBuffer& gbuffer);
 
     //! @brief Bind to fbo
     void Execute(CameraObject& camera);

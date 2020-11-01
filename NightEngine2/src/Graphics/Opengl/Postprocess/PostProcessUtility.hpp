@@ -21,7 +21,7 @@ namespace NightEngine::Rendering::Opengl
     //! @brief PostProcessUtility struct
     struct PostProcessUtility
     {
-      glm::ivec2        m_resolution = glm::ivec2(1);
+      glm::ivec2        m_resolution = glm::ivec2(0);
       glm::vec4         m_clearColor = glm::vec4(0.0f);
 
       FrameBufferObject m_temp1Fbo;
@@ -34,7 +34,7 @@ namespace NightEngine::Rendering::Opengl
       Shader            m_kawaseBlurShader;
 
       //! @brief Initialization
-      void Init(int width, int height);
+      void LazyInit(int width, int height);
 
       //! @brief Clear Color on fbo texture
       void Clear(void);

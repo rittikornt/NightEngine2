@@ -19,6 +19,7 @@
 
 namespace NightEngine::Rendering::Opengl
 {
+  //TODO: Move FrustumJitter into its own file
   struct FrustumJitter
   {
     static float GetHaltonSequence(int index, int radix)
@@ -81,8 +82,8 @@ namespace NightEngine::Rendering::Opengl
       , glm::vec2& jitteredUV, float jitterStrength)
     {
       int index = camera.m_taaFrameIndex + 1;
-      float texelOffsetX = (GetHaltonSequence(index, 2) * jitterStrength) - (jitterStrength * 0.5f);
-      float texelOffsetY = (GetHaltonSequence(index, 3) * jitterStrength) - (jitterStrength * 0.5f);
+      float texelOffsetX = (GetHaltonSequence(index, 2) * jitterStrength) - (jitterStrength * 0.5f); //[-0.5,0.5]
+      float texelOffsetY = (GetHaltonSequence(index, 3) * jitterStrength) - (jitterStrength * 0.5f); //[-0.5,0.5]
 
       float pixelWidth = Window::GetWidth();
       float pixelHeight = Window::GetHeight();
@@ -174,6 +175,11 @@ namespace NightEngine::Rendering::Opengl
 
   void CameraObject::OnStartFrame(void)
   {
+    m_windowPixelResolution.x = Window::GetWidth();
+    m_windowPixelResolution.y = Window::GetHeight();
+    m_scaledPixelResolution.x = (int)(m_windowPixelResolution.x * m_scale);
+    m_scaledPixelResolution.y = (int)(m_windowPixelResolution.y * m_scale);
+
     //Matrix
     m_view = CalculateViewMatrix(m_position, m_dirForward, WORLD_UP);
 
@@ -407,15 +413,5 @@ namespace NightEngine::Rendering::Opengl
       camera.m_position = glm::lerp(camera.m_position, targetCameraPosition, dt * k_smoothSpeed);
       //Print("Pos: ", camera.m_position);
     }
-  }
-
-  float CameraObject::GetScreenAspectRatio(void)
-  {
-    return SCREEN_ASPECT_RATIO;
-  }
-
-  glm::i32vec2 CameraObject::GetScreenSize(void)
-  {
-    return glm::i32vec2(Window::GetWidth(), Window::GetHeight());
   }
 }

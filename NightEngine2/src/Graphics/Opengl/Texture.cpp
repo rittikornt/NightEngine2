@@ -145,6 +145,26 @@ namespace NightEngine::Rendering::Opengl
     Unbind();
   }
 
+  void Texture::Resize(int width, int height, PixelFormat format, GLenum pixelTarget)
+  {
+    //Choose target based on channel
+    if (pixelTarget == ~(0))
+    {
+      pixelTarget = m_internalFormat == Format::RGB16F
+        || m_internalFormat == Format::RGB32F
+        || m_internalFormat == Format::RGBA16F
+        || m_internalFormat == Format::RGBA32F
+        || m_internalFormat == Format::RG16F
+        || m_internalFormat == Format::RED ? GL_FLOAT : GL_UNSIGNED_BYTE;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLenum>(m_internalFormat), width, height, 0
+      , static_cast<GLenum>(format), pixelTarget, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    CHECKGL_ERROR();
+  }
+
   //*****************************************************
   // Static Method
   //*****************************************************

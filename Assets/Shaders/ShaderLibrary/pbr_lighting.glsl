@@ -57,22 +57,7 @@ vec3 g_sampleOffsetDirections[20] = vec3[]
    vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
-);   
-
-//**********************************************************
-// Helper Function
-//**********************************************************
-SurfaceData GetSurfaceData(vec3 normal, vec3 fragWorldPos)
-{
-	SurfaceData data;
-	data.normal = normal;
-	data.lightDir = u_dirLightInfo.m_direction;
-
-	data.viewDir = normalize(u_cameraInfo.m_position - fragWorldPos);
-	data.halfWayVector = normalize(data.viewDir + data.lightDir);
-
-	return data;
-}
+);
 
 //**********************************************************
 // Helper Function
@@ -243,7 +228,7 @@ vec3 CalculatePBRLighting(vec3 ViewDir,vec3 LightDir, vec3 Halfway, vec3 Normal
 	//Fresnel F
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, Albedo, Metallic);
-	vec3 F = FresnelSchlick( max(dot(Halfway, ViewDir), 0.0), F0);
+	vec3 F = FresnelSchlick( clamp(dot(Halfway, ViewDir), 0.0, 1.0), F0);
 
 	//Specular term
 	float denom = 4.0 * max(dot(Normal, ViewDir), 0.0) * NdotL;
@@ -268,7 +253,7 @@ vec3 CalculateMainLighting(SurfaceData surfaceData
 	vec3 ViewDir = surfaceData.viewDir;
 	vec3 LightDir = surfaceData.lightDir;
 	vec3 Halfway = surfaceData.halfWayVector;
-
+	
 	return CalculatePBRLighting(ViewDir, LightDir, Halfway, Normal
 						, u_dirLightInfo.m_intensity, u_dirLightInfo.m_color
 						, Albedo, Roughness, Metallic);
@@ -321,7 +306,7 @@ vec3 CalculateAmbientLighting(SurfaceData surfaceData
 	vec3 Halfway = surfaceData.halfWayVector;
 
 	//Fresnel F
-	float NdotV = max(dot(Normal, ViewDir), 0.0);
+	float NdotV = clamp(dot(Normal, ViewDir), 0.0, 1.0);
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, Albedo, Metallic);
 	vec3 F = FresnelSchlick2( NdotV, F0, Roughness);

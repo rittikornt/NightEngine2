@@ -62,15 +62,20 @@ vec3 FastTonemapInvert(vec3 c)
 //https://software.intel.com/content/www/us/en/develop/documentation/ipp-dev-reference/top/volume-2-image-processing/image-color-conversion/color-models.html
 vec3 RGB_YCoCg(vec3 c)
 {
+	float Y  = dot( c, vec3(  1, 2,  1 ) );
+	float Co = dot( c, vec3(  2, 0, -2 ) );
+	float Cg = dot( c, vec3( -1, 2, -1 ) );
+    return vec3( Y, Co, Cg) * 0.25;
+
     // YCoCg([0,1], [-0.5,0.5], [-0.5,0.5])
     // Y = R/4 + G/2 + B/4
     // Co = R/2 - B/2
     // Cg = -R/4 + G/2 - B/4
-    return vec3(
-            c.x/4.0 + c.y/2.0 + c.z/4.0,
-            c.x/2.0 - c.z/2.0,
-        -c.x/4.0 + c.y/2.0 - c.z/4.0
-    );
+    //return vec3(
+    //        c.x/4.0 + c.y/2.0 + c.z/4.0,
+    //        c.x/2.0 - c.z/2.0,
+    //    -c.x/4.0 + c.y/2.0 - c.z/4.0
+    //);
 }
 
 vec3 YCoCg_RGB(vec3 c)
@@ -115,7 +120,7 @@ vec2 GetClosestNeighborPositionSS(vec2 positionSS, vec2 texelSize)
 {
     const float offset = NEIGHBOR_TEXEL_OFFSET;
 
-    //Neighbor Depth
+    //Neighbor Depth (2x2 Cross)
     float center  = LoadCameraDepth(positionSS, 0, 0, texelSize);
     float sw = LoadCameraDepth(positionSS, -offset, -offset, texelSize);
     float se = LoadCameraDepth(positionSS, offset, -offset, texelSize);
@@ -203,7 +208,6 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
 
     //RGB to YCoCg
     //(Unreal Siggraph 2014: YCoCg box) 
-    //https://youtu.be/TkBKOG4LZDI?t=4444
     botLeft = RGB_YCoCg(botLeft);
     topRight = RGB_YCoCg(topRight);
     botRight = RGB_YCoCg(botRight);
@@ -224,7 +228,7 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     vec3 maxColor = max(max(max(botLeft, topRight), botRight), topLeft);
     
     // shrink chroma min-max (YCOCG)
-    vec2 chroma_extent = vec2(0.25 * 0.5 * (maxColor.r - minColor.r));
+    vec2 chroma_extent = vec2(0.25 * 0.5 * abs(maxColor.r - minColor.r));
     vec2 chroma_center = currColor.gb;
     minColor.yz = chroma_center - chroma_extent;
     maxColor.yz = chroma_center + chroma_extent;

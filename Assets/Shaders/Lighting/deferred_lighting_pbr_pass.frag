@@ -27,7 +27,7 @@ void main()
 
 	vec3 Lo = atten * CalculateMainLighting(surfaceData
 					, matData.albedo.rgb, matData.roughness, matData.metallic);
-
+	
 	//Additional Lighting (Point/Spot Lights)
 	Lo += CalculateAdditionalLighting(viewDir, surfaceData.normal, matData.positionWS.xyz
 					, matData.albedo.rgb, matData.roughness, matData.metallic);

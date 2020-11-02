@@ -28,6 +28,21 @@ struct MaterialData
 	vec3 positionWS;
 	vec3 positionLS;
 };
+   
+//**********************************************************
+// Helper Function
+//**********************************************************
+SurfaceData GetSurfaceData(vec3 normal, vec3 fragWorldPos)
+{
+	SurfaceData data;
+	data.normal = normal;
+	data.lightDir = u_dirLightInfo.m_direction;
+
+	data.viewDir = normalize(u_cameraInfo.m_position - fragWorldPos);
+	data.halfWayVector = normalize(data.viewDir + data.lightDir);
+
+	return data;
+}
 
 void UnpackNormalFromRG(inout vec3 normal)
 {

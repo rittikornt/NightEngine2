@@ -32,7 +32,8 @@ namespace NightEngine::Rendering::Opengl
           .MR_ADD_MEMBER_PROTECTED(TAA, m_TAAShader, true)
           .MR_ADD_MEMBER_PROTECTED(TAA, m_sharpness, true)
           .MR_ADD_MEMBER_PROTECTED(TAA, m_frustumJitterStrength, true)
-          .MR_ADD_MEMBER_PROTECTED(TAA, m_beforeTonemapping, true);
+          .MR_ADD_MEMBER_PROTECTED(TAA, m_beforeTonemapping, true)
+          .MR_ADD_MEMBER_PROTECTED(TAA, m_blendToFilteredColor, true);
       }
 
       Shader    m_TAAShader;
@@ -44,8 +45,9 @@ namespace NightEngine::Rendering::Opengl
       FrameBufferObject m_copyHistoryFBO;
 
       float m_sharpness = 1.0f;
-      bool m_beforeTonemapping = true;
       float m_frustumJitterStrength = 1.0f;
+      bool m_beforeTonemapping = true;
+      bool m_blendToFilteredColor = false;
 
       bool m_isFirstFrame = true;
       glm::ivec2 m_resolution = glm::ivec2(0);

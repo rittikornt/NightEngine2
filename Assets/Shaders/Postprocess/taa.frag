@@ -14,6 +14,7 @@ layout(binding=3) uniform sampler2D u_motionVectorTexture;
 // TAA Frame Index ranges from 0 to 7.
 uniform vec4 u_TAAFrameInfo; // { taaSharpenStrength, taaFrameIndex, jitterUV.x, jitterUV.y }
 uniform bool u_beforeTonemapping = false;
+uniform bool u_blendTofilteredColor = false;
 
 //***************************************
 // Macros
@@ -84,9 +85,13 @@ vec3 YCoCg_RGB(vec3 c)
     // G = Y + Cg
     // B = Y - Co - Cg
     return vec3(
-        saturate(c.x + c.y - c.z),
-        saturate(c.x + c.z),
-        saturate(c.x - c.y - c.z));
+            (c.x + c.y - c.z),
+            (c.x + c.z),
+            (c.x - c.y - c.z));
+    //return vec3(
+    //    saturate(c.x + c.y - c.z),
+    //    saturate(c.x + c.z),
+    //    saturate(c.x - c.y - c.z));
 }
 
 //***************************************
@@ -139,34 +144,64 @@ vec2 GetClosestNeighborPositionSS(vec2 positionSS, vec2 texelSize)
     return positionSS + closest.xy;
 }
 
-vec3 ClipToAABB(vec3 color, vec3 minColor, vec3 maxColor)
+float IntersectAABB(vec3 dir, vec3 org, vec3 scale)
 {
-    // Somehow this one cause a lot of NAN pixels
-    // note: only clips towards aabb center (but fast!)
-    vec3 center  = 0.5 * (maxColor + minColor);
-    vec3 extents = 0.5 * (maxColor - minColor) + FLT_EPS;
+	vec3 rcpDir = rcp(dir);
+	vec3 TNeg = (  scale  - org) * rcpDir;
+	vec3 TPos = ((-scale) - org) * rcpDir;
+	return max(max(min(TNeg.x, TPos.x), min(TNeg.y, TPos.y)), min(TNeg.z, TPos.z));
+}
+
+float HistoryClipBlend(vec3 filteredColor, vec3 historyColor, vec3 minColor, vec3 maxColor)
+{
+	vec3 min_c = min(filteredColor, min(minColor, maxColor));
+	vec3 max_c = max(filteredColor, max(minColor, maxColor));	
+	vec3 avg_c = (max_c + min_c) * 0.5;
+
+	vec3 dir = filteredColor - historyColor;
+	vec3 org = historyColor - avg_c;
+	vec3 scale = max_c - avg_c;
+	return saturate(IntersectAABB(dir, org, scale));
+}
+
+vec3 ClampHistory(vec3 filteredColor, vec3 historyColor, vec3 minColor, vec3 maxColor)
+{
+    float clipBlend = HistoryClipBlend(filteredColor, historyColor, minColor, maxColor);
+    return lerp(historyColor, filteredColor, clipBlend);
+}
+
+vec3 FilterColor(vec2 uv, in vec3 bl, in vec3 tr, in vec3 br, in vec3 tl, in vec3 cc)
+{
+    //Right now is just a plain average
+    //TODO: normal distribution for spatialWeight, Sigma = 0.47
+    const float k_spatialWeight = 0.2;
+    float sampleWeight = k_spatialWeight;
+    vec3 filteredColor = (sampleWeight * cc);
+    float neighborsWeight = sampleWeight;
     
-    // This is actually `distance`, however the keyword is reserved
-    vec3 dist = (color - center);
+    //Neighbors samples weighting
+    sampleWeight = k_spatialWeight;
+    filteredColor += (sampleWeight * bl);
+    neighborsWeight += sampleWeight;
 
-    vec3 ts = abs(extents) / max(abs(dist), 0.01);
-    float t = clamp(Min3(ts.x, ts.y, ts.z), 0.0, 1.0);
-    return center + (dist * t);
+    sampleWeight = k_spatialWeight;
+    filteredColor += (sampleWeight * tr);
+    neighborsWeight += sampleWeight;
+
+    sampleWeight = k_spatialWeight;
+    filteredColor += (sampleWeight * br);
+    neighborsWeight += sampleWeight;
+    
+    sampleWeight = k_spatialWeight;
+    filteredColor += (sampleWeight * tl);
+    neighborsWeight += sampleWeight;
+
+    //Unfiltered for border pixel
+    bool isBorder = max(uv.x, uv.y) >= 1.0;
+    return isBorder? cc: filteredColor;
 }
 
-vec3 ClipToAABB2(vec3 q, vec3 aabb_min, vec3 aabb_max)
-{
-    // note: only clips towards aabb center (but fast!)
-    vec3 center = 0.5 * (aabb_max + aabb_min);
-    vec3 extents = 0.5 * (aabb_max - aabb_min) + FLT_EPS;
-
-    vec3 dist = q - vec3(center);
-    vec3 unitDir = abs(dist.xyz / extents);
-    float maxAxisLength = max(unitDir.x, max(unitDir.y, unitDir.z));
-    return (maxAxisLength > 1.0)? (center + dist / maxAxisLength) : q;
-}
-
-vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
+vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV, in vec2 res)
 {
     float sharpenStrength = u_TAAFrameInfo.x;
     vec2 uvJitterAmount = u_TAAFrameInfo.zw;
@@ -174,9 +209,9 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     // Sample History texture
     // using Motion Vector of the Closest Neighbor Depth
     vec2 closestNeighborPosSS = GetClosestNeighborPositionSS(positionSS, texelSize);
-    vec2 motionVector = LoadMotionVector(closestNeighborPosSS, texelSize);
-    float motionVectorLength = length(motionVector);
-    vec3 historyColor = FetchPrevTexture(screenUV - motionVector, 0, 0, texelSize).xyz;
+    vec2 motionVector01 = LoadMotionVector(closestNeighborPosSS, texelSize);
+    float motionVectorLength = length(motionVector01);
+    vec3 historyColor = FetchPrevTexture(screenUV - motionVector01, 0, 0, texelSize).xyz;
 
     //Sample Screen texture using unjittered uv
     vec2 uv = screenUV - uvJitterAmount;
@@ -184,7 +219,6 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     vec3 topRight = FetchCurrTexture(uv, NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
     vec3 botRight = FetchCurrTexture(uv, NEIGHBOR_TEXEL_OFFSET, -NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
     vec3 topLeft = FetchCurrTexture(uv, -NEIGHBOR_TEXEL_OFFSET, NEIGHBOR_TEXEL_OFFSET, texelSize).xyz;
-    
     vec3 currColor = FetchCurrTexture(uv, 0, 0, texelSize).xyz;
 
     //Sharpen filter
@@ -195,7 +229,7 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     }
     currColor.xyz = clamp(currColor.xyz, 0.0, CLAMP_MAX);
 
-    //Tonemapping HDR value (to avoid big outlier) to [0,1]
+    //Tonemapping HDR value to [0,1]
     if(u_beforeTonemapping)
     {
         botLeft = MAP(botLeft);
@@ -216,36 +250,52 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     currColor = RGB_YCoCg(currColor);
 
     //Adjust min/max in RGB
-    //vec3 corners = 4.0 * (botLeft + topRight) - 2.0 * currColor;
-    //vec3 averageColor = ((corners.xyz + currColor.xyz) * 0.14285714285);
-    //vec3 averageColor =  (botLeft + botRight + topLeft + topRight + currColor) * 0.2;
+    //vec3 filteredColor =  (botLeft + botRight + topLeft + topRight + currColor) * 0.2;
+    //vec3 filteredColor =  (currColor * 0.5) + ((botLeft + botRight + topLeft + topRight) * 0.25 * 0.5);
+    vec3 filteredColor =  FilterColor(screenUV, botLeft, topRight, botRight, topLeft, currColor);
 
     //R is the luminance in YCoCg
-    float currColorLuma = currColor.r; //Luminance(currColor.xyz);
-    float historyLuma = historyColor.r; //Luminance(historyColor.xyz);
-    //float averageLuma = averageColor.r; //Luminance(averageColor.xyz);
-    vec3 minColor = min(min(min(botLeft, topRight), botRight), topLeft);
-    vec3 maxColor = max(max(max(botLeft, topRight), botRight), topLeft);
+    float currColorLuma = currColor.r;
+    float historyLuma = historyColor.r;
+
+    vec3 minColor = min(min(min(min(botLeft, topRight), botRight), topLeft), filteredColor);
+    vec3 maxColor = max(max(max(max(botLeft, topRight), botRight), topLeft), filteredColor);
+    float lumaMin = minColor.x;
+    float lumaMax = maxColor.x;
     
     // shrink chroma min-max (YCOCG)
     vec2 chroma_extent = vec2(0.25 * 0.5 * abs(maxColor.r - minColor.r));
-    vec2 chroma_center = currColor.gb;
+    vec2 chroma_center = filteredColor.gb;
     minColor.yz = chroma_center - chroma_extent;
     maxColor.yz = chroma_center + chroma_extent;
-    //averageColor.yz = chroma_center;
+    //filteredColor.yz = chroma_center;
 
     //Clamp reprojected prev frame to current Neighborhood to reject false reprojection
-    historyColor = ClipToAABB2(historyColor, minColor, maxColor);
-    //historyColor = ClipToAABB(historyColor, minColor, maxColor);
-    //historyColor = clamp(historyColor, minColor, maxColor);
+    historyColor = ClampHistory(filteredColor, historyColor, minColor, maxColor);
+
+    //Setting target color to blend against
+    vec3 targetColor = currColor.xyz;
+    if(u_blendTofilteredColor)
+    {
+        //Smoothing transition at the high contrast area of currColor
+        const float k_blurAmp = 2.0;
+		float historyBlur = saturate(abs(motionVector01.x) * k_blurAmp + abs(motionVector01.y) * k_blurAmp);
+        
+        float aliasing = saturate(historyBlur) * 0.5;
+        const float k_lumaContrastFactor = 32.0 * 4;
+		float lumaContrast = lumaMax - lumaMin;
+        aliasing = saturate(aliasing + rcp(1.0 + lumaContrast * k_lumaContrastFactor));
+        targetColor = lerp(filteredColor, currColor, aliasing);
+    }
+    float targetColorLuma = targetColor.x;
 
     // Blend Color
     // Timothy Lottes (weighing by unbiased luminance diff; 
     // http://www.youtube.com/watch?v=WzpLWzGvFK4&t=18m)
-    float diff = abs(currColorLuma - historyLuma) / Max3(currColorLuma, historyLuma, 0.2);
+    float diff = abs(targetColorLuma - historyLuma) / Max3(targetColorLuma, historyLuma, 0.2);
     float weight = 1.0 - diff;
     float feedback = lerp(FEEDBACK_MIN, FEEDBACK_MAX, weight * weight);
-    currColor = lerp(currColor.xyz, historyColor.xyz, feedback);
+    currColor = lerp(targetColor.xyz, historyColor.xyz, feedback);
 
     //YCoCg to RGB
     currColor = YCoCg_RGB(currColor);
@@ -255,7 +305,6 @@ vec3 TAA(in vec2 texelSize, in vec2 positionSS, in vec2 screenUV)
     {
         //force [0, 0.999] range so it doesn't goes to infinity when UNMAP
         currColor = UNMAP(currColor * 0.999);
-        //currColor = UNMAP(min(currColor, 0.999));
     }
 
     currColor = clamp(currColor.xyz, 0.0, CLAMP_MAX);
@@ -271,6 +320,6 @@ void main()
     vec2 texelSize = vec2(1.0 / res.x, 1.0 / res.y);
     vec2 positionSS = OurTexCoords * res; 
     
-    vec3 color = TAA(texelSize, positionSS, OurTexCoords);
+    vec3 color = TAA(texelSize, positionSS, OurTexCoords, res);
     o_FragColor = vec4(color.xyz, 1.0);
 }

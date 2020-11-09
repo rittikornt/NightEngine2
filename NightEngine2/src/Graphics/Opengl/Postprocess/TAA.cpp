@@ -95,6 +95,7 @@ namespace NightEngine::Rendering::Opengl
             , cam.m_activeJitteredUV.x, cam.m_activeJitteredUV.y));
 
           m_TAAShader.SetUniform("u_beforeTonemapping", m_beforeTonemapping);
+          m_TAAShader.SetUniform("u_blendTofilteredColor", m_blendToFilteredColor);
           
           //Draw Quad
           screenVAO.Draw();

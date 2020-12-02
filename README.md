@@ -8,7 +8,7 @@ NightEngine2 is a open-source 3D component-based game engine written in C++. Thi
 NightEngine2 use cmake as build generator: [cmake](http://www.cmake.org/download/), which is used to generate platform-specific makefiles or project files. Start by cloning this repository, making sure to pass the `--recursive` flag to grab all the dependencies. If you forgot, then you can `git submodule update --init` instead.
 
 ```bash
-git clone --recursive https://BellyLand@bitbucket.org/BellyLand/nightengine.git
+git clone --recursive https://github.com/rittikornt/NightEngine2.git
 cd nightengine
 cd Build
 ```
